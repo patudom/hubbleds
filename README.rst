@@ -22,28 +22,14 @@
     .. image:: https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter
         :alt: Twitter
         :target: https://twitter.com/cosmicds-hubble
-
-.. image:: https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold
-    :alt: Project generated with PyScaffold
-    :target: https://pyscaffold.org/
+   .. image:: https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold
+       :alt: Project generated with PyScaffold
+       :target: https://pyscaffold.org/
 
 |
 
 ===============
-cosmicds-hubble
+Hubble's Law
 ===============
 
-
-    Add a short description here!
-
-
-A longer description of your project goes here...
-
-
-.. _pyscaffold-notes:
-
-Note
-====
-
-This project has been set up using PyScaffold 4.3. For details and usage
-information on PyScaffold see https://pyscaffold.org/.
+A Cosmic Data Story about Hubble's Law.
