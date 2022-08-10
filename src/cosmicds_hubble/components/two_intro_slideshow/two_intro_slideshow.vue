@@ -93,12 +93,12 @@
                 <h4
                   class="mb-2"
                 >
-                  Large and Small People?
+                  People on the Beach
                 </h4>
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/People near and far - will replace with uncopyrighted.png`"
+                  :src="`${state.image_location}/PeopleLargeSmallAngularSize.png`"
                 ></v-img>
               </v-col>
             </v-row>
@@ -138,7 +138,7 @@
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/People near and far - will replace with uncopyrighted.png`"
+                  :src="`${state.image_location}/PeopleLargeSmallAngularSize.png`"
                 ></v-img>
               </v-col>
               <v-col
@@ -152,7 +152,7 @@
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/esahubble_potw2031a_1600_cleaned.jpg`"
+                  :src="`${state.image_location}/esahubble_potw2031a_1600_cleaned.png`"
                 ></v-img>
               </v-col>
             </v-row>
@@ -195,7 +195,7 @@
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/People near and far labeled.png`"
+                  :src="`${state.image_location}/PeopleLargeSmallAngularSize labeled.png`"
                 ></v-img>
               </v-col>
               <v-col cols="6">
@@ -205,7 +205,7 @@
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/esahubble_potw2031a_1600_cleaned.jpg`"
+                  :src="`${state.image_location}/esahubble_potw2031a_1600_cleaned.png`"
                 ></v-img>
               </v-col> 
             </v-row> 
@@ -269,7 +269,7 @@
                 class="mx-a"
                 contain
                 max-height="300"
-                :src="`${state.image_location}/ErinPinkyAnnaArt.png`"
+                :src="`${state.image_location}/erinmoon.png`"
               ></v-img>
             </v-row>
           </v-container>
@@ -317,13 +317,10 @@
             <v-spacer></v-spacer>
             <v-row>
               <v-col>
-                <p>
-                  (Anna is making a better version of this figure!)
-                </p>
                 <v-img
                   class="mx-a"
                   contain
-                  :src="`${state.image_location}/theta_L_over_D_janky_schematic.jpg`"
+                  :src="`${state.image_location}/cosmicgraphic.png`"
                 ></v-img>
               </v-col>
             </v-row>
@@ -389,7 +386,7 @@
                           'Try again. \n Think about the people on the beach. Did the closer person appear bigger or smaller than the farther person?'
                         ]"
                         :correct-answers="[2]"
-                        :selected-callback="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(max_step_completed, 7); } }"
+                        :selected-callback="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(this.max_step_completed, 7); } }"
                       >
                       </mc-radiogroup>
                     </v-row>
@@ -511,7 +508,7 @@
                         'Try again. \ You could probably fit 10 Galaxy B’s across Galaxy A.'
                       ]"
                       :correct-answers="[1]"
-                      :selected-callback="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(max_step_completed, 9); } }"
+                      :selected-callback="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(this.max_step_completed, 9); } }"
                     >
                     </mc-radiogroup>
                   </v-row>
@@ -805,7 +802,7 @@ module.exports = {
     step(newStep, oldStep) {
       const isInteractStep = this.interact_steps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
-      max_step_completed = Math.max(max_step_completed, newCompleted);
+      this.max_step_completed = Math.max(this.max_step_completed, newCompleted);
     },
   },
 };
