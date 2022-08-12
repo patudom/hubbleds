@@ -9,6 +9,7 @@ from glue_jupyter.bqplot.scatter import BqplotScatterView, \
     BqplotScatterLayerArtist
 from traitlets import Bool
 
+from cosmicds.viewers.cds_viewers import CDSScatterView
 from ..utils import H_ALPHA_REST_LAMBDA, MG_REST_LAMBDA
 
 __all__ = ['SpectrumView', 'SpectrumViewLayerArtist', 'SpectrumViewerState']
@@ -46,7 +47,7 @@ class SpectrumViewLayerArtist(BqplotScatterLayerArtist):
                                      self.scatter]
 
 
-class SpectrumView(BqplotScatterView):
+class SpectrumView(CDSScatterView):
     _data_artist_cls = SpectrumViewLayerArtist
     _subset_artist_cls = SpectrumViewLayerArtist
 
