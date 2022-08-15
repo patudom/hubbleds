@@ -36,7 +36,7 @@ HubbleFitView = cds_viewer(
         "bqplot:rectzoom",
         "bqplot:rectangle",
         "cds:linedraw",
-        "cds:linefit"
+        "hubble:linefit"
     ],
     label='Fit View',
     state_cls=HubbleFitViewerState
@@ -48,7 +48,7 @@ HubbleScatterView = cds_viewer(
     viewer_tools=[
         'bqplot:home',
         'bqplot:rectzoom',
-        'cds:linefit'
+        'hubble:linefit'
     ],
     label='Scatter View',
     state_cls=HubbleScatterViewerState
