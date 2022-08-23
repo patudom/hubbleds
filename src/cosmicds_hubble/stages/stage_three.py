@@ -322,8 +322,8 @@ class StageThree(HubbleStage):
         # all_layer = comparison_viewer.layers[-1]
         # all_layer.state.zorder = 1
         # all_layer.state.visible = False
-        comparison_viewer.state.x_att = student_data.id[dist_attr]
-        comparison_viewer.state.y_att = student_data.id[vel_attr]
+        comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
+        comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
         comparison_viewer.state.reset_limits()
 
         prodata_viewer.add_data(student_data)
