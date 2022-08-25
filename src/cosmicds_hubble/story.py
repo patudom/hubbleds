@@ -8,7 +8,7 @@ import requests
 from cosmicds.phases import Story
 from cosmicds.registries import story_registry
 from cosmicds.utils import API_URL, RepeatedTimer
-from echo import DictCallbackProperty
+from echo import DictCallbackProperty, CallbackProperty
 from glue.core import Data
 from glue.core.component import CategoricalComponent, Component
 
@@ -19,6 +19,7 @@ from .utils import HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line
 
 @story_registry(name="hubbles_law")
 class HubblesLaw(Story):
+    title = CallbackProperty("Hubble's Law")
     measurements = DictCallbackProperty({})
     calculations = DictCallbackProperty({})
     validation_failure_counts = DictCallbackProperty({})
