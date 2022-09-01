@@ -320,6 +320,7 @@
                 <v-img
                   class="mx-a"
                   contain
+                  max-height="300"
                   :src="`${state.image_location}/cosmicgraphic.png`"
                 ></v-img>
               </v-col>
