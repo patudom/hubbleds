@@ -1,5 +1,5 @@
 """
-    Setup file for cosmicds-hubble.
+    Setup file for hubbleds.
     Use setup.cfg to configure your project.
 
     This file was generated with PyScaffold 4.3.

@@ -1,8 +1,8 @@
 ===============
-cosmicds-hubble
+hubbleds
 ===============
 
-This is the documentation of **cosmicds-hubble**.
+This is the documentation of **hubbleds**.
 
 .. note::
 
