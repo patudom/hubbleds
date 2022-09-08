@@ -1,6 +1,6 @@
 import pytest
 
-from cosmicds_hubble.skeleton import fib, main
+from hubbleds.skeleton import fib, main
 
 __author__ = "Nicholas Earl"
 __copyright__ = "Nicholas Earl"

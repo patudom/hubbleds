@@ -388,6 +388,7 @@
                         ]"
                         :correct-answers="[2]"
                         :selected-callback="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(this.max_step_completed, 7); } }"
+                        score-tag="which-galaxy-closer"
                       >
                       </mc-radiogroup>
                     </v-row>
@@ -510,6 +511,7 @@
                       ]"
                       :correct-answers="[1]"
                       :selected-callback="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(this.max_step_completed, 9); } }"
+                      score-tag="how-much-closer-galaxies"
                     >
                     </mc-radiogroup>
                   </v-row>
