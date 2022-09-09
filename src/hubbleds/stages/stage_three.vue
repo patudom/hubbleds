@@ -39,31 +39,6 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.all_galaxies_morph_plot_show.includes(stage_state.marker)"
-    >
-      <v-col
-        cols="12"
-        lg="5"
-      >
-        <v-btn
-          block
-        >PLACEHOLDER 2 {{ stage_state.marker }}</v-btn>
-      </v-col>
-      <v-col
-        cols="12"
-        lg="7"
-      >
-        <v-card
-          :color="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'info' : 'black'"
-          :class="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
-          outlined
-        >
-          <jupyter-widget :widget="viewers.morphology_viewer"/>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row
-      class="d-flex align-stretch"
       v-if="stage_state.my_galaxies_plot_show.includes(stage_state.marker)"
     >
       <v-col
@@ -122,8 +97,11 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.all_galaxies_plot_show.includes(stage_state.marker)"
     >
+    <!--
+      v-if="stage_state.all_galaxies_plot_show.includes(stage_state.marker)"
+    > 
+    -->
       <v-col
         cols="12"
         lg="5"
@@ -147,8 +125,11 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
+    >
+    <!--
       v-if="stage_state.my_class_hist_show.includes(stage_state.marker)"
     >
+    -->
       <v-col
         cols="12"
         lg="5"
@@ -172,8 +153,11 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
+    >
+    <!--
       v-if="stage_state.all_classes_hist_show.includes(stage_state.marker)"
     >
+    -->
       <v-col
         cols="12"
         lg="5"
@@ -197,8 +181,11 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
+    >
+    <!--
       v-if="stage_state.sandbox_hist_show.includes(stage_state.marker)"
     >
+    -->
       <v-col
         cols="12"
         lg="5"
@@ -217,6 +204,34 @@
           outlined
         >
           <jupyter-widget :widget="viewers.sandbox_distr_viewer"/>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row
+      class="d-flex align-stretch"
+    >
+    <!--
+      v-if="stage_state.all_galaxies_morph_plot_show.includes(stage_state.marker)"
+    >
+    -->
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <v-btn
+          block
+        >PLACEHOLDER 2 {{ stage_state.marker }}</v-btn>
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          :color="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
+          <jupyter-widget :widget="viewers.morphology_viewer"/>
         </v-card>
       </v-col>
     </v-row>
