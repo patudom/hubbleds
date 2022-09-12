@@ -80,7 +80,7 @@
           v-intersect.once="scrollIntoView" />
         <v-btn
           block
-        >PLACEHOLDER 3 {{ stage_state.marker }}</v-btn>
+        >PLACEHOLDER 2 {{ stage_state.marker }}</v-btn>
       </v-col>
       <v-col
         cols="12"
@@ -108,7 +108,7 @@
       >
         <v-btn
           block
-        >PLACEHOLDER 4 {{ stage_state.marker }}</v-btn>
+        >PLACEHOLDER 3 {{ stage_state.marker }}</v-btn>
       </v-col>
       <v-col
         cols="12"
@@ -136,7 +136,7 @@
       >
         <v-btn
           block
-        >PLACEHOLDER 5 {{ stage_state.marker }}</v-btn>
+        >PLACEHOLDER 4 {{ stage_state.marker }}</v-btn>
       </v-col>
       <v-col
         cols="12"
@@ -164,7 +164,7 @@
       >
         <v-btn
           block
-        >PLACEHOLDER 6 {{ stage_state.marker }}</v-btn>
+        >PLACEHOLDER 5 {{ stage_state.marker }}</v-btn>
       </v-col>
       <v-col
         cols="12"
@@ -192,7 +192,7 @@
       >
         <v-btn
           block
-        >PLACEHOLDER 7 {{ stage_state.marker }}</v-btn>
+        >PLACEHOLDER 6 {{ stage_state.marker }}</v-btn>
       </v-col>
       <v-col
         cols="12"
@@ -220,7 +220,7 @@
       >
         <v-btn
           block
-        >PLACEHOLDER 2 {{ stage_state.marker }}</v-btn>
+        >PLACEHOLDER 7 {{ stage_state.marker }}</v-btn>
       </v-col>
       <v-col
         cols="12"
