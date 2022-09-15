@@ -416,7 +416,8 @@
                       'Try again. You are multiplying the speed of light by a value that is smaller than 1.'
                     ]"
                     :correct-answers="[1]"
-                    :selected-callback="(state) => { if(state.correct) { this.maxStepCompleted5 = Math.max(this.maxStepCompleted5, 3); } }"  
+                    :selected-callback="(state) => { if(state.correct) { this.maxStepCompleted5 = Math.max(this.maxStepCompleted5, 3); } }"
+                    score-tag="interpret-velocity"  
                   >
                   </mc-radiogroup>
                 </v-col>
