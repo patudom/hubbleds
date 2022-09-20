@@ -17,8 +17,8 @@
         cols="12"
         lg="5"
       >
-        <c-guideline-intro-explore
-          v-if="stage_state.marker == 'ran_mar1'"
+        <c-guideline-explore-data
+          v-if="stage_state.marker == 'exp_dat1'"
           v-intersect.once="scrollIntoView" />
         <v-btn
           block
@@ -45,38 +45,50 @@
         cols="12"
         lg="5"
       >
-        <c-guideline-observe-trends-mc
-          v-if="stage_state.marker == 'ran_mar2'"
+        <c-guideline-trends-data-mc
+          v-if="stage_state.marker == 'tre_dat1'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-trend-lines-draw
-          v-if="stage_state.marker == 'ran_mar3'"
+          v-if="stage_state.marker == 'tre_lin1'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-best-fit-line
-          v-if="stage_state.marker == 'ran_mar4'"
+          v-if="stage_state.marker == 'bes_fit1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-vel-dist-relationship-mc
-          v-if="stage_state.marker == 'ran_mar5'"
+        <c-guideline-relationship-vel-dist-mc
+          v-if="stage_state.marker == 'rel_vel1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-expanding-universe
-          v-if="stage_state.marker == 'ran_mar6'"
+        <c-guideline-hubbles-expanding-universe1
+          v-if="stage_state.marker == 'hub_exp1'"
           v-intersect.once="scrollIntoView" />
+        <c-guideline-hubbles-expanding-universe2
+          v-if="stage_state.marker == 'hub_exp2'"
+          v-intersect.once="scrollIntoView" />          
         <c-guideline-running-race-mc
-          v-if="stage_state.marker == 'ran_mar7'"
+          v-if="stage_state.marker == 'run_rac1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-vel-dist-runners
-          v-if="stage_state.marker == 'ran_mar8'"
+        <c-guideline-runners-vel-dist
+          v-if="stage_state.marker == 'run_vel1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-best-fit-galaxy
-          v-if="stage_state.marker == 'ran_mar9'"
+        <c-guideline-age-universe
+          v-if="stage_state.marker == 'age_uni1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-equation
-          v-if="stage_state.marker == 'ran_mar10'"
+        <c-guideline-hypothetical-galaxy
+          v-if="stage_state.marker == 'hyp_gal1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-my-age-measurement
-          v-if="stage_state.marker == 'ran_mar11'"
+        <c-guideline-age-race-equation
+          v-if="stage_state.marker == 'age_rac1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-age-universe-equation
+          v-if="stage_state.marker == 'age_uni2'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-age-universe-calc
+          v-if="stage_state.marker == 'age_uni3'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-your-age-estimate
+          v-if="stage_state.marker == 'you_age1'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-shortcomings-reflect
-          v-if="stage_state.marker == 'ran_mar12'"
+          v-if="stage_state.marker == 'sho_ref1'"
           v-intersect.once="scrollIntoView" />
         <v-btn
           block

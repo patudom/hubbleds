@@ -28,18 +28,22 @@ class StageState(CDSState):
     advance_marker = CallbackProperty(True)
 
     markers = CallbackProperty([
-        'ran_mar1',
-        'ran_mar2',
-        'ran_mar3',
-        'ran_mar4',
-        'ran_mar5',
-        'ran_mar6',
-        'ran_mar7',
-        'ran_mar8',
-        'ran_mar9',
-        'ran_mar10',
-        'ran_mar11',
-        'ran_mar12',
+        'exp_dat1',
+        'tre_dat1',
+        'tre_lin1',
+        'bes_fit1',
+        'rel_vel1',
+        'hub_exp1',
+        'hub_exp2',
+        'run_rac1',
+        'run_vel1',
+        'age_uni1',
+        'hyp_gal1',
+        'age_rac1',
+        'age_uni2',
+        'age_uni3',
+        'you_age1',
+        'sho_ref1',
         'ran_mar13',
     ])
 
@@ -47,22 +51,26 @@ class StageState(CDSState):
     ])
 
     table_show = CallbackProperty([
-        'ran_mar1',
-        'ran_mar2',
-        'ran_mar3',
-        'ran_mar4',
-        'ran_mar5',
-        'ran_mar6',
-        'ran_mar7',
-        'ran_mar8',
-        'ran_mar9',
-        'ran_mar10',
-        'ran_mar11',
-        'ran_mar12',
+        'exp_dat1',
+        'tre_dat1',
+        'tre_lin1',
+        'bes_fit1',
+        'rel_vel1',
+        'hub_exp1',
+        'hub_exp2',
+        'run_rac1',
+        'run_vel1',
+        'age_uni1',
+        'hyp_gal1',
+        'age_rac1',
+        'age_uni2',
+        'age_uni3',
+        'you_age1',
+        'sho_ref1',
     ])
 
     table_highlights = CallbackProperty([
-        'ran_mar1',
+        'exp_dat1',
     ])
 
     all_galaxies_morph_plot_show = CallbackProperty([
@@ -72,29 +80,37 @@ class StageState(CDSState):
     ])
 
     my_galaxies_plot_show = CallbackProperty([
-        'ran_mar2',
-        'ran_mar3',
-        'ran_mar4',
-        'ran_mar5',
-        'ran_mar6',
-        'ran_mar7',
-        'ran_mar8',
-        'ran_mar9',
-        'ran_mar10',
-        'ran_mar11',
-        'ran_mar12',
+        'tre_dat1',
+        'tre_lin1',
+        'bes_fit1',
+        'rel_vel1',
+        'hub_exp1',
+        'hub_exp2',
+        'run_rac1',
+        'run_vel1',
+        'age_uni1',
+        'hyp_gal1',
+        'age_rac1',
+        'age_uni2',
+        'age_uni3',
+        'you_age1',
+        'sho_ref1',
     ])
 
     my_galaxies_plot_highlights = CallbackProperty([
-        'ran_mar2',
-        'ran_mar3',
-        'ran_mar4',
-        'ran_mar5',
-        'ran_mar6',
-        'ran_mar9',
-        'ran_mar10',
-        'ran_mar11',
-        'ran_mar12',
+        'tre_dat1',
+        'tre_lin1',
+        'bes_fit1',
+        'rel_vel1',
+        'hub_exp1',
+        'hub_exp2',
+        'age_uni1',
+        'hyp_gal1',
+        'age_rac1',
+        'age_uni2',
+        'age_uni3',
+        'you_age1',
+        'sho_ref1',
     ])
 
     all_galaxies_plot_show = CallbackProperty([
@@ -238,17 +254,21 @@ class StageThree(HubbleStage):
                 __file__).parent.parent / "components" / "generic_state_components" / "stage_three")
         path = join(state_components_dir, "")
         state_components = [
-            "guideline_intro_explore",
-            "guideline_observe_trends_mc",
+            "guideline_explore_data",
+            "guideline_trends_data_mc",
             "guideline_trend_lines_draw",
             "guideline_best_fit_line",
-            "guideline_vel_dist_relationship_mc",
-            "guideline_expanding_universe",
+            "guideline_relationship_vel_dist_mc",
+            "guideline_hubbles_expanding_universe1",
+            "guideline_hubbles_expanding_universe2",
             "guideline_running_race_mc",
-            "guideline_vel_dist_runners",
-            "guideline_best_fit_galaxy",
-            "guideline_age_equation",
-            "guideline_my_age_measurement",
+            "guideline_runners_vel_dist",
+            "guideline_age_universe",
+            "guideline_hypothetical_galaxy",
+            "guideline_age_race_equation",
+            "guideline_age_universe_equation",
+            "guideline_age_universe_calc",
+            "guideline_your_age_estimate",
             "guideline_shortcomings_reflect",
         ]
         ext = ".vue"
