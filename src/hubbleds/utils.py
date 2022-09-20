@@ -75,10 +75,13 @@ def age_in_gyr_simple(H0):
 
 
 def fit_line(x, y):
-    fit = fitting.LinearLSQFitter()
-    line_init = models.Linear1D(intercept=0, fixed={'intercept': True})
-    fitted_line = fit(line_init, x, y)
-    return fitted_line
+    try:
+        fit = fitting.LinearLSQFitter()
+        line_init = models.Linear1D(intercept=0, fixed={'intercept': True})
+        fitted_line = fit(line_init, x, y)
+        return fitted_line
+    except ValueError:
+        return None
 
 
 def format_fov(fov, units=True):
