@@ -62,11 +62,9 @@ class SubsetModifierListener(HubListener):
 
     def _create_modify_subset(self, state):
         if self._use_group:
-            # PR coming soon to add more visual attributes in the subset group
-            # constructor
             subset = self.data_collection.new_subset_group(
-                label=self._modify_subset_label, subset_state=state)
-            subset.style.color = self.modify_data.style.color
+                label=self._modify_subset_label, subset_state=state,
+                color=self.modify_data.style.color)
         else:
             subset = self.modify_data.new_subset(
                 label=self._modify_subset_label, state=state,
