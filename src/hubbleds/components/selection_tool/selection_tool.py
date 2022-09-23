@@ -133,3 +133,4 @@ class SelectionTool(v.VueTemplate):
             data = {"galaxy_name": name}
         requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-galaxy-bad",
                      json=data)
+        self.flagged = False

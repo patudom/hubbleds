@@ -561,7 +561,6 @@ class StageOne(HubbleStage):
         item = self.galaxy_table.selected[0]
         galaxy_name = item["name"]
         self.remove_measurement(galaxy_name)
-        self.selection_tool.flagged = False
 
     def _on_spectrum_flagged(self, flagged):
         if not flagged:
