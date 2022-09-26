@@ -164,12 +164,6 @@ class HubblesLaw(Story):
         v.theme.themes.light.anchor = ''
 
     def load_spectrum_data(self, name, gal_type):
-        type_folders = {
-            "Sp" : "spiral",
-            "E" : "elliptical",
-            "Ir" : "irregular"
-        }
-
         if not name.endswith(self.name_ext):
             filename = name + self.name_ext
         else:
@@ -180,6 +174,7 @@ class HubblesLaw(Story):
         # Don't load data that we've already loaded
         dc = self.data_collection
         if data_name not in dc:
+            type_folders = { "Sp" : "spiral", "E" : "elliptical", "Ir" : "irregular" }
             folder = type_folders[gal_type]
             url = f"https://cosmicds.s3.us-east-1.amazonaws.com/spectra/{folder}/{filename}"
             response = requests.get(url)
