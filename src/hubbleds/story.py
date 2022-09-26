@@ -169,11 +169,11 @@ class HubblesLaw(Story):
         else:
             filename = name
             name = name[:-len(self.name_ext)]
-        data_name = name + '[COADD]'
 
         # Don't load data that we've already loaded
         dc = self.data_collection
-        if data_name not in dc:
+        if name not in dc:
+            data_name = name + '[COADD]'
             type_folders = { "Sp" : "spiral", "E" : "elliptical", "Ir" : "irregular" }
             folder = type_folders[gal_type]
             url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{filename}"
@@ -184,10 +184,11 @@ class HubblesLaw(Story):
             data = next((d for d in fits_reader(hdulist) if d.label == data_name), None)
             if data is None:
                 return
+            data.label = name
             dc.append(data)
             data['lambda'] = 10 ** data['loglam']
             HubblesLaw.make_data_writeable(data)
-        return dc[data_name]
+        return dc[name]
 
     def update_data(self, label, new_data):
         dc = self.data_collection
