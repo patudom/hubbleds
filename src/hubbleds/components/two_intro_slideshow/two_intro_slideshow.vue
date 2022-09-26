@@ -773,6 +773,7 @@
         class="black--text"
         depressed
         @click="() => {
+          state.stage_index = 3;
           two_intro_complete = true;
           step = 0;
         }"
@@ -787,6 +788,7 @@
         class="black--text"
         depressed
         @click="() => {
+          state.stage_index = 3;
           two_intro_complete = true;
           step = 0;
         }"

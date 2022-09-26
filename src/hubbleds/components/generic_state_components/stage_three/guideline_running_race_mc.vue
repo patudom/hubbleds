@@ -2,10 +2,10 @@
   <scaffold-alert
     header-text="A Running Race"
     @back="
-      state.marker = 'ran_mar6';
+      state.marker = 'hub_exp2';
     "
     @next="
-      state.marker = 'ran_mar8';
+      state.marker = 'run_vel1';
     "
   >
     <div

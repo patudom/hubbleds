@@ -1,11 +1,11 @@
 <template>
   <scaffold-alert
-    header-text="Runner's Velocities vs. Distances"
+    header-text="Age of the Universe"
     @back="
-      state.marker = 'ran_mar8';
+      state.marker = 'run_vel1';
     "
     @next="
-      state.marker = 'ran_mar10';
+      state.marker = 'hyp_gal1';
     "
   >
     <div

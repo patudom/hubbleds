@@ -2,10 +2,10 @@
   <scaffold-alert
     header-text="Relationship Between Velocity and Distance"
     @back="
-      state.marker = 'ran_mar4';
+      state.marker = 'bes_fit1';
     "
     @next="
-      state.marker = 'ran_mar6';
+      state.marker = 'hub_exp1';
     "
   >
     <div

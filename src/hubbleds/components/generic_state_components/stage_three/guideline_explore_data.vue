@@ -8,7 +8,7 @@
     <h3
       class="mb-4"
     >
-      Time to Explore Your Data
+      Explore Your Data
     </h3>
     <div
       class="mb-4"
@@ -39,7 +39,7 @@
           color="accent"
           elevation="2"
           @click="
-            state.marker = 'ran_mar2'
+            state.marker = 'tre_dat1'
           "
         >
           graph

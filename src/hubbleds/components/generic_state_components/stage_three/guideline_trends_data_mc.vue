@@ -2,10 +2,10 @@
   <scaffold-alert
     header-text="Trends in the Data"
     @back="
-      state.marker = 'ran_mar1';
+      state.marker = 'exp_dat1';
     "
     @next="
-      state.marker = 'ran_mar3';
+      state.marker = 'tre_lin1';
     "
   >
     <div
