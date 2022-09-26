@@ -9,6 +9,7 @@ from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template
 from echo import CallbackProperty
 from glue.core.message import NumericalDataChangedMessage
+from hubbleds.components.id_slider import IDSlider
 from traitlets import default, Bool
 
 from ..data_management import \
@@ -213,6 +214,15 @@ class StageThree(HubbleStage):
                       'distance')
         self.add_link(hstkp_dc_name, 'Velocity (km/s)', STUDENT_DATA_LABEL,
                       'velocity')
+
+        # Create the student slider
+        student_slider = IDSlider(self.get_data(CLASS_SUMMARY_LABEL), "student_id", "age")
+        self.add_component(student_slider, "c-student-slider")
+        student_slider.on_id_change(lambda x: print(f"ID set to {x}"))
+
+        def update_slider(msg):
+            student_slider.update_data(self, msg.data)
+        self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == CLASS_SUMMARY_LABEL, handler=update_slider)
 
         # Create viewers
         fit_viewer = self.add_viewer(HubbleFitView, "fit_viewer", "My Data")

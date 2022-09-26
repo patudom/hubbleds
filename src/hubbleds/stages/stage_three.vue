@@ -117,6 +117,7 @@
           outlined
         >
           <jupyter-widget :widget="viewers.fit_viewer"/>
+          <c-student-slider />
         </v-card>
       </v-col>
     </v-row>

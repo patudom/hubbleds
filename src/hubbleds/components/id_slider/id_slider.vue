@@ -1,0 +1,9 @@
+<template>
+  <v-slider
+    v-model="selected"
+    :step="step"
+    :min="vmin"
+    :max="vmax"
+    ticks
+  />
+</template>
