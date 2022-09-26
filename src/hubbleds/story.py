@@ -176,7 +176,7 @@ class HubblesLaw(Story):
         if data_name not in dc:
             type_folders = { "Sp" : "spiral", "E" : "elliptical", "Ir" : "irregular" }
             folder = type_folders[gal_type]
-            url = f"https://cosmicds.s3.us-east-1.amazonaws.com/spectra/{folder}/{filename}"
+            url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{filename}"
             response = requests.get(url)
             f = BytesIO(response.content)
             f.name = name
