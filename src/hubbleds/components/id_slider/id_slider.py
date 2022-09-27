@@ -16,6 +16,9 @@ class IDSlider(VuetifyTemplate):
     vmin = Int(0).tag(sync=True)
     
     def __init__(self, data, id_component, value_component, *args, **kwargs):
+        # NB: We can't call this member value data
+        # since VuetifyTemplate already has a data member
+        # (that represents the typical Vue data)
         self.glue_data = data
         self.id_component = id_component
         self.value_component = value_component
