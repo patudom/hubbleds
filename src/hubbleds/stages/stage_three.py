@@ -200,7 +200,6 @@ class StageThree(HubbleStage):
         # Set up links between various data sets
         hubble_dc_name = "Hubble 1929-Table 1"
         hstkp_dc_name = "HSTkey2001"
-        galaxy_dc_name = "galaxy_data"
 
         dist_attr = "distance"
         vel_attr = "velocity"
@@ -214,15 +213,6 @@ class StageThree(HubbleStage):
                       'distance')
         self.add_link(hstkp_dc_name, 'Velocity (km/s)', STUDENT_DATA_LABEL,
                       'velocity')
-
-        # Create the student slider
-        student_slider = IDSlider(self.get_data(CLASS_SUMMARY_LABEL), "student_id", "age")
-        self.add_component(student_slider, "c-student-slider")
-        student_slider.on_id_change(lambda x: print(f"ID set to {x}"))
-
-        def update_slider(msg):
-            student_slider.update_data(self, msg.data)
-        self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == CLASS_SUMMARY_LABEL, handler=update_slider)
 
         # Create viewers
         fit_viewer = self.add_viewer(HubbleFitView, "fit_viewer", "My Data")
@@ -271,12 +261,11 @@ class StageThree(HubbleStage):
             self.add_component(component, label=label)
 
         # Grab data
-        class_sample_data = self.get_data(CLASS_SUMMARY_LABEL)
+        class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
         hubble1929 = self.get_data(hubble_dc_name)
         hstkp = self.get_data(hstkp_dc_name)
-        galaxy_data = self.get_data(galaxy_dc_name)
 
         # Set up the listener to sync the histogram <--> scatter viewers
 
@@ -288,16 +277,31 @@ class StageThree(HubbleStage):
         histogram_modify_label = "histogram_modify_subset"
         self.histogram_listener = HistogramListener(self.story_state,
                                                     None,
-                                                    class_sample_data,
+                                                    class_summ_data,
                                                     None,
                                                     class_meas_data,
                                                     source_subset_label=histogram_source_label,
                                                     modify_subset_label=histogram_modify_label)
 
+        # Create the student slider
+        student_slider_subset_label = "student_slider_subset"
+        student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
+        student_slider = IDSlider(class_summ_data, "student_id", "age")
+        self.add_component(student_slider, "c-student-slider")
+        def student_slider_change(id):
+            student_slider_subset.subset_state = class_meas_data['student_id'] == id
+        student_slider.on_id_change(student_slider_change)
+
+        def update_student_slider(msg):
+            student_slider.update_data(self, msg.data)
+        self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == CLASS_SUMMARY_LABEL, handler=update_student_slider)
+
+
         not_ignore = {
             fit_table.subset_label: [fit_viewer],
             histogram_source_label: [class_distr_viewer],
-            histogram_modify_label: [comparison_viewer]
+            histogram_modify_label: [comparison_viewer],
+            student_slider_subset_label: [comparison_viewer]
         }
 
         def label_ignore(x, label):
@@ -321,13 +325,14 @@ class StageThree(HubbleStage):
             viewer.state.y_att = student_data.id[vel_attr]
 
         student_layer = comparison_viewer.layers[-1]
-        student_layer.state.color = 'green'
+        student_layer.state.color = 'orange'
         student_layer.state.zorder = 3
         student_layer.state.size = 8
         comparison_viewer.add_data(class_meas_data)
         class_layer = comparison_viewer.layers[-1]
         class_layer.state.zorder = 2
         class_layer.state.color = 'red'
+        comparison_viewer.add_subset(student_slider_subset)
         # comparison_viewer.add_data(all_data)
         # all_layer = comparison_viewer.layers[-1]
         # all_layer.state.zorder = 1
@@ -348,7 +353,7 @@ class StageThree(HubbleStage):
             label = 'Count' if viewer == class_distr_viewer else 'Proportion'
             viewer.figure.axes[1].label = label
             if viewer != all_distr_viewer:
-                viewer.add_data(class_sample_data)
+                viewer.add_data(class_summ_data)
                 layer = viewer.layers[-1]
                 layer.state.color = 'red'
                 layer.state.alpha = 0.5
@@ -366,7 +371,7 @@ class StageThree(HubbleStage):
                 viewer.state.y_max = 1
                 viewer.state.hist_n_bin = 30
 
-        class_distr_viewer.state.x_att = class_sample_data.id['age']
+        class_distr_viewer.state.x_att = class_summ_data.id['age']
         all_distr_viewer.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
 

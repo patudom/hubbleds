@@ -1,6 +1,7 @@
 from ipyvuetify import VuetifyTemplate
 from echo.callback_container import CallbackContainer
 from glue_jupyter.state_traitlets_helpers import GlueState
+from numpy import isin
 from traitlets import observe, Int
 
 from cosmicds.utils import load_template
@@ -32,7 +33,7 @@ class IDSlider(VuetifyTemplate):
 
     def refresh(self):
         self.values = list(self.glue_data[self.value_component])
-        self.vmax = len(self.values)
+        self.vmax = len(self.values) - 1
         self.ids = sorted(self.glue_data[self.id_component], key=self._sort_key)
 
     def _sort_key(self, id):

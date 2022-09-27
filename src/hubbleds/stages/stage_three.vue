@@ -117,13 +117,11 @@
           outlined
         >
           <jupyter-widget :widget="viewers.fit_viewer"/>
-          <c-student-slider />
         </v-card>
       </v-col>
     </v-row>
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.all_galaxies_plot_show.includes(stage_state.marker)"
     >
       <v-col
         cols="12"
@@ -143,6 +141,7 @@
           outlined
         >
           <jupyter-widget :widget="viewers.comparison_viewer"/>
+          <c-student-slider />
         </v-card>
       </v-col>
     </v-row>
