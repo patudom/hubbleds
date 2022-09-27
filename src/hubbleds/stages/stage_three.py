@@ -286,7 +286,7 @@ class StageThree(HubbleStage):
         # Create the student slider
         student_slider_subset_label = "student_slider_subset"
         student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
-        student_slider = IDSlider(class_summ_data, "student_id", "age")
+        student_slider = IDSlider(class_summ_data, "student_id", "age", highlight_ids=[148])
         self.add_component(student_slider, "c-student-slider")
         def student_slider_change(id):
             student_slider_subset.subset_state = class_meas_data['student_id'] == id
@@ -390,6 +390,11 @@ class StageThree(HubbleStage):
             morphology_viewer.add_subset(subset)
         morphology_viewer.state.x_att = all_data.id['distance']
         morphology_viewer.state.y_att = all_data.id['velocity']
+
+        # In the comparison viewer, we only want to see the line for the student slider subset
+        comparison_linefit = comparison_viewer.toolbar.tools["hubble:linefit"]
+        comparison_linefit.add_ignore_condition(lambda layer: layer.layer.label != student_slider_subset_label)
+
 
         # Just for accessibility while testing
         self.data_collection.histogram_listener = self.histogram_listener
