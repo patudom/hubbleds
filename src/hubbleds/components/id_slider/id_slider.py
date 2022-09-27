@@ -1,8 +1,8 @@
 from ipyvuetify import VuetifyTemplate
 from echo.callback_container import CallbackContainer
 from glue_jupyter.state_traitlets_helpers import GlueState
-from numpy import isin
-from traitlets import observe, Int
+from numpy import where
+from traitlets import observe, Float, Int
 
 from cosmicds.utils import load_template
 
@@ -12,6 +12,7 @@ class IDSlider(VuetifyTemplate):
     selected = Int(0).tag(sync=True)
     state = GlueState().tag(sync=True)
     step = Int(1).tag(sync=True)
+    thumb_value = Float().tag(sync=True)
     vmax = Int(1).tag(sync=True)
     vmin = Int(0).tag(sync=True)
     
@@ -35,13 +36,14 @@ class IDSlider(VuetifyTemplate):
         self.refresh()
 
     def refresh(self):
-        self.values = list(self.glue_data[self.value_component])
-        self.vmax = len(self.values) - 1
+        self.values = sorted(self.glue_data[self.value_component])
         self.ids = sorted(self.glue_data[self.id_component], key=self._sort_key)
+        self.vmax = len(self.values) - 1
+        self.selected_id = int(self.ids[self.selected])
+        self.thumb_value = self.values[self.selected]
 
     def _sort_key(self, id):
-        ids = list(self.glue_data[self.id_component])
-        idx = ids.index(id)
+        idx = where(self.glue_data[self.id_component] == id)[0][0]
         return self.values[idx]
 
     def on_id_change(self, callback):
@@ -53,7 +55,8 @@ class IDSlider(VuetifyTemplate):
     @observe('selected')
     def _selected_id_changed(self, change):
         index = change["new"]
-        sel_id = self.ids[index]
+        self.selected_id = int(self.ids[index])
+        self.thumb_value = self.values[self.selected]
         for cb in self._id_change_cbs:
-            cb(sel_id)
+            cb(self.selected_id)
     
