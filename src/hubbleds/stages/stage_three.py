@@ -6,10 +6,12 @@ from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import extend_tool, load_template
+from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty
 from glue.core.message import NumericalDataChangedMessage
 from traitlets import default, Bool
+from ..data.styles import load_style
+
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
@@ -291,8 +293,8 @@ class StageThree(HubbleStage):
         # Set up the listener to sync the histogram <--> scatter viewers
 
         # Set up the functionality for the histogram <---> scatter sync
-        # We add a listener for when a subset is modified/created on 
-        # the histogram viewer as well as extend the xrange tool for the 
+        # We add a listener for when a subset is modified/created on
+        # the histogram viewer as well as extend the xrange tool for the
         # histogram to always affect this subset
         histogram_source_label = "histogram_source_subset"
         histogram_modify_label = "histogram_modify_subset"
@@ -351,6 +353,9 @@ class StageThree(HubbleStage):
         prodata_viewer.state.y_att = student_data.id[vel_attr]
         prodata_viewer.add_data(hstkp)
         prodata_viewer.add_data(hubble1929)
+
+        # load all the initial styles
+        self._update_viewer_style(dark=self.app_state.dark_mode)
 
         histogram_viewers = [class_distr_viewer, all_distr_viewer,
                              sandbox_distr_viewer]
@@ -436,6 +441,38 @@ class StageThree(HubbleStage):
         viewer_id = self.viewer_ids_for_data.get(msg.data.label, [])
         for vid in viewer_id:
             self.get_viewer(vid).state.reset_limits()
+
+    def _update_viewer_style(self, dark):
+        viewers = ['fit_viewer',
+                   'comparison_viewer',
+                   'morphology_viewer',
+                   'prodata_viewer',
+                   'class_distr_viewer',
+                   'all_distr_viewer',
+                   'sandbox_distr_viewer']
+
+        viewer_type = ["scatter",
+                       "scatter",
+                       "scatter",
+                       "scatter",
+                       "histogram",
+                       "histogram",
+                       "histogram"]
+
+        for viewer, vtype in zip(viewers, viewer_type):
+            viewer = self.get_viewer(viewer)
+            theme_name = "dark" if dark else "light"
+            style = load_style(f"default_{vtype}_{theme_name}")
+            update_figure_css(viewer, style_dict=style)
+
+        # spectrum_viewer = self.get_viewer("spectrum_viewer")
+        # theme_name = "dark" if dark else "light"
+        # style = load_style(f"default_spectrum_{theme_name}")
+        # update_figure_css(spectrum_viewer, style_dict=style)
+
+    def _on_dark_mode_change(self, dark):
+        super()._on_dark_mode_change(dark)
+        self._update_viewer_style(dark)
 
     def table_selected_color(self, dark):
         return "colors.lightBlue.darken4"
