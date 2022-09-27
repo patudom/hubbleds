@@ -381,6 +381,12 @@ class StageThree(HubbleStage):
                 viewer.state.y_max = 1
                 viewer.state.hist_n_bin = 30
 
+        # set reasonable offset for y-axis labels
+        # it would be better if axis labels were automatically well placed
+        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer]
+        for viewer in velocity_viewers:
+            viewer.figure.axes[1].label_offset = "5em"
+
         class_distr_viewer.state.x_att = class_sample_data.id['age']
         all_distr_viewer.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
