@@ -23,6 +23,8 @@ from ..viewers.viewers import \
 
 
 class StageState(CDSState):
+    trend_response = CallbackProperty(False)
+
     marker = CallbackProperty("")
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)

@@ -47,7 +47,8 @@
       >
         <c-guideline-trends-data-mc
           v-if="stage_state.marker == 'tre_dat1'"
-          v-intersect.once="scrollIntoView" />
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.trend_response = true" />
         <c-guideline-trend-lines-draw
           v-if="stage_state.marker == 'tre_lin1'"
           v-intersect.once="scrollIntoView" />
