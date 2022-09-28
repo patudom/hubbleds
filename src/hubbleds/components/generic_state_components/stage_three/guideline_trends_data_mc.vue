@@ -28,13 +28,13 @@
             'What\'s a trend?.'
           ]"
           :feedbacks="[
-            'Confirmed. You see a trend.',
-            'Confirmed. You don\'t see a trend.',
-            'Confirmed. You can\'t tell if there\'s a trend.',
-            'Confirmed. You don\'t know what a trend is.'
+            'Recorded. You see a trend.',
+            'Recorded. You don\'t see a trend.',
+            'Recorded. You can\'t tell if there\'s a trend.',
+            'Recorded. You don\'t know what a trend is.'
           ]"
-          :correct-answers="[1]"
-          :neutral-answers='[0,1,2]'
+          :correct-answers="[0]"
+          :neutral-answers='[1,2,3]'
           :selected-callback="(state) => { $emit('ready'); }"
         >
         </mc-radiogroup>

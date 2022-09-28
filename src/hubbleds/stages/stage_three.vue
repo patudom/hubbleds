@@ -67,7 +67,8 @@
           v-intersect.once="scrollIntoView" />          
         <c-guideline-running-race-mc
           v-if="stage_state.marker == 'run_rac1'"
-          v-intersect.once="scrollIntoView" />
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.race_response = true" />
         <c-guideline-runners-vel-dist
           v-if="stage_state.marker == 'run_vel1'"
           v-intersect.once="scrollIntoView" />

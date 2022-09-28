@@ -35,7 +35,7 @@
             'Recorded. You think the velocity of galaxies appears to be random across all distances.'
           ]"
           :correct-answers="[1]"
-          :neutral-answers='[0,1,2]'
+          :neutral-answers='[0,2,3]'
           :selected-callback="(state) => { $emit('ready'); }"
         >
         </mc-radiogroup>
