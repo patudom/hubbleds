@@ -393,9 +393,13 @@ class StageThree(HubbleStage):
         morphology_viewer.state.y_att = all_data.id['velocity']
 
         # In the comparison viewer, we only want to see the line for the student slider subset
-        comparison_linefit = comparison_viewer.toolbar.tools["hubble:linefit"]
+        linefit_id = "hubble:linefit"
+        comparison_toolbar = comparison_viewer.toolbar
+        comparison_linefit = comparison_toolbar.tools[linefit_id]
         comparison_linefit.add_ignore_condition(lambda layer: layer.layer.label != student_slider_subset_label)
-
+        comparison_linefit.activate()
+        comparison_toolbar.set_tool_enabled(linefit_id, False)
+        
 
         # Just for accessibility while testing
         self.data_collection.histogram_listener = self.histogram_listener
