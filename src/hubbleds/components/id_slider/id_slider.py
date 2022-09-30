@@ -28,6 +28,7 @@ class IDSlider(VuetifyTemplate):
 
         self._default_color = kwargs.get("default_color", "#1E90FF")
         self._highlight_ids = kwargs.get("highlight_ids", [])
+        self._highlight_label = kwargs.get("highlight_label", None)
         self._highlight_color = kwargs.get("highlight_color", "orange")
         self.color = self._default_color
 
@@ -50,7 +51,7 @@ class IDSlider(VuetifyTemplate):
         self.vmax = len(self.values) - 1
         self.selected_id = int(self.ids[self.selected])
         self.thumb_value = self.values[self.selected]
-        self.tick_labels = [str(self.values[self.vmin])] + ["" for _ in range(self.vmax - 1)] + [str(self.values[self.vmax])]
+        self.tick_labels = ["Lowest"] + ["" for _ in range(self.vmax - 1)] + ["Highest"]
 
     def _sort_key(self, id):
         idx = where(self.glue_data[self.id_component] == id)[0][0]
@@ -67,11 +68,29 @@ class IDSlider(VuetifyTemplate):
     @observe('selected')
     def _selected_changed(self, change):
 
+        old_index = change.get("old", None)
         index = change["new"]
         self.selected_id = int(self.ids[index])
-        self.thumb_value = self.values[self.selected]
+        self.thumb_value = int(self.values[self.selected])
+        highlighted = self.selected_id in self._highlight_ids
+        old_highlighted = old_index is not None and self.ids[old_index] in self._highlight_ids
 
-        if self.selected_id in self._highlight_ids and self._highlight_color is not None:
+        if (highlighted or old_highlighted) and self._highlight_label is not None:
+            labels = [x for x in self.tick_labels]
+            if highlighted:
+                labels[index] = self._highlight_label(self.selected_id)
+
+            # Restore the end labels if we had previously changed them
+            # and remove the highlighted label
+            if old_index == 0:
+                labels[0] = "Lowest"
+            if old_index == len(self.ids) - 1:
+                labels[-1] = "Highest"
+            elif old_highlighted:
+                labels[old_index] = ""
+            self.tick_labels = labels
+
+        if highlighted and self._highlight_color is not None:
             self.color = self._highlight_color
         elif self.color != self._default_color:
             self.color = self._default_color
