@@ -11,7 +11,7 @@ class DosDonts_SlideShow(v.VuetifyTemplate):
     template = load_template(
         "angsize_dosdonts_slideshow.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
-    length = Int(11).tag(sync=True)
+    length = Int(9).tag(sync=True)
     dialog = Bool(False).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
     state = GlueState().tag(sync=True)

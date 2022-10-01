@@ -161,6 +161,7 @@
             </v-card-text>
           </v-window-item>
 
+<!-- 
           <v-window-item :value="3" class="no-transition">
             <v-card-text>
               <v-container>
@@ -205,7 +206,9 @@
               </v-container>
             </v-card-text>
           </v-window-item>
+ -->
 
+<!--  
           <v-window-item :value="4" class="no-transition">
             <v-card-text>
               <v-container>
@@ -250,8 +253,9 @@
               </v-container>
             </v-card-text>
           </v-window-item>
+ -->
           
-          <v-window-item :value="5" class="no-transition">
+          <v-window-item :value="3" class="no-transition">
             <v-card-text>
               <v-container>
                 <v-row>
@@ -296,7 +300,7 @@
             </v-card-text>
           </v-window-item>
 
-          <v-window-item :value="6" 
+          <v-window-item :value="4" 
             class="no-transition"
           >
             <v-card-text>
@@ -354,7 +358,7 @@
             </v-card-text>
           </v-window-item>
 
-          <v-window-item :value="7" class="no-transition">
+          <v-window-item :value="5" class="no-transition">
             <v-card-text>
               <v-container>
                 <v-row>
@@ -399,7 +403,7 @@
             </v-card-text>
           </v-window-item>
 
-          <v-window-item :value="8" class="no-transition">
+          <v-window-item :value="6" class="no-transition">
             <v-card-text>
               <v-container>
                 <v-row>
@@ -444,7 +448,7 @@
             </v-card-text>
           </v-window-item>
 
-          <v-window-item :value="9" 
+          <v-window-item :value="7" 
             class="no-transition"
           >
             <v-card-text>
@@ -502,7 +506,7 @@
             </v-card-text>
           </v-window-item> 
 
-          <v-window-item :value="10" class="no-transition">
+          <v-window-item :value="8" class="no-transition">
               <v-card-text>
                 <v-container>
                   <v-row>
@@ -544,7 +548,7 @@
               v-slot="{ active, toggle }"
             >
               <v-btn
-                :disabled="n > max_step_completed + 11"
+                :disabled="n > max_step_completed + 9"
                 :input-value="active"
                 icon
                 @click="toggle"
@@ -555,7 +559,7 @@
           </v-item-group>
           <v-spacer></v-spacer>
            <v-btn
-            :disabled="step > max_step_completed + 11"
+            :disabled="step > max_step_completed + 9"
             v-if="step < length-1"
             color="accent"
             text
