@@ -332,6 +332,10 @@ class StageOne(HubbleStage):
         if advancing and new == "res_wav1":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:restwave", True)
+        if advancing and new == "obs_wav1":
+            spectrum_viewer = self.get_viewer("spectrum_viewer")
+            spectrum_viewer.add_event_callback(spectrum_viewer._on_mouse_moved, events=['mousemove'])
+            spectrum_viewer.add_event_callback(spectrum_viewer._on_click, events=['click'])
         if advancing and new == "obs_wav2":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
