@@ -309,7 +309,7 @@ class StageThree(HubbleStage):
         # Create the student slider
         student_slider_subset_label = "student_slider_subset"
         student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
-        student_slider = IDSlider(class_summ_data, "student_id", "age", highlight_ids=[148], highlight_label=lambda x: "Me")
+        student_slider = IDSlider(class_summ_data, "student_id", "age")
         self.add_component(student_slider, "c-student-slider")
         def student_slider_change(id):
             student_slider_subset.subset_state = class_meas_data['student_id'] == id
