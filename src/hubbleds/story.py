@@ -292,10 +292,10 @@ class HubblesLaw(Story):
         d = measurements["distance"]
         v = measurements["velocity"]
         components = {}
-        ids = []
+        ids = set()
         for i in range(measurements.size):
             id_num = measurements[id_field][i]
-            ids.append(id_num)
+            ids.add(id_num)
             dists[id_num].append(d[i])
             vels[id_num].append(v[i])
         
@@ -310,7 +310,7 @@ class HubblesLaw(Story):
             ages.append(age_in_gyr_simple(h0))
 
         components = dict(hubble=hubbles, age=ages)
-        components[id_field] = ids
+        components[id_field] = list(ids)
         new_data = Data(label=summ_label, **components)
 
         data = self.data_collection[summ_label]
