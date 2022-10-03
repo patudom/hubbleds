@@ -300,6 +300,7 @@
             </v-card-text>
           </v-window-item>
 
+<!-- 
           <v-window-item :value="4" 
             class="no-transition"
           >
@@ -357,8 +358,9 @@
               </v-container>
             </v-card-text>
           </v-window-item>
+ -->
 
-          <v-window-item :value="5" class="no-transition">
+          <v-window-item :value="4" class="no-transition">
             <v-card-text>
               <v-container>
                 <v-row>
@@ -403,14 +405,14 @@
             </v-card-text>
           </v-window-item>
 
-          <v-window-item :value="6" class="no-transition">
+          <v-window-item :value="5" class="no-transition">
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col>
-                    <h3 class="mb-4"> Colliding Galaxies </h3>
+                    <h3 class="mb-4"> Field with Multiple Objects </h3>
                     <p>
-                      Galaxies that are near each other sometimes collide. Do your best and include only the galaxy that is centered in the field of view.
+                      Some fields have multiple objects in them such as stars or other galaxies. Sometimes a galaxy even has a merging companions (as shown below) or appears in a cluster of galaxies. Do your best and include only the galaxy that is centered in the field of view.
                     </p>
                   </v-col>
                 </v-row>
@@ -440,7 +442,7 @@
                     ></v-img>
                     <h4>DON’T: </h4> 
                     <p>
-                      Measure across both galaxies
+                      Measure across both galaxies, and DON'T measure other galaxies that are not in the center of the field
                     </p>
                   </v-col>
                 </v-row>
@@ -448,7 +450,8 @@
             </v-card-text>
           </v-window-item>
 
-          <v-window-item :value="7" 
+<!-- 
+          <v-window-item :value="6" 
             class="no-transition"
           >
             <v-card-text>
@@ -505,8 +508,9 @@
               </v-container>
             </v-card-text>
           </v-window-item> 
+ -->
 
-          <v-window-item :value="8" class="no-transition">
+          <v-window-item :value="6" class="no-transition">
               <v-card-text>
                 <v-container>
                   <v-row>
@@ -548,7 +552,7 @@
               v-slot="{ active, toggle }"
             >
               <v-btn
-                :disabled="n > max_step_completed + 9"
+                :disabled="n > max_step_completed + 7"
                 :input-value="active"
                 icon
                 @click="toggle"
@@ -559,7 +563,7 @@
           </v-item-group>
           <v-spacer></v-spacer>
            <v-btn
-            :disabled="step > max_step_completed + 9"
+            :disabled="step > max_step_completed + 7"
             v-if="step < length-1"
             color="accent"
             text
