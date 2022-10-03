@@ -132,6 +132,7 @@
           outlined
         >
           <jupyter-widget :widget="viewers.comparison_viewer"/>
+          <c-student-slider />
         </v-card>
       </v-col>
     </v-row>
