@@ -146,8 +146,6 @@ class StageTwo(HubbleStage):
         self.stage_state.image_location_distance = "data/images/stage_two_distance"
         self.stage_state.image_location_dosdonts = "data/images/stage_two_dos_donts"
 
-        type_names = {"E": "Elliptical", "Ir": "Irregular", "Sp": "Spiral"}
-
         add_distances_tool = \
             dict(id="update-distances",
                  icon="mdi-tape-measure",
@@ -157,14 +155,10 @@ class StageTwo(HubbleStage):
         distance_table = Table(self.session,
                                data=self.get_data('student_measurements'),
                                glue_components=['name',
-                                                'type',
                                                 'angular_size',
                                                 'distance'],
                                key_component='name',
-                               transforms={
-                                   'type': lambda x: type_names.get(x, x)},
                                names=['Galaxy Name',
-                                      'GZ Class',
                                       'θ (arcsec)',
                                       'Distance (Mpc)'],
                                title='My Galaxies',
