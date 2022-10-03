@@ -172,8 +172,6 @@ class StageOne(HubbleStage):
         # Set up viewers
         spectrum_viewer = self.add_viewer(
             SpectrumView, label="spectrum_viewer")
-        spectrum_viewer.add_event_callback(
-            self.on_spectrum_click, events=['click'])
         sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
         add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
 
@@ -336,6 +334,7 @@ class StageOne(HubbleStage):
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.add_event_callback(spectrum_viewer._on_mouse_moved, events=['mousemove'])
             spectrum_viewer.add_event_callback(spectrum_viewer._on_click, events=['click'])
+            spectrum_viewer.add_event_callback(self.on_spectrum_click, events=['click'])
         if advancing and new == "obs_wav2":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
