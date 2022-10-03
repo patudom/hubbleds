@@ -508,10 +508,10 @@
             <v-row>
               <v-col>
                 <p>
-                  Around this same time, astronomer Vesto Slipher observed galaxies using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer. 
+                  Around this same time, astronomer Vesto Slipher observed spiral nebulae using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer. 
                 </p>
                 <p>
-                  Recall that the prevailing view in the early 1900’s was that that the universe is unchanging and eternal. As a result, the dominant expectation was that distant galaxies are either not moving at all, or if they are moving then they are moving randomly. 
+                  Recall that the prevailing view in the early 1900’s was that that the universe is unchanging and eternal. As a result, the dominant expectation was that distant nebulae are either not moving at all, or if they are moving then they are moving randomly. 
                 </p>
                 <p>
                   It’s time for you to collect some of your own data, form conclusions, and compare your conclusions to what Vesto Slipher found.
