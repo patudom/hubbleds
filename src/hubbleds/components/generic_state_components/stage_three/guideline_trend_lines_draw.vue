@@ -2,10 +2,10 @@
   <scaffold-alert
     header-text="Trend Lines"
     @back="
-      state.marker = 'ran_mar2';
+      state.marker = 'tre_dat1';
     "
     @next="
-      state.marker = 'ran_mar4';
+      state.marker = 'bes_fit1';
     "
   >
     <div

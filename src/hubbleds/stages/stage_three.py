@@ -6,12 +6,14 @@ from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import extend_tool, load_template
+from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty
 from glue.core.message import NumericalDataChangedMessage
 from hubbleds.components.id_slider import IDSlider
 from pygments import highlight
 from traitlets import default, Bool
+from ..data.styles import load_style
+
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
@@ -30,18 +32,22 @@ class StageState(CDSState):
     advance_marker = CallbackProperty(True)
 
     markers = CallbackProperty([
-        'ran_mar1',
-        'ran_mar2',
-        'ran_mar3',
-        'ran_mar4',
-        'ran_mar5',
-        'ran_mar6',
-        'ran_mar7',
-        'ran_mar8',
-        'ran_mar9',
-        'ran_mar10',
-        'ran_mar11',
-        'ran_mar12',
+        'exp_dat1',
+        'tre_dat1',
+        'tre_lin1',
+        'bes_fit1',
+        'rel_vel1',
+        'hub_exp1',
+        'hub_exp2',
+        'run_rac1',
+        'run_vel1',
+        'age_uni1',
+        'hyp_gal1',
+        'age_rac1',
+        'age_uni2',
+        'age_uni3',
+        'you_age1',
+        'sho_ref1',
         'ran_mar13',
     ])
 
@@ -49,22 +55,26 @@ class StageState(CDSState):
     ])
 
     table_show = CallbackProperty([
-        'ran_mar1',
-        'ran_mar2',
-        'ran_mar3',
-        'ran_mar4',
-        'ran_mar5',
-        'ran_mar6',
-        'ran_mar7',
-        'ran_mar8',
-        'ran_mar9',
-        'ran_mar10',
-        'ran_mar11',
-        'ran_mar12',
+        'exp_dat1',
+        'tre_dat1',
+        'tre_lin1',
+        'bes_fit1',
+        'rel_vel1',
+        'hub_exp1',
+        'hub_exp2',
+        'run_rac1',
+        'run_vel1',
+        'age_uni1',
+        'hyp_gal1',
+        'age_rac1',
+        'age_uni2',
+        'age_uni3',
+        'you_age1',
+        'sho_ref1',
     ])
 
     table_highlights = CallbackProperty([
-        'ran_mar1',
+        'exp_dat1',
     ])
 
     all_galaxies_morph_plot_show = CallbackProperty([
@@ -74,29 +84,37 @@ class StageState(CDSState):
     ])
 
     my_galaxies_plot_show = CallbackProperty([
-        'ran_mar2',
-        'ran_mar3',
-        'ran_mar4',
-        'ran_mar5',
-        'ran_mar6',
-        'ran_mar7',
-        'ran_mar8',
-        'ran_mar9',
-        'ran_mar10',
-        'ran_mar11',
-        'ran_mar12',
+        'tre_dat1',
+        'tre_lin1',
+        'bes_fit1',
+        'rel_vel1',
+        'hub_exp1',
+        'hub_exp2',
+        'run_rac1',
+        'run_vel1',
+        'age_uni1',
+        'hyp_gal1',
+        'age_rac1',
+        'age_uni2',
+        'age_uni3',
+        'you_age1',
+        'sho_ref1',
     ])
 
     my_galaxies_plot_highlights = CallbackProperty([
-        'ran_mar2',
-        'ran_mar3',
-        'ran_mar4',
-        'ran_mar5',
-        'ran_mar6',
-        'ran_mar9',
-        'ran_mar10',
-        'ran_mar11',
-        'ran_mar12',
+        'tre_dat1',
+        'tre_lin1',
+        'bes_fit1',
+        'rel_vel1',
+        'hub_exp1',
+        'hub_exp2',
+        'age_uni1',
+        'hyp_gal1',
+        'age_rac1',
+        'age_uni2',
+        'age_uni3',
+        'you_age1',
+        'sho_ref1',
     ])
 
     all_galaxies_plot_show = CallbackProperty([
@@ -239,17 +257,21 @@ class StageThree(HubbleStage):
                 __file__).parent.parent / "components" / "generic_state_components" / "stage_three")
         path = join(state_components_dir, "")
         state_components = [
-            "guideline_intro_explore",
-            "guideline_observe_trends_mc",
+            "guideline_explore_data",
+            "guideline_trends_data_mc",
             "guideline_trend_lines_draw",
             "guideline_best_fit_line",
-            "guideline_vel_dist_relationship_mc",
-            "guideline_expanding_universe",
+            "guideline_relationship_vel_dist_mc",
+            "guideline_hubbles_expanding_universe1",
+            "guideline_hubbles_expanding_universe2",
             "guideline_running_race_mc",
-            "guideline_vel_dist_runners",
-            "guideline_best_fit_galaxy",
-            "guideline_age_equation",
-            "guideline_my_age_measurement",
+            "guideline_runners_vel_dist",
+            "guideline_age_universe",
+            "guideline_hypothetical_galaxy",
+            "guideline_age_race_equation",
+            "guideline_age_universe_equation",
+            "guideline_age_universe_calc",
+            "guideline_your_age_estimate",
             "guideline_shortcomings_reflect",
         ]
         ext = ".vue"
@@ -271,8 +293,8 @@ class StageThree(HubbleStage):
         # Set up the listener to sync the histogram <--> scatter viewers
 
         # Set up the functionality for the histogram <---> scatter sync
-        # We add a listener for when a subset is modified/created on 
-        # the histogram viewer as well as extend the xrange tool for the 
+        # We add a listener for when a subset is modified/created on
+        # the histogram viewer as well as extend the xrange tool for the
         # histogram to always affect this subset
         histogram_source_label = "histogram_source_subset"
         histogram_modify_label = "histogram_modify_subset"
@@ -348,6 +370,9 @@ class StageThree(HubbleStage):
         prodata_viewer.add_data(hstkp)
         prodata_viewer.add_data(hubble1929)
 
+        # load all the initial styles
+        self._update_viewer_style(dark=self.app_state.dark_mode)
+
         histogram_viewers = [class_distr_viewer, all_distr_viewer,
                              sandbox_distr_viewer]
         for viewer in histogram_viewers:
@@ -371,6 +396,12 @@ class StageThree(HubbleStage):
                 viewer.state.y_min = 0
                 viewer.state.y_max = 1
                 viewer.state.hist_n_bin = 30
+
+        # set reasonable offset for y-axis labels
+        # it would be better if axis labels were automatically well placed
+        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer]
+        for viewer in velocity_viewers:
+            viewer.figure.axes[1].label_offset = "5em"
 
         class_distr_viewer.state.x_att = class_summ_data.id['age']
         all_distr_viewer.state.x_att = students_summary_data.id['age']
@@ -441,6 +472,38 @@ class StageThree(HubbleStage):
         viewer_id = self.viewer_ids_for_data.get(msg.data.label, [])
         for vid in viewer_id:
             self.get_viewer(vid).state.reset_limits()
+
+    def _update_viewer_style(self, dark):
+        viewers = ['fit_viewer',
+                   'comparison_viewer',
+                   'morphology_viewer',
+                   'prodata_viewer',
+                   'class_distr_viewer',
+                   'all_distr_viewer',
+                   'sandbox_distr_viewer']
+
+        viewer_type = ["scatter",
+                       "scatter",
+                       "scatter",
+                       "scatter",
+                       "histogram",
+                       "histogram",
+                       "histogram"]
+
+        for viewer, vtype in zip(viewers, viewer_type):
+            viewer = self.get_viewer(viewer)
+            theme_name = "dark" if dark else "light"
+            style = load_style(f"default_{vtype}_{theme_name}")
+            update_figure_css(viewer, style_dict=style)
+
+        # spectrum_viewer = self.get_viewer("spectrum_viewer")
+        # theme_name = "dark" if dark else "light"
+        # style = load_style(f"default_spectrum_{theme_name}")
+        # update_figure_css(spectrum_viewer, style_dict=style)
+
+    def _on_dark_mode_change(self, dark):
+        super()._on_dark_mode_change(dark)
+        self._update_viewer_style(dark)
 
     def table_selected_color(self, dark):
         return "colors.lightBlue.darken4"

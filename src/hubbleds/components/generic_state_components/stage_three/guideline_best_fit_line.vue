@@ -2,10 +2,10 @@
   <scaffold-alert
     header-text="Best Fit Line"
     @back="
-      state.marker = 'ran_mar3';
+      state.marker = 'tre_lin1';
     "
     @next="
-      state.marker = 'ran_mar5';
+      state.marker = 'rel_vel1';
     "
   >
     <div

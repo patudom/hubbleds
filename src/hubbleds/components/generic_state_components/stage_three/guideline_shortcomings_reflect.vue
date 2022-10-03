@@ -1,11 +1,11 @@
 <template>
   <scaffold-alert
-    header-text="Weaknesses in Your Measurement"
+    header-text="Shortcomings in Your Estimate"
     @back="
-      state.marker = 'ran_mar11';
+      state.marker = 'you_age1';
     "
     @next="
-      state.marker = 'ran_mar13';
+      state.marker = 'sho_ref1';
     "
   >
     <div
