@@ -57,7 +57,7 @@
                   <v-col>
                     <h3 class="mb-4"> Angular Size Measuring Tips </h3>
                     <p>
-                      Measuring the galaxy angular sizes can be tricky. In this slideshow, we will walk you through some DOs and DON’Ts for different types of galaxies and situations. The most common cases are at the beginning, and rarer, weirder cases are presented toward the end (so chances are you will find what you need on the first 4-5 slides).
+                      Measuring the galaxy angular sizes can be tricky. In this slideshow, we will walk you through DOs and DON’Ts for some different situations you may encounter. 
                     </p>
                     <p>
                       If you are having difficulty identifying the edges of fainter galaxies, it may help to adjust the contrast on your monitor.
@@ -161,6 +161,7 @@
             </v-card-text>
           </v-window-item>
 
+<!-- 
           <v-window-item :value="3" class="no-transition">
             <v-card-text>
               <v-container>
@@ -205,7 +206,9 @@
               </v-container>
             </v-card-text>
           </v-window-item>
+ -->
 
+<!--  
           <v-window-item :value="4" class="no-transition">
             <v-card-text>
               <v-container>
@@ -250,8 +253,9 @@
               </v-container>
             </v-card-text>
           </v-window-item>
+ -->
           
-          <v-window-item :value="5" class="no-transition">
+          <v-window-item :value="3" class="no-transition">
             <v-card-text>
               <v-container>
                 <v-row>
@@ -296,7 +300,8 @@
             </v-card-text>
           </v-window-item>
 
-          <v-window-item :value="6" 
+<!-- 
+          <v-window-item :value="4" 
             class="no-transition"
           >
             <v-card-text>
@@ -353,8 +358,9 @@
               </v-container>
             </v-card-text>
           </v-window-item>
+ -->
 
-          <v-window-item :value="7" class="no-transition">
+          <v-window-item :value="4" class="no-transition">
             <v-card-text>
               <v-container>
                 <v-row>
@@ -399,14 +405,14 @@
             </v-card-text>
           </v-window-item>
 
-          <v-window-item :value="8" class="no-transition">
+          <v-window-item :value="5" class="no-transition">
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col>
-                    <h3 class="mb-4"> Colliding Galaxies </h3>
+                    <h3 class="mb-4"> Field with Multiple Objects </h3>
                     <p>
-                      Galaxies that are near each other sometimes collide. Do your best and include only the galaxy that is centered in the field of view.
+                      Some fields have multiple objects in them such as stars or other galaxies. Sometimes a galaxy even has a merging companion (as shown below) or appears in a cluster of galaxies. Do your best and include only the galaxy that is centered in the field of view.
                     </p>
                   </v-col>
                 </v-row>
@@ -436,7 +442,7 @@
                     ></v-img>
                     <h4>DON’T: </h4> 
                     <p>
-                      Measure across both galaxies
+                      Measure across both galaxies, and DON'T measure other galaxies that are not in the center of the field
                     </p>
                   </v-col>
                 </v-row>
@@ -444,7 +450,8 @@
             </v-card-text>
           </v-window-item>
 
-          <v-window-item :value="9" 
+<!-- 
+          <v-window-item :value="6" 
             class="no-transition"
           >
             <v-card-text>
@@ -501,8 +508,9 @@
               </v-container>
             </v-card-text>
           </v-window-item> 
+ -->
 
-          <v-window-item :value="10" class="no-transition">
+          <v-window-item :value="6" class="no-transition">
               <v-card-text>
                 <v-container>
                   <v-row>
@@ -544,7 +552,7 @@
               v-slot="{ active, toggle }"
             >
               <v-btn
-                :disabled="n > max_step_completed + 11"
+                :disabled="n > max_step_completed + 7"
                 :input-value="active"
                 icon
                 @click="toggle"
@@ -555,7 +563,7 @@
           </v-item-group>
           <v-spacer></v-spacer>
            <v-btn
-            :disabled="step > max_step_completed + 11"
+            :disabled="step > max_step_completed + 7"
             v-if="step < length-1"
             color="accent"
             text
