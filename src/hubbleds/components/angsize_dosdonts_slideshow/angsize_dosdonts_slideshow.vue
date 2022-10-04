@@ -57,7 +57,7 @@
                   <v-col>
                     <h3 class="mb-4"> Angular Size Measuring Tips </h3>
                     <p>
-                      Measuring the galaxy angular sizes can be tricky. In this slideshow, we will walk you through some DOs and DON’Ts for different types of galaxies and situations. The most common cases are at the beginning, and rarer, weirder cases are presented toward the end (so chances are you will find what you need on the first 4-5 slides).
+                      Measuring the galaxy angular sizes can be tricky. In this slideshow, we will walk you through DOs and DON’Ts for some different situations you may encounter. 
                     </p>
                     <p>
                       If you are having difficulty identifying the edges of fainter galaxies, it may help to adjust the contrast on your monitor.
@@ -412,7 +412,7 @@
                   <v-col>
                     <h3 class="mb-4"> Field with Multiple Objects </h3>
                     <p>
-                      Some fields have multiple objects in them such as stars or other galaxies. Sometimes a galaxy even has a merging companions (as shown below) or appears in a cluster of galaxies. Do your best and include only the galaxy that is centered in the field of view.
+                      Some fields have multiple objects in them such as stars or other galaxies. Sometimes a galaxy even has a merging companion (as shown below) or appears in a cluster of galaxies. Do your best and include only the galaxy that is centered in the field of view.
                     </p>
                   </v-col>
                 </v-row>
