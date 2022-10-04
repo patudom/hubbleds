@@ -83,7 +83,7 @@
             <v-row>
               <v-col>
                 <p>
-                  Imagine that you are an astronomer living a century ago in the early 1920's. Pretty much all astronomers and scientists of this era (including Albert Einstein) believed that the universe was static, unchanging, and eternal. In other words, the universe has always been, and always will be. These ideas date back to ancient Greek times and were embraced by philosophers such as Aristotle.
+                  Imagine that you are an astronomer living a century ago in the early 1920s. Nearly all astronomers and scientists of this era (including Albert Einstein) believed that the universe was static, unchanging, and eternal. In other words, the universe has always been, and always will be. These ideas date back to ancient Greek times and were embraced by philosophers such as Aristotle.
                 </p>
                 <p
                   class="text-center grey--text"
@@ -108,6 +108,8 @@
                 >
                   <p>
                     The frame below provides an interactive view of the cosmic sky, built from authentic telescopic data. You can explore this view by panning around and zooming in/out to familiarize yourself with the tool, and connect it to the work astronomers have been doing for centuries.
+
+                    We are currently looking at the Milky Way, a band of stars that spans across a dark sky.
                   </p>
                 </div>
                 <div
@@ -338,7 +340,7 @@
                   style="min-height: 120px;"
                 >
                   <p>
-                    M31 and M51 are examples of a particular type of nebula that interested astronomers in the early 1900’s. They were known as “spiral nebulae" because of their distinctive spiral shape. In 1920, there was a “Great Debate” between astronomers Harlow Shapley and Heber Curtis questioning whether the spiral nebulae were part of our own Milky Way galaxy or were “island universes” beyond our Milky Way.
+                    M31 and M51 are examples of a particular type of nebula that interested astronomers in the early 1900’s. They were known as “spiral nebulae" because of their distinctive spiral shape. In 1920, there was a “Great Debate” between astronomers Harlow Shapley and Heber Curtis questioning whether the spiral nebulae were perhaps young solar systems being born within our own Milky Way galaxy or were “island universes” beyond our Milky Way.
                   </p>
                   <p>
                     Do you think the nebulae you’ve observed are within the Milky Way or beyond it?
@@ -508,10 +510,10 @@
             <v-row>
               <v-col>
                 <p>
-                  Around this same time, astronomer Vesto Slipher observed galaxies using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer. 
+                  Around this same time, astronomer Vesto Slipher observed spiral nebulae using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer. 
                 </p>
                 <p>
-                  Recall that the prevailing view in the early 1900’s was that that the universe is unchanging and eternal. As a result, the dominant expectation was that distant galaxies are either not moving at all, or if they are moving then they are moving randomly. 
+                  Recall that the prevailing view in the early 1900’s was that the universe is unchanging and eternal. As a result, the dominant expectation was that distant nebulae are either not moving at all, or if they are moving then they are moving randomly. 
                 </p>
                 <p>
                   It’s time for you to collect some of your own data, form conclusions, and compare your conclusions to what Vesto Slipher found.
