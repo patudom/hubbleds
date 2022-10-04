@@ -20,7 +20,7 @@
         You may adjust your measurement by clicking on the ends of the green line and moving them to a new location.
       </p>
       <p>
-        Click <strong>DO'S AND DONT'S</strong> for tips on how to ensure the most accurate results.
+        Click <strong>MEASUREMENT DOS AND DONTS</strong> for tips on how to ensure the most accurate results.
       </p>
     </div>
 
@@ -52,7 +52,7 @@
         <div
           style="font-size: 16px;"
         >
-          Click the <strong>DO'S AND DONT'S</strong> button.
+          Click the <strong>MEASUREMENT DOS AND DONTS</strong> button.
         </div>
       </v-col>
       <v-col
