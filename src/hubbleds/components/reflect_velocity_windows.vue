@@ -81,7 +81,7 @@
                 <v-row>
                   <v-col>
                     <p>
-                      Recall that you are looking at the same kind of observations Vesto Slipher made in 1920. We’ll ask you some questions about your data that astronomers in 1920 might have asked about Slipher’s data.
+                      Recall that you are looking at the same kind of observations Vesto Slipher made in the 1910s-1920s. We’ll ask you some questions about your data that astronomers in 1920 might have asked about Slipher’s data.
                     </p>
                   </v-col>
                 </v-row>
