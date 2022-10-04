@@ -6,7 +6,7 @@
     elevation="2"
     @click.stop="() => { dialog = true; state.dos_donts_opened = true }"
   >
-    dos and donts
+    measurement dos and donts
 
     <v-dialog
         v-model="dialog"

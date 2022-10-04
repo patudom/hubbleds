@@ -14,7 +14,7 @@
       class="mb-4"
     >
       <p>
-        Notice that your My Galaxies table now has a row for your selected galaxy.
+        Notice that your My Galaxies table now has a row for your selected galaxy, and the marker on your galaxy has changed from green to purple.
       </p>
     </div>
     

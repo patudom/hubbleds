@@ -592,7 +592,7 @@
                 </v-row>
                 <v-row
                   no-gutters
-                  class="my-1 yellow--text font-weight-medium"
+                  class="my-1 yellow--text font-weight-bold"
                   v-if="failedValidation5"
                   v-intersect="(entries, _observer, intersecting) => {
                     if (!intersecting) return;

@@ -189,7 +189,7 @@
                     As you explore the cosmic sky, you may see stars and fuzzy blobs called nebulae. In the 1700's, French astronomer Charles Messier cataloged as many nebulae as he could find. They are known as "Messier Objects" and are identified by their catalog number. For example, M13 represents the 13th Messier Object in the catalog.
                   </p>
                   <p>
-                    Click on the thumbnails to view some Messier Objects.
+                    Click on the buttons to the right to view some Messier Objects.
                   </p>
                 </div>
                 <div
