@@ -574,7 +574,7 @@
                       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                     >
                       <p>
-                        $$ \small{\text{Galaxy Distance} =  200,000 \cdot \frac{\text{physical length of galaxy}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
+                        $$ \small{\text{Galaxy Distance} =  210,000 \cdot \frac{\text{physical length of galaxy}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
                       </p>
                     </v-card-text>
                   </v-card>
@@ -611,7 +611,7 @@
                     v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                   >
                     <p>
-                      $$ \small{\text{Galaxy Distance} = 200,000 \cdot \frac{\text{physical length of galaxy}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
+                      $$ \small{\text{Galaxy Distance} = 210,000 \cdot \frac{\text{physical length of galaxy}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
                     </p>
                   </v-card-text>
                 </v-card>
@@ -693,7 +693,7 @@
                     v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                   >
                     <p>
-                      $$ \mathbf{\text{ Distance in Mpc} = \frac{6200}{ \text{galaxy angular size (}\theta \text{ in arcseconds)}}} $$
+                      $$ \mathbf{\text{ Distance in Mpc} = \frac{ {{ Math.round(distance_const) }} }{ \text{galaxy angular size (}\theta \text{ in arcseconds)}}} $$
                     </p>
                   </v-card-text>
                 </v-card>
