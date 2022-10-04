@@ -101,7 +101,7 @@
                       How do the observed wavelengths of your galaxies' spectral lines compare with their rest wavelengths?
                     </p>
                     <p>
-                      Choose the best response below. (Note: You can grab this pop-up by the header and move it to the side if you want to see content behind it.)
+                      Choose the best response below. (Note: You can grab this window by the header and move it to the side if you want to see content behind it.)
                     </p>
                     <mc-radiogroup
                       :radio-options="[

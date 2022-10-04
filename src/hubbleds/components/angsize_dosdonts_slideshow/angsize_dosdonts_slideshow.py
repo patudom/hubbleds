@@ -26,7 +26,7 @@ class DosDonts_SlideShow(v.VuetifyTemplate):
         "Field with Multiple Objects",
         "That's It"
     ]
-    _default_title = "Angular Size Dos and Don'ts"
+    _default_title = "Measurement Dos and Don'ts"
 
     def __init__(self, story_state, *args, **kwargs):
         self.state = story_state

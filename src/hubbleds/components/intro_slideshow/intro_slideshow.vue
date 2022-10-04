@@ -189,7 +189,7 @@
                     As you explore the cosmic sky, you may see stars and fuzzy blobs called nebulae. In the 1700's, French astronomer Charles Messier cataloged as many nebulae as he could find. They are known as "Messier Objects" and are identified by their catalog number. For example, M13 represents the 13th Messier Object in the catalog.
                   </p>
                   <p>
-                    Click on the thumbnails to view some Messier Objects.
+                    Click on the buttons to the right to view some Messier Objects.
                   </p>
                 </div>
                 <div
@@ -508,10 +508,10 @@
             <v-row>
               <v-col>
                 <p>
-                  Around this same time, astronomer Vesto Slipher observed galaxies using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer. 
+                  Around this same time, astronomer Vesto Slipher observed spiral nebulae using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer. 
                 </p>
                 <p>
-                  Recall that the prevailing view in the early 1900’s was that that the universe is unchanging and eternal. As a result, the dominant expectation was that distant galaxies are either not moving at all, or if they are moving then they are moving randomly. 
+                  Recall that the prevailing view in the early 1900’s was that that the universe is unchanging and eternal. As a result, the dominant expectation was that distant nebulae are either not moving at all, or if they are moving then they are moving randomly. 
                 </p>
                 <p>
                   It’s time for you to collect some of your own data, form conclusions, and compare your conclusions to what Vesto Slipher found.
