@@ -15,7 +15,7 @@
       v-if="!state.spec_tutorial_opened"
     >
       <p>
-        Here is a spectrum of light measured from your chosen galaxy.
+        Here is a <i>spectrum</i> of light measured from your chosen galaxy.
       </p>
       <p>
         Not familiar with spectra? Click the <strong>SPECTRUM TUTORIAL</strong> button to learn what spectra can tell us about galaxies.

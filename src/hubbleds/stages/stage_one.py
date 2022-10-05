@@ -172,8 +172,6 @@ class StageOne(HubbleStage):
         # Set up viewers
         spectrum_viewer = self.add_viewer(
             SpectrumView, label="spectrum_viewer")
-        spectrum_viewer.add_event_callback(
-            self.on_spectrum_click, events=['click'])
         sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
         add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
 
@@ -332,6 +330,11 @@ class StageOne(HubbleStage):
         if advancing and new == "res_wav1":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:restwave", True)
+        if advancing and new == "obs_wav1":
+            spectrum_viewer = self.get_viewer("spectrum_viewer")
+            spectrum_viewer.add_event_callback(spectrum_viewer._on_mouse_moved, events=['mousemove'])
+            spectrum_viewer.add_event_callback(spectrum_viewer._on_click, events=['click'])
+            spectrum_viewer.add_event_callback(self.on_spectrum_click, events=['click'])
         if advancing and new == "obs_wav2":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
@@ -400,8 +403,7 @@ class StageOne(HubbleStage):
         specview.toolbar.active_tool = None
         filename = name
         spec_name = filename.split(".")[0]
-        data_name = spec_name + '[COADD]'
-        data = self.get_data(data_name)
+        data = self.get_data(spec_name)
         self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
         if len(specview.layers) == 0:
             spec_data = self.get_data(SPECTRUM_DATA_LABEL)

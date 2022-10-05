@@ -81,7 +81,7 @@
                 <v-row>
                   <v-col>
                     <p>
-                      Recall that you are looking at the same kind of observations Vesto Slipher made in 1920. We’ll ask you some questions about your data that astronomers in 1920 might have asked about Slipher’s data.
+                      Recall that you are looking at the same kind of observations Vesto Slipher made in the 1910s-1920s. We’ll ask you some questions about your data that astronomers in 1920 might have asked about Slipher’s data.
                     </p>
                   </v-col>
                 </v-row>
@@ -101,7 +101,7 @@
                       How do the observed wavelengths of your galaxies' spectral lines compare with their rest wavelengths?
                     </p>
                     <p>
-                      Choose the best response below. (Note: You can grab this pop-up by the header and move it to the side if you want to see content behind it.)
+                      Choose the best response below. (Note: You can grab this window by the header and move it to the side if you want to see content behind it.)
                     </p>
                     <mc-radiogroup
                       :radio-options="[

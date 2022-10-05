@@ -6,10 +6,14 @@ from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import extend_tool, load_template
+from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty
 from glue.core.message import NumericalDataChangedMessage
+from hubbleds.components.id_slider import IDSlider
+from pygments import highlight
 from traitlets import default, Bool
+from ..data.styles import load_style
+
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
@@ -203,12 +207,10 @@ class StageThree(HubbleStage):
         fit_table = Table(self.session,
                           data=student_data,
                           glue_components=['name',
-                                           'type',
                                            'velocity',
                                            'distance'],
                           key_component='name',
                           names=['Galaxy Name',
-                                 'Galaxy Type',
                                  'Velocity (km/s)',
                                  'Distance (Mpc)'],
                           title='My Galaxies',
@@ -219,7 +221,6 @@ class StageThree(HubbleStage):
         # Set up links between various data sets
         hubble_dc_name = "Hubble 1929-Table 1"
         hstkp_dc_name = "HSTkey2001"
-        galaxy_dc_name = "galaxy_data"
 
         dist_attr = "distance"
         vel_attr = "velocity"
@@ -285,33 +286,47 @@ class StageThree(HubbleStage):
             self.add_component(component, label=label)
 
         # Grab data
-        class_sample_data = self.get_data(CLASS_SUMMARY_LABEL)
+        class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
         hubble1929 = self.get_data(hubble_dc_name)
         hstkp = self.get_data(hstkp_dc_name)
-        galaxy_data = self.get_data(galaxy_dc_name)
 
         # Set up the listener to sync the histogram <--> scatter viewers
 
         # Set up the functionality for the histogram <---> scatter sync
-        # We add a listener for when a subset is modified/created on 
-        # the histogram viewer as well as extend the xrange tool for the 
+        # We add a listener for when a subset is modified/created on
+        # the histogram viewer as well as extend the xrange tool for the
         # histogram to always affect this subset
         histogram_source_label = "histogram_source_subset"
         histogram_modify_label = "histogram_modify_subset"
         self.histogram_listener = HistogramListener(self.story_state,
                                                     None,
-                                                    class_sample_data,
+                                                    class_summ_data,
                                                     None,
                                                     class_meas_data,
                                                     source_subset_label=histogram_source_label,
                                                     modify_subset_label=histogram_modify_label)
 
+        # Create the student slider
+        student_slider_subset_label = "student_slider_subset"
+        student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
+        student_slider = IDSlider(class_summ_data, "student_id", "age")
+        self.add_component(student_slider, "c-student-slider")
+        def student_slider_change(id):
+            student_slider_subset.subset_state = class_meas_data['student_id'] == id
+        student_slider.on_id_change(student_slider_change)
+
+        def update_student_slider(msg):
+            student_slider.update_data(self, msg.data)
+        self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == CLASS_SUMMARY_LABEL, handler=update_student_slider)
+
+
         not_ignore = {
             fit_table.subset_label: [fit_viewer],
             histogram_source_label: [class_distr_viewer],
-            histogram_modify_label: [comparison_viewer]
+            histogram_modify_label: [comparison_viewer],
+            student_slider_subset_label: [comparison_viewer]
         }
 
         def label_ignore(x, label):
@@ -335,13 +350,14 @@ class StageThree(HubbleStage):
             viewer.state.y_att = student_data.id[vel_attr]
 
         student_layer = comparison_viewer.layers[-1]
-        student_layer.state.color = 'green'
+        student_layer.state.color = 'orange'
         student_layer.state.zorder = 3
         student_layer.state.size = 8
         comparison_viewer.add_data(class_meas_data)
         class_layer = comparison_viewer.layers[-1]
         class_layer.state.zorder = 2
         class_layer.state.color = 'red'
+        comparison_viewer.add_subset(student_slider_subset)
         # comparison_viewer.add_data(all_data)
         # all_layer = comparison_viewer.layers[-1]
         # all_layer.state.zorder = 1
@@ -356,13 +372,16 @@ class StageThree(HubbleStage):
         prodata_viewer.add_data(hstkp)
         prodata_viewer.add_data(hubble1929)
 
+        # load all the initial styles
+        self._update_viewer_style(dark=self.app_state.dark_mode)
+
         histogram_viewers = [class_distr_viewer, all_distr_viewer,
                              sandbox_distr_viewer]
         for viewer in histogram_viewers:
             label = 'Count' if viewer == class_distr_viewer else 'Proportion'
             viewer.figure.axes[1].label = label
             if viewer != all_distr_viewer:
-                viewer.add_data(class_sample_data)
+                viewer.add_data(class_summ_data)
                 layer = viewer.layers[-1]
                 layer.state.color = 'red'
                 layer.state.alpha = 0.5
@@ -380,7 +399,13 @@ class StageThree(HubbleStage):
                 viewer.state.y_max = 1
                 viewer.state.hist_n_bin = 30
 
-        class_distr_viewer.state.x_att = class_sample_data.id['age']
+        # set reasonable offset for y-axis labels
+        # it would be better if axis labels were automatically well placed
+        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer]
+        for viewer in velocity_viewers:
+            viewer.figure.axes[1].label_offset = "5em"
+
+        class_distr_viewer.state.x_att = class_summ_data.id['age']
         all_distr_viewer.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
 
@@ -399,6 +424,15 @@ class StageThree(HubbleStage):
             morphology_viewer.add_subset(subset)
         morphology_viewer.state.x_att = all_data.id['distance']
         morphology_viewer.state.y_att = all_data.id['velocity']
+
+        # In the comparison viewer, we only want to see the line for the student slider subset
+        linefit_id = "hubble:linefit"
+        comparison_toolbar = comparison_viewer.toolbar
+        comparison_linefit = comparison_toolbar.tools[linefit_id]
+        comparison_linefit.add_ignore_condition(lambda layer: layer.layer.label != student_slider_subset_label)
+        comparison_linefit.activate()
+        comparison_toolbar.set_tool_enabled(linefit_id, False)
+        
 
         # Just for accessibility while testing
         self.data_collection.histogram_listener = self.histogram_listener
@@ -440,6 +474,38 @@ class StageThree(HubbleStage):
         viewer_id = self.viewer_ids_for_data.get(msg.data.label, [])
         for vid in viewer_id:
             self.get_viewer(vid).state.reset_limits()
+
+    def _update_viewer_style(self, dark):
+        viewers = ['fit_viewer',
+                   'comparison_viewer',
+                   'morphology_viewer',
+                   'prodata_viewer',
+                   'class_distr_viewer',
+                   'all_distr_viewer',
+                   'sandbox_distr_viewer']
+
+        viewer_type = ["scatter",
+                       "scatter",
+                       "scatter",
+                       "scatter",
+                       "histogram",
+                       "histogram",
+                       "histogram"]
+
+        for viewer, vtype in zip(viewers, viewer_type):
+            viewer = self.get_viewer(viewer)
+            theme_name = "dark" if dark else "light"
+            style = load_style(f"default_{vtype}_{theme_name}")
+            update_figure_css(viewer, style_dict=style)
+
+        # spectrum_viewer = self.get_viewer("spectrum_viewer")
+        # theme_name = "dark" if dark else "light"
+        # style = load_style(f"default_spectrum_{theme_name}")
+        # update_figure_css(spectrum_viewer, style_dict=style)
+
+    def _on_dark_mode_change(self, dark):
+        super()._on_dark_mode_change(dark)
+        self._update_viewer_style(dark)
 
     def table_selected_color(self, dark):
         return "colors.lightBlue.darken4"

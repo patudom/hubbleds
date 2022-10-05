@@ -11,7 +11,7 @@ class DosDonts_SlideShow(v.VuetifyTemplate):
     template = load_template(
         "angsize_dosdonts_slideshow.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
-    length = Int(11).tag(sync=True)
+    length = Int(7).tag(sync=True)
     dialog = Bool(False).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
     state = GlueState().tag(sync=True)
@@ -21,16 +21,12 @@ class DosDonts_SlideShow(v.VuetifyTemplate):
         "Intro",
         "Blurry",
         "Elongated",
-        "Hazy Elliptical Galaxies",
-        "Faint Irregular Galaxies",
         "Measure the Entire Galaxy",
-        "Field with Multiple Objects",
         "Zoomed In Galaxies",
-        "Colliding Galaxies",
-        "Galaxy Cluster",
+        "Field with Multiple Objects",
         "That's It"
     ]
-    _default_title = "Angular Size Dos and Don'ts"
+    _default_title = "Measurement Dos and Don'ts"
 
     def __init__(self, story_state, *args, **kwargs):
         self.state = story_state

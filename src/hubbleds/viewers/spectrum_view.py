@@ -170,8 +170,6 @@ class SpecView(BqplotScatterView):
                               self.user_line_label,
                               self.element_tick, self.element_label]
 
-        self.add_event_callback(self._on_mouse_moved, events=['mousemove'])
-        self.add_event_callback(self._on_click, events=['click'])
         self.scale_y.observe(self._update_locations, names=['min', 'max'])
 
         add_callback(self.state, 'y_min', self._on_ymin_change, echo_old=True)

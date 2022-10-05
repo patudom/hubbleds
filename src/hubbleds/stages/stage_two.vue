@@ -3,6 +3,8 @@
     <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
+          color="error"
+          class="black--text"
           @click="() => {
             console.log('stage state:', stage_state);
             console.log('story state:', story_state);
@@ -10,6 +12,7 @@
         >
           State
         </v-btn>
+        Marker: {{ stage_state.marker }}
       </v-col>
     </v-row>
     <v-row
