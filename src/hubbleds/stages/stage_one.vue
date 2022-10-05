@@ -40,7 +40,7 @@
           v-if="stage_state.marker == 'sel_gal3'"
           v-intersect.once="scrollIntoView" />
         <v-btn
-          v-if="stage_state.marker == 'sel_gal2' || 'sel_gal3' && stage_state.gals_total < stage_state.gals_max && show_team_interface"
+          v-if="show_team_interface && (stage_state.marker == 'sel_gal2' || 'sel_gal3' && stage_state.gals_total < stage_state.gals_max)"
           color="error"
           class="black--text"
           block
