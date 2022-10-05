@@ -374,6 +374,7 @@
                                 fov: 350, // optional, in arcseconds, default is 90
                                 instant: false // also optional, false by default
                               })"
+                            :disabled=true
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -392,6 +393,7 @@
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false // also optional, false by default
                               })"
+                            :disabled=true
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -410,6 +412,7 @@
                                 fov: 6000, // optional, in arcseconds, default is 90
                                 instant: false // also optional, false by default
                               })"
+
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -428,6 +431,7 @@
                                 fov:7500, // optional, in arcseconds, default is 90
                                 instant: false // also optional, false by default
                               })"
+                            :disabled=true
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -467,6 +471,7 @@
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :disabled=true
                           >
                             M82
                           </v-btn>
