@@ -24,8 +24,8 @@
           :radio-options="[
             'Yes, I see a trend.',
             'No, I don\'t see a trend.',
-            'I can\'t tell if there\'s a trend',
-            'What\'s a trend?.'
+            'I can\'t tell if there\'s a trend.',
+            'What\'s a trend??'
           ]"
           :feedbacks="[
             'Recorded. You see a trend.',
@@ -33,8 +33,8 @@
             'Recorded. You can\'t tell if there\'s a trend.',
             'Recorded. You don\'t know what a trend is.'
           ]"
-          :correct-answers="[0]"
-          :neutral-answers='[1,2,3]'
+          :correct-answers="[]"
+          :neutral-answers='[0,1,2,3]'
           :selected-callback="(state) => { $emit('ready'); }"
         >
         </mc-radiogroup>
