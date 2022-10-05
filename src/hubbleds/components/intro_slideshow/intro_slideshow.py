@@ -45,6 +45,14 @@ class IntroSlideshow(v.VuetifyTemplate):
             'c-exploration-tool1': exploration_tool1,
             'c-exploration-tool2': exploration_tool2
         }
+        
+        self.vue_go_to_location_tool2({
+                                "ra": 10.63,
+                                "dec": 41.27,
+                                "fov": 6000,
+                                "instant": True 
+                              })
+        
         self.currentTitle = self._default_title
 
         def update_title(change):
@@ -61,6 +69,8 @@ class IntroSlideshow(v.VuetifyTemplate):
 
         exploration_tool.observe(update_exploration_complete,
                                  names=["exploration_complete"])
+        
+        
 
         super().__init__(*args, **kwargs)
 
