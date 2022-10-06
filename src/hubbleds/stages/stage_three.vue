@@ -63,16 +63,16 @@
           v-if="stage_state.marker == 'tre_dat3'"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.trend_response = true" />
+        <c-guideline-relationship-vel-dist-mc
+          v-if="stage_state.marker == 'rel_vel1'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.relvel_response = true" />
         <c-guideline-trend-lines-draw
           v-if="stage_state.marker == 'tre_lin1'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-best-fit-line
           v-if="stage_state.marker == 'bes_fit1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-relationship-vel-dist-mc
-          v-if="stage_state.marker == 'rel_vel1'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.relvel_response = true" />
         <c-guideline-hubbles-expanding-universe1
           v-if="stage_state.marker == 'hub_exp1'"
           v-intersect.once="scrollIntoView" />

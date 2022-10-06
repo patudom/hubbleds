@@ -27,7 +27,7 @@
             'I can\'t tell if there\'s a trend.',
           ]"
           :feedbacks="[
-            'Isn\'t it neat how adding more data can make a trend more clear?',
+            'Isn\'t it interesting how adding more data can make a trend more clear?',
             'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend',
             'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend',
           ]"
@@ -104,7 +104,7 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'tre_lin1';
+                state.marker = 'rel_vel1';
                 define_trend = false;
               }
             "
