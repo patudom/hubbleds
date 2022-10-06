@@ -1,7 +1,7 @@
 import ipyvuetify as v
 from cosmicds.utils import load_template
 from glue_jupyter.state_traitlets_helpers import GlueState
-from traitlets import Bool, Unicode, Float
+from traitlets import Bool, Unicode
 
 
 class TrendsData(v.VuetifyTemplate):

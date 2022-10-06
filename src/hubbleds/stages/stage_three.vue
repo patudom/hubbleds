@@ -51,8 +51,12 @@
         cols="12"
         lg="5"
       >
-        <c-guideline-trends-data-mc
+        <c-guideline-trends-data-mc1
           v-if="stage_state.marker == 'tre_dat1'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.trend_response = true" />
+        <c-guideline-trends-data2
+          v-if="stage_state.marker == 'tre_dat2'"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.trend_response = true" />
         <c-guideline-trend-lines-draw

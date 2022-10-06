@@ -14,6 +14,7 @@ from pygments import highlight
 from traitlets import default, Bool
 from ..data.styles import load_style
 
+from ..components import TrendsData
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
@@ -35,9 +36,11 @@ class StageState(CDSState):
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
+
     markers = CallbackProperty([
         'exp_dat1',
         'tre_dat1',
+        'tre_dat2',
         'tre_lin1',
         'bes_fit1',
         'rel_vel1',
@@ -61,6 +64,7 @@ class StageState(CDSState):
     table_show = CallbackProperty([
         'exp_dat1',
         'tre_dat1',
+        'tre_dat2',
         'tre_lin1',
         'bes_fit1',
         'rel_vel1',
@@ -89,6 +93,7 @@ class StageState(CDSState):
 
     my_galaxies_plot_show = CallbackProperty([
         'tre_dat1',
+        'tre_dat2',
         'tre_lin1',
         'bes_fit1',
         'rel_vel1',
@@ -107,6 +112,7 @@ class StageState(CDSState):
 
     my_galaxies_plot_highlights = CallbackProperty([
         'tre_dat1',
+        'tre_dat2',
         'tre_lin1',
         'bes_fit1',
         'rel_vel1',
@@ -260,7 +266,7 @@ class StageThree(HubbleStage):
         path = join(state_components_dir, "")
         state_components = [
             "guideline_explore_data",
-            "guideline_trends_data_mc",
+            "guideline_trends_data2",
             "guideline_trend_lines_draw",
             "guideline_best_fit_line",
             "guideline_relationship_vel_dist_mc",
@@ -283,6 +289,18 @@ class StageThree(HubbleStage):
             # comp + ext = filename; path = folder where they live.
             component = GenericStateComponent(comp + ext, path,
                                               self.stage_state)
+            self.add_component(component, label=label)
+
+        # Set up trends_data components
+        trends_data_components_dir = str(Path(
+            __file__).parent.parent / "components" / "trends_data_components")
+        path = join(trends_data_components_dir, "")
+        trends_data_components = [
+            "guideline_trends_data_mc1"
+        ]
+        for comp in trends_data_components:
+            label = f"c-{comp}".replace("_", "-")
+            component = TrendsData(comp + ext, path, self.stage_state)
             self.add_component(component, label=label)
 
         # Grab data
