@@ -1,13 +1,15 @@
 <template>
-  <scaffold-alert
-    header-text="A Running Race"
-    @back="
-      state.marker = 'hub_exp2';
-    "
-    @next="
-      state.marker = 'run_vel1';
-    "
+  <v-alert
+    color="info"
+    class="mb-4 mx-auto"
+    max-width="800"
+    elevation="6"
   >
+    <h3
+      class="mb-4"
+    >
+      A Running Race
+    </h3>
     <div
       class="mb-4"
     >
@@ -25,29 +27,73 @@
         fluid
       >
         <p>The race began:</p>
-        <v-radio-group>
-          <v-radio
-            key="1"
-            label="1/3 of an hour ago"
-            value="1"
-          ></v-radio>
-          <v-radio
-            key="2"
-            label="3 hours ago"
-            value="2"
-          ></v-radio>
-          <v-radio
-            key="3"
-            label="12 hours ago"
-            value="3"
-          ></v-radio>
-          <v-radio
-            key="4"
-            label="75 hours ago"
-            value="4"
-          ></v-radio>
-        </v-radio-group>
+        <mc-radiogroup
+          :radio-options="[
+            '1/3 of an hour ago',
+            '3 hours ago',
+            '12 hours ago',
+            '75 hours ago'
+          ]"
+          :feedbacks="[
+            'Recorded. You think it started 1/3 of an hour ago.',
+            'Recorded. You think it started 3 hours ago.',
+            'Recorded. You think it started 12 hours ago.',
+            'Recorded. You think it started 75 hours ago.'
+          ]"
+          :correct-answers="[1]"
+          :neutral-answers='[0,2,3]'
+          :selected-callback="(state) => { $emit('ready'); }"
+        >
+        </mc-radiogroup>
       </v-container>
     </div>
-  </scaffold-alert>
+    
+    <v-divider
+      class="my-4"
+    >
+    </v-divider>
+
+    <v-row
+      align="center"
+      no-gutters
+    >
+        <v-btn
+          class="black--text"
+          color="accent"
+          elevation="2"
+          @click="
+            state.marker = 'hub_exp2'
+          "
+        >
+          back
+        </v-btn>
+      <v-spacer></v-spacer>
+      <v-col
+        cols="6"
+        class="shrink"
+        v-if="!state.race_response"
+      >
+        <div
+          style="font-size: 16px;"
+        >
+          Answer the question above.
+        </div>
+      </v-col>
+      <v-col
+        class="shrink"
+        v-if="state.race_response"
+      >
+        <v-btn
+          class="black--text"
+          color="accent"
+          elevation="2"
+          @click="
+            state.marker = 'run_vel1'
+          "
+        >
+          next
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-alert>
 </template>
