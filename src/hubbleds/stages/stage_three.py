@@ -23,7 +23,7 @@ from ..stage import HubbleStage
 from ..viewers import HubbleFitView, \
     HubbleScatterView
 from ..viewers.viewers import \
-    HubbleClassHistogramView, HubbleHistogramView
+    HubbleClassHistogramView, HubbleHistogramView, HubbleFitLayerView
 
 
 class StageState(CDSState):
