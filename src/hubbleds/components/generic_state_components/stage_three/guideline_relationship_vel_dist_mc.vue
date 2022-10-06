@@ -23,10 +23,10 @@
         <p>The trend is:</p>
         <mc-radiogroup
           :radio-options="[
-            'The velocity of galaxies are generally the same across all distances.',
-            'Galaxies that are at a greater distance from us tend to have a larger velocity.',
-            'Galaxies that are at a greater distance from us tend to have a smaller velocity.',
-            'The velocity of galaxies appears to be random across all distances.'
+            'The velocities of galaxies are generally the same across all distances.',
+            'Galaxies that are at a greater distance from us tend to have larger velocities.',
+            'Galaxies that are at a greater distance from us tend to have smaller velocities.',
+            'The velocities of galaxies appear to be random across all distances.'
           ]"
           :feedbacks="[
             'This would be true if the data points formed a horizontal line across the graph. Try again.',
@@ -57,7 +57,7 @@
           color="accent"
           elevation="2"
           @click="
-            state.marker = 'bes_fit1'
+            state.marker = 'tre_dat3'
           "
         >
           back
@@ -83,7 +83,7 @@
           color="accent"
           elevation="2"
           @click="
-            state.marker = 'hub_exp1'
+            state.marker = 'tre_lin1'
           "
         >
           next
