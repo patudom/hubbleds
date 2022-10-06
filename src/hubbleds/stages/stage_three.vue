@@ -67,8 +67,11 @@
           v-if="stage_state.marker == 'rel_vel1'"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.relvel_response = true" />
-        <c-guideline-trend-lines-draw
+        <c-guideline-trend-lines1
           v-if="stage_state.marker == 'tre_lin1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-trend-lines-draw2
+          v-if="stage_state.marker == 'tre_lin2'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-best-fit-line
           v-if="stage_state.marker == 'bes_fit1'"
