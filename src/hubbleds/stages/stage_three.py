@@ -41,6 +41,7 @@ class StageState(CDSState):
         'exp_dat1',
         'tre_dat1',
         'tre_dat2',
+        'tre_dat3',
         'tre_lin1',
         'bes_fit1',
         'rel_vel1',
@@ -65,6 +66,7 @@ class StageState(CDSState):
         'exp_dat1',
         'tre_dat1',
         'tre_dat2',
+        'tre_dat3',
         'tre_lin1',
         'bes_fit1',
         'rel_vel1',
@@ -94,6 +96,7 @@ class StageState(CDSState):
     my_galaxies_plot_show = CallbackProperty([
         'tre_dat1',
         'tre_dat2',
+        'tre_dat3',
         'tre_lin1',
         'bes_fit1',
         'rel_vel1',
@@ -113,6 +116,7 @@ class StageState(CDSState):
     my_galaxies_plot_highlights = CallbackProperty([
         'tre_dat1',
         'tre_dat2',
+        'tre_dat3',
         'tre_lin1',
         'bes_fit1',
         'rel_vel1',
@@ -269,7 +273,6 @@ class StageThree(HubbleStage):
             "guideline_trends_data2",
             "guideline_trend_lines_draw",
             "guideline_best_fit_line",
-            "guideline_relationship_vel_dist_mc",
             "guideline_hubbles_expanding_universe1",
             "guideline_hubbles_expanding_universe2",
             "guideline_running_race_mc",
@@ -296,7 +299,8 @@ class StageThree(HubbleStage):
             __file__).parent.parent / "components" / "trends_data_components")
         path = join(trends_data_components_dir, "")
         trends_data_components = [
-            "guideline_trends_data_mc1"
+            "guideline_trends_data_mc1",
+            "guideline_trends_data_mc3"
         ]
         for comp in trends_data_components:
             label = f"c-{comp}".replace("_", "-")

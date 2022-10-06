@@ -14,7 +14,7 @@
       class="mb-4"
     >
       <p>
-        Do you see any sort of trend in your data? Is there a relationship between the velocity and distance of the galaxies?
+        TEST: Now with a larger data set, do you see a trend? Is there a relationship between the velocity and distance of the galaxies?
       </p>
       <v-container
         class="px-0"
@@ -27,9 +27,9 @@
             'I can\'t tell if there\'s a trend.',
           ]"
           :feedbacks="[
-            'Interesting, but it might help to look at more data before deciding for sure.',
-            'Yeah, it can be hard with so few data points. Let\'s see what happens if we add more data.',
-            'Yeah, it can be hard with so few data points. Let\'s see what happens if we add more data.',
+            'Isn\'t it neat how adding more data can make a trend more clear?',
+            'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend',
+            'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend',
           ]"
           :correct-answers="[]"
           :neutral-answers='[0,1,2]'
@@ -75,7 +75,7 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'exp_dat1';
+                state.marker = 'tre_dat2';
                 define_trend = false;
               }
             "
@@ -104,9 +104,8 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'tre_dat2';
+                state.marker = 'tre_lin1';
                 define_trend = false;
-                state.trend_response = false;
               }
             "
         >
