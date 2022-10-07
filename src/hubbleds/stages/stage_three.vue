@@ -113,6 +113,7 @@
           outlined
         >
           <jupyter-widget :widget="viewers.fit_viewer"/>
+          <jupyter-widget :widget="viewers.layer_viewer"/>
         </v-card>
       </v-col>
     </v-row>
