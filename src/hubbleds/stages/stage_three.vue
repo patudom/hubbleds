@@ -112,7 +112,6 @@
           :class="stage_state.my_galaxies_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.fit_viewer"/>
           <jupyter-widget :widget="viewers.layer_viewer"/>
         </v-card>
       </v-col>

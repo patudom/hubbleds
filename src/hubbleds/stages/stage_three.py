@@ -416,7 +416,7 @@ class StageThree(HubbleStage):
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
-        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer]
+        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer, layer_viewer]
         for viewer in velocity_viewers:
             viewer.figure.axes[1].label_offset = "5em"
 
@@ -480,6 +480,9 @@ class StageThree(HubbleStage):
 
         extend_tool(fit_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
+        
+        extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
+                    fit_selection_deactivate)
 
     @property
     def all_viewers(self):
@@ -492,14 +495,17 @@ class StageThree(HubbleStage):
 
     def _update_viewer_style(self, dark):
         viewers = ['fit_viewer',
+                   'layer_viewer',
                    'comparison_viewer',
                    'morphology_viewer',
                    'prodata_viewer',
                    'class_distr_viewer',
                    'all_distr_viewer',
-                   'sandbox_distr_viewer']
+                   'sandbox_distr_viewer',
+                   ]
 
         viewer_type = ["scatter",
+                       "scatter",
                        "scatter",
                        "scatter",
                        "scatter",

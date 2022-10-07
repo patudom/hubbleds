@@ -47,9 +47,10 @@ HubbleFitLayerView = cds_viewer(
     name="HubbleFitLayerView",
     viewer_tools=[
         "bqplot:home",
+        "hubble:togglelayer",
+        'bqplot:rectangle',
         "cds:linedraw",
         "hubble:linefit",
-        "hubble:togglelayer"
     ],
     label='Layer View',
     state_cls=HubbleFitViewerState
