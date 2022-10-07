@@ -28,8 +28,8 @@
           ]"
           :feedbacks="[
             'Isn\'t it interesting how adding more data can make a trend more clear?',
-            'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend',
-            'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend',
+            'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend.',
+            'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend.',
           ]"
           :correct-answers="[]"
           :neutral-answers='[0,1,2]'
