@@ -7,3 +7,4 @@ from .selection_tool import SelectionTool
 from .spectrum_slideshow import SpectrumSlideshow
 from .distance_calc_components import DistanceCalc
 from .trends_data_components import TrendsData
+from .hubble_exp_universe import HubbleExp

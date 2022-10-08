@@ -1,5 +1,6 @@
 <template>
   <v-container>
+                          <c-hubble-slideshow/> 
     <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
@@ -127,6 +128,21 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row>
+      <!--
+      v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['rel_vel1']"
+    -->
+      <v-col
+        cols="4"
+        offset="2"
+      >
+        TEST 1
+      </v-col>
+      <v-col>
+                <c-hubble-slideshow/> 
+      </v-col>
+      test test test
+    </v-row>
     <v-row
       class="d-flex align-stretch"
     >
@@ -214,11 +230,8 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
-    >
-    <!--
       v-if="stage_state.sandbox_hist_show.includes(stage_state.marker)"
     >
-    -->
       <v-col
         cols="12"
         lg="5"
@@ -242,11 +255,8 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
-    >
-    <!--
       v-if="stage_state.all_galaxies_morph_plot_show.includes(stage_state.marker)"
     >
-    -->
       <v-col
         cols="12"
         lg="5"

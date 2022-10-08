@@ -14,7 +14,7 @@ from pygments import highlight
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..components import TrendsData
+from ..components import TrendsData, HubbleExp
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
@@ -31,6 +31,7 @@ class StageState(CDSState):
     trend_response = CallbackProperty(False)
     relvel_response = CallbackProperty(False)
     race_response = CallbackProperty(False)
+    hubble_dialog_open = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -267,6 +268,9 @@ class StageThree(HubbleStage):
                                                'sandbox_distr_viewer',
                                                "Sandbox")
 
+        hubble_slideshow = HubbleExp(self.stage_state)
+        self.add_component(hubble_slideshow, label='c-hubble-slideshow')
+        
         # Set up the generic state components
         state_components_dir = str(
             Path(
@@ -425,7 +429,7 @@ class StageThree(HubbleStage):
                 viewer.state.normalize = True
                 viewer.state.y_min = 0
                 viewer.state.y_max = 1
-                viewer.state.hist_n_bin = 30
+                #viewer.state.hist_n_bin = 15
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
