@@ -278,6 +278,10 @@ class StageThree(HubbleStage):
 
         hubble_slideshow = HubbleExp(self.stage_state)
         self.add_component(hubble_slideshow, label='c-hubble-slideshow')
+
+        add_callback(self.stage_state, 'marker',
+                     self._on_marker_update, echo_old=True)
+        self.trigger_marker_update_cb = True
         
         # Set up the generic state components
         state_components_dir = str(
@@ -400,6 +404,7 @@ class StageThree(HubbleStage):
         class_layer.state.visible = False
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         toggle_tool.set_layer_to_toggle(class_layer)
+        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
 
         
 
@@ -522,7 +527,17 @@ class StageThree(HubbleStage):
         
         extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
-
+    
+    def _on_marker_update(self, old, new):
+        if not self.trigger_marker_update_cb:
+            return
+        markers = self.stage_state.markers
+        advancing = markers.index(new) > markers.index(old)
+        print("advancing", advancing, "new marker:", new)
+        if advancing and new == "tre_dat2":
+            layer_viewer = self.get_viewer("layer_viewer")
+            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
+    
     @property
     def all_viewers(self):
         return [layout.viewer for layout in self.viewers.values()]
