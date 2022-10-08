@@ -14,7 +14,10 @@
       class="mb-4"
     >
       <p>
-        Do you see any sort of trend in your data? Is there a relationship between the velocity and distance of the galaxies?
+        The graph here shows the velocities of your galaxies plotted vs. their distances.  
+      </p>
+      <p>
+        Do you see any sort of trend in your data? Is there a relationship between the velocities and distances of the galaxies?
       </p>
       <v-container
         class="px-0"
