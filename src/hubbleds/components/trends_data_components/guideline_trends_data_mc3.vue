@@ -14,7 +14,7 @@
       class="mb-4"
     >
       <p>
-        TEST: Now with a larger data set, do you see a trend? Is there a relationship between the velocity and distance of the galaxies?
+        Now with a larger data set, do you see a trend? Is there a relationship between the velocity and distance of the galaxies?
       </p>
       <v-container
         class="px-0"

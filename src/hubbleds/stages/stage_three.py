@@ -32,6 +32,7 @@ class StageState(CDSState):
     relvel_response = CallbackProperty(False)
     race_response = CallbackProperty(False)
     hubble_dialog_opened = CallbackProperty(False)
+    class_layer_toggled = CallbackProperty(0)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -282,6 +283,7 @@ class StageThree(HubbleStage):
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
         self.trigger_marker_update_cb = True
+
         
         # Set up the generic state components
         state_components_dir = str(
@@ -406,7 +408,7 @@ class StageThree(HubbleStage):
         toggle_tool.set_layer_to_toggle(class_layer)
         layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
 
-        
+        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
 
         student_layer = comparison_viewer.layers[-1]
         student_layer.state.color = 'orange'
@@ -533,11 +535,15 @@ class StageThree(HubbleStage):
             return
         markers = self.stage_state.markers
         advancing = markers.index(new) > markers.index(old)
-        print("advancing", advancing, "new marker:", new)
         if advancing and new == "tre_dat2":
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
     
+    def _on_class_layer_toggled(self, used):
+        self.stage_state.class_layer_toggled = used 
+        if(self.stage_state.class_layer_toggled == 1):
+           self.stage_state.move_marker_forward(self.stage_state.marker)             
+
     @property
     def all_viewers(self):
         return [layout.viewer for layout in self.viewers.values()]

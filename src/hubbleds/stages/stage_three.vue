@@ -15,7 +15,6 @@
         Marker: {{ stage_state.marker }}
       </v-col>
     </v-row>
-    <c-hubble-slideshow/>
     <v-row
       class="d-flex align-stretch"
       v-if="stage_state.table_show.includes(stage_state.marker)"
