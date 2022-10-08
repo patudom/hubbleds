@@ -51,9 +51,6 @@ class StageState(CDSState):
         'tre_lin1',
         'tre_lin2',
         'bes_fit1',
-        'hub_exp2',
-        'run_rac1',
-        'run_vel1',
         'age_uni1',
         'hyp_gal1',
         'age_rac1',
@@ -61,7 +58,6 @@ class StageState(CDSState):
         'age_uni3',
         'you_age1',
         'sho_ref1',
-        'ran_mar13',
     ])
 
     step_markers = CallbackProperty([
@@ -73,13 +69,10 @@ class StageState(CDSState):
         'tre_dat2',
         'tre_dat3',
         'rel_vel1',
+        'hub_exp1',
         'tre_lin1',
         'tre_lin2',
         'bes_fit1',
-        'hub_exp1',
-        'hub_exp2',
-        'run_rac1',
-        'run_vel1',
         'age_uni1',
         'hyp_gal1',
         'age_rac1',
@@ -104,13 +97,10 @@ class StageState(CDSState):
         'tre_dat2',
         'tre_dat3',
         'rel_vel1',
+        'hub_exp1',
         'tre_lin1',
         'tre_lin2',
         'bes_fit1',
-        'hub_exp1',
-        'hub_exp2',
-        'run_rac1',
-        'run_vel1',
         'age_uni1',
         'hyp_gal1',
         'age_rac1',
@@ -125,11 +115,10 @@ class StageState(CDSState):
         'tre_dat2',
         'tre_dat3',
         'rel_vel1',
+        'hub_exp1',
         'tre_lin1',
         'tre_lin2',
         'bes_fit1',
-        'hub_exp1',
-        'hub_exp2',
         'age_uni1',
         'hyp_gal1',
         'age_rac1',
@@ -298,9 +287,6 @@ class StageThree(HubbleStage):
             "guideline_trend_lines_draw2",
             "guideline_best_fit_line",
             "guideline_hubbles_expanding_universe1",
-            "guideline_hubbles_expanding_universe2",
-            "guideline_running_race_mc",
-            "guideline_runners_vel_dist",
             "guideline_age_universe",
             "guideline_hypothetical_galaxy",
             "guideline_age_race_equation",
@@ -538,6 +524,10 @@ class StageThree(HubbleStage):
         if advancing and new == "tre_dat2":
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
+        if advancing and new == "tre_lin1":
+            layer_viewer = self.get_viewer("layer_viewer")
+            class_layer = layer_viewer.layers[-1]
+            class_layer.state.visible = False            
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 

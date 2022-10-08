@@ -2,7 +2,7 @@
   <scaffold-alert
     header-text="Trend Lines"
     @back="
-      state.marker = 'rel_vel1';
+      state.marker = 'hub_exp1';
     "
     @next="
       state.marker = 'tre_lin2';
