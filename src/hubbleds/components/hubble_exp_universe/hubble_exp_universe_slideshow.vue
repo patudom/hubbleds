@@ -4,7 +4,7 @@
     block
     color="secondary"
     elevation="2"
-    @click.stop="() => { dialog = true; }"
+    @click.stop="() => { dialog = true; state.hubble_dialog_opened = true }"
   >
     Hubble's Discovery
     <v-dialog
@@ -70,12 +70,12 @@
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col>
+                  <v-col
+                    cols = "12"
+                    lg = "5"
+                  >
                     <p>
-                      To understand Hubble’s thinking about this, let’s use the following situation as a model: Imagine runners in the middle of a race, where the runners are running at different speeds.
-                    </p>
-                    <p>
-                      In this diagram, runner A is running with a velocity of 4 km per hour and has run a distance of 12 km, while runner C is running faster with a velocity of 10 km per hour and has gone a distance of 30 km.
+                      To understand Hubble’s thinking about this, let’s use the following situation as a model: Imagine runners in the middle of a race, where the runners are running at different speeds, as shown in the diagram.
                     </p>
                     <p>
                       Can you figure out how long ago the race started — the “age” of the race? (Assume each runner has maintained a consistent speed for the entire race).
@@ -91,15 +91,27 @@
                         '75 hours ago'
                       ]"
                       :feedbacks="[
-                        'Try again. The equation describes a relationship between your galaxy\’s velocity and the speed of light.',
-                        'Correct. The fraction is the ratio of the observed wavelength of my spectral line over the line’s rest wavelength minus 1. This will be the case for all of your galaxies.',
-                        'Try again. You are multiplying the speed of light by a value that is smaller than 1.'
+                        'Try again. The age of the race is the distance any runner has traveled divided by their speed.',
+                        'Correct. The age of the race is the distance any runner has traveled divided by their speed.',
+                        'Try again. The age of the race is the distance any runner has traveled divided by their speed.',
+                        'Try again. The age of the race is the distance any runner has traveled divided by their speed.',
                       ]"
                       :correct-answers="[1]"
                       :selected-callback="(state) => { if(state.correct) { this.maxStepCompleted = Math.max(this.maxStepCompleted, 1);} }"
                       score-tag="race-age"  
                     >
                     </mc-radiogroup>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    lg="7"
+                  >
+                    <v-img
+                      id="runners"
+                      class="mb-4 mx-a mt-n3"
+                      contain
+                      :src="`${state.image_location}/runners_km.png`"
+                    ></v-img>
                   </v-col>
                 </v-row>
               </v-container>
@@ -115,7 +127,7 @@
                       To return to this data story, if we graph the runners’ velocities vs. distance, the graph would look like this.
                     </p>
                     <p>
-                      Doesn’t this look a lot like your graph for the galaxies?
+                      Doesn’t this look a lot like the trend in your class's graph for the galaxies?
                     </p>
                     <p>
                       As with the runners, you can use your galaxies’ velocity and distance data to calculate the time when all galaxies were in the same place — the <strong>age of the universe</strong>.
@@ -177,7 +189,7 @@
             color="accent"
             class="black--text"
             depressed
-            @click="() => { $emit('close'); dialog = false; step = 0; }"
+            @click="() => { $emit('close'); dialog = false; step = 0; state.hubble_dialog_opened = true }"
           >
             Done
           </v-btn>

@@ -1,6 +1,5 @@
 <template>
   <v-container>
-                          <c-hubble-slideshow/> 
     <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
@@ -16,6 +15,7 @@
         Marker: {{ stage_state.marker }}
       </v-col>
     </v-row>
+    <c-hubble-slideshow/>
     <v-row
       class="d-flex align-stretch"
       v-if="stage_state.table_show.includes(stage_state.marker)"
@@ -126,22 +126,10 @@
         >
           <jupyter-widget :widget="viewers.fit_viewer"/>
         </v-card>
+        <c-hubble-slideshow 
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
+        />  
       </v-col>
-    </v-row>
-    <v-row>
-      <!--
-      v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['rel_vel1']"
-    -->
-      <v-col
-        cols="4"
-        offset="2"
-      >
-        TEST 1
-      </v-col>
-      <v-col>
-                <c-hubble-slideshow/> 
-      </v-col>
-      test test test
     </v-row>
     <v-row
       class="d-flex align-stretch"

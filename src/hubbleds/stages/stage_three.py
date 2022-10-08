@@ -7,7 +7,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty
+from echo import CallbackProperty, add_callback
 from glue.core.message import NumericalDataChangedMessage
 from hubbleds.components.id_slider import IDSlider
 from pygments import highlight
@@ -31,11 +31,13 @@ class StageState(CDSState):
     trend_response = CallbackProperty(False)
     relvel_response = CallbackProperty(False)
     race_response = CallbackProperty(False)
-    hubble_dialog_open = CallbackProperty(False)
+    hubble_dialog_opened = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
+
+    image_location = CallbackProperty()
 
 
     markers = CallbackProperty([
@@ -44,10 +46,10 @@ class StageState(CDSState):
         'tre_dat2',
         'tre_dat3',
         'rel_vel1',
+        'hub_exp1',
         'tre_lin1',
         'tre_lin2',
         'bes_fit1',
-        'hub_exp1',
         'hub_exp2',
         'run_rac1',
         'run_vel1',
@@ -214,6 +216,11 @@ class StageThree(HubbleStage):
 
         self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
+
+        self.stage_state.image_location = join("data", "images",
+                                               "stage_three")
+        add_callback(self.app_state, 'using_voila',
+                     self._update_image_location)
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         all_data = self.get_data(ALL_DATA_LABEL)
@@ -541,3 +548,7 @@ class StageThree(HubbleStage):
 
     def table_selected_color(self, dark):
         return "colors.lightBlue.darken4"
+
+    def _update_image_location(self, using_voila):
+        prepend = "voila/files/" if using_voila else ""
+        self.stage_state.image_location = prepend + "data/images/stage_three"
