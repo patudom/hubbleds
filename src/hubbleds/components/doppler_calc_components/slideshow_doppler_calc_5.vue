@@ -19,7 +19,7 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <span
-          @click="() => { state.doppler_calc_dialog = false; if (step == length)  {step = 0}; }"
+          @click="() => { state.doppler_calc_dialog = false; if (step == length-1)  {step = 0}; }"
         >
           <v-btn
             icon
@@ -838,7 +838,6 @@
             step = 0; 
             state.marker='dop_cal6'; 
             state.doppler_calc_complete = true;
-            console.log('calc done:', state.doppler_calc_complete);
             student_vel_calc = true}"
         >
           Done
