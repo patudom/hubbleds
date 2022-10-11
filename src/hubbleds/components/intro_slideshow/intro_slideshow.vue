@@ -392,6 +392,7 @@
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M1'"
+                          >
                             M1
                           </v-btn>
                         </v-col>
