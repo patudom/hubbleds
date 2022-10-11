@@ -215,18 +215,20 @@
                           cols="12"
                           lg="6"
                         >
-                          <v-btn
+                          <v-btn 
                             @click="go_to_location_tool1({
                                 ra: 83.63,
                                 dec: 22.014,
                                 fov: 350, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M1' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M1'"
                           >
-                            M1
+                            M1 
                           </v-btn>
                         </v-col>
                         <v-col
@@ -238,11 +240,13 @@
                                 ra: 250.4,
                                 dec: 36.46,
                                 fov: 700, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M13' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M13'"
                           >
                             M13
                           </v-btn>
@@ -256,13 +260,15 @@
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M31' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M31'"
                           >
-                            M31
+                            M31 
                           </v-btn>
                         </v-col>
                         <v-col
@@ -274,11 +280,13 @@
                                 ra: 83.82,
                                 dec: -5.39,
                                 fov:7500, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M42' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M42'"
                           >
                             M42
                           </v-btn>
@@ -292,11 +300,13 @@
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M51' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M51'"
                           >
                             M51
                           </v-btn>
@@ -310,11 +320,13 @@
                                 ra: 148.97,
                                 dec: 69.68,
                                 fov: 400, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M82' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M82'"
                           >
                             M82
                           </v-btn>
@@ -372,13 +384,14 @@
                                 ra: 83.63,
                                 dec: 22.014,
                                 fov: 350, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M1' // name of object
                               })"
                             :disabled=true
                             color="info"
                             width="100%"
                             class="mx-2"
-                          >
+                            :outlined="target === 'M1'"
                             M1
                           </v-btn>
                         </v-col>
@@ -391,12 +404,14 @@
                                 ra: 250.4,
                                 dec: 36.46,
                                 fov: 700, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M13' // name of object
                               })"
                             :disabled=true
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M13'"
                           >
                             M13
                           </v-btn>
@@ -410,12 +425,14 @@
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M31' // name of object
                               })"
 
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M31'"
                           >
                             M31
                           </v-btn>
@@ -429,7 +446,8 @@
                                 ra: 83.82,
                                 dec: -5.39,
                                 fov:7500, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M42' // name of object
                               })"
                             :disabled=true
                             color="info"
@@ -448,11 +466,13 @@
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M51' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M51'"
                           >
                             M51
                           </v-btn>
@@ -466,7 +486,8 @@
                                 ra: 148.97,
                                 dec: 69.68,
                                 fov: 400, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M82' // name of object
                               })"
                             color="info"
                             width="100%"
@@ -625,12 +646,15 @@
 #exploration-tool, #exploration-tool2, #exploration-tool3 {
   height: 400px;
 }
+
+
 </style>
 
 
 <script>
 module.exports = {
-  props: ["continueText"],
+  props: ["continueText","target"],
+
 };
 </script>
 

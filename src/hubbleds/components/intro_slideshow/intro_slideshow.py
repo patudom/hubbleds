@@ -22,6 +22,7 @@ class IntroSlideshow(v.VuetifyTemplate):
     intro_complete = Bool(False).tag(sync=True)
     state = GlueState().tag(sync=True)
     show_team_interface = Bool(False).tag(sync=True)
+    target = Unicode("").tag(sync=True)
 
     _titles = [
         "Welcome to Your Data Story",
@@ -81,6 +82,7 @@ class IntroSlideshow(v.VuetifyTemplate):
         instant = args.get("instant") or False
         fov_as = args.get("fov", None)
         fov = fov_as * u.arcsec if fov_as else GALAXY_FOV
+        self.target = args.get("target","none")
         wwt.center_on_coordinates(coordinates, fov=fov, instant=instant)
 
     def vue_go_to_location_tool1(self, args):
