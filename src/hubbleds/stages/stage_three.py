@@ -266,8 +266,11 @@ class StageThree(HubbleStage):
                                                'sandbox_distr_viewer',
                                                "Sandbox")
 
-        hubble_slideshow = HubbleExp(self.stage_state)
+        hubble_slideshow = HubbleExp(self.stage_state, self.viewers["layer_viewer"])
         self.add_component(hubble_slideshow, label='c-hubble-slideshow')
+
+# for the runner viewer
+# self.add_viewer(RunnerViewer)
 
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)

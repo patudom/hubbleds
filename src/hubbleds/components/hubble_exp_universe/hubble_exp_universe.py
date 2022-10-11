@@ -1,8 +1,9 @@
 import ipyvuetify as v
 from pathlib import Path
-from traitlets import Int, Bool, Unicode, List
+from traitlets import Int, Bool, Unicode, List, Instance
 from cosmicds.utils import load_template
 from glue_jupyter.state_traitlets_helpers import GlueState
+from ipywidgets import widget_serialization, DOMWidget
 
 
 # theme_colors()
@@ -17,6 +18,7 @@ class HubbleExp(v.VuetifyTemplate):
     state = GlueState().tag(sync=True)
     maxStepCompleted = Int(0).tag(sync=True)
     interactSteps = List([1]).tag(sync=True)
+    layer_viewer = Instance(DOMWidget).tag(sync=True, **widget_serialization)
 
     _titles = [
         "Hubble's Discovery",
@@ -25,9 +27,10 @@ class HubbleExp(v.VuetifyTemplate):
     ]
     _default_title = "Hubble's Discovery"
 
-    def __init__(self, stage_state, *args, **kwargs):
+    def __init__(self, stage_state, layer_viewer, *args, **kwargs):
         self.state = stage_state
         self.currentTitle = self._default_title
+        self.layer_viewer = layer_viewer
 
         def update_title(change):
             index = change["new"]

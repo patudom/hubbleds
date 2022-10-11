@@ -122,7 +122,10 @@
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col>
+                  <v-col
+                    cols="12"
+                    lg="5"
+                    >
                     <p>
                       To return to this data story, if we graph the runners’ velocities vs. distance, the graph would look like this.
                     </p>
@@ -133,6 +136,12 @@
                       As with the runners, you can use your galaxies’ velocity and distance data to calculate the time when all galaxies were in the same place — the <strong>age of the universe</strong>.
                     </p>
                   </v-col>
+                  <v-col
+                    cols="12"
+                    lg="7">
+                    <jupyter-widget :widget="layer_viewer"/>
+                  </v-col>
+
                 </v-row>
               </v-container>
             </v-card-text>
