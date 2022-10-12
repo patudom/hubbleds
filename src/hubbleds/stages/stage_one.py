@@ -219,6 +219,7 @@ class StageOne(HubbleStage):
                                        selected_data=selected)
         self.add_component(selection_tool, label='c-selection-tool')
         selection_tool.on_galaxy_selected = self._on_galaxy_selected
+        selection_tool._on_reset_view = self._on_selection_viewer_reset
         selection_tool.observe(self._on_selection_tool_flagged,
                                names=['flagged'])
 
@@ -476,6 +477,12 @@ class StageOne(HubbleStage):
         self.stage_state.lambda_rest = data["restwave"][index]
         self.stage_state.lambda_obs = data["measwave"][index]
         self.stage_state.sel_gal_index = index
+    
+    def _on_selection_viewer_reset(self) -> None:
+        """ clear selection from galaxy table"""
+        self.galaxy_table.selected = []
+        self.stage_state.sel_gal_index = None
+            
 
     def on_spectrum_click(self, event):
         specview = self.get_viewer("spectrum_viewer")

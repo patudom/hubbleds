@@ -26,6 +26,7 @@ class SelectionTool(v.VueTemplate):
     dialog = Bool(False).tag(sync=True)
     flagged = Bool(False).tag(sync=True)
     state = GlueState().tag(sync=True)
+    is_reset = Bool(False).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
@@ -111,6 +112,10 @@ class SelectionTool(v.VueTemplate):
         self.current_galaxy = {}
         self.candidate_galaxy = {}
         self.state.gal_selected = False
+        self._on_reset_view()
+    
+    def _on_reset_view(self):
+        pass
 
     def go_to_location(self, ra, dec, fov=GALAXY_FOV):
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
