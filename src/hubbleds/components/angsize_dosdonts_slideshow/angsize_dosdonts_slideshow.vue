@@ -85,10 +85,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
@@ -130,10 +126,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
@@ -269,10 +261,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
@@ -374,10 +362,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
@@ -419,10 +403,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
@@ -534,11 +514,12 @@
         >
           <v-btn
             :disabled="step === 0"
+            class="black--text"
             color="accent"
-            text
+            depressed
             @click="step--"
           >
-            Back
+            back
           </v-btn>
           <v-spacer></v-spacer>
           <v-item-group
@@ -565,20 +546,27 @@
            <v-btn
             :disabled="step > max_step_completed + 7"
             v-if="step < length-1"
+            class="black--text"
             color="accent"
-            text
+            depressed
             @click="step++;"
           >
-            {{ step < length-1 ? 'next' : '' }}
+            next
           </v-btn>
           <v-btn
             v-if = "step == length-1"
             color="accent"
             class="black--text"
             depressed
-            @click="() => { $emit('close'); dialog = false; step = 0; }"
+            @click="
+              () => {
+                $emit('close');
+                dialog = false;
+                step = 0;
+              }
+            "
           >
-            Done
+            done
           </v-btn>
         </v-card-actions>
       </v-card>
