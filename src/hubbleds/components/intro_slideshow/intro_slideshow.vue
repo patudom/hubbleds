@@ -656,6 +656,11 @@
 module.exports = {
   props: ["continueText","target"],
 
+  watch: {
+    step(val) {
+      this.target = '';
+    }
+  }
 };
 </script>
 
