@@ -24,8 +24,8 @@ class HubbleFitViewerState(HubbleScatterViewerState):
     def reset_limits(self):
         with delay_callback(self, 'x_min', 'x_max', 'y_min', 'y_max'):
             super().reset_limits()
-            self.x_max = 1.2 * self.x_max
-            self.y_max = 1.2 * self.y_max
+            self.x_max = 1.1 * self.x_max
+            self.y_max = 1.1 * self.y_max
 
 
 HubbleFitView = cds_viewer(

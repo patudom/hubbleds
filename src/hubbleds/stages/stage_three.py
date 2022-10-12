@@ -355,6 +355,9 @@ class StageThree(HubbleStage):
         
         # add class measurement data and hide by default
         layer_viewer.add_data(class_meas_data)
+        layer_viewer.state.x_att = class_meas_data.id[dist_attr]
+        layer_viewer.state.y_att = class_meas_data.id[vel_attr]
+        layer_viewer.viewer.state.reset_limits()
         class_layer = layer_viewer.layers[-1]
         class_layer.state.zorder=1
         class_layer.state.color="blue"
