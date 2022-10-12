@@ -126,6 +126,15 @@
 </template>
 
 
+<style>
+
+.v-dialog .v-card__text {
+  font-size: 18px !important;
+}
+
+</style>
+
+
 <script>
 
 module.exports = {
