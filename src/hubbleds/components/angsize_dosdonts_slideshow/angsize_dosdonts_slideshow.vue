@@ -85,10 +85,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
@@ -130,10 +126,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
@@ -269,10 +261,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
@@ -374,10 +362,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
@@ -419,10 +403,6 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
