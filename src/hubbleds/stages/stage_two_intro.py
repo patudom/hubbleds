@@ -44,8 +44,8 @@ class StageTwoIntro(Stage):
                                     names=['two_intro_complete'])
         self.stage_state.image_location = "data/images/stage_two_intro"
 
-        add_callback(self.story_state, 'step_index',
-                self._on_step_index_update)
+        # add_callback(self.story_state, 'step_index',
+        #         self._on_step_index_update)
 
     @property
     def slideshow(self):
@@ -59,6 +59,7 @@ class StageTwoIntro(Stage):
             # time the button is clicked, not just the first
             self.slideshow.two_intro_complete = False
 
+    # this function is no longer called anywhere
     def _on_step_index_update(self, index):
         # Change the marker without firing the associated stage callback
         # We can't just use ignore_callback, since other stuff (i.e. the frontend)
