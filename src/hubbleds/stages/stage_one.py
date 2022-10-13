@@ -265,7 +265,7 @@ class StageOne(HubbleStage):
         ]
         for comp in doppler_components:
             label = f"c-{comp}".replace("_", "-")
-            component = DopplerCalc(comp + ext, path, self.stage_state)
+            component = DopplerCalc(comp + ext, path, self.stage_state, self.story_state)
             self.add_component(component, label=label)
 
         # execute add_student_velocity when student_vel_calc in c-doppler-calc-5-slideshow is updated.
