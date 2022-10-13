@@ -11,6 +11,7 @@ from echo import CallbackProperty, add_callback
 from glue.core.message import NumericalDataChangedMessage
 from hubbleds.components.id_slider import IDSlider
 from pygments import highlight
+from hubbleds.utils import IMAGE_BASE_URL
 from traitlets import default, Bool
 from ..data.styles import load_style
 
@@ -38,7 +39,7 @@ class StageState(CDSState):
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
-    image_location = CallbackProperty()
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three")
 
 
     markers = CallbackProperty([
@@ -206,11 +207,6 @@ class StageThree(HubbleStage):
 
         self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
-
-        self.stage_state.image_location = join("data", "images",
-                                               "stage_three")
-        add_callback(self.app_state, 'using_voila',
-                     self._update_image_location)
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         all_data = self.get_data(ALL_DATA_LABEL)

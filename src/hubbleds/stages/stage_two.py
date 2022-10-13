@@ -16,7 +16,7 @@ from ..components import DistanceSidebar, DistanceTool, DistanceCalc
 from ..components.angsize_dosdonts_slideshow import DosDonts_SlideShow
 from ..data_management import STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
-from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, format_fov
+from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, IMAGE_BASE_URL, format_fov
 
 log = logging.getLogger()
 
@@ -34,8 +34,8 @@ class StageState(CDSState):
     marker = CallbackProperty("")
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
-    image_location_distance = CallbackProperty()
-    image_location_dosdonts = CallbackProperty()
+    image_location_distance = CallbackProperty(f"{IMAGE_BASE_URL}/stage_two_distance")
+    image_location_dosdonts = CallbackProperty(f"{IMAGE_BASE_URL}/stage_two_dos_donts")
     distance_sidebar = CallbackProperty(False)
     n_meas = CallbackProperty(0)
     show_ruler = CallbackProperty(False)
@@ -143,8 +143,6 @@ class StageTwo(HubbleStage):
 
         self.add_component(DistanceTool(self.stage_state),
                            label="c-distance-tool")
-        self.stage_state.image_location_distance = "data/images/stage_two_distance"
-        self.stage_state.image_location_dosdonts = "data/images/stage_two_dos_donts"
 
         add_distances_tool = \
             dict(id="update-distances",
