@@ -11,3 +11,9 @@
     </v-row>
   </v-container>
 </template>
+
+<style>
+.v-container .v-card__text {
+  font-size: 18px !important;
+}
+</style>s
