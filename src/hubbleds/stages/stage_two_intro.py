@@ -4,12 +4,13 @@ from cosmicds.utils import load_template
 from echo import add_callback, CallbackProperty 
 from glue.core.state_objects import State
 from traitlets import default
+from ..utils import IMAGE_BASE_URL
 
 from ..components.two_intro_slideshow import TwoIntroSlideShow
 
 
 class StageState(State):
-    image_location = CallbackProperty()
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_two_intro")
 
 
 @register_stage(story="hubbles_law", index=2, steps=[
@@ -42,7 +43,6 @@ class StageTwoIntro(Stage):
         self.add_component(two_intro_slideshow, label='c-two-intro-slideshow')
         two_intro_slideshow.observe(self._on_slideshow_complete,
                                     names=['two_intro_complete'])
-        self.stage_state.image_location = "data/images/stage_two_intro"
 
         # add_callback(self.story_state, 'step_index',
         #         self._on_step_index_update)

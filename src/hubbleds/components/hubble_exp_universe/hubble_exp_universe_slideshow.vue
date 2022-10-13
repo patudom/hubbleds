@@ -140,6 +140,7 @@
                     cols="12"
                     lg="7">
                     <jupyter-widget :widget="layer_viewer"/>
+                    <jupyter-widget :widget="hubble_race_viewer"/>
                   </v-col>
 
                 </v-row>

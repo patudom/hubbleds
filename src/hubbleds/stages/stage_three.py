@@ -2,6 +2,7 @@ from functools import partial
 from os.path import join
 from pathlib import Path
 
+from numpy import asarray
 from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
@@ -9,8 +10,10 @@ from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty, add_callback
 from glue.core.message import NumericalDataChangedMessage
+from glue.core.data import Data
 from hubbleds.components.id_slider import IDSlider
 from pygments import highlight
+from hubbleds.utils import IMAGE_BASE_URL
 from traitlets import default, Bool
 from ..data.styles import load_style
 
@@ -38,7 +41,7 @@ class StageState(CDSState):
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
-    image_location = CallbackProperty()
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three")
 
 
     markers = CallbackProperty([
@@ -207,11 +210,6 @@ class StageThree(HubbleStage):
         self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
 
-        self.stage_state.image_location = join("data", "images",
-                                               "stage_three")
-        add_callback(self.app_state, 'using_voila',
-                     self._update_image_location)
-
         student_data = self.get_data(STUDENT_DATA_LABEL)
         all_data = self.get_data(ALL_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -265,8 +263,21 @@ class StageThree(HubbleStage):
         sandbox_distr_viewer = self.add_viewer(HubbleHistogramView,
                                                'sandbox_distr_viewer',
                                                "Sandbox")
-
-        hubble_slideshow = HubbleExp(self.stage_state, self.viewers["layer_viewer"])
+        hubble_race_viewer = self.add_viewer(HubbleScatterView,
+                                                "hubble_race_viewer",
+                                                 "Race")
+        hubble_race_viewer.figure.axes[0].tick_format = ',.0f'
+        hubble_race_viewer.figure.axes[1].tick_format = ',.0f'
+        hubble_race_data = Data(label='hubble_race_data')
+        hubble_race_data.add_component([12,24,30],'distance (km)')
+        hubble_race_data.add_component([4,8,10],'velocity (km/hr)')
+        self.add_data(hubble_race_data)
+        hubble_race_viewer.add_data(hubble_race_data)
+        hubble_race_viewer.state.x_att = hubble_race_data.id['distance (km)']
+        hubble_race_viewer.state.y_att = hubble_race_data.id['velocity (km/hr)']
+        hubble_slideshow = HubbleExp(self.stage_state, [self.viewers["hubble_race_viewer"],self.viewers["layer_viewer"]])
+        
+        
         self.add_component(hubble_slideshow, label='c-hubble-slideshow')
 
 # for the runner viewer

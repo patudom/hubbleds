@@ -19,6 +19,7 @@ class HubbleExp(v.VuetifyTemplate):
     maxStepCompleted = Int(0).tag(sync=True)
     interactSteps = List([1]).tag(sync=True)
     layer_viewer = Instance(DOMWidget).tag(sync=True, **widget_serialization)
+    hubble_race_viewer = Instance(DOMWidget).tag(sync=True, **widget_serialization)
 
     _titles = [
         "Hubble's Discovery",
@@ -27,10 +28,11 @@ class HubbleExp(v.VuetifyTemplate):
     ]
     _default_title = "Hubble's Discovery"
 
-    def __init__(self, stage_state, layer_viewer, *args, **kwargs):
+    def __init__(self, stage_state, viewers, *args, **kwargs):
         self.state = stage_state
         self.currentTitle = self._default_title
-        self.layer_viewer = layer_viewer
+        self.hubble_race_viewer = viewers[0]
+        self.layer_viewer = viewers[1]
 
         def update_title(change):
             index = change["new"]

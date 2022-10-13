@@ -39,7 +39,9 @@
           :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="widgets.fit_table"/>
+          <v-lazy>
+            <jupyter-widget :widget="widgets.fit_table"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
@@ -123,7 +125,9 @@
           :class="stage_state.my_galaxies_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.layer_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.layer_viewer"/>
+          </v-lazy>
         </v-card>
         <c-hubble-slideshow 
           v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
@@ -154,7 +158,9 @@
           :class="stage_state.all_galaxies_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.comparison_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.comparison_viewer"/>
+          </v-lazy>
           <c-student-slider />
         </v-card>
       </v-col>
@@ -183,7 +189,9 @@
           :class="stage_state.my_class_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.class_distr_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.class_distr_viewer"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
@@ -211,7 +219,9 @@
           :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.all_distr_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_distr_viewer"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
@@ -236,7 +246,9 @@
           :class="stage_state.sandbox_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.sandbox_distr_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.sandbox_distr_viewer"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
@@ -261,7 +273,9 @@
           :class="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.morphology_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.morphology_viewer"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
