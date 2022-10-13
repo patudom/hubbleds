@@ -39,7 +39,9 @@
           :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="widgets.fit_table"/>
+          <v-lazy>
+            <jupyter-widget :widget="widgets.fit_table"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
@@ -51,20 +53,31 @@
         cols="12"
         lg="5"
       >
-        <c-guideline-trends-data-mc
+        <c-guideline-trends-data-mc1
           v-if="stage_state.marker == 'tre_dat1'"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.trend_response = true" />
-        <c-guideline-trend-lines-draw
-          v-if="stage_state.marker == 'tre_lin1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-best-fit-line
-          v-if="stage_state.marker == 'bes_fit1'"
-          v-intersect.once="scrollIntoView" />
+        <c-guideline-trends-data2
+          v-if="stage_state.marker == 'tre_dat2'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.trend_response = true" />
+        <c-guideline-trends-data-mc3
+          v-if="stage_state.marker == 'tre_dat3'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.trend_response = true" />
         <c-guideline-relationship-vel-dist-mc
           v-if="stage_state.marker == 'rel_vel1'"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.relvel_response = true" />
+        <c-guideline-trend-lines1
+          v-if="stage_state.marker == 'tre_lin1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-trend-lines-draw2
+          v-if="stage_state.marker == 'tre_lin2'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-best-fit-line
+          v-if="stage_state.marker == 'bes_fit1'"
+          v-intersect.once="scrollIntoView" />
         <c-guideline-hubbles-expanding-universe1
           v-if="stage_state.marker == 'hub_exp1'"
           v-intersect.once="scrollIntoView" />
@@ -112,8 +125,13 @@
           :class="stage_state.my_galaxies_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.layer_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.layer_viewer"/>
+          </v-lazy>
         </v-card>
+        <c-hubble-slideshow 
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
+        />  
       </v-col>
     </v-row>
     <v-row
@@ -140,7 +158,9 @@
           :class="stage_state.all_galaxies_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.comparison_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.comparison_viewer"/>
+          </v-lazy>
           <c-student-slider />
         </v-card>
       </v-col>
@@ -169,7 +189,9 @@
           :class="stage_state.my_class_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.class_distr_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.class_distr_viewer"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
@@ -197,17 +219,16 @@
           :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.all_distr_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_distr_viewer"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
     <v-row
       class="d-flex align-stretch"
-    >
-    <!--
       v-if="stage_state.sandbox_hist_show.includes(stage_state.marker)"
     >
-    -->
       <v-col
         cols="12"
         lg="5"
@@ -225,17 +246,16 @@
           :class="stage_state.sandbox_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.sandbox_distr_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.sandbox_distr_viewer"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
     <v-row
       class="d-flex align-stretch"
-    >
-    <!--
       v-if="stage_state.all_galaxies_morph_plot_show.includes(stage_state.marker)"
     >
-    -->
       <v-col
         cols="12"
         lg="5"
@@ -253,12 +273,23 @@
           :class="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="viewers.morphology_viewer"/>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.morphology_viewer"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
+
+<style>
+
+  .v-dialog .v-card__text {
+    font-size: 18px !important;
+  }
+  
+  </style>
 
 
 <script>

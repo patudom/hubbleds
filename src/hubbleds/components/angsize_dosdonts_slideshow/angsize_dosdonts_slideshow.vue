@@ -85,15 +85,11 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/IL-DO.png`"
+                      :src="`${state.image_location_dosdonts}/IL-Do.png`"
                     ></v-img>
                     <h4> DO: </h4> 
                     <p>
@@ -104,7 +100,7 @@
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/IL-DONT.png`"
+                      :src="`${state.image_location_dosdonts}/IL-Dont.png`"
                     ></v-img>
                     <h4>DON'T : </h4> 
                     <p>
@@ -130,15 +126,11 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/LS-DO.png`"
+                      :src="`${state.image_location_dosdonts}/LS-Do.png`"
                     ></v-img>
                     <h4>DO:</h4> 
                     <p>
@@ -149,7 +141,7 @@
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/LS-DONT.png`"
+                      :src="`${state.image_location_dosdonts}/LS-Dont.png`"
                     ></v-img>
                     <h4>DON’T: </h4> 
                     <p>
@@ -184,7 +176,7 @@
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/EH-DO.png`"
+                      :src="`${state.image_location_dosdonts}/EH-Do.png`"
                     ></v-img>
                     <h4>DO: </h4> 
                     <p>
@@ -195,7 +187,7 @@
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/EH-DONT.png`"
+                      :src="`${state.image_location_dosdonts}/EH-Dont.png`"
                     ></v-img>
                     <h4>DON’T: </h4> 
                     <p>
@@ -269,15 +261,11 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/BS-DO.png`"
+                      :src="`${state.image_location_dosdonts}/BS-Do.png`"
                     ></v-img>
                     <h4>DO: </h4>  
                     <p>
@@ -288,7 +276,7 @@
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/BS-DONT.png`"
+                      :src="`${state.image_location_dosdonts}/BS-Dont.png`"
                     ></v-img>
                     <h4>DON'T: </h4> 
                     <p>
@@ -325,7 +313,7 @@
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/Multi-DO.png`"
+                      :src="`${state.image_location_dosdonts}/Multi-Do.png`"
                     ></v-img>
                     <h4>DO: </h4> 
                     <p>
@@ -374,15 +362,11 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/TC-DO.png`"
+                      :src="`${state.image_location_dosdonts}/TC-Do.png`"
                     ></v-img>
                     <h4>DO: </h4>  
                     <p>
@@ -393,7 +377,7 @@
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/TC-DONT.png`"
+                      :src="`${state.image_location_dosdonts}/TC-Dont.png`"
                     ></v-img>
                     <h4>DON’T: </h4> 
                     <p>
@@ -419,15 +403,11 @@
                 <v-row>
                   <v-col
                     cols="6"
-                    class="d-flex flex-column"
-                    height="100%"
-                    flat
-                    tile
                   >
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/Col-DO.png`"
+                      :src="`${state.image_location_dosdonts}/Col-Do.png`"
                     ></v-img>
                     <h4>DO: </h4>  
                     <p>
@@ -438,7 +418,7 @@
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/Col-DONT.png`"
+                      :src="`${state.image_location_dosdonts}/Col-Dont.png`"
                     ></v-img>
                     <h4>DON’T: </h4> 
                     <p>
@@ -475,7 +455,7 @@
                     <v-img
                       class="mb-4 mx-a"
                       contain
-                      :src="`${state.image_location_dosdonts}/Cluster-DO.png`"
+                      :src="`${state.image_location_dosdonts}/Cluster-Do.png`"
                     ></v-img>
                     <h4>DO: </h4> 
                     <p>
@@ -534,11 +514,12 @@
         >
           <v-btn
             :disabled="step === 0"
+            class="black--text"
             color="accent"
-            text
+            depressed
             @click="step--"
           >
-            Back
+            back
           </v-btn>
           <v-spacer></v-spacer>
           <v-item-group
@@ -565,20 +546,27 @@
            <v-btn
             :disabled="step > max_step_completed + 7"
             v-if="step < length-1"
+            class="black--text"
             color="accent"
-            text
+            depressed
             @click="step++;"
           >
-            {{ step < length-1 ? 'next' : '' }}
+            next
           </v-btn>
           <v-btn
             v-if = "step == length-1"
             color="accent"
             class="black--text"
             depressed
-            @click="() => { $emit('close'); dialog = false; step = 0; }"
+            @click="
+              () => {
+                $emit('close');
+                dialog = false;
+                step = 0;
+              }
+            "
           >
-            Done
+            done
           </v-btn>
         </v-card-actions>
       </v-card>
