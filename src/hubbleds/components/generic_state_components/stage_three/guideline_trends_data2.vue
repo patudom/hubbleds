@@ -8,16 +8,19 @@
     <h3
       class="mb-4"
     >
-      Hubble's Expanding Universe
+      Trends in the Data
     </h3>
     <div
       class="mb-4"
     >
       <p>
-        The relationship between your galaxies’ velocity and distance is the same as what Hubble found: galaxies at a greater distance away are moving away from us at a higher velocity.
+        It can be difficult to notice a trend with so few data points.
       </p>
       <p>
-       Click the <strong>HUBBLE's DISCOVERY</strong> button to learn what was significant about this result.
+        Since everyone in your class also measured 5 galaxies, let's look at a dataset that combines everyone's measurements.
+      </p>
+      <p>
+        Click <v-icon>mdi-google-classroom</v-icon> to display measurements from your entire class.
       </p>
     </div>
     
@@ -35,7 +38,7 @@
           color="accent"
           elevation="2"
           @click="
-            state.marker = 'rel_vel1'
+            state.marker = 'tre_dat1'
           "
         >
           back
@@ -44,24 +47,24 @@
       <v-col
         cols="6"
         class="shrink"
-        v-if="!state.hubble_dialog_opened"
+        v-if="state.class_layer_toggled==0"
       >
         <div
           style="font-size: 16px;"
         >
-          Click the <strong>HUBBLE'S DISCOVERY</strong> button.
+          Click <v-icon>mdi-google-classroom</v-icon> in Toolbar.
         </div>
       </v-col>
       <v-col
         class="shrink"
-        v-if="state.hubble_dialog_opened"
+        v-if="state.class_layer_toggled>0"
       >
         <v-btn
           class="black--text"
           color="accent"
           elevation="2"
           @click="
-            state.marker = 'tre_lin1'
+            state.marker = 'tre_dat3'
           "
         >
           next

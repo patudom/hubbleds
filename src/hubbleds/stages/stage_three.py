@@ -7,13 +7,14 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty
+from echo import CallbackProperty, add_callback
 from glue.core.message import NumericalDataChangedMessage
 from hubbleds.components.id_slider import IDSlider
 from pygments import highlight
 from traitlets import default, Bool
 from ..data.styles import load_style
 
+from ..components import TrendsData, HubbleExp
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
@@ -30,21 +31,26 @@ class StageState(CDSState):
     trend_response = CallbackProperty(False)
     relvel_response = CallbackProperty(False)
     race_response = CallbackProperty(False)
+    hubble_dialog_opened = CallbackProperty(False)
+    class_layer_toggled = CallbackProperty(0)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
+    image_location = CallbackProperty()
+
+
     markers = CallbackProperty([
         'exp_dat1',
         'tre_dat1',
-        'tre_lin1',
-        'bes_fit1',
+        'tre_dat2',
+        'tre_dat3',
         'rel_vel1',
         'hub_exp1',
-        'hub_exp2',
-        'run_rac1',
-        'run_vel1',
+        'tre_lin1',
+        'tre_lin2',
+        'bes_fit1',
         'age_uni1',
         'hyp_gal1',
         'age_rac1',
@@ -52,7 +58,6 @@ class StageState(CDSState):
         'age_uni3',
         'you_age1',
         'sho_ref1',
-        'ran_mar13',
     ])
 
     step_markers = CallbackProperty([
@@ -61,13 +66,13 @@ class StageState(CDSState):
     table_show = CallbackProperty([
         'exp_dat1',
         'tre_dat1',
-        'tre_lin1',
-        'bes_fit1',
+        'tre_dat2',
+        'tre_dat3',
         'rel_vel1',
         'hub_exp1',
-        'hub_exp2',
-        'run_rac1',
-        'run_vel1',
+        'tre_lin1',
+        'tre_lin2',
+        'bes_fit1',
         'age_uni1',
         'hyp_gal1',
         'age_rac1',
@@ -89,13 +94,13 @@ class StageState(CDSState):
 
     my_galaxies_plot_show = CallbackProperty([
         'tre_dat1',
-        'tre_lin1',
-        'bes_fit1',
+        'tre_dat2',
+        'tre_dat3',
         'rel_vel1',
         'hub_exp1',
-        'hub_exp2',
-        'run_rac1',
-        'run_vel1',
+        'tre_lin1',
+        'tre_lin2',
+        'bes_fit1',
         'age_uni1',
         'hyp_gal1',
         'age_rac1',
@@ -107,11 +112,13 @@ class StageState(CDSState):
 
     my_galaxies_plot_highlights = CallbackProperty([
         'tre_dat1',
-        'tre_lin1',
-        'bes_fit1',
+        'tre_dat2',
+        'tre_dat3',
         'rel_vel1',
         'hub_exp1',
-        'hub_exp2',
+        'tre_lin1',
+        'tre_lin2',
+        'bes_fit1',
         'age_uni1',
         'hyp_gal1',
         'age_rac1',
@@ -200,6 +207,11 @@ class StageThree(HubbleStage):
         self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
 
+        self.stage_state.image_location = join("data", "images",
+                                               "stage_three")
+        add_callback(self.app_state, 'using_voila',
+                     self._update_image_location)
+
         student_data = self.get_data(STUDENT_DATA_LABEL)
         all_data = self.get_data(ALL_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -254,6 +266,14 @@ class StageThree(HubbleStage):
                                                'sandbox_distr_viewer',
                                                "Sandbox")
 
+        hubble_slideshow = HubbleExp(self.stage_state)
+        self.add_component(hubble_slideshow, label='c-hubble-slideshow')
+
+        add_callback(self.stage_state, 'marker',
+                     self._on_marker_update, echo_old=True)
+        self.trigger_marker_update_cb = True
+
+        
         # Set up the generic state components
         state_components_dir = str(
             Path(
@@ -261,14 +281,12 @@ class StageThree(HubbleStage):
         path = join(state_components_dir, "")
         state_components = [
             "guideline_explore_data",
-            "guideline_trends_data_mc",
-            "guideline_trend_lines_draw",
-            "guideline_best_fit_line",
+            "guideline_trends_data2",
             "guideline_relationship_vel_dist_mc",
+            "guideline_trend_lines1",
+            "guideline_trend_lines_draw2",
+            "guideline_best_fit_line",
             "guideline_hubbles_expanding_universe1",
-            "guideline_hubbles_expanding_universe2",
-            "guideline_running_race_mc",
-            "guideline_runners_vel_dist",
             "guideline_age_universe",
             "guideline_hypothetical_galaxy",
             "guideline_age_race_equation",
@@ -284,6 +302,19 @@ class StageThree(HubbleStage):
             # comp + ext = filename; path = folder where they live.
             component = GenericStateComponent(comp + ext, path,
                                               self.stage_state)
+            self.add_component(component, label=label)
+
+        # Set up trends_data components
+        trends_data_components_dir = str(Path(
+            __file__).parent.parent / "components" / "trends_data_components")
+        path = join(trends_data_components_dir, "")
+        trends_data_components = [
+            "guideline_trends_data_mc1",
+            "guideline_trends_data_mc3"
+        ]
+        for comp in trends_data_components:
+            label = f"c-{comp}".replace("_", "-")
+            component = TrendsData(comp + ext, path, self.stage_state)
             self.add_component(component, label=label)
 
         # Grab data
@@ -361,8 +392,9 @@ class StageThree(HubbleStage):
         class_layer.state.visible = False
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         toggle_tool.set_layer_to_toggle(class_layer)
+        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
 
-        
+        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
 
         student_layer = comparison_viewer.layers[-1]
         student_layer.state.color = 'orange'
@@ -412,7 +444,7 @@ class StageThree(HubbleStage):
                 viewer.state.normalize = True
                 viewer.state.y_min = 0
                 viewer.state.y_max = 1
-                viewer.state.hist_n_bin = 30
+                #viewer.state.hist_n_bin = 15
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
@@ -483,6 +515,24 @@ class StageThree(HubbleStage):
         
         extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
+    
+    def _on_marker_update(self, old, new):
+        if not self.trigger_marker_update_cb:
+            return
+        markers = self.stage_state.markers
+        advancing = markers.index(new) > markers.index(old)
+        if advancing and new == "tre_dat2":
+            layer_viewer = self.get_viewer("layer_viewer")
+            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
+        if advancing and new == "tre_lin1":
+            layer_viewer = self.get_viewer("layer_viewer")
+            class_layer = layer_viewer.layers[-1]
+            class_layer.state.visible = False            
+    
+    def _on_class_layer_toggled(self, used):
+        self.stage_state.class_layer_toggled = used 
+        if(self.stage_state.class_layer_toggled == 1):
+           self.stage_state.move_marker_forward(self.stage_state.marker)             
 
     @property
     def all_viewers(self):
@@ -530,3 +580,7 @@ class StageThree(HubbleStage):
 
     def table_selected_color(self, dark):
         return "colors.lightBlue.darken4"
+
+    def _update_image_location(self, using_voila):
+        prepend = "voila/files/" if using_voila else ""
+        self.stage_state.image_location = prepend + "data/images/stage_three"
