@@ -560,6 +560,7 @@ class StageThree(HubbleStage):
     def _update_viewer_style(self, dark):
         viewers = ['fit_viewer',
                    'layer_viewer',
+                   'hubble_race_viewer',
                    'comparison_viewer',
                    'morphology_viewer',
                    'prodata_viewer',
@@ -569,6 +570,7 @@ class StageThree(HubbleStage):
                    ]
 
         viewer_type = ["scatter",
+                       "scatter",
                        "scatter",
                        "scatter",
                        "scatter",
