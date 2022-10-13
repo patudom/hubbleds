@@ -47,6 +47,7 @@ class IntroSlideshow(v.VuetifyTemplate):
             'c-exploration-tool2': exploration_tool2
         }
         
+        # Initialize at M31. (The next/back buttons do this, but do it here too, in case student navigates with slideshow dots.)
         self.vue_go_to_location_tool2({
                                 "ra": 10.63,
                                 "dec": 41.27,

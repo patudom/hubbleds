@@ -380,13 +380,6 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
-                                ra: 83.63,
-                                dec: 22.014,
-                                fov: 350, // optional, in arcseconds, default is 90
-                                instant: false, // also optional, false by default
-                                target: 'M1' // name of object
-                              })"
                             :disabled=true
                             color="info"
                             width="100%"
@@ -401,13 +394,6 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
-                                ra: 250.4,
-                                dec: 36.46,
-                                fov: 700, // optional, in arcseconds, default is 90
-                                instant: false, // also optional, false by default
-                                target: 'M13' // name of object
-                              })"
                             :disabled=true
                             color="info"
                             width="100%"
@@ -443,13 +429,6 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
-                                ra: 83.82,
-                                dec: -5.39,
-                                fov:7500, // optional, in arcseconds, default is 90
-                                instant: false, // also optional, false by default
-                                target: 'M42' // name of object
-                              })"
                             :disabled=true
                             color="info"
                             width="100%"
@@ -483,13 +462,6 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
-                                ra: 148.97,
-                                dec: 69.68,
-                                fov: 400, // optional, in arcseconds, default is 90
-                                instant: false, // also optional, false by default
-                                target: 'M82' // name of object
-                              })"
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -562,7 +534,22 @@
         class="black--text"
         color="accent"
         depressed
-        @click="step--"
+        @click="() => {
+          step--;
+          if(step==3) go_to_location_tool1({ // reset viewer to MW
+                                ra: 266.64, // default MW coords
+                                dec: -28.39,
+                                fov: 216000, // 60 degrees
+                                instant: true, // also optional, false by default
+                              })
+          if(step==4) go_to_location_tool2({ // Set to M31 with button pressed
+                                ra: 10.63,
+                                dec: 41.27,
+                                fov: 6000, // optional, in arcseconds, default is 90
+                                instant: true, // also optional, false by default
+                                target: 'M31' // name of object
+                              })
+          }"
       >
         back
       </v-btn>
@@ -599,7 +586,22 @@
         class="black--text"
         color="accent"
         depressed
-        @click="step++;"
+        @click="() => {
+          step++;
+          if(step==3) go_to_location_tool1({ // reset viewer to MW
+                                ra: 266.64, // default MW coords
+                                dec: -28.39,
+                                fov: 216000, // 60 degrees
+                                instant: true, // also optional, false by default
+                              })
+          if(step==4) go_to_location_tool2({ // Go to M31 with button pressed
+                                ra: 10.63,
+                                dec: 41.27,
+                                fov: 6000, // optional, in arcseconds, default is 90
+                                instant: true, // also optional, false by default
+                                target: 'M31' // name of object
+                              })
+          }"
       >
         next
       </v-btn>
