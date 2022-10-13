@@ -22,4 +22,8 @@
   color: black !important;
 }
 
+.JaxEquation .MathJax {
+  margin: 16px auto !important;
+}
+
 </style>
