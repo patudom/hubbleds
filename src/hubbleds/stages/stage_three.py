@@ -275,6 +275,8 @@ class StageThree(HubbleStage):
         hubble_race_viewer.add_data(hubble_race_data)
         hubble_race_viewer.state.x_att = hubble_race_data.id['distance (km)']
         hubble_race_viewer.state.y_att = hubble_race_data.id['velocity (km/hr)']
+        hubble_race_viewer.axis_y.tick_values  = asarray([4,6,8,10])
+        hubble_race_viewer._update_appearance_from_settings()
         hubble_slideshow = HubbleExp(self.stage_state, [self.viewers["hubble_race_viewer"],self.viewers["layer_viewer"]])
         
         
@@ -560,6 +562,7 @@ class StageThree(HubbleStage):
     def _update_viewer_style(self, dark):
         viewers = ['fit_viewer',
                    'layer_viewer',
+                   'hubble_race_viewer',
                    'comparison_viewer',
                    'morphology_viewer',
                    'prodata_viewer',
@@ -569,6 +572,7 @@ class StageThree(HubbleStage):
                    ]
 
         viewer_type = ["scatter",
+                       "scatter",
                        "scatter",
                        "scatter",
                        "scatter",
