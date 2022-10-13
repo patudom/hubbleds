@@ -11,3 +11,15 @@
     </v-row>
   </v-container>
 </template>
+
+<style>
+
+.theme--dark .MathJax {
+  color: white !important;
+}
+
+.theme--light .MathJax {
+  color: black !important;
+}
+
+</style>
