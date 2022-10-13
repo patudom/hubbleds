@@ -1,7 +1,7 @@
 from cosmicds.phases import Stage
 from cosmicds.registries import register_stage
 from cosmicds.utils import load_template
-from echo import CallbackProperty
+from echo import add_callback, CallbackProperty 
 from glue.core.state_objects import State
 from traitlets import default
 
@@ -37,12 +37,15 @@ class StageTwoIntro(Stage):
         super().__init__(*args, **kwargs)
 
         self.stage_state = StageState()
-        two_intro_slideshow = TwoIntroSlideShow(self.stage_state,
+        two_intro_slideshow = TwoIntroSlideShow(self.story_state,
                                                 self.app_state)
         self.add_component(two_intro_slideshow, label='c-two-intro-slideshow')
         two_intro_slideshow.observe(self._on_slideshow_complete,
                                     names=['two_intro_complete'])
         self.stage_state.image_location = "data/images/stage_two_intro"
+
+        add_callback(self.story_state, 'step_index',
+                self._on_step_index_update)
 
     @property
     def slideshow(self):
@@ -55,3 +58,12 @@ class StageTwoIntro(Stage):
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.slideshow.two_intro_complete = False
+
+    def _on_step_index_update(self, index):
+        # Change the marker without firing the associated stage callback
+        # We can't just use ignore_callback, since other stuff (i.e. the frontend)
+        # may depend on marker callbacks
+        self.trigger_marker_update_cb = False
+        index = min(index, len(self.stage_state.step_markers) - 1)
+        self.stage_state.marker = self.stage_state.step_markers[index]
+        self.trigger_marker_update_cb = True
