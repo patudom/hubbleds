@@ -39,7 +39,7 @@
           color="accent"
           elevation="2"
           @click="
-            state.marker = 'cho_row1'
+            state.marker = 'cho_row1_2'
           "
         >
           next

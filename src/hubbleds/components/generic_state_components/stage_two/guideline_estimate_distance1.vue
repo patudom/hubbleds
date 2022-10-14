@@ -2,7 +2,7 @@
   <scaffold-alert
     header-text="Estimate Distance"
     @back="
-      state.marker = 'rep_rem1';
+      state.marker = 'rep_rem1_2';
     "
     @next="
       state.marker = 'est_dis2';

@@ -44,13 +44,13 @@ class StageState(CDSState):
 
     markers = CallbackProperty([
         'ang_siz1',
-        'cho_row1',
+        'cho_row1_2',
         'ang_siz2',
         'ang_siz3',
         'ang_siz4',
         'ang_siz5',
         'ang_siz6',
-        'rep_rem1',
+        'rep_rem1_2',
         'est_dis1',
         'est_dis2',
         'cho_row2',
@@ -73,13 +73,13 @@ class StageState(CDSState):
         'ang_siz4',
         'ang_siz5',
         'ang_siz6',
-        'rep_rem1',
+        'rep_rem1_2',
         'est_dis1',
         'est_dis2',
     ])
 
     table_highlights = CallbackProperty([
-        'cho_row1',
+        'cho_row1_2',
         'cho_row2',
         'est_dis3',
         'est_dis4',
@@ -250,7 +250,7 @@ class StageTwo(HubbleStage):
             self.story_state.step_complete = True
             self.story_state.step_index = self.stage_state.step_markers.index(
                 new)
-        if advancing and (new == "cho_row1" or new == "cho_row2"):
+        if advancing and (new == "cho_row1_2" or new == "cho_row2"):
             self.distance_table.selected = []
             self.distance_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, instant=True)
@@ -284,8 +284,9 @@ class StageTwo(HubbleStage):
         self.distance_tool.measuring_allowed = bool(galaxy)
         self.stage_state.meas_theta = data["angular_size"][index]
 
-        if self.stage_state.marker == 'cho_row1' or self.stage_state.marker == 'cho_row2':
+        if self.stage_state.marker == 'cho_row1_2' or self.stage_state.marker == 'cho_row2':
             self.stage_state.move_marker_forward(self.stage_state.marker)
+            print("Advancing Stage 2 marker:", self.stage_state.marker)
             self.stage_state.galaxy_selected = True
 
     def _angular_size_update(self, change):

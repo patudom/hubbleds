@@ -2,7 +2,7 @@
   <scaffold-alert
     header-text="Angular Size Measurement"
     @back="
-      state.marker = 'cho_row1';
+      state.marker = 'cho_row1_2';
     "
     @next="() => { state.show_ruler = true; state.marker = 'ang_siz3'; console.log(state.show_ruler) }"
   >

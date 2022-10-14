@@ -41,7 +41,7 @@
           v-if="stage_state.marker == 'ang_siz6'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-repeat-remaining-galaxies
-          v-if="stage_state.marker == 'rep_rem1'"
+          v-if="stage_state.marker == 'rep_rem1_2'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-estimate-distance1
           v-if="stage_state.marker == 'est_dis1'"
@@ -91,7 +91,7 @@
         lg="4"
       >
         <c-guideline-choose-row1
-          v-if="stage_state.marker == 'cho_row1'"
+          v-if="stage_state.marker == 'cho_row1_2'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-choose-row2
           v-if="stage_state.marker == 'cho_row2'"
