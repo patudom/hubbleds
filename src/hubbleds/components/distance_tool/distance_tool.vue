@@ -457,18 +457,18 @@ export default {
 .wwt-widget .p-Widget, .wwt-widget iframe {
   height: 400px !important;
   width: 100% !important;
-  z-index: 15;
+  z-index: 3;
 }
 
 .distance-canvas {
   background: transparent;
-  z-index: 20;
+  z-index: 4;
   cursor: crosshair;
 }
 
 .fov-canvas {
   background: transparent;
-  z-index: 30;
+  z-index: 5;
   pointer-events: none;
 }
 

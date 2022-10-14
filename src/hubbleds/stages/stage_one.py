@@ -21,7 +21,7 @@ from ..data.styles import load_style
 from ..data_management import SDSS_DATA_LABEL, SPECTRUM_DATA_LABEL, \
     STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
-from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, MG_REST_LAMBDA
+from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, MG_REST_LAMBDA
 from ..viewers import SpectrumView
 
 log = logging.getLogger()
@@ -41,7 +41,7 @@ class StageState(CDSState):
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
-    image_location = CallbackProperty()
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_one_spectrum")
     lambda_rest = CallbackProperty(0)
     lambda_obs = CallbackProperty(0)
     element = CallbackProperty("")
@@ -156,11 +156,6 @@ class StageOne(HubbleStage):
         self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
 
-        self.stage_state.image_location = join("data", "images",
-                                               "stage_one_spectrum")
-        add_callback(self.app_state, 'using_voila',
-                     self._update_image_location)
-
         # Set up any Data-based values
         student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         self.stage_state.gals_total = int(student_measurements.size)
@@ -271,8 +266,7 @@ class StageOne(HubbleStage):
         ]
         for comp in doppler_components:
             label = f"c-{comp}".replace("_", "-")
-            component = DopplerCalc(comp + ext, path, self.stage_state,
-                                    self.story_state)
+            component = DopplerCalc(comp + ext, path, self.stage_state, self.story_state)
             self.add_component(component, label=label)
 
         # execute add_student_velocity when student_vel_calc in c-doppler-calc-5-slideshow is updated.

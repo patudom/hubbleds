@@ -405,7 +405,7 @@
                   <v-img
                     class="mx-a"
                     contain
-                    :src="`${state.image_location}/galaxies A B boxed - Harry may update with nicer boxes.png`"
+                    :src="`${state.image_location}/galaxies_a_b_boxed.png`"
                   ></v-img>
                 </v-col>
             </v-row> 
@@ -529,7 +529,7 @@
                   <v-img
                     class="mx-a"
                     contain
-                    :src="`${state.image_location}/galaxies A B boxed - Harry may update with nicer boxes.png`"
+                    :src="`${state.image_location}/galaxies_a_b_boxed.png`"
                   ></v-img>
                 </div>
               </v-col>
