@@ -29,6 +29,9 @@ class LayerToggleTool(Tool):
         if len(self.viewer.layers) > 0:
             self.layer_to_toggle.visible = not self.layer_to_toggle.visible
         self.class_layer_toggled += 1
+        
+        if self.layer_to_toggle.visible:
+            self.viewer.state.reset_limits()
     
     def set_layer_to_toggle(self, layer = None):
         if layer is not None:
