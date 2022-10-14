@@ -26,9 +26,6 @@
         <c-guideline-explore-data
           v-if="stage_state.marker == 'exp_dat1'"
           v-intersect.once="scrollIntoView" />
-        <v-btn
-          block
-        >PLACEHOLDER 1 {{ stage_state.marker }}</v-btn>
       </v-col>
       <v-col
         cols="12"
@@ -112,9 +109,6 @@
         <c-guideline-shortcomings-reflect
           v-if="stage_state.marker == 'sho_ref1'"
           v-intersect.once="scrollIntoView" />
-        <v-btn
-          block
-        >PLACEHOLDER 2 {{ stage_state.marker }}</v-btn>
       </v-col>
       <v-col
         cols="12"
