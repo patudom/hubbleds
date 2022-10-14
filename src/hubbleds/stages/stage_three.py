@@ -2,7 +2,7 @@ from functools import partial
 from os.path import join
 from pathlib import Path
 
-from numpy import asarray
+from numpy import asarray, histogram
 from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
@@ -333,8 +333,6 @@ class StageThree(HubbleStage):
 
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
-        students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
-        classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
 
         # Set up the listener to sync the histogram <--> scatter viewers
 
@@ -393,39 +391,11 @@ class StageThree(HubbleStage):
         # load all the initial styles
         self._update_viewer_style(dark=self.app_state.dark_mode)
 
-        histogram_viewers = [class_distr_viewer, all_distr_viewer,
-                             sandbox_distr_viewer]
-        for viewer in histogram_viewers:
-            label = 'Count' if viewer == class_distr_viewer else 'Proportion'
-            viewer.figure.axes[1].label = label
-            if viewer != all_distr_viewer:
-                viewer.add_data(class_summ_data)
-                layer = viewer.layers[-1]
-                layer.state.color = 'red'
-                layer.state.alpha = 0.5
-            if viewer != class_distr_viewer:
-                viewer.add_data(students_summary_data)
-                layer = viewer.layers[-1]
-                layer.state.color = 'blue'
-                layer.state.alpha = 0.5
-                viewer.add_data(classes_summary_data)
-                layer = viewer.layers[-1]
-                layer.state.color = '#f0c470'
-                layer.state.alpha = 0.5
-                viewer.state.normalize = True
-                viewer.state.y_min = 0
-                viewer.state.y_max = 1
-                viewer.state.hist_n_bin = 20
-
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
         velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer, layer_viewer]
         for viewer in velocity_viewers:
             viewer.figure.axes[1].label_offset = "5em"
-
-        class_distr_viewer.state.x_att = class_summ_data.id['age']
-        all_distr_viewer.state.x_att = students_summary_data.id['age']
-        sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
         
 
         # Just for accessibility while testing
@@ -547,8 +517,41 @@ class StageThree(HubbleStage):
         comparison_linefit.activate()
         comparison_toolbar.set_tool_enabled(linefit_id, False)
 
+    def _setup_histogram_layers(self):
+        class_distr_viewer = self.get_viewer("class_distr_viewer")
+        all_distr_viewer = self.get_viewer("all_distr_viewer")
+        sandbox_distr_viewer = self.get_viewer("sandbox_distr_viewer")
+        class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
+        students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
+        classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
+        histogram_viewers = [class_distr_viewer, all_distr_viewer, sandbox_distr_viewer]
+        for viewer in histogram_viewers:
+            label = 'Count' if viewer == class_distr_viewer else 'Proportion'
+            viewer.figure.axes[1].label = label
+            if viewer != all_distr_viewer:
+                viewer.add_data(class_summ_data)
+                layer = viewer.layers[-1]
+                layer.state.color = 'red'
+                layer.state.alpha = 0.5
+            if viewer != class_distr_viewer:
+                viewer.add_data(students_summary_data)
+                layer = viewer.layers[-1]
+                layer.state.color = 'blue'
+                layer.state.alpha = 0.5
+                viewer.add_data(classes_summary_data)
+                layer = viewer.layers[-1]
+                layer.state.color = '#f0c470'
+                layer.state.alpha = 0.5
+                viewer.state.normalize = True
+                viewer.state.y_min = 0
+                viewer.state.y_max = 1
+                viewer.state.hist_n_bin = 20
 
-    def _setup_morphology_layers(self):
+        class_distr_viewer.state.x_att = class_summ_data.id['age']
+        all_distr_viewer.state.x_att = students_summary_data.id['age']
+        sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
+
+    def _setup_morphology_subsets(self):
         # Do some stuff with the galaxy data
         type_field = 'type'
         morphology_viewer = self.get_viewer("morphology_viewer")
@@ -577,7 +580,8 @@ class StageThree(HubbleStage):
 
     def _deferred_setup(self):
         self._setup_scatter_layers()
-        self._setup_morphology_layers()
+        self._setup_histogram_layers()
+        self._setup_morphology_subsets()
 
     @property
     def all_viewers(self):
