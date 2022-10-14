@@ -8,7 +8,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty, add_callback
+from echo import CallbackProperty, add_callback, remove_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
 from hubbleds.components.id_slider import IDSlider
@@ -475,22 +475,6 @@ class StageThree(HubbleStage):
         all_distr_viewer.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
 
-        # Do some stuff with the galaxy data
-        type_field = 'type'
-        elliptical_subset = all_data.new_subset(all_data.id[type_field] == 'E',
-                                                label='Elliptical',
-                                                color='orange')
-        spiral_subset = all_data.new_subset(all_data.id[type_field] == 'Sp',
-                                            label='Spiral', color='green')
-        irregular_subset = all_data.new_subset(all_data.id[type_field] == 'Ir',
-                                               label='Irregular', color='red')
-        morphology_subsets = [elliptical_subset, spiral_subset,
-                              irregular_subset]
-        for subset in morphology_subsets:
-            morphology_viewer.add_subset(subset)
-        morphology_viewer.state.x_att = all_data.id['distance']
-        morphology_viewer.state.y_att = all_data.id['velocity']
-
         # In the comparison viewer, we only want to see the line for the student slider subset
         linefit_id = "hubble:linefit"
         comparison_toolbar = comparison_viewer.toolbar
@@ -534,6 +518,9 @@ class StageThree(HubbleStage):
         
         extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
+
+        # We defer some of the setup for later, to make loading faster
+        add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
     
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -551,7 +538,37 @@ class StageThree(HubbleStage):
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
         if(self.stage_state.class_layer_toggled == 1):
-           self.stage_state.move_marker_forward(self.stage_state.marker)             
+           self.stage_state.move_marker_forward(self.stage_state.marker)
+
+    def _setup_morphology_viewer(self):
+        # Do some stuff with the galaxy data
+        type_field = 'type'
+        morphology_viewer = self.get_viewer("morphology_viewer")
+        all_data = self.get_data(ALL_DATA_LABEL)
+        elliptical_subset = all_data.new_subset(all_data.id[type_field] == 'E',
+                                                label='Elliptical',
+                                                color='orange')
+        spiral_subset = all_data.new_subset(all_data.id[type_field] == 'Sp',
+                                            label='Spiral', color='green')
+        irregular_subset = all_data.new_subset(all_data.id[type_field] == 'Ir',
+                                               label='Irregular', color='red')
+        morphology_subsets = [elliptical_subset, spiral_subset,
+                              irregular_subset]
+        for subset in morphology_subsets:
+            morphology_viewer.add_subset(subset)
+        morphology_viewer.state.x_att = all_data.id['distance']
+        morphology_viewer.state.y_att = all_data.id['velocity']
+
+    def _on_stage_index_changed(self, index):
+        if index > 0:
+            self._deferred_setup()
+
+            # Remove this callback once we're done
+            remove_callback(self.stage_state, self._on_stage_index_changed)
+
+    def _deferred_setup(self):
+        self._setup_morphology_viewer()
+
 
     @property
     def all_viewers(self):
