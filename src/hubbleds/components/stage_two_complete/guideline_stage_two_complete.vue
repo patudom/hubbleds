@@ -42,6 +42,20 @@
         </v-btn>
       </v-col>
       <v-spacer></v-spacer>
+      <v-col
+        class="shrink"
+      >
+        <v-btn
+          class="black--text"
+          color="accent"
+          elevation="2"
+          @click="
+          stage_two_complete = true;
+          "
+        >
+          next
+        </v-btn>
+      </v-col>
     </v-row>
   </v-alert>
 </template>

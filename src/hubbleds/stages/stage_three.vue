@@ -134,6 +134,17 @@
         />  
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-card
+          color="error"
+        >
+          <v-card-text>
+            NOTE: Graphs that appear below this card are still a work in progress. When this stage is finished, students will not see the graphs below until they reach the relevant part in the sequencing.
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
     <v-row
       class="d-flex align-stretch"
     >
