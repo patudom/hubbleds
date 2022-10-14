@@ -12,7 +12,7 @@ from cosmicds.utils import load_template
 from echo import CallbackProperty, add_callback, ignore_callback
 from traitlets import default, Bool
 
-from ..components import DistanceSidebar, DistanceTool, DistanceCalc
+from ..components import DistanceSidebar, DistanceTool, DistanceCalc, StageTwoComplete
 from ..components.angsize_dosdonts_slideshow import DosDonts_SlideShow
 from ..data_management import STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
@@ -140,10 +140,18 @@ class StageTwo(HubbleStage):
         dosdonts_slideshow = DosDonts_SlideShow(self.stage_state)
         self.add_component(dosdonts_slideshow, label='c-dosdonts-slideshow')
 
+        two_complete = StageTwoComplete(self.stage_state)
+        self.add_component(two_complete, label='c-guideline-stage-two-complete')
+
+        two_complete.observe(self._on_stage_complete,
+                                    names=['stage_two_complete'])
+
         self.show_team_interface = self.app_state.show_team_interface
 
         self.add_component(DistanceTool(self.stage_state),
                            label="c-distance-tool")
+
+        
 
         add_distances_tool = \
             dict(id="update-distances",
@@ -199,8 +207,7 @@ class StageTwo(HubbleStage):
             "guideline_repeat_remaining_galaxies",
             "guideline_estimate_distance1",
             "guideline_choose_row2",
-            "guideline_fill_remaining_galaxies",
-            "guideline_stage_two_complete"
+            "guideline_fill_remaining_galaxies"
         ]
         ext = ".vue"
         for comp in state_components:
@@ -385,3 +392,15 @@ class StageTwo(HubbleStage):
     @property
     def distance_table(self):
         return self.get_widget("distance_table")
+
+    @property
+    def last_guideline(self):
+        return self.get_component('c-guideline-stage-two-complete')
+
+    def _on_stage_complete(self, change):
+        if change["new"]:
+            self.story_state.stage_index = 4
+
+            # We need to do this so that the stage will be moved forward every
+            # time the button is clicked, not just the first
+            self.last_guideline.stage_two_complete = False
