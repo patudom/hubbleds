@@ -13,6 +13,8 @@
           @click="() => {
             console.log('stage state:', stage_state);
             console.log('story state:', story_state);
+            console.log('stage 2 marker:', story_state.stages[3].state.marker)
+            console.log('stage 3 marker:', story_state.stages[4].state.marker)
             }"
         >
           State
