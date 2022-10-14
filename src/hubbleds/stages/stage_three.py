@@ -21,7 +21,8 @@ from ..components import TrendsData, HubbleExp
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
-    CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, STUDENT_DATA_LABEL
+    CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, STUDENT_DATA_LABEL, HUBBLE_1929_DATA_LABEL, \
+    HUBBLE_KEY_DATA_LABEL
 from ..histogram_listener import HistogramListener
 from ..stage import HubbleStage
 from ..viewers import HubbleFitView, \
@@ -211,7 +212,6 @@ class StageThree(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
-        all_data = self.get_data(ALL_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
 
         fit_table = Table(self.session,
@@ -229,20 +229,18 @@ class StageThree(HubbleStage):
         self.add_widget(fit_table, label="fit_table")
 
         # Set up links between various data sets
-        hubble_dc_name = "Hubble 1929-Table 1"
-        hstkp_dc_name = "HSTkey2001"
 
         dist_attr = "distance"
         vel_attr = "velocity"
         for field in [dist_attr, vel_attr]:
             self.add_link(CLASS_DATA_LABEL, field, ALL_DATA_LABEL, field)
-        self.add_link(hubble_dc_name, 'Distance (Mpc)', hstkp_dc_name,
+        self.add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL,
                       'Distance (Mpc)')
-        self.add_link(hubble_dc_name, 'Tweaked Velocity (km/s)', hstkp_dc_name,
+        self.add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL,
                       'Velocity (km/s)')
-        self.add_link(hstkp_dc_name, 'Distance (Mpc)', STUDENT_DATA_LABEL,
+        self.add_link(HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)', STUDENT_DATA_LABEL,
                       'distance')
-        self.add_link(hstkp_dc_name, 'Velocity (km/s)', STUDENT_DATA_LABEL,
+        self.add_link(HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)', STUDENT_DATA_LABEL,
                       'velocity')
 
         # Create viewers
@@ -337,8 +335,6 @@ class StageThree(HubbleStage):
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
-        hubble1929 = self.get_data(hubble_dc_name)
-        hstkp = self.get_data(hstkp_dc_name)
 
         # Set up the listener to sync the histogram <--> scatter viewers
 
@@ -358,11 +354,11 @@ class StageThree(HubbleStage):
 
         # Create the student slider
         student_slider_subset_label = "student_slider_subset"
-        student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
+        self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
         student_slider = IDSlider(class_summ_data, "student_id", "age")
         self.add_component(student_slider, "c-student-slider")
         def student_slider_change(id):
-            student_slider_subset.subset_state = class_meas_data['student_id'] == id
+            self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
         student_slider.on_id_change(student_slider_change)
 
         def update_student_slider(msg):
@@ -393,50 +389,6 @@ class StageThree(HubbleStage):
             return x.label == histogram_modify_label and x.data != self.histogram_listener.modify_data
 
         comparison_viewer.ignore(comparison_ignorer)
-
-        for viewer in [fit_viewer, comparison_viewer, prodata_viewer, layer_viewer]:
-            viewer.add_data(student_data)
-            # viewer.layers[-1].state.visible = False
-            viewer.state.x_att = student_data.id[dist_attr]
-            viewer.state.y_att = student_data.id[vel_attr]
-        
-        # add class measurement data and hide by default
-        layer_viewer.add_data(class_meas_data)
-        layer_viewer.state.x_att = class_meas_data.id[dist_attr]
-        layer_viewer.state.y_att = class_meas_data.id[vel_attr]
-        layer_viewer.state.reset_limits()
-        class_layer = layer_viewer.layers[-1]
-        class_layer.state.zorder=1
-        class_layer.state.color="blue"
-        class_layer.state.visible = False
-        toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
-        toggle_tool.set_layer_to_toggle(class_layer)
-        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
-
-        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
-
-        student_layer = comparison_viewer.layers[-1]
-        student_layer.state.color = 'orange'
-        student_layer.state.zorder = 3
-        student_layer.state.size = 8
-        comparison_viewer.add_data(class_meas_data)
-        class_layer = comparison_viewer.layers[-1]
-        class_layer.state.zorder = 2
-        class_layer.state.color = 'red'
-        comparison_viewer.add_subset(student_slider_subset)
-        # comparison_viewer.add_data(all_data)
-        # all_layer = comparison_viewer.layers[-1]
-        # all_layer.state.zorder = 1
-        # all_layer.state.visible = False
-        comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
-        comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
-        comparison_viewer.state.reset_limits()
-
-        prodata_viewer.add_data(student_data)
-        prodata_viewer.state.x_att = student_data.id[dist_attr]
-        prodata_viewer.state.y_att = student_data.id[vel_attr]
-        prodata_viewer.add_data(hstkp)
-        prodata_viewer.add_data(hubble1929)
 
         # load all the initial styles
         self._update_viewer_style(dark=self.app_state.dark_mode)
@@ -474,14 +426,6 @@ class StageThree(HubbleStage):
         class_distr_viewer.state.x_att = class_summ_data.id['age']
         all_distr_viewer.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
-
-        # In the comparison viewer, we only want to see the line for the student slider subset
-        linefit_id = "hubble:linefit"
-        comparison_toolbar = comparison_viewer.toolbar
-        comparison_linefit = comparison_toolbar.tools[linefit_id]
-        comparison_linefit.add_ignore_condition(lambda layer: layer.layer.label != student_slider_subset_label)
-        comparison_linefit.activate()
-        comparison_toolbar.set_tool_enabled(linefit_id, False)
         
 
         # Just for accessibility while testing
@@ -540,7 +484,71 @@ class StageThree(HubbleStage):
         if(self.stage_state.class_layer_toggled == 1):
            self.stage_state.move_marker_forward(self.stage_state.marker)
 
-    def _setup_morphology_viewer(self):
+    def _setup_scatter_layers(self):
+        dist_attr = "distance"
+        vel_attr = "velocity"
+        hubble1929 = self.get_data(HUBBLE_1929_DATA_LABEL)
+        hstkp = self.get_data(HUBBLE_KEY_DATA_LABEL)
+        fit_viewer = self.get_viewer("fit_viewer")
+        comparison_viewer = self.get_viewer("comparison_viewer")
+        prodata_viewer = self.get_viewer("prodata_viewer")
+        layer_viewer = self.get_viewer("layer_viewer")
+        student_data = self.get_data(STUDENT_DATA_LABEL)
+        class_meas_data = self.get_data(CLASS_DATA_LABEL)
+        for viewer in [fit_viewer, comparison_viewer, prodata_viewer, layer_viewer]:
+            viewer.add_data(student_data)
+            # viewer.layers[-1].state.visible = False
+            viewer.state.x_att = student_data.id[dist_attr]
+            viewer.state.y_att = student_data.id[vel_attr]
+        
+        # add class measurement data and hide by default
+        layer_viewer.add_data(class_meas_data)
+        layer_viewer.state.x_att = class_meas_data.id[dist_attr]
+        layer_viewer.state.y_att = class_meas_data.id[vel_attr]
+        layer_viewer.state.reset_limits()
+        class_layer = layer_viewer.layers[-1]
+        class_layer.state.zorder=1
+        class_layer.state.color="blue"
+        class_layer.state.visible = False
+        toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
+        toggle_tool.set_layer_to_toggle(class_layer)
+        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
+
+        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
+
+        student_layer = comparison_viewer.layers[-1]
+        student_layer.state.color = 'orange'
+        student_layer.state.zorder = 3
+        student_layer.state.size = 8
+        comparison_viewer.add_data(class_meas_data)
+        class_layer = comparison_viewer.layers[-1]
+        class_layer.state.zorder = 2
+        class_layer.state.color = 'red'
+        comparison_viewer.add_subset(self.student_slider_subset)
+        # comparison_viewer.add_data(all_data)
+        # all_layer = comparison_viewer.layers[-1]
+        # all_layer.state.zorder = 1
+        # all_layer.state.visible = False
+        comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
+        comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
+        comparison_viewer.state.reset_limits()
+
+        prodata_viewer.add_data(student_data)
+        prodata_viewer.state.x_att = student_data.id[dist_attr]
+        prodata_viewer.state.y_att = student_data.id[vel_attr]
+        prodata_viewer.add_data(hstkp)
+        prodata_viewer.add_data(hubble1929)
+
+        # In the comparison viewer, we only want to see the line for the student slider subset
+        linefit_id = "hubble:linefit"
+        comparison_toolbar = comparison_viewer.toolbar
+        comparison_linefit = comparison_toolbar.tools[linefit_id]
+        comparison_linefit.add_ignore_condition(lambda layer: layer.layer.label != self.student_slider_subset.label)
+        comparison_linefit.activate()
+        comparison_toolbar.set_tool_enabled(linefit_id, False)
+
+
+    def _setup_morphology_layers(self):
         # Do some stuff with the galaxy data
         type_field = 'type'
         morphology_viewer = self.get_viewer("morphology_viewer")
@@ -560,15 +568,16 @@ class StageThree(HubbleStage):
         morphology_viewer.state.y_att = all_data.id['velocity']
 
     def _on_stage_index_changed(self, index):
+        print(f"Index: {index}")
         if index > 0:
             self._deferred_setup()
 
             # Remove this callback once we're done
-            remove_callback(self.stage_state, self._on_stage_index_changed)
+            remove_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
 
     def _deferred_setup(self):
-        self._setup_morphology_viewer()
-
+        self._setup_scatter_layers()
+        self._setup_morphology_layers()
 
     @property
     def all_viewers(self):
