@@ -44,9 +44,6 @@ class StageTwoIntro(Stage):
         two_intro_slideshow.observe(self._on_slideshow_complete,
                                     names=['two_intro_complete'])
 
-        # add_callback(self.story_state, 'step_index',
-        #         self._on_step_index_update)
-
     @property
     def slideshow(self):
         return self.get_component('c-two-intro-slideshow')
@@ -58,13 +55,3 @@ class StageTwoIntro(Stage):
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.slideshow.two_intro_complete = False
-
-    # this function is no longer called anywhere
-    def _on_step_index_update(self, index):
-        # Change the marker without firing the associated stage callback
-        # We can't just use ignore_callback, since other stuff (i.e. the frontend)
-        # may depend on marker callbacks
-        self.trigger_marker_update_cb = False
-        index = min(index, len(self.stage_state.step_markers) - 1)
-        self.stage_state.marker = self.stage_state.step_markers[index]
-        self.trigger_marker_update_cb = True
