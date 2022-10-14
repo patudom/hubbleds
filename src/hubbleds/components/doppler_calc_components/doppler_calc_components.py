@@ -29,8 +29,8 @@ class DopplerCalc(v.VuetifyTemplate):
     ]
     _default_title = "Doppler Calculation"
 
-    def __init__(self, filename, path, state, story_state, *args, **kwargs):
-        self.state = state
+    def __init__(self, filename, path, stage_state, story_state, *args, **kwargs):
+        self.state = stage_state
         self.story_state = story_state
         super().__init__(*args, **kwargs)
         self.template = load_template(filename, path)

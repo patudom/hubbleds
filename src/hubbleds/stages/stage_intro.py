@@ -6,10 +6,10 @@ from echo import CallbackProperty
 from traitlets import default
 
 from ..components.intro_slideshow import IntroSlideshow
-
+from ..utils import IMAGE_BASE_URL
 
 class StageState(CDSState):
-    image_location = CallbackProperty()
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_intro")
 
 
 @register_stage(story="hubbles_law", index=0, steps=[
@@ -41,7 +41,6 @@ class StageIntro(Stage):
         self.add_component(intro_slideshow, label='c-intro-slideshow')
         intro_slideshow.observe(self._on_slideshow_complete,
                                 names=['intro_complete'])
-        self.stage_state.image_location = "data/images"
 
     @property
     def slideshow(self):
