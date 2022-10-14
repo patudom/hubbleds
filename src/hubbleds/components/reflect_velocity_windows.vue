@@ -187,7 +187,7 @@
                       ]"
                       :feedbacks="[
                         'Actually, your evidence does not support this statement. Galaxies would not be moving in a universe that is static and unchanging.',
-                        'That\'s right.',
+                        'That\'s right. In a static, unchanging universe, galaxies would not be moving like yours are.',
                         'You <strong>can</strong> draw a conclusion about this statement based on your evidence. Consider this and try again: galaxies would not be moving in a universe that is static and unchanging. And you have already concluded that your observed galaxies are moving. So...'
                       ]"
                       :correct-answers="[1]"
