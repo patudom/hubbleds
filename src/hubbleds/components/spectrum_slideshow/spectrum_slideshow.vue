@@ -80,13 +80,8 @@
                         </v-card-text>
                       </v-card>
                       <p>
-                        Diffraction gratings and prisms &#8212; and raindrops, bubbles, and oil slicks &#8212; create spectra because they bend light of different colors by different amounts. See link for more details.
-                      </p>
-                      <p
-                        class="text-center grey--text"
-                      >
-                        [ Insert link as described above ]
-                      </p>         
+                        Diffraction gratings and prisms &#8212; and raindrops, bubbles, and oil slicks &#8212; create spectra because they bend light of different colors by different amounts.
+                      </p>     
                       <p>
                         The figure illustrates light passing through a diffraction grating (1) and a prism (2).
                       </p>

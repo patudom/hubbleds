@@ -41,8 +41,8 @@ class TwoIntroSlideShow(v.VuetifyTemplate):
     ]
     _default_title = "1920's Astronomy"
 
-    def __init__(self, story_state, app_state, *args, **kwargs):
-        self.state = story_state
+    def __init__(self, stage_state, app_state, *args, **kwargs):
+        self.state = stage_state
         self.show_team_interface = app_state.show_team_interface
         self.distance_const = DISTANCE_CONSTANT
         self.currentTitle = self._default_title

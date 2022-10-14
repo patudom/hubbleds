@@ -30,6 +30,7 @@ class StageState(CDSState):
     dos_donts_opened = CallbackProperty(False)
     make_measurement = CallbackProperty(False)
     angsizes_total = CallbackProperty(0)
+    distances_total = CallbackProperty(0)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -90,7 +91,7 @@ class StageState(CDSState):
     _NONSERIALIZED_PROPERTIES = [
         'markers', 'step_markers',
         'csv_highlights', 'table_highlights',
-        'image_location'
+        'distances_total', 'image_location'
     ]
 
     def __init__(self, *args, **kwargs):
@@ -346,6 +347,7 @@ class StageTwo(HubbleStage):
                                index)
         if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.
             self.enable_distance_tool(True)
+        self.get_distance_count()
 
     def update_distances(self, table, tool):
         data = table.glue_data
@@ -360,6 +362,7 @@ class StageTwo(HubbleStage):
                                        distance, index)
         self.story_state.update_student_data()
         table.update_tool(tool)
+        self.get_distance_count()
 
     def vue_add_distance_data_point(self, _args=None):
         self.stage_state.make_measurement = True
@@ -369,6 +372,11 @@ class StageTwo(HubbleStage):
             tool = self.distance_table.get_tool("update-distances")
             tool["disabled"] = False
             self.distance_table.update_tool(tool)
+    
+    def get_distance_count(self):
+        student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
+        distances = student_measurements["distance"]
+        self.stage_state.distances_total = distances[distances != None].size
 
     @property
     def distance_sidebar(self):

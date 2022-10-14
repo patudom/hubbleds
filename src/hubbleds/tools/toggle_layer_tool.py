@@ -38,6 +38,7 @@ class LayerToggleTool(Tool):
                 self.viewer.state.x_att = self.viewer.state.layers_data[self.layer_index].id[x_att]
                 self.viewer.state.y_att = self.viewer.state.layers_data[self.layer_index].id[y_att]
                 self.viewer.state.reset_limits()
+                self.viewer.state.reset_limits()
     
     def set_layer_to_toggle(self, layer = None):
         if layer is not None:

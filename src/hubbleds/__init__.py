@@ -8,7 +8,7 @@ from .viewers import *
 from .components import *
 
 
-STORY_PATHS['hubble'] = Path(__file__).parent / "Notebook.ipynb"
+STORY_PATHS['hubble'] = Path(__file__).parent / "HubbleDS.ipynb"
 
 # Register any custom Vue components
 comp_dir = Path(__file__).parent / "components"
