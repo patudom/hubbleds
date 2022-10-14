@@ -38,7 +38,7 @@ class StageTwoIntro(Stage):
         super().__init__(*args, **kwargs)
 
         self.stage_state = StageState()
-        two_intro_slideshow = TwoIntroSlideShow(self.story_state,
+        two_intro_slideshow = TwoIntroSlideShow(self.stage_state,
                                                 self.app_state)
         self.add_component(two_intro_slideshow, label='c-two-intro-slideshow')
         two_intro_slideshow.observe(self._on_slideshow_complete,

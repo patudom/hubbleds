@@ -11,7 +11,7 @@
       Select Five Galaxies
     </h3>
     <div
-      v-if="state.gals_total == 0 & !state.gal_selected"
+      v-if="state.gals_total == 0 && !state.gal_selected"
       class="mb-4"
     >
       <p>
@@ -22,7 +22,7 @@
       </p>
     </div>
     <div
-      v-if="state.gals_total < 5 & state.gal_selected"
+      v-if="state.gals_total < 5 && state.gal_selected"
     >
       <p>
         What do you think of this galaxy?
@@ -58,7 +58,7 @@
       </v-col>
       <v-spacer></v-spacer>
       <v-col
-        v-if="state.gals_total < 5"
+        v-if="state.gals_total < 5 && state.gals_total > 0"
         cols="6"
         class="shrink"
       >
@@ -66,6 +66,28 @@
           style="font-size: 16px;"
         >
           Select {{ 5 - state.gals_total }} <span v-if="state.gals_total > 0">more</span> <span v-if="state.gals_total < 4">galaxies</span><span v-if="state.gals_total == 4">galaxy</span>.
+        </div>
+      </v-col>
+      <v-col
+        v-if="state.gals_total == 0 && !state.gal_selected"
+        cols="6"
+        class="shrink"
+      >
+        <div
+          style="font-size: 16px;"
+        >
+          Click on any green dot.
+        </div>
+      </v-col>
+      <v-col
+        v-if="state.gals_total == 0 && state.gal_selected"
+        cols="6"
+        class="shrink"
+      >
+        <div
+          style="font-size: 16px;"
+        >
+          Click <v-icon>mdi-plus</v-icon> to add galaxy or <v-icon>mdi-cached</v-icon> to choose another
         </div>
       </v-col>
     </v-row>

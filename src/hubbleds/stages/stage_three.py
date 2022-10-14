@@ -402,6 +402,9 @@ class StageThree(HubbleStage):
         
         # add class measurement data and hide by default
         layer_viewer.add_data(class_meas_data)
+        layer_viewer.state.x_att = class_meas_data.id[dist_attr]
+        layer_viewer.state.y_att = class_meas_data.id[vel_attr]
+        layer_viewer.state.reset_limits()
         class_layer = layer_viewer.layers[-1]
         class_layer.state.zorder=1
         class_layer.state.color="blue"
@@ -460,7 +463,7 @@ class StageThree(HubbleStage):
                 viewer.state.normalize = True
                 viewer.state.y_min = 0
                 viewer.state.y_max = 1
-                #viewer.state.hist_n_bin = 15
+                viewer.state.hist_n_bin = 20
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
