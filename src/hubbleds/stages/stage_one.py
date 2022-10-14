@@ -336,6 +336,10 @@ class StageOne(HubbleStage):
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
 
     def _on_step_index_update(self, index):
+        # If we aren't on this stage, ignore
+        if self.story_state.stage_index != self.index:
+            return
+
         # Change the marker without firing the associated stage callback
         # We can't just use ignore_callback, since other stuff (i.e. the frontend)
         # may depend on marker callbacks
