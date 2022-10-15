@@ -15,13 +15,18 @@
       class="mb-4"
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
     >
+      <p class="mb-4">
+        You entered:
+      </p>
       <v-card
-        class="JaxEquation past_block pa-3"
+        class="JaxEquation pa-3"
+        color="info lighten-1"
+        elevation="0"
       >
         $$ D = \frac{ {{ Math.round(distance_const) }} }{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.meas_theta).toFixed(0) }} } }} $$
       </v-card>    
-      <p>
-        Dividing through gives you the estimated distance.
+      <p class="mt-4">
+        Dividing through gives you the estimated distance to your galaxy:
       </p>
       <div
         class="JaxEquation my-8"
@@ -149,7 +154,6 @@ mjx-mstyle {
   font-family: "Roboto", Arial, Helvetica, sans-serif;
   padding: 3px;
 }
-
 
 </style>
 
