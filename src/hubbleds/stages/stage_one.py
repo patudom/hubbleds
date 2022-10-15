@@ -9,7 +9,7 @@ from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import load_template, update_figure_css
+from cosmicds.utils import load_template, update_figure_css, extend_tool
 from echo import add_callback, ignore_callback, CallbackProperty
 from glue.core import Data
 from glue_jupyter.bqplot.scatter import BqplotScatterView
@@ -181,6 +181,14 @@ class StageOne(HubbleStage):
                  tooltip="Fill in velocities",
                  disabled=True,
                  activate=self.update_velocities)
+        
+        
+        add_info_tooltip = \
+            dict(id="tooltip",
+                    icon="mdi-information-outline",
+                    tooltip="This table shows the galaxy IDs of the galaxies <em>you</em> select above in the sky viewer. You can click on the galaxy ID to see the galaxy in the sky viewer.",
+                    disabled=False,
+                    activate= None)
         galaxy_table = Table(self.session,
                              data=self.get_data(STUDENT_MEASUREMENTS_LABEL),
                              glue_components=['name',
@@ -200,13 +208,13 @@ class StageOne(HubbleStage):
                                  self.app_state.dark_mode),
                              use_subset_group=False,
                              single_select=True,  # True for now
-                             tools=[add_velocities_tool])
+                             tools=[add_info_tooltip, add_velocities_tool])
 
         self.add_widget(galaxy_table, label="galaxy_table")
         galaxy_table.row_click_callback = self.on_galaxy_row_click
         galaxy_table.observe(
             self.galaxy_table_selected_change, names=["selected"])
-
+        
         # Set up components
         sdss_data = self.get_data(SDSS_DATA_LABEL)
         selected = self.get_data(STUDENT_MEASUREMENTS_LABEL).to_dataframe()
