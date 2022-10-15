@@ -140,20 +140,55 @@
                     <p>
                       To return to this data story, if we graph the runners’ velocities vs. distance, the graph would look like this.
                     </p>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    lg="7">
+                    <jupyter-widget :widget="hubble_race_viewer"/>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+          </v-window-item>
+
+          <v-window-item :value="3" class="no-transition">
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    lg="5"
+                    >
+                    <p>
+                      To return to this data story, if we graph the runners’ velocities vs. distance, the graph would look like this.
+                    </p>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    lg="7">
+                    <jupyter-widget :widget="hubble_race_viewer"/>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    lg="5"
+                    >
                     <p>
                       Doesn’t this look a lot like the trend in your class's graph for the galaxies?
                     </p>
                     <p>
                       As with the runners, you can use your galaxies’ velocity and distance data to calculate the time when all galaxies were in the same place — the <strong>age of the universe</strong>.
                     </p>
+                    <p>
+                      Let's learn how.
+                    </p>
                   </v-col>
                   <v-col
                     cols="12"
                     lg="7">
                     <jupyter-widget :widget="layer_viewer"/>
-                    <jupyter-widget :widget="hubble_race_viewer"/>
                   </v-col>
-
                 </v-row>
               </v-container>
             </v-card-text>
