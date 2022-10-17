@@ -17,7 +17,7 @@ from hubbleds.utils import IMAGE_BASE_URL
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..components import TrendsData, HubbleExp
+from ..components import TrendsData, HubbleExp, AgeCalc
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
@@ -44,6 +44,9 @@ class StageState(CDSState):
 
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three")
 
+    hypgal_distance = CallbackProperty(100)
+    hypgal_velocity = CallbackProperty(8000)
+
 
     markers = CallbackProperty([
         'exp_dat1',
@@ -60,6 +63,7 @@ class StageState(CDSState):
         'age_rac1',
         'age_uni2',
         'age_uni3',
+        'age_uni4',
         'you_age1',
         'sho_ref1',
     ])
@@ -304,8 +308,6 @@ class StageThree(HubbleStage):
             "guideline_age_universe",
             "guideline_hypothetical_galaxy",
             "guideline_age_race_equation",
-            "guideline_age_universe_equation",
-            "guideline_age_universe_calc",
             "guideline_your_age_estimate",
             "guideline_shortcomings_reflect",
         ]
@@ -330,6 +332,20 @@ class StageThree(HubbleStage):
             label = f"c-{comp}".replace("_", "-")
             component = TrendsData(comp + ext, path, self.stage_state)
             self.add_component(component, label=label)
+
+        # Set up age_calc components
+        age_calc_components_dir = str(Path(
+            __file__).parent.parent / "components" / "age_calc_components")
+        path = join(age_calc_components_dir, "")
+        age_calc_components = [
+            "guideline_age_universe_equation2",
+            "guideline_age_universe_estimate3",
+            "guideline_age_universe_estimate4",
+        ]
+        for comp in age_calc_components:
+            label = f"c-{comp}".replace("_", "-")
+            component = AgeCalc(comp + ext, path, self.stage_state)
+            self.add_component(component, label=label) 
 
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
