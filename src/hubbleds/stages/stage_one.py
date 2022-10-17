@@ -358,7 +358,7 @@ class StageOne(HubbleStage):
 
     def _on_galaxy_update(self, galaxy):
         if galaxy:
-            self.stage_state.load_spectrum_data(galaxy["name"], galaxy["type"])
+            self.story_state.load_spectrum_data(galaxy["name"], galaxy["type"])
             self.galaxy_table.selected = [galaxy]
 
     def _on_galaxy_selected(self, galaxy):
