@@ -170,10 +170,6 @@ class StageOne(HubbleStage):
         sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
         add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
 
-        for label in ['hub_const_viewer', 'hub_fit_viewer',
-                      'hub_comparison_viewer', 'hub_students_viewer',
-                      'hub_morphology_viewer', 'hub_prodata_viewer']:
-            self.add_viewer(BqplotScatterView, label=label)
 
         add_velocities_tool = \
             dict(id="update-velocities",
@@ -214,6 +210,7 @@ class StageOne(HubbleStage):
                                        selected_data=selected)
         self.add_component(selection_tool, label='c-selection-tool')
         selection_tool.on_galaxy_selected = self._on_galaxy_selected
+        selection_tool._on_reset_view = self._on_selection_viewer_reset
         selection_tool.observe(self._on_selection_tool_flagged,
                                names=['flagged'])
 
@@ -335,6 +332,10 @@ class StageOne(HubbleStage):
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
 
     def _on_step_index_update(self, index):
+        # If we aren't on this stage, ignore
+        if self.story_state.stage_index != self.index:
+            return
+
         # Change the marker without firing the associated stage callback
         # We can't just use ignore_callback, since other stuff (i.e. the frontend)
         # may depend on marker callbacks
@@ -470,6 +471,12 @@ class StageOne(HubbleStage):
         self.stage_state.lambda_rest = data["restwave"][index]
         self.stage_state.lambda_obs = data["measwave"][index]
         self.stage_state.sel_gal_index = index
+    
+    def _on_selection_viewer_reset(self) -> None:
+        """ clear selection from galaxy table"""
+        self.galaxy_table.selected = []
+        self.stage_state.sel_gal_index = None
+            
 
     def on_spectrum_click(self, event):
         specview = self.get_viewer("spectrum_viewer")

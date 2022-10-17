@@ -27,7 +27,7 @@ class StageIntro(Stage):
 
     @default('title')
     def _default_title(self):
-        return "Hubble's Law Intro"
+        return "Introduction"
 
     @default('subtitle')
     def _default_subtitle(self):

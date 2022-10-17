@@ -31,9 +31,6 @@
             >
               <v-col cols="6">
                 <p>
-                  Welcome to the Cosmic Data Story about Hubble's Law.
-                </p>
-                <p>
                   In this investigation, you will use real astronomical data to form answers to major questions about our universe:
                 </p>
                 <v-card
@@ -215,18 +212,20 @@
                           cols="12"
                           lg="6"
                         >
-                          <v-btn
+                          <v-btn 
                             @click="go_to_location_tool1({
                                 ra: 83.63,
                                 dec: 22.014,
                                 fov: 350, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M1' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M1'"
                           >
-                            M1
+                            M1 
                           </v-btn>
                         </v-col>
                         <v-col
@@ -238,11 +237,13 @@
                                 ra: 250.4,
                                 dec: 36.46,
                                 fov: 700, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M13' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M13'"
                           >
                             M13
                           </v-btn>
@@ -256,13 +257,15 @@
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M31' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M31'"
                           >
-                            M31
+                            M31 
                           </v-btn>
                         </v-col>
                         <v-col
@@ -274,11 +277,13 @@
                                 ra: 83.82,
                                 dec: -5.39,
                                 fov:7500, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M42' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M42'"
                           >
                             M42
                           </v-btn>
@@ -292,11 +297,13 @@
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M51' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M51'"
                           >
                             M51
                           </v-btn>
@@ -310,11 +317,13 @@
                                 ra: 148.97,
                                 dec: 69.68,
                                 fov: 400, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M82' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M82'"
                           >
                             M82
                           </v-btn>
@@ -368,15 +377,11 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
-                                ra: 83.63,
-                                dec: 22.014,
-                                fov: 350, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
-                              })"
+                            :disabled=true
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M1'"
                           >
                             M1
                           </v-btn>
@@ -386,15 +391,11 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
-                                ra: 250.4,
-                                dec: 36.46,
-                                fov: 700, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
-                              })"
+                            :disabled=true
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M13'"
                           >
                             M13
                           </v-btn>
@@ -408,11 +409,14 @@
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M31' // name of object
                               })"
+
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M31'"
                           >
                             M31
                           </v-btn>
@@ -422,12 +426,7 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
-                                ra: 83.82,
-                                dec: -5.39,
-                                fov:7500, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
-                              })"
+                            :disabled=true
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -444,11 +443,13 @@
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
+                                instant: false, // also optional, false by default
+                                target: 'M51' // name of object
                               })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :outlined="target === 'M51'"
                           >
                             M51
                           </v-btn>
@@ -458,15 +459,10 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
-                                ra: 148.97,
-                                dec: 69.68,
-                                fov: 400, // optional, in arcseconds, default is 90
-                                instant: false // also optional, false by default
-                              })"
                             color="info"
                             width="100%"
                             class="mx-2"
+                            :disabled=true
                           >
                             M82
                           </v-btn>
@@ -535,7 +531,22 @@
         class="black--text"
         color="accent"
         depressed
-        @click="step--"
+        @click="() => {
+          step--;
+          if(step==3) go_to_location_tool1({ // reset viewer to MW
+                                ra: 266.64, // default MW coords
+                                dec: -28.39,
+                                fov: 216000, // 60 degrees
+                                instant: true, // also optional, false by default
+                              })
+          if(step==4) go_to_location_tool2({ // Set to M31 with button pressed
+                                ra: 10.63,
+                                dec: 41.27,
+                                fov: 6000, // optional, in arcseconds, default is 90
+                                instant: true, // also optional, false by default
+                                target: 'M31' // name of object
+                              })
+          }"
       >
         back
       </v-btn>
@@ -572,7 +583,22 @@
         class="black--text"
         color="accent"
         depressed
-        @click="step++;"
+        @click="() => {
+          step++;
+          if(step==3) go_to_location_tool1({ // reset viewer to MW
+                                ra: 266.64, // default MW coords
+                                dec: -28.39,
+                                fov: 216000, // 60 degrees
+                                instant: true, // also optional, false by default
+                              })
+          if(step==4) go_to_location_tool2({ // Go to M31 with button pressed
+                                ra: 10.63,
+                                dec: 41.27,
+                                fov: 6000, // optional, in arcseconds, default is 90
+                                instant: true, // also optional, false by default
+                                target: 'M31' // name of object
+                              })
+          }"
       >
         next
       </v-btn>
@@ -620,12 +646,20 @@
 #exploration-tool, #exploration-tool2, #exploration-tool3 {
   height: 400px;
 }
+
+
 </style>
 
 
 <script>
 module.exports = {
-  props: ["continueText"],
+  props: ["continueText","target"],
+
+  watch: {
+    step(val) {
+      this.target = '';
+    }
+  }
 };
 </script>
 

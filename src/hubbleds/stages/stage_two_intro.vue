@@ -26,4 +26,9 @@
   margin: 16px auto !important;
 }
 
+.v-container .v-card__text {
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+}
+
 </style>
