@@ -26,7 +26,6 @@ class SelectionTool(v.VueTemplate):
     dialog = Bool(False).tag(sync=True)
     flagged = Bool(False).tag(sync=True)
     state = GlueState().tag(sync=True)
-    is_reset = Bool(False).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
@@ -40,13 +39,15 @@ class SelectionTool(v.VueTemplate):
                                           instant=False)
 
         df = data.to_dataframe()
-        table = Table.from_pandas(df)
-        layer = self.widget.layers.add_table_layer(table)
-        layer.size_scale = 50
-        layer.color = "#00FF00"
-        self.sdss_layer = layer
+        self.table = Table.from_pandas(df)
         self.motions_left = 2
         self.gals_max = kwargs.get("galaxies_max", 5)
+        
+        show_galaxy_layer = kwargs.get("show_galaxies", False)
+        if show_galaxy_layer:
+            self.show_galaxies()
+        else:
+            self.sdss_layer = None
 
         self.selected_data = DataFrame()
         self.selected_layer = None
@@ -78,6 +79,16 @@ class SelectionTool(v.VueTemplate):
         self.widget.set_selection_change_callback(wwt_cb)
 
         super().__init__(*args, **kwargs)
+
+    def show_galaxies(self, show=True):
+        if show and self.sdss_layer is None:
+            layer = self.widget.layers.add_table_layer(self.table)
+            layer.size_scale = 50
+            layer.color = "#00FF00"
+            self.sdss_layer = layer
+        elif not show:
+            self.widget.layers.remove_layer(self.sdss_layer)
+            self.sdss_layer = None
 
     @property
     def on_galaxy_selected(self):
@@ -113,10 +124,6 @@ class SelectionTool(v.VueTemplate):
         self.current_galaxy = {}
         self.candidate_galaxy = {}
         self.state.gal_selected = False
-        self._on_reset_view()
-    
-    def _on_reset_view(self):
-        pass
 
     def go_to_location(self, ra, dec, fov=GALAXY_FOV):
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
@@ -139,4 +146,3 @@ class SelectionTool(v.VueTemplate):
             data = {"galaxy_name": name}
         requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-galaxy-bad",
                      json=data)
-        self.flagged = False
