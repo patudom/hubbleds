@@ -102,8 +102,8 @@ class SelectionTool(v.VueTemplate):
         self.selected_data = self.selected_data.append(galaxy,
                                                        ignore_index=True)
         self.selected_count = self.selected_data.shape[0]
-        table = Table.from_pandas(self.selected_data)
-        layer = self.widget.layers.add_table_layer(table)
+        self.table = Table.from_pandas(self.selected_data)
+        layer = self.widget.layers.add_table_layer(self.table)
         layer.size_scale = 100
         layer.color = "#FF00FF"
         if self.selected_layer is not None:
