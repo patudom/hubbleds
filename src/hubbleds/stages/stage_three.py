@@ -35,6 +35,7 @@ class StageState(CDSState):
     trend_response = CallbackProperty(False)
     relvel_response = CallbackProperty(False)
     race_response = CallbackProperty(False)
+    relage_response = CallbackProperty(False)
     hubble_dialog_opened = CallbackProperty(False)
     class_layer_toggled = CallbackProperty(0)
 
@@ -47,6 +48,8 @@ class StageState(CDSState):
     hypgal_distance = CallbackProperty(100)
     hypgal_velocity = CallbackProperty(8000)
 
+    low_age = CallbackProperty(0)
+    high_age = CallbackProperty(0)
 
     markers = CallbackProperty([
         'exp_dat1',
@@ -65,7 +68,12 @@ class StageState(CDSState):
         'age_uni3',
         'age_uni4',
         'you_age1',
-        'sho_ref1',
+        'sho_est1',
+        'sho_est2',
+        'ran_var1',
+        'cla_res1',
+        'rel_age1',
+        'cla_age1',
     ])
 
     step_markers = CallbackProperty([
@@ -87,7 +95,7 @@ class StageState(CDSState):
         'age_uni2',
         'age_uni3',
         'you_age1',
-        'sho_ref1',
+        'sho_est1',
     ])
 
     table_highlights = CallbackProperty([
@@ -115,7 +123,7 @@ class StageState(CDSState):
         'age_uni2',
         'age_uni3',
         'you_age1',
-        'sho_ref1',
+        'sho_est1',
     ])
 
     my_galaxies_plot_highlights = CallbackProperty([
@@ -133,7 +141,7 @@ class StageState(CDSState):
         'age_uni2',
         'age_uni3',
         'you_age1',
-        'sho_ref1',
+        'sho_est1',
     ])
 
     all_galaxies_plot_show = CallbackProperty([
@@ -309,7 +317,11 @@ class StageThree(HubbleStage):
             "guideline_hypothetical_galaxy",
             "guideline_age_race_equation",
             "guideline_your_age_estimate",
-            "guideline_shortcomings_reflect",
+            "guideline_shortcomings_est_reflect1",
+            "guideline_shortcomings_est2",
+            "guideline_random_variability",
+            "guideline_classmates_results",
+            "guideline_relationship_age_slope_mc",
         ]
         ext = ".vue"
         for comp in state_components:
@@ -341,6 +353,7 @@ class StageThree(HubbleStage):
             "guideline_age_universe_equation2",
             "guideline_age_universe_estimate3",
             "guideline_age_universe_estimate4",
+            "guideline_class_age_range"
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
@@ -369,7 +382,7 @@ class StageThree(HubbleStage):
         # Create the student slider
         student_slider_subset_label = "student_slider_subset"
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
-        student_slider = IDSlider(class_summ_data, "student_id", "age")
+        student_slider = IDSlider(class_summ_data, "student_id", "age", self.stage_state)
         self.add_component(student_slider, "c-student-slider")
         def student_slider_change(id):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id

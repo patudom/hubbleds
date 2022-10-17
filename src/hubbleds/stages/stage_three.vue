@@ -43,7 +43,7 @@
       </v-col>
     </v-row>
     <v-row
-      class="d-flex align-stretch"/>
+      class="d-flex align-stretch">
     <!--  
       v-if="stage_state.my_galaxies_plot_show.includes(stage_state.marker)"
     > -->
@@ -102,19 +102,23 @@
         <c-guideline-age-universe-equation2
           v-if="stage_state.marker == 'age_uni2'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate3/>
-        <!--
+        <c-guideline-age-universe-estimate3
           v-if="stage_state.marker == 'age_uni3'"
           v-intersect.once="scrollIntoView" />
-          -->
         <c-guideline-age-universe-estimate4
           v-if="stage_state.marker == 'age_uni4'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-your-age-estimate
           v-if="stage_state.marker == 'you_age1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-shortcomings-reflect
-          v-if="stage_state.marker == 'sho_ref1'"
+        <c-guideline-shortcomings-est-reflect1
+          v-if="stage_state.marker == 'sho_est1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-shortcomings-est2
+          v-if="stage_state.marker == 'sho_est2'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-random-variability
+          v-if="stage_state.marker == 'ran_var1'"
           v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
@@ -135,7 +139,7 @@
         />  
       </v-col>
     </v-row>
-    <v-row>
+    <!-- <v-row>
       <v-col>
         <v-card
           color="error"
@@ -145,7 +149,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row
       class="d-flex align-stretch"
     >
@@ -157,9 +161,16 @@
         cols="12"
         lg="5"
       >
-        <v-btn
-          block
-        >PLACEHOLDER 3 {{ stage_state.marker }}</v-btn>
+        <c-guideline-classmates-results/>
+          <!-- v-if="stage_state.marker == 'cla_res1'"
+          v-intersect.once="scrollIntoView" /> -->
+        <c-guideline-relationship-age-slope-mc
+          v-if="stage_state.marker == 'rel_age1'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.relage_response = true"  />
+        <c-guideline-class-age-range
+          v-if="stage_state.marker == 'cla_age1'"
+          v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"

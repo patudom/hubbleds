@@ -26,7 +26,7 @@
         $$ t = {{ Math.round(age_const) }}  \times \frac{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_distance).toFixed(0) }} } } \text{ Mpc} } { \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_velocity).toFixed(0) }} } }  \text{ km/s} }  \text{   Gyr}$$
       </v-card>    
       <p class="mt-4">
-        Dividing through gives you your estimate for the age of the universe:
+        Dividing through gives an estimated age of the universe from your dataset:
       </p>
       <div
         class="JaxEquation my-8"
