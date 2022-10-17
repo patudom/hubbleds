@@ -170,10 +170,6 @@ class StageOne(HubbleStage):
         sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
         add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
 
-        for label in ['hub_const_viewer', 'hub_fit_viewer',
-                      'hub_comparison_viewer', 'hub_students_viewer',
-                      'hub_morphology_viewer', 'hub_prodata_viewer']:
-            self.add_viewer(BqplotScatterView, label=label)
 
         add_velocities_tool = \
             dict(id="update-velocities",
