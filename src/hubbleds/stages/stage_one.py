@@ -44,7 +44,7 @@ class StageState(CDSState):
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_one_spectrum")
     lambda_rest = CallbackProperty(0)
     lambda_obs = CallbackProperty(0)
-    element = CallbackProperty("")
+    galaxy = CallbackProperty({})
     reflection_complete = CallbackProperty(False)
     doppler_calc_reached = CallbackProperty(False)
     doppler_calc_dialog = CallbackProperty(
@@ -294,6 +294,7 @@ class StageOne(HubbleStage):
         add_callback(restwave_tool, 'lambda_on', self._on_lambda_on)
         for tool_id in ["hubble:restwave", "hubble:wavezoom", "bqplot:home"]:
             spectrum_viewer.toolbar.set_tool_enabled(tool_id, False)
+        add_callback(self.stage_state, 'galaxy', self._on_galaxy_update)
 
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -344,6 +345,11 @@ class StageOne(HubbleStage):
         self.stage_state.marker = self.stage_state.step_markers[index]
         self.trigger_marker_update_cb = True
 
+    def _on_galaxy_update(self, galaxy):
+        if galaxy:
+            self.stage_state.load_spectrum_data(galaxy["name"], galaxy["type"])
+            self.galaxy_table.selected = [galaxy]
+
     def _on_galaxy_selected(self, galaxy):
         data = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         is_in = isin(data['name'], galaxy['name'])  # Avoid duplicates
@@ -361,7 +367,7 @@ class StageOne(HubbleStage):
             galaxy.pop("element")
             self.story_state.load_spectrum_data(filename, gal_type)
             self.add_data_values(STUDENT_MEASUREMENTS_LABEL, galaxy)
-            self.galaxy_table.selected = [{'name': filename}]
+            self.stage_state.galaxy = galaxy
 
     def _on_lambda_used(self, used):
         self.stage_state.lambda_used = used
@@ -441,6 +447,7 @@ class StageOne(HubbleStage):
             return
 
         self.selection_tool.current_galaxy = galaxy
+        self.stage_state.galaxy = galaxy
 
         # Load the spectrum data, if necessary
         filename = name
