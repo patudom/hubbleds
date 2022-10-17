@@ -43,9 +43,11 @@
       </v-col>
     </v-row>
     <v-row
-      class="d-flex align-stretch"
+      class="d-flex align-stretch"/>
+    <!--  
       v-if="stage_state.my_galaxies_plot_show.includes(stage_state.marker)"
-    >
+    > -->
+
       <v-col
         cols="12"
         lg="5"
@@ -97,11 +99,16 @@
         <c-guideline-age-race-equation
           v-if="stage_state.marker == 'age_rac1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-equation
+        <c-guideline-age-universe-equation2
           v-if="stage_state.marker == 'age_uni2'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-calc
+        <c-guideline-age-universe-estimate3/>
+        <!--
           v-if="stage_state.marker == 'age_uni3'"
+          v-intersect.once="scrollIntoView" />
+          -->
+        <c-guideline-age-universe-estimate4
+          v-if="stage_state.marker == 'age_uni4'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-your-age-estimate
           v-if="stage_state.marker == 'you_age1'"

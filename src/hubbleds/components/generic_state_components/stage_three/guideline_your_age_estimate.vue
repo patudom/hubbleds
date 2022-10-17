@@ -12,7 +12,7 @@
       class="mb-4"
     >
       <p>
-        Congratulations!!! You have made your very own estimate of the age of the universe!!!
+        Congratulations! &#127881 You have made your very own estimate of the age of the universe.
       </p>
       <p>
         Now we need to think about how reliable your estimate is.
