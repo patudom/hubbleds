@@ -83,7 +83,8 @@ class SelectionTool(v.VueTemplate):
     def show_galaxies(self, show=True):
         if show and self.sdss_layer is None:
             layer = self.widget.layers.add_table_layer(self.table)
-            layer.size_scale = 50
+            layer.marker_type = "gaussian"
+            layer.size_scale = 100
             layer.color = "#00FF00"
             self.sdss_layer = layer
         elif not show:
@@ -104,8 +105,9 @@ class SelectionTool(v.VueTemplate):
         self.selected_count = self.selected_data.shape[0]
         self.table = Table.from_pandas(self.selected_data)
         layer = self.widget.layers.add_table_layer(self.table)
+        layer.marker_type = "gaussian"
         layer.size_scale = 100
-        layer.color = "#FF00FF"
+        layer.color = "#FF0000" # This will mix with #00FF00 above to make yellow
         if self.selected_layer is not None:
             self.widget.layers.remove_layer(self.selected_layer)
         self.selected_layer = layer
