@@ -15,7 +15,7 @@
         Congratulations! &#127881 You have made your very own estimate of the age of the universe.
       </p>
       <p>
-        We will now label your best-fit line with your age estimate.
+        Notice your best-fit line is now labeled with your age estimate.
       </p>
       <p>
         Next, we need to think about how reliable your estimate is.

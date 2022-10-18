@@ -18,6 +18,19 @@
       <p>
         Enter the <strong>distance</strong> (in <strong>Mpc</strong>) and <strong>velocity</strong> (in <strong>km/s</strong>) of your hypothetical galaxy in the boxes.
       </p>
+      <v-card
+        color="error"
+        class="ma-4"
+      >
+        <v-card-text>
+          Until the "best-fit galaxy" functionality is hooked up, Pat has arbitrarily assigned 
+          <ul>
+            <li>Dist = 100 Mpc</li>
+            <li>vel = 8000 km/s</li>
+          </ul>
+          as the "correct" values here.
+        </v-card-text>
+      </v-card>
       <div
         class="JaxEquation my-8"
       >
