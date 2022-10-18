@@ -79,6 +79,7 @@ class StageState(CDSState):
         'cla_age4',
         'con_int1',
         'age_dis1',
+        'con_int2',
     ])
 
     step_markers = CallbackProperty([
@@ -364,6 +365,7 @@ class StageThree(HubbleStage):
             "guideline_age_universe_estimate3",
             "guideline_age_universe_estimate4",
             "guideline_class_age_range",
+            "guideline_confidence_interval_reflect2",
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")

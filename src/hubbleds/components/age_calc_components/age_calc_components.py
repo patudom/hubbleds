@@ -12,6 +12,9 @@ class AgeCalc(v.VuetifyTemplate):
     failedValidation3 = Bool(False).tag(sync=True)
     failedValidationAgeRange = Bool(False).tag(sync=True)
     age_const = Float().tag(sync=True)
+    hint1_dialog = Bool(False).tag(sync=True)
+    hint2_dialog = Bool(False).tag(sync=True)
+    hint3_dialog = Bool(False).tag(sync=True)
 
     def __init__(self, filename, path, state, *args, **kwargs):
         self.state = state

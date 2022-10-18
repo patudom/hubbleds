@@ -180,9 +180,9 @@
         <c-guideline-class-age-range4
           v-if="stage_state.marker == 'cla_age4'"
           v-intersect.once="scrollIntoView"/>
-        <c-guideline-confidence-interval/>
-          <!-- v-if="stage_state.marker == 'con_int1'"
-          v-intersect.once="scrollIntoView"/> -->
+        <c-guideline-confidence-interval
+          v-if="stage_state.marker == 'con_int1'"
+          v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"
@@ -214,6 +214,9 @@
         <c-guideline-class-age-distribution
           v-if="stage_state.marker == 'age_dis1'"
           v-intersect.once="scrollIntoView"/>
+        <c-guideline-confidence-interval-reflect2/>
+          <!-- v-if="stage_state.marker == 'con_int2'"
+          v-intersect.once="scrollIntoView"/> -->
       </v-col>
       <v-col
         cols="12"
