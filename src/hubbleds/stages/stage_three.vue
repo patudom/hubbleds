@@ -164,9 +164,14 @@
           outlined
         >
           <v-lazy>
-            <jupyter-widget :widget="viewers.comparison_viewer"/>
+            <jupyter-widget
+              :widget="viewers.comparison_viewer"
+              class="comparison_viewer"
+              />
           </v-lazy>
-          <c-student-slider />
+          <c-student-slider 
+            class="slider_card"
+            />
         </v-card>
       </v-col>
     </v-row>
@@ -290,11 +295,30 @@
 
 <style>
 
-  .v-dialog .v-card__text {
-    font-size: 18px !important;
-  }
-  
-  </style>
+.v-dialog .v-card__text {
+  font-size: 18px !important;
+}
+
+.v-slider__thumb:hover, .v-slider__thumb-label-container:hover {
+  cursor: grab;
+}
+
+.v-slider__thumb:active, .v-slider__thumb-label-container:active {
+  cursor: grabbing;
+}
+
+.comparison_viewer.v-card {
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+  margin-bottom: 1px !important;
+}
+
+.slider_card {
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+}
+
+</style>
 
 
 <script>
