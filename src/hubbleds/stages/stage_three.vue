@@ -161,9 +161,9 @@
         cols="12"
         lg="5"
       >
-        <c-guideline-classmates-results/>
-          <!-- v-if="stage_state.marker == 'cla_res1'"
-          v-intersect.once="scrollIntoView" /> -->
+        <c-guideline-classmates-results
+          v-if="stage_state.marker == 'cla_res1'"
+          v-intersect.once="scrollIntoView" />
         <c-guideline-relationship-age-slope-mc
           v-if="stage_state.marker == 'rel_age1'"
           v-intersect.once="scrollIntoView"
@@ -171,6 +171,18 @@
         <c-guideline-class-age-range
           v-if="stage_state.marker == 'cla_age1'"
           v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-range2
+          v-if="stage_state.marker == 'cla_age2'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-range3
+          v-if="stage_state.marker == 'cla_age3'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-range4
+          v-if="stage_state.marker == 'cla_age4'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-confidence-interval/>
+          <!-- v-if="stage_state.marker == 'con_int1'"
+          v-intersect.once="scrollIntoView"/> -->
       </v-col>
       <v-col
         cols="12"
@@ -199,9 +211,9 @@
         cols="12"
         lg="5"
       >
-        <v-btn
-          block
-        >PLACEHOLDER 4 {{ stage_state.marker }}</v-btn>
+        <c-guideline-class-age-distribution
+          v-if="stage_state.marker == 'age_dis1'"
+          v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"

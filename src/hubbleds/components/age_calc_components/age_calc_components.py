@@ -10,6 +10,7 @@ class AgeCalc(v.VuetifyTemplate):
     template = Unicode().tag(sync=True)
     state = GlueState().tag(sync=True)
     failedValidation3 = Bool(False).tag(sync=True)
+    failedValidationAgeRange = Bool(False).tag(sync=True)
     age_const = Float().tag(sync=True)
 
     def __init__(self, filename, path, state, *args, **kwargs):
