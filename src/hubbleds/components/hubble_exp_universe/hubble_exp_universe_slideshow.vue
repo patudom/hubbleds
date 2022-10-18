@@ -114,17 +114,6 @@
                     ></v-img>
                   </v-col>
                 </v-row>
-                <v-row>
-                  <v-col>
-                    <v-card
-                      color="error"
-                    >
-                      <v-card-text>
-                        NOTE: This is the last part of this Stage that properly "works" Anything that follows is still under construction.
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </v-row>
               </v-container>
             </v-card-text>
           </v-window-item>
