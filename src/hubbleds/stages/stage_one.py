@@ -304,6 +304,8 @@ class StageOne(HubbleStage):
             self.story_state.step_complete = True
             self.story_state.step_index = self.stage_state.step_markers.index(
                 new)
+        if advancing and old == "sel_gal1":
+            self.selection_tool.show_galaxies()
         if advancing and old == "sel_gal3":
             self.galaxy_table.selected = []
             self.selection_tool.widget.center_on_coordinates(
