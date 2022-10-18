@@ -35,7 +35,7 @@ class SelectionTool(v.VueTemplate):
         self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self.widget.background = 'SDSS: Sloan Digital Sky Survey (Optical)'
         self.widget.foreground = 'SDSS: Sloan Digital Sky Survey (Optical)'
-        self.widget.center_on_coordinates(self.START_COORDINATES,
+        self.widget.center_on_coordinates(self.START_COORDINATES, fov= 6 * u.arcmin, #start in close enough to see galaxies
                                           instant=False)
 
         df = data.to_dataframe()
