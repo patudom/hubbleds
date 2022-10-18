@@ -488,7 +488,10 @@ class StageThree(HubbleStage):
         if advancing and new == "tre_lin1":
             layer_viewer = self.get_viewer("layer_viewer")
             class_layer = layer_viewer.layers[-1]
-            class_layer.state.visible = False            
+            class_layer.state.visible = False
+        if advancing and new == "you_age1":
+            layer_viewer = self.get_viewer("layer_viewer")
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True                   
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
@@ -522,6 +525,9 @@ class StageThree(HubbleStage):
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         toggle_tool.set_layer_to_toggle(class_layer)
         layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
+
+        # cosmicds PR157 - turn off fit line label for layer_viewer
+        layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
 
         add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
 
