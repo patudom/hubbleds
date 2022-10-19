@@ -298,7 +298,7 @@
     </v-row>
 
     <!--------------------- MORPHOLOGY HUBBLE VIEWER ----------------------->
-    <v-row
+    <!-- <v-row
       class="d-flex align-stretch"
           v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
@@ -324,12 +324,11 @@
           </v-lazy>
         </v-card>
       </v-col>
-    </v-row>
+    </v-row> -->
 
     <!--------------------- ALL DATA HUBBLE VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
       <v-col
         cols="12"
@@ -344,8 +343,6 @@
         lg="7"
       >
         <v-card
-          :color="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'info' : 'black'"
-          :class="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
           <v-lazy>

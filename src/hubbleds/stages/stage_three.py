@@ -213,9 +213,9 @@ class StageThree(HubbleStage):
                                             "comparison_viewer",
                                             "Data Comparison")
         all_viewer = self.add_viewer(HubbleScatterView, "all_viewer", "All Data")
-        morphology_viewer = self.add_viewer(HubbleScatterView,
-                                            "morphology_viewer",
-                                            "Galaxy Morphology")
+        # morphology_viewer = self.add_viewer(HubbleScatterView,
+        #                                     "morphology_viewer",
+        #                                     "Galaxy Morphology")
         prodata_viewer = self.add_viewer(HubbleScatterView, "prodata_viewer",
                                          "Professional Data")
         class_distr_viewer = self.add_viewer(HubbleClassHistogramView,
@@ -380,7 +380,8 @@ class StageThree(HubbleStage):
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
-        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer, layer_viewer]
+        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, layer_viewer]
+        # velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer, layer_viewer]
         for viewer in velocity_viewers:
             viewer.figure.axes[1].label_offset = "5em"
         
@@ -556,26 +557,26 @@ class StageThree(HubbleStage):
         all_distr_viewer.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
 
-    def _setup_morphology_subsets(self):
-        # Do some stuff with the galaxy data
-        type_field = 'type'
-        morphology_viewer = self.get_viewer("morphology_viewer")
-        all_viewer = self.get_viewer("all_viewer")
-        all_data = self.get_data(ALL_DATA_LABEL)
-        all_viewer.ignore(lambda layer: layer.label in ["Elliptical", "Spiral", "Irregular"])
-        elliptical_subset = all_data.new_subset(all_data.id[type_field] == 'E',
-                                                label='Elliptical',
-                                                color='orange')
-        spiral_subset = all_data.new_subset(all_data.id[type_field] == 'Sp',
-                                            label='Spiral', color='green')
-        irregular_subset = all_data.new_subset(all_data.id[type_field] == 'Ir',
-                                               label='Irregular', color='red')
-        morphology_subsets = [elliptical_subset, spiral_subset,
-                              irregular_subset]
-        for subset in morphology_subsets:
-            morphology_viewer.add_subset(subset)
-        morphology_viewer.state.x_att = all_data.id['distance']
-        morphology_viewer.state.y_att = all_data.id['velocity']
+    # def _setup_morphology_subsets(self):
+    #     # Do some stuff with the galaxy data
+    #     type_field = 'type'
+    #     morphology_viewer = self.get_viewer("morphology_viewer")
+    #     all_viewer = self.get_viewer("all_viewer")
+    #     all_data = self.get_data(ALL_DATA_LABEL)
+    #     all_viewer.ignore(lambda layer: layer.label in ["Elliptical", "Spiral", "Irregular"])
+    #     elliptical_subset = all_data.new_subset(all_data.id[type_field] == 'E',
+    #                                             label='Elliptical',
+    #                                             color='orange')
+    #     spiral_subset = all_data.new_subset(all_data.id[type_field] == 'Sp',
+    #                                         label='Spiral', color='green')
+    #     irregular_subset = all_data.new_subset(all_data.id[type_field] == 'Ir',
+    #                                            label='Irregular', color='red')
+    #     morphology_subsets = [elliptical_subset, spiral_subset,
+    #                           irregular_subset]
+    #     for subset in morphology_subsets:
+    #         morphology_viewer.add_subset(subset)
+    #     morphology_viewer.state.x_att = all_data.id['distance']
+    #     morphology_viewer.state.y_att = all_data.id['velocity']
 
     def _on_stage_index_changed(self, index):
         print(f"Index: {index}")
@@ -588,7 +589,7 @@ class StageThree(HubbleStage):
     def _deferred_setup(self):
         self._setup_scatter_layers()
         self._setup_histogram_layers()
-        self._setup_morphology_subsets()
+        # self._setup_morphology_subsets()
 
     @property
     def all_viewers(self):
@@ -605,7 +606,7 @@ class StageThree(HubbleStage):
                    'hubble_race_viewer',
                    'comparison_viewer',
                    'all_viewer',
-                   'morphology_viewer',
+                   # 'morphology_viewer',
                    'prodata_viewer',
                    'class_distr_viewer',
                    'all_distr_viewer',
@@ -617,7 +618,7 @@ class StageThree(HubbleStage):
                        "scatter",
                        "scatter",
                        "scatter",
-                       "scatter",
+                       # "scatter",
                        "scatter",
                        "histogram",
                        "histogram",
