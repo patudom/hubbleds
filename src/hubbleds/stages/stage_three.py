@@ -89,30 +89,6 @@ class StageState(CDSState):
         'exp_dat1',
     ])
 
-    all_galaxies_morph_plot_show = CallbackProperty([
-    ])
-
-    all_galaxies_morph_plot_highlights = CallbackProperty([
-    ])
-
-    my_galaxies_plot_show = CallbackProperty([
-        'tre_dat1',
-        'tre_dat2',
-        'tre_dat3',
-        'rel_vel1',
-        'hub_exp1',
-        'tre_lin1',
-        'tre_lin2',
-        'bes_fit1',
-        'age_uni1',
-        'hyp_gal1',
-        'age_rac1',
-        'age_uni2',
-        'age_uni3',
-        'you_age1',
-        'sho_est1',
-    ])
-
     my_galaxies_plot_highlights = CallbackProperty([
         'tre_dat1',
         'tre_dat2',
@@ -131,25 +107,13 @@ class StageState(CDSState):
         'sho_est1',
     ])
 
-    all_galaxies_plot_show = CallbackProperty([
-    ])
-
     all_galaxies_plot_highlights = CallbackProperty([
-    ])
-
-    my_class_hist_show = CallbackProperty([
     ])
 
     my_class_hist_highlights = CallbackProperty([
     ])
 
-    all_classes_hist_show = CallbackProperty([
-    ])
-
     all_classes_hist_highlights = CallbackProperty([
-    ])
-
-    sandbox_hist_show = CallbackProperty([
     ])
 
     sandbox_hist_highlights = CallbackProperty([

@@ -42,10 +42,9 @@
       </v-col>
     </v-row>
     <v-row
-      class="d-flex align-stretch">
-    <!--  
-      v-if="stage_state.my_galaxies_plot_show.includes(stage_state.marker)"
-    > -->
+      class="d-flex align-stretch"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1']"
+    >
 
       <v-col
         cols="12"
@@ -151,11 +150,8 @@
     </v-row> -->
     <v-row
       class="d-flex align-stretch"
-    >
-    <!--
-      v-if="stage_state.all_galaxies_plot_show.includes(stage_state.marker)"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1']"
     > 
-    -->
       <v-col
         cols="12"
         lg="5"
@@ -201,11 +197,8 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int1']"
     >
-    <!--
-      v-if="stage_state.my_class_hist_show.includes(stage_state.marker)"
-    >
-    -->
       <v-col
         cols="12"
         lg="5"
@@ -234,11 +227,8 @@
           v-intersect.once="scrollIntoView"/>
     <v-row
       class="d-flex align-stretch"
-    >
-    <!--
       v-if="stage_state.all_classes_hist_show.includes(stage_state.marker)"
     >
-    -->
       <v-col
         cols="12"
         lg="5"
@@ -318,6 +308,7 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
+      v-if="stage_state.all_classes_hist_show.includes(stage_state.marker)"
     >
       <v-col
         cols="12"
