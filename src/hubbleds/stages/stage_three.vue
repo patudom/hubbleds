@@ -318,6 +318,10 @@
   border-top-right-radius: 0px !important;
 }
 
+.g_legend{
+  fill: #F002 !important;
+}
+
 </style>
 
 

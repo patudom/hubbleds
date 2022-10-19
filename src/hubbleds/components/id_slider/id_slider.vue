@@ -14,7 +14,7 @@
       thumb-label="always"
     >
       <template v-slot:thumb-label="">
-        {{ thumb_value }}
+        <strong>{{ thumb_value }}</strong>
       </template>
     </v-slider>
   </v-card>
