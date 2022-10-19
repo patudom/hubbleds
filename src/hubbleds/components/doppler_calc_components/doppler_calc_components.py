@@ -1,5 +1,6 @@
 import ipyvuetify as v
 from cosmicds.utils import load_template
+from echo import delay_callback
 from glue_jupyter.state_traitlets_helpers import GlueState
 from traitlets import Float, Bool, Int, Unicode, List
 
@@ -44,3 +45,8 @@ class DopplerCalc(v.VuetifyTemplate):
                 self.currentTitle = self._default_title
 
         self.observe(update_title, names=["step"])
+
+    def vue_complete_stage_one(self, _args=None):
+        with delay_callback(self.story_state, 'stage_index'):
+            self.story_state.step_complete = True
+            self.story_state.stage_index = 2

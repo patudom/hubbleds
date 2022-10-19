@@ -79,9 +79,7 @@
           class="black--text"
           color="accent"
           elevation="2"
-          @click="
-            story_state.stage_index = 2;
-            story_state.step_complete = true"
+          @click="complete_stage_one()"
           >
           stage 2
         </v-btn>
