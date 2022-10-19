@@ -249,6 +249,7 @@ class StageThree(HubbleStage):
         comparison_viewer = self.add_viewer(HubbleScatterView,
                                             "comparison_viewer",
                                             "Data Comparison")
+        all_viewer = self.add_viewer(HubbleScatterView, "all_viewer", "All Data")
         morphology_viewer = self.add_viewer(HubbleScatterView,
                                             "morphology_viewer",
                                             "Galaxy Morphology")
@@ -463,9 +464,10 @@ class StageThree(HubbleStage):
         comparison_viewer = self.get_viewer("comparison_viewer")
         prodata_viewer = self.get_viewer("prodata_viewer")
         layer_viewer = self.get_viewer("layer_viewer")
+        all_viewer = self.get_viewer("all_viewer")
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
-        for viewer in [fit_viewer, comparison_viewer, prodata_viewer, layer_viewer]:
+        for viewer in [fit_viewer, comparison_viewer, prodata_viewer, layer_viewer, all_viewer]:
             viewer.add_data(student_data)
             # viewer.layers[-1].state.visible = False
             viewer.state.x_att = student_data.id[dist_attr]
@@ -482,7 +484,7 @@ class StageThree(HubbleStage):
         toggle_tool.set_layer_to_toggle(class_layer)
         layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
 
-        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
+        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)
 
         student_layer = comparison_viewer.layers[-1]
         student_layer.state.color = 'orange'
@@ -493,13 +495,26 @@ class StageThree(HubbleStage):
         class_layer.state.zorder = 2
         class_layer.state.color = 'red'
         comparison_viewer.add_subset(self.student_slider_subset)
-        # comparison_viewer.add_data(all_data)
-        # all_layer = comparison_viewer.layers[-1]
-        # all_layer.state.zorder = 1
-        # all_layer.state.visible = False
         comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
         comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
         comparison_viewer.state.reset_limits()
+
+        all_data = self.get_data(ALL_DATA_LABEL)
+        student_layer = all_viewer.layers[-1]
+        student_layer.state.color = 'orange'
+        student_layer.state.zorder = 3
+        student_layer.state.size = 8
+        all_viewer.add_data(class_meas_data)
+        class_layer = comparison_viewer.layers[-1]
+        class_layer.state.zorder = 2
+        class_layer.state.size = 5
+        class_layer.state.color = 'red'
+        all_viewer.add_data(all_data)
+        all_layer = comparison_viewer.layers[-1]
+        all_layer.state.zorder = 1
+        all_layer.state.visible = False
+        all_viewer.state.x_att = all_data.id[dist_attr]
+        all_viewer.state.y_att = all_data.id[vel_attr]
 
         prodata_viewer.add_data(student_data)
         prodata_viewer.state.x_att = student_data.id[dist_attr]
@@ -553,7 +568,9 @@ class StageThree(HubbleStage):
         # Do some stuff with the galaxy data
         type_field = 'type'
         morphology_viewer = self.get_viewer("morphology_viewer")
+        all_viewer = self.get_viewer("all_viewer")
         all_data = self.get_data(ALL_DATA_LABEL)
+        all_viewer.ignore(lambda layer: layer.label in ["Elliptical", "Spiral", "Irregular"])
         elliptical_subset = all_data.new_subset(all_data.id[type_field] == 'E',
                                                 label='Elliptical',
                                                 color='orange')

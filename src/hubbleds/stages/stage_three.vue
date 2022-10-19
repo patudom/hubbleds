@@ -284,6 +284,32 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row
+      class="d-flex align-stretch"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <v-btn
+          block
+        >PLACEHOLDER 8 {{ stage_state.marker }}</v-btn>
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          :color="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.all_galaxies_morph_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_viewer"/>
+          </v-lazy>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
