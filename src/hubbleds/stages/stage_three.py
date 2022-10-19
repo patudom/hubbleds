@@ -340,7 +340,7 @@ class StageThree(HubbleStage):
         # Create the student slider
         student_slider_subset_label = "student_slider_subset"
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
-        student_slider = IDSlider(class_summ_data, "student_id", "age", self.stage_state)
+        student_slider = IDSlider(class_summ_data, "student_id", "age", self.stage_state, highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "c-student-slider")
         def student_slider_change(id):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
@@ -484,10 +484,11 @@ class StageThree(HubbleStage):
         student_layer.state.zorder = 3
         student_layer.state.size = 8
         comparison_viewer.add_data(class_meas_data)
-        class_layer = comparison_viewer.layers[-1]
+        class_layer = comparison_viewer.layers[-2]
+        class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
         class_layer.state.color = 'red'
-        comparison_viewer.add_subset(self.student_slider_subset)
+        # comparison_viewer.add_subset(self.student_slider_subset)
         comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
         comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
         comparison_viewer.state.reset_limits()
