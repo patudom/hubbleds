@@ -48,7 +48,7 @@
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1']"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1']"
     >
 
       <v-col
@@ -201,6 +201,9 @@
           </v-lazy>
           <c-student-slider />
         </v-card>
+        <c-hubble-slideshow 
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
+        />  
       </v-col>
     </v-row>
 
@@ -329,6 +332,7 @@
     <!--------------------- ALL DATA HUBBLE VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
       <v-col
         cols="12"
