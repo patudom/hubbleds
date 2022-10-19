@@ -604,6 +604,7 @@ class StageThree(HubbleStage):
                    'layer_viewer',
                    'hubble_race_viewer',
                    'comparison_viewer',
+                   'all_viewer',
                    'morphology_viewer',
                    'prodata_viewer',
                    'class_distr_viewer',
@@ -612,6 +613,7 @@ class StageThree(HubbleStage):
                    ]
 
         viewer_type = ["scatter",
+                       "scatter",
                        "scatter",
                        "scatter",
                        "scatter",
