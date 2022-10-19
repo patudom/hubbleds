@@ -227,7 +227,7 @@
           v-intersect.once="scrollIntoView"/>
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.all_classes_hist_show.includes(stage_state.marker)"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
       <v-col
         cols="12"
@@ -254,7 +254,7 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.sandbox_hist_show.includes(stage_state.marker)"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
       <v-col
         cols="12"
@@ -281,7 +281,7 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.all_galaxies_morph_plot_show.includes(stage_state.marker)"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
       <v-col
         cols="12"
@@ -308,7 +308,7 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.all_classes_hist_show.includes(stage_state.marker)"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
       <v-col
         cols="12"
