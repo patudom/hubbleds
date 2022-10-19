@@ -85,25 +85,6 @@ class StageState(CDSState):
     step_markers = CallbackProperty([
     ])
 
-    table_show = CallbackProperty([
-        'exp_dat1',
-        'tre_dat1',
-        'tre_dat2',
-        'tre_dat3',
-        'rel_vel1',
-        'hub_exp1',
-        'tre_lin1',
-        'tre_lin2',
-        'bes_fit1',
-        'age_uni1',
-        'hyp_gal1',
-        'age_rac1',
-        'age_uni2',
-        'age_uni3',
-        'you_age1',
-        'sho_est1',
-    ])
-
     table_highlights = CallbackProperty([
         'exp_dat1',
     ])

@@ -17,7 +17,6 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.table_show.includes(stage_state.marker)"
     >
       <v-col
         cols="12"
