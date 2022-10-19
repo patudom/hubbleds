@@ -15,6 +15,8 @@
         Marker: {{ stage_state.marker }}
       </v-col>
     </v-row>
+
+    <!--------------------- TABLE ROW ----------------------->
     <v-row
       class="d-flex align-stretch"
     >
@@ -41,6 +43,9 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!--------------------- OUR DATA HUBBLE VIEWER ----------------------->
+
     <v-row
       class="d-flex align-stretch"
       v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1']"
@@ -148,6 +153,9 @@
         </v-card>
       </v-col>
     </v-row> -->
+
+    <!--------------------- SLIDER VERSION: OUR DATA HUBBLE VIEWER ----------------------->
+
     <v-row
       class="d-flex align-stretch"
       v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1']"
@@ -195,6 +203,8 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!--------------------- OUR CLASS HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
       v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int1']"
@@ -222,9 +232,14 @@
         </v-card>
       </v-col>
     </v-row>
-        <c-guideline-confidence-interval-reflect2
-          v-if="stage_state.marker == 'con_int2'"
-          v-intersect.once="scrollIntoView"/>
+
+    <c-guideline-confidence-interval-reflect2
+      v-if="stage_state.marker == 'con_int2'"
+      v-intersect.once="scrollIntoView"/>
+
+
+
+    <!--------------------- ALL DATA HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
           v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
@@ -252,6 +267,8 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!--------------------- SANDBOX HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
           v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
@@ -279,6 +296,8 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!--------------------- MORPHOLOGY HUBBLE VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
           v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
@@ -306,6 +325,8 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!--------------------- ALL DATA HUBBLE VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
           v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
