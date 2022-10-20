@@ -306,6 +306,8 @@ class StageOne(HubbleStage):
                 new)
         if advancing and old == "sel_gal1":
             self.selection_tool.show_galaxies()
+            self.selection_tool.widget.center_on_coordinates(
+                self.START_COORDINATES, fov = 60 * u.deg, instant=True)
         if advancing and old == "sel_gal3":
             self.galaxy_table.selected = []
             self.selection_tool.widget.center_on_coordinates(
