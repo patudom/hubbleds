@@ -34,8 +34,8 @@
         <c-guideline-angsize-meas4
           v-if="stage_state.marker == 'ang_siz4'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-angsize-meas5
-          v-if="stage_state.marker == 'ang_siz5'"
+        <c-guideline-angsize-meas5a
+          v-if="stage_state.marker == 'ang_siz5a'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-angsize-meas6
           v-if="stage_state.marker == 'ang_siz6'"
@@ -94,6 +94,9 @@
       >
         <c-guideline-choose-row1
           v-if="stage_state.marker == 'cho_row1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-angsize-meas5
+          v-if="stage_state.marker == 'ang_siz5'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-choose-row2
           v-if="stage_state.marker == 'cho_row2'"
