@@ -12,6 +12,6 @@ class HubbleLineFitTool(LineFitTool):
     def label(self, layer, line):
         slope = line.slope.value
         age = age_in_gyr_simple(slope)
-        return 'H0=%.0f km/s/Mpc;  %.0f Gyr' % (slope, age) if not isnan(slope) else None
+        return '%.0f Gyr' % (age) if not isnan(slope) else None
 
     

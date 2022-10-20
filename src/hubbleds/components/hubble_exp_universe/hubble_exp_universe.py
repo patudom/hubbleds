@@ -12,7 +12,7 @@ class HubbleExp(v.VuetifyTemplate):
     template = load_template(
         "hubble_exp_universe_slideshow.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
-    length = Int(3).tag(sync=True)
+    length = Int(4).tag(sync=True)
     dialog = Bool(False).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
     state = GlueState().tag(sync=True)
@@ -25,6 +25,7 @@ class HubbleExp(v.VuetifyTemplate):
         "Hubble's Discovery",
         "A Running Race",
         "Runner's Velocities vs. Distances",
+        "Age of the Universe"
     ]
     _default_title = "Hubble's Discovery"
 
