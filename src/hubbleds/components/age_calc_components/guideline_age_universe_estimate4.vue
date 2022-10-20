@@ -8,7 +8,7 @@
     <h3
       class="mb-4"
     >
-      Estimate Distance
+      Estimate Age of Universe
     </h3> 
 
     <div
@@ -23,15 +23,15 @@
         color="info lighten-1"
         elevation="0"
       >
-        $$ D = \frac{ {{ Math.round(distance_const) }} }{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.meas_theta).toFixed(0) }} } }} $$
+        $$ t = {{ Math.round(age_const) }}  \times \frac{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_distance).toFixed(0) }} } } \text{ Mpc} } { \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_velocity).toFixed(0) }} } }  \text{ km/s} }  \text{   Gyr}$$
       </v-card>    
       <p class="mt-4">
-        Dividing through gives you the estimated distance to your galaxy:
+        Dividing through gives an estimated age of the universe from your dataset:
       </p>
       <div
         class="JaxEquation my-8"
       >
-        $$ D = {{ (Math.round(distance_const)/state.meas_theta).toFixed(0) }} \text{ Mpc} $$
+        $$ D = {{ (Math.round(age_const * state.hypgal_distance/state.hypgal_velocity).toFixed(0) ) }} \text{ Gyr} $$
       </div>
       <v-divider role="presentation" class="mt-3"></v-divider>
       <v-card
@@ -47,7 +47,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ D = \frac{ {{ Math.round(distance_const) }} }{\theta} $$
+                $$ t \text{ (in Gyr)}= {{ Math.round(age_const) }}  \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
               </div>
             </v-col>
           </v-row>
@@ -56,13 +56,15 @@
             no-gutters
             class="my-1"
           >
-            <v-col>
-              \(D\)
+            <v-col
+              
+            >
+              \(t\)
             </v-col>
             <v-col
               cols="10"
             >
-              distance to your galaxy, in Mpc
+              age of the universe, in Gyr. (1 Gyr = 1 billion years)
             </v-col>
           </v-row>
           <v-row
@@ -72,12 +74,27 @@
             <v-col
               cols="2"
             >
-              \(&theta;\)
+              \(d\)
             </v-col>
             <v-col
               cols="10"
             >
-              angular size of your galaxy, in arcseconds
+              distance the galaxy has traveled (distance to the galaxy, in Mpc)
+            </v-col>
+          </v-row>
+          <v-row
+            no-gutters
+            class="my-1"
+          >
+            <v-col
+              cols="2"
+            >
+              \(v\)
+            </v-col>
+            <v-col
+              cols="10"
+            >
+              velocity of the galaxy (in km/s)
             </v-col>
           </v-row>
         </v-container>
@@ -97,7 +114,7 @@
           color="accent"
           elevation="2"
           @click="
-            state.marker = 'est_dis3';
+            state.marker = 'age_uni3';
           "
         >
           back
@@ -112,8 +129,7 @@
           color="accent"
           elevation="2"
           @click=" () => {
-            state.marker = 'fil_rem1';
-            state.distance_calc_count += 1;
+            state.marker = 'you_age1';
           }"
         >
           next

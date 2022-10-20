@@ -2,7 +2,7 @@
   <scaffold-alert
     header-text="Age of the Universe"
     @back="
-      state.marker = 'hub_exp1';
+      state.marker = 'bes_fit1';
     "
     @next="
       state.marker = 'hyp_gal1';

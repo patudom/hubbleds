@@ -15,9 +15,10 @@
         Marker: {{ stage_state.marker }}
       </v-col>
     </v-row>
+
+    <!--------------------- TABLE ROW ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.table_show.includes(stage_state.marker)"
     >
       <v-col
         cols="12"
@@ -42,10 +43,14 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!--------------------- OUR DATA HUBBLE VIEWER ----------------------->
+
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.my_galaxies_plot_show.includes(stage_state.marker)"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1']"
     >
+
       <v-col
         cols="12"
         lg="5"
@@ -97,17 +102,26 @@
         <c-guideline-age-race-equation
           v-if="stage_state.marker == 'age_rac1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-equation
+        <c-guideline-age-universe-equation2
           v-if="stage_state.marker == 'age_uni2'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-calc
+        <c-guideline-age-universe-estimate3
           v-if="stage_state.marker == 'age_uni3'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-age-universe-estimate4
+          v-if="stage_state.marker == 'age_uni4'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-your-age-estimate
           v-if="stage_state.marker == 'you_age1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-shortcomings-reflect
-          v-if="stage_state.marker == 'sho_ref1'"
+        <c-guideline-shortcomings-est-reflect1
+          v-if="stage_state.marker == 'sho_est1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-shortcomings-est2
+          v-if="stage_state.marker == 'sho_est2'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-random-variability
+          v-if="stage_state.marker == 'ran_var1'"
           v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
@@ -128,7 +142,7 @@
         />  
       </v-col>
     </v-row>
-    <v-row>
+    <!-- <v-row>
       <v-col>
         <v-card
           color="error"
@@ -138,21 +152,40 @@
           </v-card-text>
         </v-card>
       </v-col>
-    </v-row>
+    </v-row> -->
+
+    <!--------------------- SLIDER VERSION: OUR DATA HUBBLE VIEWER ----------------------->
+
     <v-row
       class="d-flex align-stretch"
-    >
-    <!--
-      v-if="stage_state.all_galaxies_plot_show.includes(stage_state.marker)"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1']"
     > 
-    -->
       <v-col
         cols="12"
         lg="5"
       >
-        <v-btn
-          block
-        >PLACEHOLDER 3 {{ stage_state.marker }}</v-btn>
+        <c-guideline-classmates-results
+          v-if="stage_state.marker == 'cla_res1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-relationship-age-slope-mc
+          v-if="stage_state.marker == 'rel_age1'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.relage_response = true"  />
+        <c-guideline-class-age-range
+          v-if="stage_state.marker == 'cla_age1'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-range2
+          v-if="stage_state.marker == 'cla_age2'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-range3
+          v-if="stage_state.marker == 'cla_age3'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-range4
+          v-if="stage_state.marker == 'cla_age4'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-confidence-interval
+          v-if="stage_state.marker == 'con_int1'"
+          v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"
@@ -173,22 +206,24 @@
             class="slider_card"
             />
         </v-card>
+        <c-hubble-slideshow 
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
+        />  
       </v-col>
     </v-row>
+
+    <!--------------------- OUR CLASS HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int1']"
     >
-    <!--
-      v-if="stage_state.my_class_hist_show.includes(stage_state.marker)"
-    >
-    -->
       <v-col
         cols="12"
         lg="5"
       >
-        <v-btn
-          block
-        >PLACEHOLDER 4 {{ stage_state.marker }}</v-btn>
+        <c-guideline-class-age-distribution
+          v-if="stage_state.marker == 'age_dis1'"
+          v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"
@@ -205,13 +240,18 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <c-guideline-confidence-interval-reflect2
+      v-if="stage_state.marker == 'con_int2'"
+      v-intersect.once="scrollIntoView"/>
+
+
+
+    <!--------------------- ALL DATA HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
-    <!--
-      v-if="stage_state.all_classes_hist_show.includes(stage_state.marker)"
-    >
-    -->
       <v-col
         cols="12"
         lg="5"
@@ -235,9 +275,11 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!--------------------- SANDBOX HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.sandbox_hist_show.includes(stage_state.marker)"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
       <v-col
         cols="12"
@@ -262,9 +304,11 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row
+
+    <!--------------------- MORPHOLOGY HUBBLE VIEWER ----------------------->
+    <!-- <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.all_galaxies_morph_plot_show.includes(stage_state.marker)"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
       <v-col
         cols="12"
@@ -285,6 +329,33 @@
         >
           <v-lazy>
             <jupyter-widget :widget="viewers.morphology_viewer"/>
+          </v-lazy>
+        </v-card>
+      </v-col>
+    </v-row> -->
+
+    <!--------------------- ALL DATA HUBBLE VIEWER ----------------------->
+    <v-row
+      class="d-flex align-stretch"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <v-btn
+          block
+        >PLACEHOLDER 8 {{ stage_state.marker }}</v-btn>
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          outlined
+        >
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_viewer"/>
           </v-lazy>
         </v-card>
       </v-col>

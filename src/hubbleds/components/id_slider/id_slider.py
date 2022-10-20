@@ -18,13 +18,14 @@ class IDSlider(VuetifyTemplate):
     vmax = Int(1).tag(sync=True)
     vmin = Int(0).tag(sync=True)
     
-    def __init__(self, data, id_component, value_component, *args, **kwargs):
+    def __init__(self, data, id_component, value_component, stage_state, *args, **kwargs):
         # NB: We can't call this member value data
         # since VuetifyTemplate already has a data member
         # (that represents the typical Vue data)
         self.glue_data = data
         self.id_component = id_component
         self.value_component = value_component
+        self.state = stage_state
 
         self._default_color = kwargs.get("default_color", "#FF0000")
         self._highlight_ids = kwargs.get("highlight_ids", [])
@@ -48,6 +49,8 @@ class IDSlider(VuetifyTemplate):
     def refresh(self):
         self.ids = sorted(self.glue_data[self.id_component], key=self._sort_key)
         self.values = sorted(self.glue_data[self.value_component])
+        self.state.low_age = int(min(self.values))
+        self.state.high_age = int(max(self.values))
         self.vmax = len(self.values) - 1
         self.selected_id = int(self.ids[self.selected])
         self.thumb_value = self.values[self.selected]
