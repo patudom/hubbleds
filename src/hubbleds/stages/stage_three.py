@@ -421,8 +421,11 @@ class StageThree(HubbleStage):
         extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
 
-        # We defer some of the setup for later, to make loading faster
-        add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
+        # If possible, we defer some of the setup for later, to make loading faster
+        if self.story_state.stage_index != self.index:
+            add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
+        else:
+            self._deferred_setup()
     
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
