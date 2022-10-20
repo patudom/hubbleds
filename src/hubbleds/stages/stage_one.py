@@ -123,6 +123,9 @@ class StageState(CDSState):
     def marker_before(self, marker):
         return self.indices[self.marker] < self.indices[marker]
 
+    def marker_after(self, marker):
+        return self.indices[self.marker] > self.indices[marker]
+
 
 @register_stage(story="hubbles_law", index=1, steps=[
     # "Explore celestial sky",
@@ -601,12 +604,11 @@ class StageOne(HubbleStage):
         for item in table.items:
             index = table.indices_from_items([item])[0]
             if index is not None and data["velocity"][index] is None:
-                lamb_obs = data["restwave"][index]
+                lamb_rest = data["restwave"][index]
                 lamb_meas = data["measwave"][index]
-                if lamb_obs is None or lamb_meas is None:
+                if lamb_rest is None or lamb_meas is None:
                     continue
-                velocity = round((3 * (10 ** 5) * (lamb_meas / lamb_obs - 1)),
-                                 0)
+                velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
                 self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
                                        velocity, index)
         self.story_state.update_student_data()
