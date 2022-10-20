@@ -580,7 +580,6 @@ class StageThree(HubbleStage):
     #     morphology_viewer.state.y_att = all_data.id['velocity']
 
     def _on_stage_index_changed(self, index):
-        print(f"Index: {index}")
         if index > 0:
             self._deferred_setup()
 
@@ -599,7 +598,10 @@ class StageThree(HubbleStage):
     def _on_data_change(self, msg):
         viewer_id = self.viewer_ids_for_data.get(msg.data.label, [])
         for vid in viewer_id:
-            self.get_viewer(vid).state.reset_limits()
+            try:
+                self.get_viewer(vid).state.reset_limits()
+            except:
+                pass
 
     def _update_viewer_style(self, dark):
         viewers = ['fit_viewer',

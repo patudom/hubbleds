@@ -2,6 +2,7 @@ import logging
 from os.path import join
 from pathlib import Path
 from random import sample
+from turtle import st
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -9,10 +10,10 @@ from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import load_template, update_figure_css
+from cosmicds.utils import load_template, update_figure_css, debounce
 from echo import add_callback, ignore_callback, CallbackProperty
 from glue.core import Data
-from glue_jupyter.bqplot.scatter import BqplotScatterView
+from glue.core.message import NumericalDataChangedMessage
 from numpy import isin
 from traitlets import default, Bool
 
@@ -44,7 +45,7 @@ class StageState(CDSState):
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_one_spectrum")
     lambda_rest = CallbackProperty(0)
     lambda_obs = CallbackProperty(0)
-    element = CallbackProperty("")
+    galaxy = CallbackProperty({})
     reflection_complete = CallbackProperty(False)
     doppler_calc_reached = CallbackProperty(False)
     doppler_calc_dialog = CallbackProperty(
@@ -156,13 +157,11 @@ class StageOne(HubbleStage):
         self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
 
-        # Set up any Data-based values
-        student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
-        self.stage_state.gals_total = int(student_measurements.size)
-        measwaves = student_measurements["measwave"]
-        self.stage_state.obswaves_total = measwaves[measwaves != None].size
-        velocities = student_measurements["velocity"]
-        self.stage_state.velocities_total = velocities[velocities != None].size
+        # Set up any Data-based state values
+        self._update_state_from_measurements()
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                                 filter=lambda msg: msg.data.label == STUDENT_MEASUREMENTS_LABEL,
+                                 handler=self._on_measurements_changed)
 
         # Set up viewers
         spectrum_viewer = self.add_viewer(
@@ -294,6 +293,19 @@ class StageOne(HubbleStage):
         add_callback(restwave_tool, 'lambda_on', self._on_lambda_on)
         for tool_id in ["hubble:restwave", "hubble:wavezoom", "bqplot:home"]:
             spectrum_viewer.toolbar.set_tool_enabled(tool_id, False)
+        add_callback(self.stage_state, 'galaxy', self._on_galaxy_update)
+
+    def _on_measurements_changed(self, msg):
+        self._update_state_from_measurements()
+
+    @debounce(wait=2)
+    def _update_state_from_measurements(self):
+        student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
+        self.stage_state.gals_total = int(student_measurements.size)
+        measwaves = student_measurements["measwave"]
+        self.stage_state.obswaves_total = measwaves[measwaves != None].size
+        velocities = student_measurements["velocity"]
+        self.stage_state.velocities_total = velocities[velocities != None].size
 
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -348,6 +360,11 @@ class StageOne(HubbleStage):
         self.stage_state.marker = self.stage_state.step_markers[index]
         self.trigger_marker_update_cb = True
 
+    def _on_galaxy_update(self, galaxy):
+        if galaxy:
+            self.story_state.load_spectrum_data(galaxy["name"], galaxy["type"])
+            self.galaxy_table.selected = [galaxy]
+
     def _on_galaxy_selected(self, galaxy):
         data = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         is_in = isin(data['name'], galaxy['name'])  # Avoid duplicates
@@ -365,7 +382,7 @@ class StageOne(HubbleStage):
             galaxy.pop("element")
             self.story_state.load_spectrum_data(filename, gal_type)
             self.add_data_values(STUDENT_MEASUREMENTS_LABEL, galaxy)
-            self.galaxy_table.selected = [{'name': filename}]
+            self.stage_state.galaxy = galaxy
 
     def _on_lambda_used(self, used):
         self.stage_state.lambda_used = used
@@ -445,6 +462,7 @@ class StageOne(HubbleStage):
             return
 
         self.selection_tool.current_galaxy = galaxy
+        self.stage_state.galaxy = galaxy
 
         # Load the spectrum data, if necessary
         filename = name
@@ -490,10 +508,6 @@ class StageOne(HubbleStage):
         new_value = round(event["domain"]["x"], 0)
         index = self.galaxy_table.index
         data = self.galaxy_table.glue_data
-        curr_value = data["measwave"][index]
-
-        if curr_value is None:
-            self.stage_state.obswaves_total = self.stage_state.obswaves_total + 1
 
         self.stage_state.waveline_set = True
         self.stage_state.lambda_obs = new_value
@@ -519,7 +533,6 @@ class StageOne(HubbleStage):
         velocity = round(self.stage_state.student_vel)
         self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
                                velocity, index)
-        self.stage_state.velocities_total = self.stage_state.velocities_total + 1
 
     @property
     def selection_tool(self):
@@ -596,7 +609,6 @@ class StageOne(HubbleStage):
                                  0)
                 self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
                                        velocity, index)
-                self.stage_state.velocities_total = self.stage_state.velocities_total + 1
         self.story_state.update_student_data()
         table.update_tool(tool)
 
