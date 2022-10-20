@@ -8,7 +8,7 @@
           @click="() => {
             console.log('stage state:', stage_state);
             console.log('story state:', story_state);
-            }"
+          }"
         >
           State
         </v-btn>
@@ -361,11 +361,15 @@
 
 <style>
 
-  .v-dialog .v-card__text {
-    font-size: 18px !important;
-  }
-  
-  </style>
+.v-dialog .v-card__text {
+  font-size: 18px !important;
+}
+
+.v-alert .v-input--radio-group+.v-alert, .v-dialog .v-input--radio-group+.v-alert {
+  background-color: #000b !important;
+}
+
+</style>
 
 
 <script>

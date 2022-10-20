@@ -13,8 +13,14 @@
 </template>
 
 <style>
+
 .v-container .v-card__text {
   font-size: 18px !important;
   line-height: 1.5 !important;
 }
+
+.v-alert .v-input--radio-group+.v-alert, .v-dialog .v-input--radio-group+.v-alert {
+  background-color: #000b !important;
+}
+
 </style>
