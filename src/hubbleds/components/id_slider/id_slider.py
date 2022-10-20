@@ -52,9 +52,11 @@ class IDSlider(VuetifyTemplate):
         self.state.low_age = int(min(self.values))
         self.state.high_age = int(max(self.values))
         self.vmax = len(self.values) - 1
+        self.halfvmax = self.vmax/2 if (self.vmax % 2 == 0) else (self.vmax-1)/2 #check if vmax is even or odd
         self.selected_id = int(self.ids[self.selected])
         self.thumb_value = self.values[self.selected]
-        self.tick_labels = ["Low"] + ["" for _ in range(self.vmax - 1)] + ["High"]
+        self.tick_labels = ["Low"] + ["" for _ in range(int(self.halfvmax)-1)] + ["Age (Gyr)"]  + ["" for _ in range(int(self.halfvmax)-1)] + ["High"]
+
 
     def _sort_key(self, id):
         idx = where(self.glue_data[self.id_component] == id)[0][0]
