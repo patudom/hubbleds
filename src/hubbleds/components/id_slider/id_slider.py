@@ -27,11 +27,11 @@ class IDSlider(VuetifyTemplate):
         self.value_component = value_component
         self.state = stage_state
 
-        self._default_color = kwargs.get("default_color", "#FF0000")
-        self._highlight_ids = kwargs.get("highlight_ids", [])
-        self._highlight_label = kwargs.get("highlight_label", None)
-        self._highlight_color = kwargs.get("highlight_color", "orange")
-        self.color = self._default_color
+        self.default_color = kwargs.get("default_color", "#FF0000")
+        self.highlight_ids = kwargs.get("highlight_ids", [])
+        self.highlight_label = kwargs.get("highlight_label", None)
+        self.highlight_color = kwargs.get("highlight_color", "orange")
+        self.color = self.default_color
 
         self._id_change_cbs = CallbackContainer()
 
@@ -55,6 +55,7 @@ class IDSlider(VuetifyTemplate):
         self.halfvmax = self.vmax/2 if (self.vmax % 2 == 0) else (self.vmax-1)/2 #check if vmax is even or odd
         self.selected_id = int(self.ids[self.selected])
         self.thumb_value = self.values[self.selected]
+        self.highlighted = self.selected_id in self.highlight_ids
         self.tick_labels = ["Low"] + ["" for _ in range(int(self.halfvmax)-1)] + ["Age (Gyr)"]  + ["" for _ in range(int(self.halfvmax)-1)] + ["High"]
 
 
@@ -65,7 +66,7 @@ class IDSlider(VuetifyTemplate):
     def on_id_change(self, callback, run=True):
         self._id_change_cbs.append(callback)
         if run:
-            callback(self.selected_id)
+            callback(self.selected_id, self.highlighted)
 
     def remove_on_id_change(self, callback):
         self._id_change_cbs.remove(callback)
@@ -77,13 +78,14 @@ class IDSlider(VuetifyTemplate):
         index = change["new"]
         self.selected_id = int(self.ids[index])
         self.thumb_value = int(self.values[self.selected])
-        highlighted = self.selected_id in self._highlight_ids
-        old_highlighted = old_index is not None and self.ids[old_index] in self._highlight_ids
+        highlighted = self.selected_id in self.highlight_ids
+        old_highlighted = old_index is not None and self.ids[old_index] in self.highlight_ids
+        self.highlighted = highlighted
 
-        if (highlighted or old_highlighted) and self._highlight_label is not None:
+        if (highlighted or old_highlighted) and self.highlight_label is not None:
             labels = [x for x in self.tick_labels]
             if highlighted:
-                labels[index] = self._highlight_label(self.selected_id)
+                labels[index] = self.highlight_label(self.selected_id)
 
             # Restore the end labels if we had previously changed them
             # and remove the highlighted label
@@ -95,11 +97,11 @@ class IDSlider(VuetifyTemplate):
                 labels[old_index] = ""
             self.tick_labels = labels
 
-        if highlighted and self._highlight_color is not None:
-            self.color = self._highlight_color
-        elif self.color != self._default_color:
-            self.color = self._default_color
+        if highlighted and self.highlight_color is not None:
+            self.color = self.highlight_color
+        elif self.color != self.default_color:
+            self.color = self.default_color
 
         for cb in self._id_change_cbs:
-            cb(self.selected_id)
+            cb(self.selected_id, self.highlighted)
     
