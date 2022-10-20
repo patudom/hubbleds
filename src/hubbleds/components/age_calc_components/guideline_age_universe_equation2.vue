@@ -28,7 +28,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ t \text{ (in Gyr)}= 980 \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
+                $$ t \text{ (in Gyr)}= {{ Math.round(age_const) }}  \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
               </div>
             </v-col>
           </v-row>
@@ -104,3 +104,9 @@
     </div>
   </scaffold-alert>
 </template>
+
+<style>
+  .JaxEquation .MathJax {
+    margin: 20px auto !important;
+  }
+</style>

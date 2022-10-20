@@ -8,7 +8,7 @@
     <h3
       class="mb-4"
     >
-      Select Five Galaxies
+      Select Your Galaxies
     </h3>
     <div
       v-if="state.gals_total == 0 & !state.gal_selected"

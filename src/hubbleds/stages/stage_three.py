@@ -17,7 +17,7 @@ from hubbleds.utils import IMAGE_BASE_URL
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..components import TrendsData, HubbleExp
+from ..components import TrendsData, HubbleExp, AgeCalc
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
@@ -35,6 +35,7 @@ class StageState(CDSState):
     trend_response = CallbackProperty(False)
     relvel_response = CallbackProperty(False)
     race_response = CallbackProperty(False)
+    relage_response = CallbackProperty(False)
     hubble_dialog_opened = CallbackProperty(False)
     class_layer_toggled = CallbackProperty(0)
 
@@ -44,6 +45,11 @@ class StageState(CDSState):
 
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three")
 
+    hypgal_distance = CallbackProperty(100)
+    hypgal_velocity = CallbackProperty(8000)
+
+    low_age = CallbackProperty(0)
+    high_age = CallbackProperty(0)
 
     markers = CallbackProperty([
         'exp_dat1',
@@ -60,58 +66,27 @@ class StageState(CDSState):
         'age_rac1',
         'age_uni2',
         'age_uni3',
+        'age_uni4',
         'you_age1',
-        'sho_ref1',
+        'sho_est1',
+        'sho_est2',
+        'ran_var1',
+        'cla_res1',
+        'rel_age1',
+        'cla_age1',
+        'cla_age2',
+        'cla_age3',
+        'cla_age4',
+        'con_int1',
+        'age_dis1',
+        'con_int2',
     ])
 
     step_markers = CallbackProperty([
     ])
 
-    table_show = CallbackProperty([
-        'exp_dat1',
-        'tre_dat1',
-        'tre_dat2',
-        'tre_dat3',
-        'rel_vel1',
-        'hub_exp1',
-        'tre_lin1',
-        'tre_lin2',
-        'bes_fit1',
-        'age_uni1',
-        'hyp_gal1',
-        'age_rac1',
-        'age_uni2',
-        'age_uni3',
-        'you_age1',
-        'sho_ref1',
-    ])
-
     table_highlights = CallbackProperty([
         'exp_dat1',
-    ])
-
-    all_galaxies_morph_plot_show = CallbackProperty([
-    ])
-
-    all_galaxies_morph_plot_highlights = CallbackProperty([
-    ])
-
-    my_galaxies_plot_show = CallbackProperty([
-        'tre_dat1',
-        'tre_dat2',
-        'tre_dat3',
-        'rel_vel1',
-        'hub_exp1',
-        'tre_lin1',
-        'tre_lin2',
-        'bes_fit1',
-        'age_uni1',
-        'hyp_gal1',
-        'age_rac1',
-        'age_uni2',
-        'age_uni3',
-        'you_age1',
-        'sho_ref1',
     ])
 
     my_galaxies_plot_highlights = CallbackProperty([
@@ -129,28 +104,16 @@ class StageState(CDSState):
         'age_uni2',
         'age_uni3',
         'you_age1',
-        'sho_ref1',
-    ])
-
-    all_galaxies_plot_show = CallbackProperty([
+        'sho_est1',
     ])
 
     all_galaxies_plot_highlights = CallbackProperty([
     ])
 
-    my_class_hist_show = CallbackProperty([
-    ])
-
     my_class_hist_highlights = CallbackProperty([
     ])
 
-    all_classes_hist_show = CallbackProperty([
-    ])
-
     all_classes_hist_highlights = CallbackProperty([
-    ])
-
-    sandbox_hist_show = CallbackProperty([
     ])
 
     sandbox_hist_highlights = CallbackProperty([
@@ -249,9 +212,10 @@ class StageThree(HubbleStage):
         comparison_viewer = self.add_viewer(HubbleScatterView,
                                             "comparison_viewer",
                                             "Data Comparison")
-        morphology_viewer = self.add_viewer(HubbleScatterView,
-                                            "morphology_viewer",
-                                            "Galaxy Morphology")
+        all_viewer = self.add_viewer(HubbleScatterView, "all_viewer", "All Data")
+        # morphology_viewer = self.add_viewer(HubbleScatterView,
+        #                                     "morphology_viewer",
+        #                                     "Galaxy Morphology")
         prodata_viewer = self.add_viewer(HubbleScatterView, "prodata_viewer",
                                          "Professional Data")
         class_distr_viewer = self.add_viewer(HubbleClassHistogramView,
@@ -304,10 +268,17 @@ class StageThree(HubbleStage):
             "guideline_age_universe",
             "guideline_hypothetical_galaxy",
             "guideline_age_race_equation",
-            "guideline_age_universe_equation",
-            "guideline_age_universe_calc",
             "guideline_your_age_estimate",
-            "guideline_shortcomings_reflect",
+            "guideline_shortcomings_est_reflect1",
+            "guideline_shortcomings_est2",
+            "guideline_random_variability",
+            "guideline_classmates_results",
+            "guideline_relationship_age_slope_mc",
+            "guideline_class_age_range2",
+            "guideline_class_age_range3",
+            "guideline_class_age_range4",
+            "guideline_confidence_interval",
+            "guideline_class_age_distribution",
         ]
         ext = ".vue"
         for comp in state_components:
@@ -331,6 +302,22 @@ class StageThree(HubbleStage):
             component = TrendsData(comp + ext, path, self.stage_state)
             self.add_component(component, label=label)
 
+        # Set up age_calc components
+        age_calc_components_dir = str(Path(
+            __file__).parent.parent / "components" / "age_calc_components")
+        path = join(age_calc_components_dir, "")
+        age_calc_components = [
+            "guideline_age_universe_equation2",
+            "guideline_age_universe_estimate3",
+            "guideline_age_universe_estimate4",
+            "guideline_class_age_range",
+            "guideline_confidence_interval_reflect2",
+        ]
+        for comp in age_calc_components:
+            label = f"c-{comp}".replace("_", "-")
+            component = AgeCalc(comp + ext, path, self.stage_state)
+            self.add_component(component, label=label) 
+
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
 
@@ -353,7 +340,7 @@ class StageThree(HubbleStage):
         # Create the student slider
         student_slider_subset_label = "student_slider_subset"
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
-        student_slider = IDSlider(class_summ_data, "student_id", "age")
+        student_slider = IDSlider(class_summ_data, "student_id", "age", self.stage_state, highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "c-student-slider")
         def student_slider_change(id):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
@@ -393,7 +380,8 @@ class StageThree(HubbleStage):
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
-        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer, layer_viewer]
+        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, layer_viewer]
+        # velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer, layer_viewer]
         for viewer in velocity_viewers:
             viewer.figure.axes[1].label_offset = "5em"
         
@@ -447,7 +435,10 @@ class StageThree(HubbleStage):
         if advancing and new == "tre_lin1":
             layer_viewer = self.get_viewer("layer_viewer")
             class_layer = layer_viewer.layers[-1]
-            class_layer.state.visible = False            
+            class_layer.state.visible = False
+        if advancing and new == "you_age1":
+            layer_viewer = self.get_viewer("layer_viewer")
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True                   
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
@@ -463,9 +454,10 @@ class StageThree(HubbleStage):
         comparison_viewer = self.get_viewer("comparison_viewer")
         prodata_viewer = self.get_viewer("prodata_viewer")
         layer_viewer = self.get_viewer("layer_viewer")
+        all_viewer = self.get_viewer("all_viewer")
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
-        for viewer in [fit_viewer, comparison_viewer, prodata_viewer, layer_viewer]:
+        for viewer in [fit_viewer, comparison_viewer, prodata_viewer, layer_viewer, all_viewer]:
             viewer.add_data(student_data)
             # viewer.layers[-1].state.visible = False
             viewer.state.x_att = student_data.id[dist_attr]
@@ -482,6 +474,9 @@ class StageThree(HubbleStage):
         toggle_tool.set_layer_to_toggle(class_layer)
         layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
 
+        # cosmicds PR157 - turn off fit line label for layer_viewer
+        layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
+
         add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
 
         student_layer = comparison_viewer.layers[-1]
@@ -489,17 +484,31 @@ class StageThree(HubbleStage):
         student_layer.state.zorder = 3
         student_layer.state.size = 8
         comparison_viewer.add_data(class_meas_data)
-        class_layer = comparison_viewer.layers[-1]
+        class_layer = comparison_viewer.layers[-2]
+        class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
         class_layer.state.color = 'red'
-        comparison_viewer.add_subset(self.student_slider_subset)
-        # comparison_viewer.add_data(all_data)
-        # all_layer = comparison_viewer.layers[-1]
-        # all_layer.state.zorder = 1
-        # all_layer.state.visible = False
+        # comparison_viewer.add_subset(self.student_slider_subset)
         comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
         comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
         comparison_viewer.state.reset_limits()
+
+        all_data = self.get_data(ALL_DATA_LABEL)
+        student_layer = all_viewer.layers[-1]
+        student_layer.state.color = 'orange'
+        student_layer.state.zorder = 3
+        student_layer.state.size = 8
+        all_viewer.add_data(class_meas_data)
+        class_layer = comparison_viewer.layers[-1]
+        class_layer.state.zorder = 2
+        class_layer.state.size = 5
+        class_layer.state.color = 'red'
+        all_viewer.add_data(all_data)
+        all_layer = comparison_viewer.layers[-1]
+        all_layer.state.zorder = 1
+        all_layer.state.visible = False
+        all_viewer.state.x_att = all_data.id[dist_attr]
+        all_viewer.state.y_att = all_data.id[vel_attr]
 
         prodata_viewer.add_data(student_data)
         prodata_viewer.state.x_att = student_data.id[dist_attr]
@@ -549,24 +558,26 @@ class StageThree(HubbleStage):
         all_distr_viewer.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
 
-    def _setup_morphology_subsets(self):
-        # Do some stuff with the galaxy data
-        type_field = 'type'
-        morphology_viewer = self.get_viewer("morphology_viewer")
-        all_data = self.get_data(ALL_DATA_LABEL)
-        elliptical_subset = all_data.new_subset(all_data.id[type_field] == 'E',
-                                                label='Elliptical',
-                                                color='orange')
-        spiral_subset = all_data.new_subset(all_data.id[type_field] == 'Sp',
-                                            label='Spiral', color='green')
-        irregular_subset = all_data.new_subset(all_data.id[type_field] == 'Ir',
-                                               label='Irregular', color='red')
-        morphology_subsets = [elliptical_subset, spiral_subset,
-                              irregular_subset]
-        for subset in morphology_subsets:
-            morphology_viewer.add_subset(subset)
-        morphology_viewer.state.x_att = all_data.id['distance']
-        morphology_viewer.state.y_att = all_data.id['velocity']
+    # def _setup_morphology_subsets(self):
+    #     # Do some stuff with the galaxy data
+    #     type_field = 'type'
+    #     morphology_viewer = self.get_viewer("morphology_viewer")
+    #     all_viewer = self.get_viewer("all_viewer")
+    #     all_data = self.get_data(ALL_DATA_LABEL)
+    #     all_viewer.ignore(lambda layer: layer.label in ["Elliptical", "Spiral", "Irregular"])
+    #     elliptical_subset = all_data.new_subset(all_data.id[type_field] == 'E',
+    #                                             label='Elliptical',
+    #                                             color='orange')
+    #     spiral_subset = all_data.new_subset(all_data.id[type_field] == 'Sp',
+    #                                         label='Spiral', color='green')
+    #     irregular_subset = all_data.new_subset(all_data.id[type_field] == 'Ir',
+    #                                            label='Irregular', color='red')
+    #     morphology_subsets = [elliptical_subset, spiral_subset,
+    #                           irregular_subset]
+    #     for subset in morphology_subsets:
+    #         morphology_viewer.add_subset(subset)
+    #     morphology_viewer.state.x_att = all_data.id['distance']
+    #     morphology_viewer.state.y_att = all_data.id['velocity']
 
     def _on_stage_index_changed(self, index):
         if index > 0:
@@ -578,7 +589,7 @@ class StageThree(HubbleStage):
     def _deferred_setup(self):
         self._setup_scatter_layers()
         self._setup_histogram_layers()
-        self._setup_morphology_subsets()
+        # self._setup_morphology_subsets()
 
     @property
     def all_viewers(self):
@@ -597,7 +608,8 @@ class StageThree(HubbleStage):
                    'layer_viewer',
                    'hubble_race_viewer',
                    'comparison_viewer',
-                   'morphology_viewer',
+                   'all_viewer',
+                   # 'morphology_viewer',
                    'prodata_viewer',
                    'class_distr_viewer',
                    'all_distr_viewer',
@@ -609,6 +621,7 @@ class StageThree(HubbleStage):
                        "scatter",
                        "scatter",
                        "scatter",
+                       # "scatter",
                        "scatter",
                        "histogram",
                        "histogram",

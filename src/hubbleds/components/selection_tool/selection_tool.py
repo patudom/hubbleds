@@ -26,7 +26,6 @@ class SelectionTool(v.VueTemplate):
     dialog = Bool(False).tag(sync=True)
     flagged = Bool(False).tag(sync=True)
     state = GlueState().tag(sync=True)
-    is_reset = Bool(False).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
@@ -36,17 +35,19 @@ class SelectionTool(v.VueTemplate):
         self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self.widget.background = 'SDSS: Sloan Digital Sky Survey (Optical)'
         self.widget.foreground = 'SDSS: Sloan Digital Sky Survey (Optical)'
-        self.widget.center_on_coordinates(self.START_COORDINATES,
+        self.widget.center_on_coordinates(self.START_COORDINATES, fov= 6 * u.arcmin, #start in close enough to see galaxies
                                           instant=False)
 
         df = data.to_dataframe()
-        table = Table.from_pandas(df)
-        layer = self.widget.layers.add_table_layer(table)
-        layer.size_scale = 50
-        layer.color = "#00FF00"
-        self.sdss_layer = layer
+        self.table = Table.from_pandas(df)
         self.motions_left = 2
         self.gals_max = kwargs.get("galaxies_max", 5)
+        
+        show_galaxy_layer = kwargs.get("show_galaxies", False)
+        if show_galaxy_layer:
+            self.show_galaxies()
+        else:
+            self.sdss_layer = None
 
         self.selected_data = DataFrame()
         self.selected_layer = None
@@ -79,6 +80,17 @@ class SelectionTool(v.VueTemplate):
 
         super().__init__(*args, **kwargs)
 
+    def show_galaxies(self, show=True):
+        if show and self.sdss_layer is None:
+            layer = self.widget.layers.add_table_layer(self.table)
+            layer.marker_type = "gaussian"
+            layer.size_scale = 100
+            layer.color = "#00FF00"
+            self.sdss_layer = layer
+        elif not show:
+            self.widget.layers.remove_layer(self.sdss_layer)
+            self.sdss_layer = None
+
     @property
     def on_galaxy_selected(self):
         return self._on_galaxy_selected
@@ -91,10 +103,11 @@ class SelectionTool(v.VueTemplate):
         self.selected_data = self.selected_data.append(galaxy,
                                                        ignore_index=True)
         self.selected_count = self.selected_data.shape[0]
-        table = Table.from_pandas(self.selected_data)
-        layer = self.widget.layers.add_table_layer(table)
+        self.table = Table.from_pandas(self.selected_data)
+        layer = self.widget.layers.add_table_layer(self.table)
+        layer.marker_type = "gaussian"
         layer.size_scale = 100
-        layer.color = "#FF00FF"
+        layer.color = "#FF0000" # This will mix with #00FF00 above to make yellow
         if self.selected_layer is not None:
             self.widget.layers.remove_layer(self.selected_layer)
         self.selected_layer = layer
@@ -113,10 +126,6 @@ class SelectionTool(v.VueTemplate):
         self.current_galaxy = {}
         self.candidate_galaxy = {}
         self.state.gal_selected = False
-        self._on_reset_view()
-    
-    def _on_reset_view(self):
-        pass
 
     def go_to_location(self, ra, dec, fov=GALAXY_FOV):
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
@@ -139,4 +148,3 @@ class SelectionTool(v.VueTemplate):
             data = {"galaxy_name": name}
         requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-galaxy-bad",
                      json=data)
-        self.flagged = False
