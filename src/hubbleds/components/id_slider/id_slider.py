@@ -9,7 +9,7 @@ from cosmicds.utils import load_template
 class IDSlider(VuetifyTemplate):
     template = load_template("id_slider.vue", __file__,
                              traitlet=True).tag(sync=True)
-    color = Unicode("#1E90FF").tag(sync=True)
+    color = Unicode("#FF0000").tag(sync=True)
     selected = Int(0).tag(sync=True)
     state = GlueState().tag(sync=True)
     step = Int(1).tag(sync=True)
@@ -27,7 +27,7 @@ class IDSlider(VuetifyTemplate):
         self.value_component = value_component
         self.state = stage_state
 
-        self._default_color = kwargs.get("default_color", "#1E90FF")
+        self._default_color = kwargs.get("default_color", "#FF0000")
         self._highlight_ids = kwargs.get("highlight_ids", [])
         self._highlight_label = kwargs.get("highlight_label", None)
         self._highlight_color = kwargs.get("highlight_color", "orange")
@@ -52,9 +52,11 @@ class IDSlider(VuetifyTemplate):
         self.state.low_age = int(min(self.values))
         self.state.high_age = int(max(self.values))
         self.vmax = len(self.values) - 1
+        self.halfvmax = self.vmax/2 if (self.vmax % 2 == 0) else (self.vmax-1)/2 #check if vmax is even or odd
         self.selected_id = int(self.ids[self.selected])
         self.thumb_value = self.values[self.selected]
-        self.tick_labels = ["Lowest"] + ["" for _ in range(self.vmax - 1)] + ["Highest"]
+        self.tick_labels = ["Low"] + ["" for _ in range(int(self.halfvmax)-1)] + ["Age (Gyr)"]  + ["" for _ in range(int(self.halfvmax)-1)] + ["High"]
+
 
     def _sort_key(self, id):
         idx = where(self.glue_data[self.id_component] == id)[0][0]

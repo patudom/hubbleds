@@ -196,9 +196,14 @@
           outlined
         >
           <v-lazy>
-            <jupyter-widget :widget="viewers.comparison_viewer"/>
+            <jupyter-widget
+              :widget="viewers.comparison_viewer"
+              class="comparison_viewer"
+              />
           </v-lazy>
-          <c-student-slider />
+          <c-student-slider 
+            class="slider_card"
+            />
         </v-card>
         <c-hubble-slideshow 
           v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
@@ -373,6 +378,27 @@
 
 .v-alert .v-input--radio-group+.v-alert, .v-dialog .v-input--radio-group+.v-alert {
   background-color: #000b !important;
+.v-slider__thumb:hover, .v-slider__thumb-label-container:hover {
+  cursor: grab;
+}
+
+.v-slider__thumb:active, .v-slider__thumb-label-container:active {
+  cursor: grabbing;
+}
+
+.comparison_viewer.v-card {
+  border-bottom-left-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+  margin-bottom: 1px !important;
+}
+
+.slider_card {
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+}
+
+.g_legend{
+  fill: #F002 !important;
 }
 
 </style>

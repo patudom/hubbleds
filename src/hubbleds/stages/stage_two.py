@@ -349,6 +349,8 @@ class StageTwo(HubbleStage):
 
     def add_student_distance(self, _args=None):
         index = self.distance_table.index
+        if index is None:
+            return
         distance = round(DISTANCE_CONSTANT / self.stage_state.meas_theta, 0)
         self.update_data_value("student_measurements", "distance", distance,
                                index)
