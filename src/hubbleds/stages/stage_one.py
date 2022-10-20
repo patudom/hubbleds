@@ -126,6 +126,9 @@ class StageState(CDSState):
     def marker_after(self, marker):
         return self.indices[self.marker] > self.indices[marker]
 
+    def marker_index(self, marker):
+        return self.indices[marker]
+
 
 @register_stage(story="hubbles_law", index=1, steps=[
     # "Explore celestial sky",
@@ -137,6 +140,8 @@ class StageState(CDSState):
 class StageOne(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
+
+    _state_cls = StageState
 
     @default('template')
     def _default_template(self):
@@ -157,7 +162,6 @@ class StageOne(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
 
         # Set up any Data-based state values
@@ -177,7 +181,7 @@ class StageOne(HubbleStage):
             dict(id="update-velocities",
                  icon="mdi-run-fast",
                  tooltip="Fill in velocities",
-                 disabled=True,
+                 disabled=self.stage_state.marker_before('dop_cal6'),
                  activate=self.update_velocities)
         galaxy_table = Table(self.session,
                              data=self.get_data(STUDENT_MEASUREMENTS_LABEL),
@@ -319,6 +323,8 @@ class StageOne(HubbleStage):
             self.story_state.step_complete = True
             self.story_state.step_index = self.stage_state.step_markers.index(
                 new)
+        if advancing and new == "dop_cal6":
+            self.stage_state.doppler_calc_complete = True
         if advancing and old == "sel_gal1":
             self.selection_tool.show_galaxies()
             self.selection_tool.widget.center_on_coordinates(
@@ -546,8 +552,6 @@ class StageOne(HubbleStage):
         return self.get_component('c-spectrum-slideshow')
 
     def _update_image_location(self, using_voila):
-        print("In _update_image_location")
-        print(using_voila)
         prepend = "voila/files/" if using_voila else ""
         self.stage_state.image_location = prepend + "data/images/stage_one_spectrum"
 

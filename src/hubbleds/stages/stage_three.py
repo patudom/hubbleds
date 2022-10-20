@@ -142,6 +142,8 @@ class StageState(CDSState):
 class StageThree(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
 
+    _state_cls = StageState
+
     @default('stage_state')
     def _default_state(self):
         return StageState()
@@ -171,7 +173,6 @@ class StageThree(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
 
         student_data = self.get_data(STUDENT_DATA_LABEL)

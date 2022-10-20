@@ -117,6 +117,8 @@ class StageTwo(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     START_COORDINATES = SkyCoord(213 * u.deg, 61 * u.deg, frame='icrs')
 
+    _state_cls = StageState
+
     @default('template')
     def _default_template(self):
         return load_template("stage_two.vue", __file__)
@@ -136,7 +138,6 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state = StageState()
         dosdonts_slideshow = DosDonts_SlideShow(self.stage_state)
         self.add_component(dosdonts_slideshow, label='c-dosdonts-slideshow')
 
