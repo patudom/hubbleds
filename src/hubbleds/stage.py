@@ -7,8 +7,8 @@ from cosmicds.phases import Stage
 from cosmicds.utils import API_URL, CDSJSONEncoder
 from echo import add_callback
 
-from .data_management import MEAS_TO_STATE, UNITS_TO_STATE
-from .utils import HUBBLE_ROUTE_PATH
+from .data_management import MEAS_TO_STATE, STUDENT_MEASUREMENTS_LABEL, UNITS_TO_STATE
+from .utils import HUBBLE_ROUTE_PATH, distance_from_angular_size, velocity_from_wavelengths
 
 
 class HubbleStage(Stage):
@@ -51,15 +51,32 @@ class HubbleStage(Stage):
             requests.delete(
                 f"{API_URL}/{HUBBLE_ROUTE_PATH}/measurement/{user['id']}/{galaxy_name}")
 
-    def update_data_value(self, dc_name, comp_name, value, index):
+    def update_data_value(self, dc_name, comp_name, value, index, block_submit=False):
         super().update_data_value(dc_name, comp_name, value, index)
 
-        if dc_name != "student_measurements":
+        if dc_name != STUDENT_MEASUREMENTS_LABEL:
             return
 
+        # Update dependent values, if the student has already has a value for them
+        # We block submission to avoid sending unnecessary requests
+        data = self.data_collection[dc_name]
+        if comp_name == "measwave":
+            velocity = data["velocity"][index]
+            if velocity is not None:
+                rest = data["restwave"][index]
+                new_velocity = velocity_from_wavelengths(value, rest)
+                self.update_data_value(dc_name, "velocity", new_velocity, index, block_submit=True)
+
+        if comp_name == "angular_size":
+            distance = data["distance"][index]
+            if distance is not None:
+                new_distance = distance_from_angular_size(value)
+                self.update_data_value(dc_name, "distance", new_distance, index, block_submit=True)
+
+        # Submit a measurement, if necessary
         if self.app_state.update_db \
-                and comp_name in MEAS_TO_STATE.keys():
-            data = self.data_collection[dc_name]
+                and comp_name in MEAS_TO_STATE.keys() \
+                and not block_submit:
             measurement = {comp.label: data[comp][index] for comp in
                            data.main_components}
             self.submit_measurement(measurement)
@@ -68,7 +85,7 @@ class HubbleStage(Stage):
         super().add_data_values(dc_name, values)
         self.story_state.update_student_data()
 
-        if self.app_state.update_db and dc_name == "student_measurements":
+        if self.app_state.update_db and dc_name == STUDENT_MEASUREMENTS_LABEL:
             self.submit_measurement(values)
 
     def table_selected_color(self, dark):
