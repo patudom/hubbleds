@@ -67,7 +67,9 @@
             </v-card>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ang_siz4']"
+        >
           <v-col
             cols="6"
             offset="3"
