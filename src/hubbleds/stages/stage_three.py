@@ -342,8 +342,11 @@ class StageThree(HubbleStage):
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
         student_slider = IDSlider(class_summ_data, "student_id", "age", self.stage_state, highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "c-student-slider")
-        def student_slider_change(id):
+        def student_slider_change(id, highlighted):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
+            color = student_slider.highlight_color if highlighted else student_slider.default_color
+            self.student_slider_subset.style.color = color
+
         student_slider.on_id_change(student_slider_change)
 
         def update_student_slider(msg):

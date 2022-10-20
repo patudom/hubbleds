@@ -303,9 +303,11 @@
                     v-intersect = "(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                   >
                     <v-card-text>
-                      <p>
+                      <div
+                        class="JaxEquation"
+                      >
                         $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$  
-                      </p>
+                      </div>
                       <h6>
                         (ask your instructor for more information if you want to know how to use trigonometry to derive this formula).
                       </h6> 
@@ -359,9 +361,11 @@
                       <v-card-text 
                         v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                       >
-                        <p>
+                        <div
+                          class="JaxEquation"
+                        >
                           $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$ 
-                        </p>
+                        </div>
                       </v-card-text>
                     </v-card>
                     </v-row>
@@ -441,9 +445,11 @@
                       <v-card-text
                         v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                       >
-                        <p>
+                        <div
+                          class="JaxEquation"
+                        >
                           $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$ 
-                        </p>
+                        </div>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -489,9 +495,11 @@
                       <v-card-text
                         v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                       >
-                        <p>
+                        <div
+                          class="JaxEquation"
+                        >
                           $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$ 
-                        </p>
+                        </div>
                       </v-card-text>
                     </v-card>
                   </v-row>
@@ -559,9 +567,11 @@
                   <p>
                     Nice work! To estimate distances to <strong>your</strong> galaxies, we start with this same formula:
                   </p>
-                  <p>
+                  <div
+                    class="JaxEquation"
+                  >
                     $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$ 
-                  </p>
+                  </div>
                   <p>
                     With some algebra and unit conversions, this becomes: 
                   </p>
@@ -573,9 +583,11 @@
                     <v-card-text
                       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                     >
-                      <p>
+                      <div
+                        class="JaxEquation"
+                      >
                         $$ \small{\text{Galaxy Distance} =  210,000 \cdot \frac{\text{physical length of galaxy}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
-                      </p>
+                      </div>
                     </v-card-text>
                   </v-card>
                 </div>
@@ -610,9 +622,11 @@
                   <v-card-text
                     v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                   >
-                    <p>
+                    <div
+                      class="JaxEquation"
+                    >
                       $$ \small{\text{Galaxy Distance} = 210,000 \cdot \frac{\text{physical length of galaxy}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
-                    </p>
+                    </div>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -643,9 +657,11 @@
                   <v-card-text
                     v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                   >
-                    <p>
+                    <div
+                      class="JaxEquation"
+                    >
                       $$ \text{physical length of Milky Way galaxy, }  L = 100,000 \text{ light years}  = 0.03 \text{ Mpc} $$
-                    </p>
+                    </div>
                   </v-card-text>
                 </v-card>
                 <p>
@@ -692,9 +708,11 @@
                   <v-card-text
                     v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
                   >
-                    <p>
+                    <div
+                      class="JaxEquation"
+                    >
                       $$ \mathbf{\text{ Distance in Mpc} = \frac{ {{ Math.round(distance_const) }} }{ \text{galaxy angular size (}\theta \text{ in arcseconds)}}} $$
-                    </p>
+                    </div>
                   </v-card-text>
                 </v-card>
               </v-col>

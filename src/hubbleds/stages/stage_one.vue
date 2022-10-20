@@ -68,7 +68,7 @@
       <v-col
         cols="12"
         lg="4"
-        :style="$vuetify.breakpoint.lg ? 'max-height: 100px' : 'max-height: 2500px'"
+        :style="$vuetify.breakpoint.lg ? 'max-height: 400px' : 'max-height: 2500px'"
       >
         <c-guideline-notice-galaxy-table 
           v-if="stage_state.marker == 'sel_gal2' & stage_state.gals_total == 1"
@@ -205,6 +205,17 @@
 
 .v-dialog .v-card__text {
   font-size: 18px !important;
+}
+
+.v-radio label.theme--dark{
+  color: white !important;
+}
+.v-radio label.theme--light{
+  color: black !important;
+}
+
+.v-alert .v-input--radio-group+.v-alert, .v-dialog .v-input--radio-group+.v-alert {
+  background-color: #000b !important;
 }
 
 </style>
