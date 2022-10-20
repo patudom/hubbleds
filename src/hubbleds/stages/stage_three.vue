@@ -50,7 +50,6 @@
       class="d-flex align-stretch"
       v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1']"
     >
-
       <v-col
         cols="12"
         lg="5"
