@@ -157,3 +157,9 @@ def vertical_line_mark(layer, x, color, label=None):
     viewer_state = layer.state.viewer_state
     return line_mark(layer, x, viewer_state.y_min, x, viewer_state.y_max,
                      color, label)
+
+def velocity_from_wavelengths(lamb_meas, lamb_rest):
+    return round((3 * (10 ** 5) * (lamb_meas / lamb_rest - 1)), 0)
+
+def distance_from_angular_size(theta):
+    return round(DISTANCE_CONSTANT / theta, 0)

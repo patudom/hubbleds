@@ -16,7 +16,7 @@ from ..components import DistanceSidebar, DistanceTool, DistanceCalc, StageTwoCo
 from ..components.angsize_dosdonts_slideshow import DosDonts_SlideShow
 from ..data_management import STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
-from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, IMAGE_BASE_URL, format_fov
+from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, IMAGE_BASE_URL, distance_from_angular_size, format_fov
 
 log = logging.getLogger()
 
@@ -351,7 +351,7 @@ class StageTwo(HubbleStage):
         index = self.distance_table.index
         if index is None:
             return
-        distance = round(DISTANCE_CONSTANT / self.stage_state.meas_theta, 0)
+        distance = distance_from_angular_size(self.stage_state.meas_theta)
         self.update_data_value("student_measurements", "distance", distance,
                                index)
         if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.

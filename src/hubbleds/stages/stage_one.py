@@ -22,7 +22,7 @@ from ..data.styles import load_style
 from ..data_management import SDSS_DATA_LABEL, SPECTRUM_DATA_LABEL, \
     STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
-from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, MG_REST_LAMBDA
+from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, MG_REST_LAMBDA, velocity_from_wavelengths
 from ..viewers import SpectrumView
 
 log = logging.getLogger()
@@ -521,9 +521,9 @@ class StageOne(HubbleStage):
         data = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         index = self.galaxy_table.index
         if index is not None:
-            lamb_obs = data["restwave"][index]
+            lamb_rest = data["restwave"][index]
             lamb_meas = data["measwave"][index]
-            velocity = round((3 * (10 ** 5) * (lamb_meas / lamb_obs - 1)), 0)
+            velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
             self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
                                    velocity, index)
             self.story_state.update_student_data()
