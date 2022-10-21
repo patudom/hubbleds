@@ -17,6 +17,8 @@ class StageState(CDSState):
 ])
 class StageIntro(Stage):
 
+    _state_cls = StageState
+
     @default('template')
     def _default_template(self):
         return load_template("stage_intro.vue", __file__)
@@ -36,7 +38,6 @@ class StageIntro(Stage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state = StageState()
         intro_slideshow = IntroSlideshow(self.stage_state, self.app_state)
         self.add_component(intro_slideshow, label='c-intro-slideshow')
         intro_slideshow.observe(self._on_slideshow_complete,

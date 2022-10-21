@@ -22,7 +22,7 @@ from ..data.styles import load_style
 from ..data_management import SDSS_DATA_LABEL, SPECTRUM_DATA_LABEL, \
     STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
-from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, MG_REST_LAMBDA
+from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, MG_REST_LAMBDA, velocity_from_wavelengths
 from ..viewers import SpectrumView
 
 log = logging.getLogger()
@@ -123,6 +123,15 @@ class StageState(CDSState):
     def marker_before(self, marker):
         return self.indices[self.marker] < self.indices[marker]
 
+    def marker_after(self, marker):
+        return self.indices[self.marker] > self.indices[marker]
+
+    def marker_reached(self, marker):
+        return self.indices[self.marker] >= self.indices[marker]
+
+    def marker_index(self, marker):
+        return self.indices[marker]
+
 
 @register_stage(story="hubbles_law", index=1, steps=[
     # "Explore celestial sky",
@@ -134,6 +143,8 @@ class StageState(CDSState):
 class StageOne(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
+
+    _state_cls = StageState
 
     @default('template')
     def _default_template(self):
@@ -154,7 +165,6 @@ class StageOne(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
 
         # Set up any Data-based state values
@@ -174,7 +184,7 @@ class StageOne(HubbleStage):
             dict(id="update-velocities",
                  icon="mdi-run-fast",
                  tooltip="Fill in velocities",
-                 disabled=True,
+                 disabled=self.stage_state.marker_before('dop_cal6'),
                  activate=self.update_velocities)
         galaxy_table = Table(self.session,
                              data=self.get_data(STUDENT_MEASUREMENTS_LABEL),
@@ -288,11 +298,13 @@ class StageOne(HubbleStage):
                      self.enable_velocity_tool)
 
         spectrum_viewer = self.get_viewer("spectrum_viewer")
-        restwave_tool = spectrum_viewer.toolbar.tools["hubble:restwave"]
+        spec_toolbar = spectrum_viewer.toolbar
+        restwave_tool = spec_toolbar.tools["hubble:restwave"]
         add_callback(restwave_tool, 'lambda_used', self._on_lambda_used)
         add_callback(restwave_tool, 'lambda_on', self._on_lambda_on)
-        for tool_id in ["hubble:restwave", "hubble:wavezoom", "bqplot:home"]:
-            spectrum_viewer.toolbar.set_tool_enabled(tool_id, False)
+        spec_toolbar.set_tool_enabled("hubble:restwave", self.stage_state.marker_reached("res_wav1"))
+        spec_toolbar.set_tool_enabled("hubble:wavezoom", self.stage_state.marker_reached("obs_wav2"))
+        spec_toolbar.set_tool_enabled("bqplot:home", self.stage_state.marker_reached("obs_wav2"))
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_update)
 
     def _on_measurements_changed(self, msg):
@@ -316,6 +328,8 @@ class StageOne(HubbleStage):
             self.story_state.step_complete = True
             self.story_state.step_index = self.stage_state.step_markers.index(
                 new)
+        if advancing and new == "dop_cal6":
+            self.stage_state.doppler_calc_complete = True
         if advancing and old == "sel_gal1":
             self.selection_tool.show_galaxies()
             self.selection_tool.widget.center_on_coordinates(
@@ -521,9 +535,9 @@ class StageOne(HubbleStage):
         data = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         index = self.galaxy_table.index
         if index is not None:
-            lamb_obs = data["restwave"][index]
+            lamb_rest = data["restwave"][index]
             lamb_meas = data["measwave"][index]
-            velocity = round((3 * (10 ** 5) * (lamb_meas / lamb_obs - 1)), 0)
+            velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
             self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
                                    velocity, index)
             self.story_state.update_student_data()
@@ -543,8 +557,6 @@ class StageOne(HubbleStage):
         return self.get_component('c-spectrum-slideshow')
 
     def _update_image_location(self, using_voila):
-        print("In _update_image_location")
-        print(using_voila)
         prepend = "voila/files/" if using_voila else ""
         self.stage_state.image_location = prepend + "data/images/stage_one_spectrum"
 
@@ -601,12 +613,11 @@ class StageOne(HubbleStage):
         for item in table.items:
             index = table.indices_from_items([item])[0]
             if index is not None and data["velocity"][index] is None:
-                lamb_obs = data["restwave"][index]
+                lamb_rest = data["restwave"][index]
                 lamb_meas = data["measwave"][index]
-                if lamb_obs is None or lamb_meas is None:
+                if lamb_rest is None or lamb_meas is None:
                     continue
-                velocity = round((3 * (10 ** 5) * (lamb_meas / lamb_obs - 1)),
-                                 0)
+                velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
                 self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
                                        velocity, index)
         self.story_state.update_student_data()
