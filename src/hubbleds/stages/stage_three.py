@@ -80,6 +80,15 @@ class StageState(CDSState):
         'con_int1',
         'age_dis1',
         'con_int2',
+        'age_uni1c',
+        'hyp_gal1c',
+        'age_uni3c',
+        'age_uni4c',
+        'you_age1c',
+        'cla_res1c',
+        'cla_age1c',
+        'age_dis1c',
+        'con_int2c',
     ])
 
     step_markers = CallbackProperty([
@@ -279,6 +288,11 @@ class StageThree(HubbleStage):
             "guideline_class_age_range4",
             "guideline_confidence_interval",
             "guideline_class_age_distribution",
+            "guideline_age_universe_c",  # move these to their own block
+            "guideline_hypothetical_galaxy_c",
+            "guideline_your_age_estimate_c",
+            "guideline_classmates_results_c",
+            "guideline_class_age_distribution_c",
         ]
         ext = ".vue"
         for comp in state_components:
@@ -312,6 +326,10 @@ class StageThree(HubbleStage):
             "guideline_age_universe_estimate4",
             "guideline_class_age_range",
             "guideline_confidence_interval_reflect2",
+            "guideline_age_universe_estimate3_c",
+            "guideline_age_universe_estimate4_c",
+            "guideline_class_age_range_c",
+            "guideline_confidence_interval_reflect2_c",
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")

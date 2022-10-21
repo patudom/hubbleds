@@ -48,7 +48,6 @@
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1']"
     >
       <v-col
         cols="12"
@@ -122,6 +121,21 @@
         <c-guideline-random-variability
           v-if="stage_state.marker == 'ran_var1'"
           v-intersect.once="scrollIntoView" />
+        <c-guideline-age-universe-c
+          v-if="stage_state.marker == 'age_uni1c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-hypothetical-galaxy-c
+          v-if="stage_state.marker == 'hyp_gal1c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-age-universe-estimate3-c
+          v-if="stage_state.marker == 'age_uni3c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-age-universe-estimate4-c
+          v-if="stage_state.marker == 'age_uni4c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-your-age-estimate-c
+          v-if="stage_state.marker == 'you_age1c'"
+          v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
         cols="12"
@@ -185,6 +199,12 @@
         <c-guideline-confidence-interval
           v-if="stage_state.marker == 'con_int1'"
           v-intersect.once="scrollIntoView"/>
+        <c-guideline-classmates-results-c
+          v-if="stage_state.marker == 'cla_res1c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-class-age-range-c
+          v-if="stage_state.marker == 'cla_age1c'"
+          v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"
@@ -223,6 +243,9 @@
         <c-guideline-class-age-distribution
           v-if="stage_state.marker == 'age_dis1'"
           v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-distribution-c
+          v-if="stage_state.marker == 'age_dis1c'"
+          v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"
@@ -241,7 +264,9 @@
     </v-row>
 
     <c-guideline-confidence-interval-reflect2
-      v-if="stage_state.marker == 'con_int2'"
+      v-intersect.once="scrollIntoView"/>
+    <c-guideline-confidence-interval-reflect2-c
+      v-if="stage_state.marker == 'con_int2c'"
       v-intersect.once="scrollIntoView"/>
 
 
