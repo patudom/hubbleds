@@ -18,6 +18,8 @@ class StageState(State):
 ])
 class StageTwoIntro(Stage):
 
+    _state_cls = StageState
+
     @default('template')
     def _default_template(self):
         return load_template("stage_two_intro.vue", __file__)
@@ -37,7 +39,6 @@ class StageTwoIntro(Stage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state = StageState()
         two_intro_slideshow = TwoIntroSlideShow(self.stage_state,
                                                 self.app_state)
         self.add_component(two_intro_slideshow, label='c-two-intro-slideshow')
