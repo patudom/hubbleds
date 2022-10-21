@@ -128,6 +128,9 @@ class StageState(CDSState):
     def marker_before(self, marker):
         return self.indices[self.marker] < self.indices[marker]
 
+    def marker_after(self, marker):
+        return self.indices[self.marker] > self.indices[marker]
+
     def move_marker_forward(self, marker_text, _value=None):
         index = min(self.markers.index(marker_text) + 1, len(self.markers) - 1)
         self.marker = self.markers[index]
@@ -141,6 +144,8 @@ class StageState(CDSState):
 ])
 class StageThree(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
+
+    _state_cls = StageState
 
     @default('stage_state')
     def _default_state(self):
@@ -171,7 +176,6 @@ class StageThree(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
@@ -424,8 +428,11 @@ class StageThree(HubbleStage):
         extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
 
-        # We defer some of the setup for later, to make loading faster
-        add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
+        # If possible, we defer some of the setup for later, to make loading faster
+        if self.story_state.stage_index != self.index:
+            add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
+        else:
+            self._deferred_setup()
     
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -475,7 +482,7 @@ class StageThree(HubbleStage):
         class_layer.state.visible = False
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         toggle_tool.set_layer_to_toggle(class_layer)
-        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
+        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', not self.stage_state.marker_before("tre_dat2"))
 
         # cosmicds PR157 - turn off fit line label for layer_viewer
         layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
