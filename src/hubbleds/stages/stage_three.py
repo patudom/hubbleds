@@ -128,6 +128,9 @@ class StageState(CDSState):
     def marker_before(self, marker):
         return self.indices[self.marker] < self.indices[marker]
 
+    def marker_after(self, marker):
+        return self.indices[self.marker] > self.indices[marker]
+
     def move_marker_forward(self, marker_text, _value=None):
         index = min(self.markers.index(marker_text) + 1, len(self.markers) - 1)
         self.marker = self.markers[index]
@@ -476,7 +479,7 @@ class StageThree(HubbleStage):
         class_layer.state.visible = False
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         toggle_tool.set_layer_to_toggle(class_layer)
-        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
+        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', not self.stage_state.marker_before("tre_dat2"))
 
         # cosmicds PR157 - turn off fit line label for layer_viewer
         layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
