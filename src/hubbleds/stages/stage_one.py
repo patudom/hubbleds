@@ -126,6 +126,9 @@ class StageState(CDSState):
     def marker_after(self, marker):
         return self.indices[self.marker] > self.indices[marker]
 
+    def marker_reached(self, marker):
+        return self.indices[self.marker] >= self.indices[marker]
+
     def marker_index(self, marker):
         return self.indices[marker]
 
@@ -295,11 +298,13 @@ class StageOne(HubbleStage):
                      self.enable_velocity_tool)
 
         spectrum_viewer = self.get_viewer("spectrum_viewer")
-        restwave_tool = spectrum_viewer.toolbar.tools["hubble:restwave"]
+        spec_toolbar = spectrum_viewer.toolbar
+        restwave_tool = spec_toolbar.tools["hubble:restwave"]
         add_callback(restwave_tool, 'lambda_used', self._on_lambda_used)
         add_callback(restwave_tool, 'lambda_on', self._on_lambda_on)
-        for tool_id in ["hubble:restwave", "hubble:wavezoom", "bqplot:home"]:
-            spectrum_viewer.toolbar.set_tool_enabled(tool_id, False)
+        spec_toolbar.set_tool_enabled("hubble:restwave", self.stage_state.marker_reached("res_wav1"))
+        spec_toolbar.set_tool_enabled("hubble:wavezoom", self.stage_state.marker_reached("obs_wav2"))
+        spec_toolbar.set_tool_enabled("bqplot:home", self.stage_state.marker_reached("obs_wav2"))
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_update)
 
     def _on_measurements_changed(self, msg):
