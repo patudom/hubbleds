@@ -236,6 +236,10 @@ class StageThree(HubbleStage):
         hubble_race_viewer = self.add_viewer(HubbleScatterView,
                                                 "hubble_race_viewer",
                                                  "Race")
+                                                 
+        for key in hubble_race_viewer.toolbar.tools:
+            hubble_race_viewer.toolbar.set_tool_enabled(key, False)
+        
         hubble_race_viewer.figure.axes[0].tick_format = ',.0f'
         hubble_race_viewer.figure.axes[1].tick_format = ',.0f'
         hubble_race_data = Data(label='hubble_race_data')
