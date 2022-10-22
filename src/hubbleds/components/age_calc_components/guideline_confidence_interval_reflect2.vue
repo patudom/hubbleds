@@ -70,11 +70,12 @@
           cols="12"
           lg="3"
         >
-          <v-textarea
+          <form-textarea
             outlined
             rows="1"
             label="Best Guess Age"
-          ></v-textarea>
+            tag="best-guess-age"
+          ></form-textarea>
         </v-col>
         <v-col>
           Gyr
@@ -146,11 +147,12 @@
         <v-col
           cols="12"
           lg="3">
-          <v-textarea
+          <form-textarea
             outlined
             rows="1"
             label="Likely Low Age"
-          ></v-textarea>
+            tag="likely-low-age"
+          ></form-textarea>
         </v-col>
         <v-col
           lg="2">
@@ -159,11 +161,12 @@
               <v-col
           cols="12"
           lg="3">
-          <v-textarea
+          <form-textarea
             outlined
             rows="1"
             label="Likely High Age"
-          ></v-textarea>
+            tag="likely-high-age"
+          ></form-textarea>
         </v-col>
         <v-col
           lg="2">
@@ -174,12 +177,13 @@
       <p class="mt-4">
         3. Explain why you chose your values using information from the scatterplot and/or the histogram:
       </p>
-      <v-textarea
+      <form-textarea
         outlined
         auto-grow
         rows="2"
         label="My Reasoning"
-      ></v-textarea>
+        tag="my-reasoning"
+      ></form-textarea>
 
       <v-row>
         <v-col
@@ -239,12 +243,13 @@
         </v-col>
       </v-row>
 
-      <v-textarea
+      <form-textarea
         outlined
         auto-grow
         rows="2"
         label="My Level of Confidence"
-      ></v-textarea>
+        tag="my-confidence"
+      ></form-textarea>
     </div>
   </scaffold-alert>
 </template>
