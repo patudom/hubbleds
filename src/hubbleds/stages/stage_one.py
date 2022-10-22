@@ -177,8 +177,9 @@ class StageOne(HubbleStage):
         # Set up viewers
         spectrum_viewer = self.add_viewer(
             SpectrumView, label="spectrum_viewer")
-        sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
-        add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
+        if spectrum_viewer.toolbar.tools.get("hubble:specflag") is not None:
+            sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
+            add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
 
 
         add_velocities_tool = \
@@ -633,9 +634,10 @@ class StageOne(HubbleStage):
         self._empty_spectrum_viewer()
 
         spectrum_viewer = self.get_viewer("spectrum_viewer")
-        sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
-        with ignore_callback(sf_tool, "flagged"):
-            sf_tool.flagged = False
+        if spectrum_viewer.toolbar.tools.get("hubble:specflag") is not None:
+            sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
+            with ignore_callback(sf_tool, "flagged"):
+                sf_tool.flagged = False
 
     def update_velocities(self, table, tool):
         data = table.glue_data
