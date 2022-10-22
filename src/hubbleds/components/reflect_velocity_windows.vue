@@ -66,6 +66,9 @@
                     <p>
                       Scientists do not work in a vacuum and neither should you. You can consult colleagues (i.e. classmates or lab partners) and instructors for help.
                     </p>
+                    <p>
+                      You can drag this window out of the way to see your data.
+                    <p>
                   </v-col>
                 </v-row>
               </v-container>

@@ -28,7 +28,7 @@
               <v-col>
                 <div>
                   <p>
-                    You’ve now uncovered evidence that galaxies are for the most part moving AWAY from our Milky Way galaxy. To scientists in the 1920’s, this led to a radical shift in their world view. Once they knew galaxies do not, in fact, move about randomly, they needed to come up with a new explanation for this surprising phenomenon.
+                    You’ve now uncovered evidence that <b>galaxies</b> are for the most part <b>moving AWAY from our Milky Way galaxy</b>. To scientists in the 1920’s, this led to a <b>radical shift in their world view</b>. Once they knew galaxies do not, in fact, move about randomly, they <b>needed</b> to come up with a new explanation for this surprising phenomenon.</b>
                   </p>
                 </div>
               </v-col>
@@ -47,10 +47,10 @@
               <v-col>
                 <div>                    
                   <p>
-                    Edwin Hubble was an astronomer who was interested in these galaxies. After looking at Slipher’s velocity measurements, Hubble wondered if there is a relationship between the galaxies’ velocities and their distances from the Milky Way. 
+                    <b>Edwin Hubble</b> was an astronomer who was interested in these galaxies. After looking at Slipher’s velocity measurements, Hubble wondered if there is a <b>relationship between</b> the galaxies’ <b>velocities</b> and their <b>distances</b> from the Milky Way. 
                   </p>
                   <p>
-                    Measuring distances to objects in space is one of the most challenging things to do in astronomy. In the next section, you will learn a method for determining distances to galaxies.
+                    Measuring <b>distances</b> to objects in space is one of the most challenging things to do in astronomy. In the next section, you will learn a method for determining distances to galaxies.
                   </p>
                 </div>
               </v-col>
@@ -121,7 +121,7 @@
                 </h3>
                 <div>
                   <p>  
-                  From looking at these images, can you determine which person and which galaxy are closer to the viewer? What visual clues and assumptions do you need to make this estimation?
+                  From looking at these images, can you guess, or know,  which person and which galaxy are <b>closer</b> to the viewer? Think about what visual cues you are using and assumptions you are making as you ponder your answer.
                   </p>
                 </div>
               </v-col>
@@ -291,7 +291,7 @@
                 </h3>
                 <div>
                   <p>
-                    As with the people, if we know the physical length of a galaxy, then its angular size tells us its distance from us. 
+                    As with the people, if we know the physical size of a galaxy, then its angular size tells us its distance from us. 
                   </p>
                   <p>
                     For very far away objects like galaxies, the relationship is described by the formula:
@@ -306,11 +306,11 @@
                       <div
                         class="JaxEquation"
                       >
-                        $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$  
+                        $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Size} (L)}{\text{Galaxy's Distance} (D)}} $$  
                       </div>
-                      <h6>
+                      <h5>
                         (ask your instructor for more information if you want to know how to use trigonometry to derive this formula).
-                      </h6> 
+                      </h5> 
                     </v-card-text>
                   </v-card>
                 </div>

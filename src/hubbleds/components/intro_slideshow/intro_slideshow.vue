@@ -31,7 +31,7 @@
             >
               <v-col cols="6">
                 <p>
-                  In this investigation, you will use real astronomical data to form answers to major questions about our universe:
+                  Welcome to the <b> "Hubble's Law" Cosmic Data Story</b> where you will use real astronomical data- old and new- to (literally!) investigate the mysteries of our Universe. In particular, let's ask:
                 </p>
                 <v-card
                   class="justify-center pa-2 mx-12 my-8"
@@ -51,21 +51,24 @@
                   </p>
                 </v-card>
                 <p>
-                  While exploring these questions, you will learn techniques scientists use to assess the <strong>reliability</strong> of your results, based on your data. After all, when scientists collect data to answer new questions, there is no answer key they can use to check if their conclusions are correct.
+                  When scientists collect data to answer questions no one has answered, or even asked yet, there is definitely no answer key in the back of some book. So, as you explore in this data story as a scientist, you will want to <b> question the reliability </b> of your results.  Are the <b> data </b> really <b> good enough </b> to support a conclusion? <b> How can you know if they are good enough?
                 </p>
                 <p>
-                  Like a scientist, you will have to judge for yourself what can be concluded from their data, and how much confidence you should have in your conclusions.
+                  Just as scientists constantly must, you'll need to <b> determine what can be concluded </b> from the data at-hand, and <b> how much confidence </b> you should have in your conclusions.
                 </p>
                 <p>
-                  Let’s get started!
+                  Let's get started
                 </p>
               </v-col>
               <v-col cols="6">
                 <v-img
-                  lazy-src="https://astropix.ipac.caltech.edu/archive/esahubble/heic0406a/esahubble_heic0406a_320.jpg"
-                  src="https://astropix.ipac.caltech.edu/archive/esahubble/heic0406a/esahubble_heic0406a_320.jpg"
-                  alt="Image of distant galaxies taken by the Hubble Space Telescope"
+                  lazy-src="https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg"
+                  src="https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg"
+                  alt="Hubble Telescope"
                 ></v-img>
+                <p class="text-center grey--text" >
+                  <i>Ever wonder who the Hubble Space is named for, and why? </i>
+                <p>
               </v-col>
             </v-row>
           </v-container>
@@ -78,19 +81,20 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col>
+              <v-col cols="6">
                 <p>
-                  Imagine that you are an astronomer living a century ago in the early 1920s. Nearly all astronomers and scientists of this era (including Albert Einstein) believed that the universe was static, unchanging, and eternal. In other words, the universe has always been, and always will be. These ideas date back to ancient Greek times and were embraced by philosophers such as Aristotle.
+                  Imagine that you are an eminent astronomer living in the early 1920s. You and your colleagues around the world, including Albert Einstein, would agree that the <b> universe is unchanging and everlasting. </b> In other words, you expect that the universe always has been and will be the way it is the way you see it now. This picture of an unchanging universe had rarely been questioned throughout human history, thanks in large part to <b> Aristotle </b> , who embraced perfection and permanence. 
                 </p>
-                <p
-                  class="text-center grey--text"
-                >
-                <v-col cols="12">
+                </v-col>
+                <v-col cols="6">
                 <v-img
                   lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/School_of_Athens.jpg"
                   src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/School_of_Athens.jpg"
                   alt="School of Athens"
                 ></v-img>
+                <p class="text-center grey--text">
+                  <i> Figure caption: Plato (red robe) and his pupil Aristotle (blue robe) at the center of “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Aristotle lived from 384-322 BC, and his theory of an unchanging Universe persisted until the time of Edwin Hubble, 23 centuries later. </i>
+                </p>
               </v-col>
                 </p>
               </v-col>
@@ -110,10 +114,13 @@
                   style="min-height: 120px;"
                 >
                   <p>
-                    The frame below provides an interactive view of the cosmic sky, built from authentic telescopic data. You can explore this view by panning around and zooming in/out to familiarize yourself with the tool, and connect it to the work astronomers have been doing for centuries.
-
-                    We are currently looking at the Milky Way, a band of stars that spans across a dark sky.
+                    The frame below provides an <b> interactive view </b>of the cosmic sky, using images from real observations.
                   </p>
+                  <p>
+                    Take note that the bright-dark-bright band you see going diagonally across the frame (before you try the controls!) is caused by stars and dust in our home galaxy,  called <b> "The Milky Way". </b>  Later, we’ll talk about the shapes of galaxies–but for now, just know that our Milky Way is actually a “spiral disk galaxy,” shaped, overall, like a very thin <b> pancake </b> .  The Milky Way as seen on Earth’s night sky only looks like a stripe because our Solar system is buried deep within the Milky Way’s disk, so our view is like that of a (magically-semi-transparent) pancake viewed from inside of its fluffy goodness. 
+                  </p>
+                  <p>
+                    Now that you know all that, go ahead and <b> pan and zoom </b> (try out clicking and dragging) to see parts of the sky beyond this starter view.  
                 </div>
                 <div
                   class="mb-2 mx-4"
@@ -194,7 +201,7 @@
                     As you explore the cosmic sky, you may see stars and fuzzy blobs called nebulae. In the 1700's, French astronomer Charles Messier cataloged as many nebulae as he could find. They are known as "Messier Objects" and are identified by their catalog number. For example, M13 represents the 13th Messier Object in the catalog.
                   </p>
                   <p>
-                    Click on the buttons to the right to view some Messier Objects.
+                    Click on the buttons to the right to <b> view some Messier Objects</b>. (Also, fun fact, “nebula” means “cloud,” or “fog,” in Latin.)
                   </p>
                 </div>
                 <div
@@ -355,10 +362,10 @@
                   style="min-height: 120px;"
                 >
                   <p>
-                    M31 and M51 are examples of a particular type of nebula that interested astronomers in the early 1900’s. They were known as “spiral nebulae" because of their distinctive spiral shape. In 1920, there was a “Great Debate” between astronomers Harlow Shapley and Heber Curtis questioning whether the spiral nebulae were perhaps young solar systems being born within our own Milky Way galaxy or were “island universes” beyond our Milky Way.
+                    <b>M31</b> and <b>M51</b> are examples of a particular type of nebula that interested astronomers in the early 1900’s. They were known as <b>“spiral nebulae"</b> because of their distinctive spiral shape. In 1920, there was a <b>“Great Debate”</b> between astronomers <b>Harlow Shapley</b> and Allegheny Observatory's <b> Heber Curtis </b> questioning whether the spiral nebulae were perhaps <b>young solar systems</b> being born within our own Milky Way galaxy or were <b>“island universes”</b> beyond our Milky Way.
                   </p>
                   <p>
-                    Do you think the nebulae you’ve observed are within the Milky Way or beyond it?
+                    Do you have some idea if the <b> nebulae you’ve explored</b> are within the Milky Way or beyond it? (Hint: we haven’t told you anything yet about how you might tell!) 
                   </p>
                 </div>
                 <div
@@ -491,7 +498,10 @@
             <v-row>
               <v-col>
                 <p>
-                  Between 1907&#8211;1921, astronomer Henrietta Leavitt discovered and observed Cepheid variable stars. She noticed an important property about these stars, that there is a relationship between the intrinsic brightness of the Cepheids and how slowly or rapidly their brightness changes. This important discovery made it possible to determine distances to the nebulae and finally resolve the Shapley-Curtis Great Debate: it turned out that many of the nebulae are far beyond the Milky Way and constitute individual galaxies in their own right.
+                  Between 1907&#8211;1921, Harvard astronomer <b>Henrietta Leavitt</b> discovered and observed Cepheid variable starsin a nebula (now known to be a small nearby galaxy) called the “Small Magellanic Cloud”. By carefully analyzing changes in the Cepheid stars’ brightness over time, she discovered that <b> fainter Cepheids vary more slowly, systematically,  than brighter ones </b>, as shown in her <b>graph </b> here. This important discovery made it possible to determine distances to far-away nebulae and finally resolve the Shapley-Curtis Great Debate: it turned out that many of the nebulae are far beyond the Milky Way and constitute individual <b>galaxies in their own right</b>.
+                </p>
+                <p>
+                  Ironically, one of the astronomers who used Leavitt’s relationship soon after it was discovered, to measure distances, was Harlow Shapley, who did not take long to realize he had taken the wrong side in the famous Great Debate. 
                 </p>
                 <p
                   class="text-center grey--text"
@@ -505,21 +515,27 @@
                     lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
                     src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
                     alt="Leavitt at Work "
+                    height = "350"
                   ></v-img>
+                <i> Henrietta Swan Leavitt </i>
               </v-col>
               <v-col cols= "4">
                 <v-img
                     lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
                     src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
                     alt="Leavitt Plate"
+                    height = "350"
                   ></v-img>
+                <i> Henritta Leavitt's Plates </i>
               </v-col>
               <v-col cols= "4">
                 <v-img
                     lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
                     src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
                     alt="Leavitt graph"
+                    height = "350"
                   ></v-img>
+                <i> Graph  from Leavitt's 1912 paper. The horizontal axis is the logarithm of the period of the corresponding Cepheid, and the vertical axis is its apparent magnitude. The lines drawn correspond to the stars' minimum and maximum brightness. </i>
               </v-col>
             </v-row>
           </v-container>
@@ -534,10 +550,10 @@
             <v-row>
               <v-col>
                 <p>
-                  Around this same time, astronomer Vesto Slipher observed spiral nebulae using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer. 
+                  Around this same time, astronomer <b>Vesto Slipher</b> observed spiral nebulae using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer.
                 </p>
                 <p>
-                  Recall that the prevailing view in the early 1900’s was that the universe is unchanging and eternal. As a result, the dominant expectation was that distant nebulae are either not moving at all, or if they are moving then they are moving randomly. 
+                  Recall that the prevailing view in the early 1900’s was that the universe is unchanging and eternal. As a result, the dominant expectation was that distant nebulae are either not moving at all, or if they are moving then they are moving randomly.
                 </p>
                 <p>
                   It’s time for you to collect some of your own data, form conclusions, and compare your conclusions to what Vesto Slipher found.
@@ -547,7 +563,7 @@
                 <v-img
                   lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/V.M.Slipher.gif"
                   src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/V.M.Slipher.gif"
-                  alt="Vesto"
+                  alt="Vesto Slipher"
                 ></v-img>
               </v-col>
             </v-row>
