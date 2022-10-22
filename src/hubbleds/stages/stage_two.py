@@ -96,7 +96,6 @@ class StageState(CDSState):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.marker_index = 0
         self.marker = self.markers[0]
         self.indices = {marker: idx for idx, marker in enumerate(self.markers)}
 
@@ -106,6 +105,15 @@ class StageState(CDSState):
     def move_marker_forward(self, marker_text, _value=None):
         index = min(self.markers.index(marker_text) + 1, len(self.markers) - 1)
         self.marker = self.markers[index]
+    
+    def marker_after(self, marker):
+        return self.indices[self.marker] > self.indices[marker]
+
+    def marker_reached(self, marker):
+        return self.indices[self.marker] >= self.indices[marker]
+
+    def marker_index(self, marker):
+        return self.indices[marker]
 
 
 @register_stage(story="hubbles_law", index=3, steps=[
@@ -137,6 +145,9 @@ class StageTwo(HubbleStage):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        
+        
 
         dosdonts_slideshow = DosDonts_SlideShow(self.stage_state)
         self.add_component(dosdonts_slideshow, label='c-dosdonts-slideshow')
@@ -244,7 +255,15 @@ class StageTwo(HubbleStage):
                      self._make_measurement)
         add_callback(self.stage_state, 'distance_calc_count',
                      self.add_student_distance)
-
+        
+       
+        # ang_siz2 -> cho_row1, est_dis3 -> cho_row2
+        for marker in ['ang_siz2', 'est_dis3']:
+            if self.stage_state.marker_reached(marker):
+                marker_index = self.stage_state.markers.index(marker)
+                new_index = marker_index - 1
+                self.stage_state.marker = self.stage_state.marker[new_index]
+        
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
             return

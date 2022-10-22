@@ -130,10 +130,14 @@ class StageState(CDSState):
 
     def marker_after(self, marker):
         return self.indices[self.marker] > self.indices[marker]
+    
+    def marker_reached(self, marker):
+        return self.indices[self.marker] >= self.indices[marker]
 
     def move_marker_forward(self, marker_text, _value=None):
         index = min(self.markers.index(marker_text) + 1, len(self.markers) - 1)
         self.marker = self.markers[index]
+    
 
 
 @register_stage(story="hubbles_law", index=4, steps=[
@@ -247,7 +251,10 @@ class StageThree(HubbleStage):
         
         
         self.add_component(hubble_slideshow, label='c-hubble-slideshow')
-
+        
+        layer_viewer.toolbar.set_tool_enabled("cds:linedraw", self.stage_state.marker_reached("tre_lin2"))
+        layer_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("bes_fit1"))      
+        
 # for the runner viewer
 # self.add_viewer(RunnerViewer)
 
@@ -448,7 +455,13 @@ class StageThree(HubbleStage):
             class_layer.state.visible = False
         if advancing and new == "you_age1":
             layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True                   
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+        if advancing and new == "tre_lin2":
+            layer_viewer = self.get_viewer("layer_viewer")
+            layer_viewer.toolbar.set_tool_enabled("cds:linedraw", True )
+        if advancing and new == "bes_fit1":
+            layer_viewer = self.get_viewer("layer_viewer")
+            layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)            
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
@@ -487,7 +500,10 @@ class StageThree(HubbleStage):
         # cosmicds PR157 - turn off fit line label for layer_viewer
         layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
 
-        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
+        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)      
+        
+        layer_toolbar = layer_viewer.toolbar
+        layer_toolbar.set_tool_enabled("hubble:togglelayer", self.stage_state.marker_reached("tre_dat2"))
 
         student_layer = comparison_viewer.layers[-1]
         student_layer.state.color = 'orange'
