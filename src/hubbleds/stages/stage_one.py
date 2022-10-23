@@ -9,7 +9,7 @@ from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import load_template, update_figure_css, extend_tool, debounce
+from cosmicds.utils import load_template, update_figure_css, debounce
 from cosmicds.utils import extend_tool
 
 from echo import add_callback, ignore_callback, CallbackProperty
