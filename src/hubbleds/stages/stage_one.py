@@ -10,7 +10,6 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import load_template, update_figure_css, debounce
-from cosmicds.utils import extend_tool
 from echo import add_callback, ignore_callback, CallbackProperty
 from glue.core import Data
 from glue_jupyter.bqplot.scatter import BqplotScatterView
@@ -24,6 +23,9 @@ from ..data_management import SDSS_DATA_LABEL, SPECTRUM_DATA_LABEL, \
 from ..stage import HubbleStage
 from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, MG_REST_LAMBDA
 from ..viewers import SpectrumView
+
+from cosmicds.utils import extend_tool
+
 
 log = logging.getLogger()
 
