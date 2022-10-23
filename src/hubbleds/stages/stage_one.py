@@ -11,7 +11,6 @@ from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import load_template, update_figure_css, debounce
 from cosmicds.utils import extend_tool
-
 from echo import add_callback, ignore_callback, CallbackProperty
 from glue.core import Data
 from glue_jupyter.bqplot.scatter import BqplotScatterView
