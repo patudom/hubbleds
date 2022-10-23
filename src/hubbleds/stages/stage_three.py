@@ -255,12 +255,9 @@ class StageThree(HubbleStage):
         
         
         self.add_component(hubble_slideshow, label='c-hubble-slideshow')
-        
-        layer_viewer.toolbar.set_tool_enabled("cds:linedraw", self.stage_state.marker_reached("tre_lin2"))
-        layer_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("bes_fit1"))      
-        
-# for the runner viewer
-# self.add_viewer(RunnerViewer)
+
+        layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("tre_lin2"))
+        layer_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("bes_fit1"))
 
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
@@ -458,11 +455,14 @@ class StageThree(HubbleStage):
             class_layer = layer_viewer.layers[-1]
             class_layer.state.visible = False
         if advancing and new == "you_age1":
+            layer_viewer = self.get_viewer("layer_viewer")                
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+        if advancing and new == "tre_lin2":
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
         if advancing and new == "tre_lin2":
             layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.set_tool_enabled("cds:linedraw", True )
+            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True )
         if advancing and new == "bes_fit1":
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)            
