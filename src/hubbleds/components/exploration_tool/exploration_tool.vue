@@ -37,11 +37,7 @@
               Data Tool and Imagery credits
             </v-card-title>
             <v-card-text>
-              
-              <p><strong>Data Source</strong>:&nbsp;The data you are looking at were collected in the 1980's and 1990's using 1-meter ground-based telescopes at Palomar Observatory in California and the Siding Spring Observatory in Australia. The glass plate images were digitized in the 1990's-2000's into the Digitized Sky Survey.</p>
-              
-              <p><strong>Data Visualization Tool</strong>:&nbsp;The data is visualized here with the WorldWide Telescope (WWT). WWT provides free easy access to dozens of astronomical datasets with an advanced set of tools for researchers, educators, and astronomy lovers.</p>
-              
+              lorem ipsum
             </v-card-text>
             <v-card-actions>
                <v-spacer></v-spacer>
