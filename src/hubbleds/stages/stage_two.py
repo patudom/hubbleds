@@ -160,6 +160,12 @@ class StageTwo(HubbleStage):
                  tooltip="Fill in distances",
                  disabled=True,
                  activate=self.update_distances)
+        add_info_tooltip = \
+            dict(id="tooltip",
+                    icon="mdi-information-outline",
+                    tooltip="This table shows your galaxies. As you progress through this stage, you will fill in the data columns with values you derive for the galaxy's size and distance.",
+                    disabled=False,
+                    activate= None)
         distance_table = Table(self.session,
                                data=self.get_data('student_measurements'),
                                glue_components=['name',
@@ -174,7 +180,7 @@ class StageTwo(HubbleStage):
                                    self.app_state.dark_mode),
                                use_subset_group=False,
                                single_select=True,
-                               tools=[add_distances_tool])
+                               tools=[add_info_tooltip,add_distances_tool])
 
         self.add_widget(distance_table, label="distance_table")
         distance_table.observe(
