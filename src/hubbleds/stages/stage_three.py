@@ -180,13 +180,7 @@ class StageThree(HubbleStage):
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
-        
-        add_info_tooltip = \
-            dict(id="tooltip",
-                    icon="mdi-information-outline",
-                    tooltip="This table shows all of the galaxy properties <em>you</em> have derived in the previous stages.",
-                    disabled=False,
-                    activate= None)
+
         fit_table = Table(self.session,
                           data=student_data,
                           glue_components=['name',
@@ -197,8 +191,7 @@ class StageThree(HubbleStage):
                                  'Velocity (km/s)',
                                  'Distance (Mpc)'],
                           title='My Galaxies',
-                          subset_label="fit_table_selected",
-                          tools = [add_info_tooltip]
+                          subset_label="fit_table_selected"
                           )
         self.add_widget(fit_table, label="fit_table")
 
