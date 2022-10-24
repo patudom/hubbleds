@@ -500,25 +500,18 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols= "4">
+              <v-col cols= "6">
                 <v-img
                     lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
                     src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
                     alt="Leavitt at Work "
                   ></v-img>
               </v-col>
-              <v-col cols= "4">
+              <v-col cols= "5">
                 <v-img
                     lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
                     src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
                     alt="Leavitt Plate"
-                  ></v-img>
-              </v-col>
-              <v-col cols= "4">
-                <v-img
-                    lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
-                    src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
-                    alt="Leavitt graph"
                   ></v-img>
               </v-col>
             </v-row>
