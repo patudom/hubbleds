@@ -11,6 +11,7 @@ HUBBLE_1929_DATA_LABEL = "Hubble 1929-Table 1"
 HUBBLE_KEY_DATA_LABEL = "HSTkey2001"
 
 BEST_FIT_SUBSET_LABEL = "best_fit_subset"
+BEST_FIT_GALAXY_NAME = "Best Fit Galaxy"
 
 def reverse(d):
     return { v : k for k, v in d.items() }

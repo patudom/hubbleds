@@ -2,6 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
+from fsspec import Callback
 import requests
 
 import ipyvuetify as v
@@ -14,10 +15,10 @@ from echo import DictCallbackProperty, CallbackProperty
 from glue.core import Data
 from glue.core.component import CategoricalComponent, Component
 from glue.core.data_factories.fits import fits_reader
-from glue.core.subset import MaskSubsetState
+from glue.core.subset import CategorySubsetState
 
 from .data_management import BEST_FIT_SUBSET_LABEL, CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, SDSS_DATA_LABEL, STATE_TO_MEAS, STATE_TO_SUMM, \
-    STUDENT_DATA_LABEL, STUDENT_MEASUREMENTS_LABEL
+    STUDENT_DATA_LABEL, STUDENT_MEASUREMENTS_LABEL, BEST_FIT_GALAXY_NAME
 from .utils import H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line
 
 
@@ -202,10 +203,10 @@ class HubblesLaw(Story):
 
         dmin = min(distances)
         dmax = max(distances)
-        d = 0.5 * (dmin + dmax)
-        v = int(line.slope.value * d)
+        d = round(0.5 * (dmin + dmax))
+        v = round(line.slope.value * d)
         return {
-            "name": "Best Fit Galaxy",
+            "name": BEST_FIT_GALAXY_NAME,
             "distance": d,
             "velocity": v,
             "ra": 0, "decl": 0,
@@ -215,6 +216,7 @@ class HubblesLaw(Story):
             "z": 0, "angular_size": 0,
             "element": "H-α",
             "student_id": self.student_user["id"],
+            "last_modified": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
 
 
@@ -263,13 +265,20 @@ class HubblesLaw(Story):
 
         # Make sure that the best-fit galaxy subset is correct
         if self.has_best_fit_galaxy:
-            mask = student_data["name"] == bfg["name"]
-            subset_state = MaskSubsetState(mask, [student_data.id["name"]])
+            c = student_data.get_component("name")
+            indices = np.where(c.labels == bfg["name"])[0]
+            codes = c.codes[indices]
+            subset_state = CategorySubsetState(student_data.id["name"], codes)
             subset = next((s for s in student_data.subsets if s.label == BEST_FIT_SUBSET_LABEL), None)
             if subset is not None:
                 subset.subset_state = subset_state
             else:
-                subset = student_data.new_subset(label=BEST_FIT_SUBSET_LABEL, subset=subset_state, color="blue", alpha=1)
+                # Once glue-core 1.6 is released, we can use color, alpha kwargs here
+                subset = student_data.new_subset(label=BEST_FIT_SUBSET_LABEL, subset=subset_state)
+                subset.style.color = "blue"
+                subset.style.alpha = 1
+                subset.style.markersize = 10
+                
 
     @staticmethod
     def prune_none(data):
