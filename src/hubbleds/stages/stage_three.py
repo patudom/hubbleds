@@ -562,6 +562,7 @@ class StageThree(HubbleStage):
         draw_tool = layer_viewer.toolbar.tools['hubble:linedraw'] 
         add_callback(draw_tool, 'line_drawn', self._on_trend_line_drawn)
         
+        line_fit_tool = layer_viewer.toolbar.tools['hubble:linefit']
         add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
         
         layer_toolbar = layer_viewer.toolbar
