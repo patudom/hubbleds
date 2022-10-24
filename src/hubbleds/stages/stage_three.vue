@@ -178,7 +178,7 @@
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1c']"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['tre_lin2c']"
     > 
       <v-col
         cols="12"
