@@ -48,8 +48,11 @@ class StageState(CDSState):
     hypgal_distance = CallbackProperty(100)
     hypgal_velocity = CallbackProperty(8000)
 
-    low_age = CallbackProperty(0)
-    high_age = CallbackProperty(0)
+    stu_low_age = CallbackProperty(0)
+    stu_high_age = CallbackProperty(0)
+
+    cla_low_age = CallbackProperty(0)
+    cla_high_age = CallbackProperty(0)
 
     markers = CallbackProperty([
         'exp_dat1',
@@ -189,6 +192,7 @@ class StageThree(HubbleStage):
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
+        all_data = self.get_data(ALL_DATA_LABEL)
 
         fit_table = Table(self.session,
                           data=student_data,
@@ -256,14 +260,10 @@ class StageThree(HubbleStage):
         
         self.add_component(hubble_slideshow, label='c-hubble-slideshow')
 
-# for the runner viewer
-# self.add_viewer(RunnerViewer)
-
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
         self.trigger_marker_update_cb = True
 
-        
         # Set up the generic state components
         state_components_dir = str(
             Path(
@@ -341,6 +341,7 @@ class StageThree(HubbleStage):
 
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
+        classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
 
         # Set up the listener to sync the histogram <--> scatter viewers
 
@@ -361,19 +362,51 @@ class StageThree(HubbleStage):
         # Create the student slider
         student_slider_subset_label = "student_slider_subset"
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
-        student_slider = IDSlider(class_summ_data, "student_id", "age", self.stage_state, highlight_ids=[self.story_state.student_user["id"]])
+        student_slider = IDSlider(class_summ_data, "student_id", "age", highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "c-student-slider")
         def student_slider_change(id, highlighted):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
             color = student_slider.highlight_color if highlighted else student_slider.default_color
             self.student_slider_subset.style.color = color
+        def student_slider_refresh(slider):
+            self.stage_state.stu_low_age = round(min(slider.values))
+            self.stage_state.stu_high_age = round(max(slider.values))
 
         student_slider.on_id_change(student_slider_change)
+        student_slider.on_refresh(student_slider_refresh)
 
         def update_student_slider(msg):
             student_slider.update_data(self, msg.data)
         self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == CLASS_SUMMARY_LABEL, handler=update_student_slider)
 
+        # Create the class slider
+        class_slider_subset_label = "class_slider_subset"
+        self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
+        class_slider = IDSlider(classes_summary_data, "class_id", "age")
+        self.add_component(class_slider, "c-class-slider")
+        def class_slider_change(id, highlighted):
+            self.class_slider_subset.subset_state = all_data['class_id'] == id
+            color = class_slider.highlight_color if highlighted else class_slider.default_color
+            self.class_slider_subset.style.color = color
+        def class_slider_refresh(slider):
+            self.stage_state.cla_low_age = round(min(slider.values))
+            self.stage_state.cla_high_age = round(max(slider.values))
+
+        class_slider.on_id_change(class_slider_change)
+        class_slider.on_refresh(class_slider_refresh)
+
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == STUDENT_DATA_LABEL,
+                           handler=student_slider.refresh)
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == CLASS_SUMMARY_LABEL,
+                           handler=class_slider.refresh)
+
+        def update_class_slider(msg):
+            class_slider.update_data(self, msg.data)
+        self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == ALL_CLASS_SUMMARIES_LABEL, handler=update_class_slider)    
+
+        classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
 
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
@@ -404,7 +437,7 @@ class StageThree(HubbleStage):
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
-        velocity_viewers = [prodata_viewer, comparison_viewer, layer_viewer]
+        velocity_viewers = [prodata_viewer, comparison_viewer, layer_viewer, all_viewer]
         # velocity_viewers = [prodata_viewer, comparison_viewer, morphology_viewer, layer_viewer]
         for viewer in velocity_viewers:
             viewer.figure.axes[1].label_offset = "5em"
@@ -521,13 +554,15 @@ class StageThree(HubbleStage):
         student_layer.state.color = 'orange'
         student_layer.state.zorder = 3
         student_layer.state.size = 8
+        student_layer.state.visible = False
         all_viewer.add_data(class_meas_data)
-        class_layer = comparison_viewer.layers[-1]
+        class_layer = all_viewer.layers[-1]
         class_layer.state.zorder = 2
         class_layer.state.size = 5
         class_layer.state.color = 'red'
+        class_layer.state.visible = False
         all_viewer.add_data(all_data)
-        all_layer = comparison_viewer.layers[-1]
+        all_layer = all_viewer.layers[-2]
         all_layer.state.zorder = 1
         all_layer.state.visible = False
         all_viewer.state.x_att = all_data.id[dist_attr]

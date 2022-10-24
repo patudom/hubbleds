@@ -65,7 +65,6 @@ class StageState(CDSState):
 
     step_markers = CallbackProperty([
         'ang_siz1',
-        'ang_siz3',
         'est_dis1'
     ])
 
@@ -112,7 +111,6 @@ class StageState(CDSState):
 
 
 @register_stage(story="hubbles_law", index=3, steps=[
-    "ANGULAR SIZES",
     "MEASURE SIZE",
     "ESTIMATE DISTANCE"
 ])

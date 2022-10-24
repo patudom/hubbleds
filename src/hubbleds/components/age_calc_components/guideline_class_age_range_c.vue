@@ -70,7 +70,7 @@
           color="accent"
           elevation="2"
           @click="() => {
-            const expectedAnswers = [state.low_age, state.high_age];
+            const expectedAnswers = [state.cla_low_age, state.cla_high_age];
             state.marker = validateAnswersJS(['low_age', 'high_age'], expectedAnswers) ? 'age_dis1c' : 'cla_age1c';
           }"
         >
