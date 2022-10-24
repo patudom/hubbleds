@@ -14,10 +14,11 @@ from echo import DictCallbackProperty, CallbackProperty
 from glue.core import Data
 from glue.core.component import CategoricalComponent, Component
 from glue.core.data_factories.fits import fits_reader
+from glue.core.subset import MaskSubsetState
 
-from .data_management import CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, SDSS_DATA_LABEL, STATE_TO_MEAS, STATE_TO_SUMM, \
+from .data_management import BEST_FIT_SUBSET_LABEL, CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, SDSS_DATA_LABEL, STATE_TO_MEAS, STATE_TO_SUMM, \
     STUDENT_DATA_LABEL, STUDENT_MEASUREMENTS_LABEL
-from .utils import HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line
+from .utils import H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line
 
 
 @story_registry(name="hubbles_law")
@@ -26,7 +27,7 @@ class HubblesLaw(Story):
     measurements = DictCallbackProperty({})
     calculations = DictCallbackProperty({})
     validation_failure_counts = DictCallbackProperty({})
-    responses = DictCallbackProperty({})
+    has_best_fit_galaxy = CallbackProperty(False)
 
     measurement_keys = [
         "obs_wave_value",
@@ -53,6 +54,8 @@ class HubblesLaw(Story):
         super().__init__(*args, **kwargs)
 
         self._set_theme()
+
+        self.add_callback('has_best_fit_galaxy', self.update_student_data)
 
         # Load data needed for Hubble's Law
         data_dir = Path(__file__).parent / "data"
@@ -190,6 +193,31 @@ class HubblesLaw(Story):
             HubblesLaw.make_data_writeable(data)
         return dc[name]
 
+    def _best_fit_galaxy(self, measurements):
+        distances = measurements["distance"]
+        velocities = measurements["velocity"]
+        line = fit_line(distances, velocities)
+        if line is None:
+            return None
+
+        dmin = min(distances)
+        dmax = max(distances)
+        d = 0.5 * (dmin + dmax)
+        v = int(line.slope.value * d)
+        return {
+            "name": "Best Fit Galaxy",
+            "distance": d,
+            "velocity": v,
+            "ra": 0, "decl": 0,
+            "type": "Sp",
+            "measwave": 0,
+            "restwave": H_ALPHA_REST_LAMBDA,
+            "z": 0, "angular_size": 0,
+            "element": "H-α",
+            "student_id": self.student_user["id"],
+        }
+
+
     def update_data(self, label, new_data):
         dc = self.data_collection
         if label in dc:
@@ -203,7 +231,7 @@ class HubblesLaw(Story):
             HubblesLaw.make_data_writeable(data) 
             dc.append(data)
 
-    def update_student_data(self):
+    def update_student_data(self, *args):
         dc = self.data_collection
         meas_data = dc[STUDENT_MEASUREMENTS_LABEL]
         df = meas_data.to_dataframe()
@@ -216,6 +244,12 @@ class HubblesLaw(Story):
         if not all(len(v) > 0 for v in components.values()):
             return
 
+        # Add the best-fit galaxy, if appropriate
+        if self.has_best_fit_galaxy:
+            bfg = self._best_fit_galaxy(components)
+            for col, data in components.items():
+                data.append(bfg.get(col, None))
+
         new_data = Data(label=STUDENT_DATA_LABEL)
         for col, data in components.items():
             categorical = col in self.categorical_cols
@@ -226,6 +260,16 @@ class HubblesLaw(Story):
         student_data = dc[STUDENT_DATA_LABEL]
         student_data.update_values_from_data(new_data)
         HubblesLaw.make_data_writeable(student_data)
+
+        # Make sure that the best-fit galaxy subset is correct
+        if self.has_best_fit_galaxy:
+            mask = student_data["name"] == bfg["name"]
+            subset_state = MaskSubsetState(mask, [student_data.id["name"]])
+            subset = next((s for s in student_data.subsets if s.label == BEST_FIT_SUBSET_LABEL), None)
+            if subset is not None:
+                subset.subset_state = subset_state
+            else:
+                subset = student_data.new_subset(label=BEST_FIT_SUBSET_LABEL, subset=subset_state, color="blue", alpha=1)
 
     @staticmethod
     def prune_none(data):
