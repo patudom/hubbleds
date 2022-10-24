@@ -48,15 +48,11 @@ class StageState(CDSState):
     hypgal_distance = CallbackProperty(100)
     hypgal_velocity = CallbackProperty(8000)
 
-    # Jon - I'm having an issue where because we call the id_slider twice -once for the student values and once for the class values, the student high/low values are getting overwritten by the call for the class slider. I think we need to add an argument to the id_slider to specify which set of ages to store with each call, but I'm not sure the most efficient way to do this.
-    low_age = CallbackProperty(0)
-    high_age = CallbackProperty(0)
+    stu_low_age = CallbackProperty(0)
+    stu_high_age = CallbackProperty(0)
 
-    # stu_low_age = CallbackProperty(0)
-    # stu_high_age = CallbackProperty(0)
-
-    # cla_low_age = CallbackProperty(0)
-    # cla_high_age = CallbackProperty(0)
+    cla_low_age = CallbackProperty(0)
+    cla_high_age = CallbackProperty(0)
 
     markers = CallbackProperty([
         'exp_dat1',
@@ -366,14 +362,18 @@ class StageThree(HubbleStage):
         # Create the student slider
         student_slider_subset_label = "student_slider_subset"
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
-        student_slider = IDSlider(class_summ_data, "student_id", "age", self.stage_state, highlight_ids=[self.story_state.student_user["id"]])
+        student_slider = IDSlider(class_summ_data, "student_id", "age", highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "c-student-slider")
         def student_slider_change(id, highlighted):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
             color = student_slider.highlight_color if highlighted else student_slider.default_color
             self.student_slider_subset.style.color = color
+        def student_slider_refresh(slider):
+            self.stage_state.stu_low_age = round(min(slider.values))
+            self.stage_state.stu_high_age = round(max(slider.values))
 
         student_slider.on_id_change(student_slider_change)
+        student_slider.on_refresh(student_slider_refresh)
 
         def update_student_slider(msg):
             student_slider.update_data(self, msg.data)
@@ -382,14 +382,18 @@ class StageThree(HubbleStage):
         # Create the class slider
         class_slider_subset_label = "class_slider_subset"
         self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
-        class_slider = IDSlider(classes_summary_data, "class_id", "age", self.stage_state)
+        class_slider = IDSlider(classes_summary_data, "class_id", "age")
         self.add_component(class_slider, "c-class-slider")
         def class_slider_change(id, highlighted):
             self.class_slider_subset.subset_state = all_data['class_id'] == id
             color = class_slider.highlight_color if highlighted else class_slider.default_color
             self.class_slider_subset.style.color = color
+        def class_slider_refresh(slider):
+            self.stage_state.cla_low_age = round(min(slider.values))
+            self.stage_state.cla_high_age = round(max(slider.values))
 
         class_slider.on_id_change(class_slider_change)
+        class_slider.on_refresh(class_slider_refresh)
 
         def update_class_slider(msg):
             class_slider.update_data(self, msg.data)
