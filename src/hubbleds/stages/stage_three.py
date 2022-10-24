@@ -395,6 +395,13 @@ class StageThree(HubbleStage):
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
 
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == STUDENT_DATA_LABEL,
+                           handler=student_slider.refresh)
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == CLASS_SUMMARY_LABEL,
+                           handler=class_slider.refresh)
+
         def update_class_slider(msg):
             class_slider.update_data(self, msg.data)
         self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == ALL_CLASS_SUMMARIES_LABEL, handler=update_class_slider)    
