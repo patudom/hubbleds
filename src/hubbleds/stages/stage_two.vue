@@ -28,6 +28,9 @@
         <c-guideline-angsize-meas2
           v-if="stage_state.marker == 'ang_siz2'"
           v-intersect.once="scrollIntoView" />
+        <c-guideline-angsize-meas2b
+          v-if="stage_state.marker == 'ang_siz2b'"
+          v-intersect.once="scrollIntoView" />
         <c-guideline-angsize-meas3
           v-if="stage_state.marker == 'ang_siz3'"
           v-intersect.once="scrollIntoView" />
