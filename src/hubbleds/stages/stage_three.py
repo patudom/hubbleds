@@ -39,6 +39,7 @@ class StageState(CDSState):
     hubble_dialog_opened = CallbackProperty(False)
     class_layer_toggled = CallbackProperty(0)
     trend_line_drawn = CallbackProperty(False)
+    best_fit_clicked = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -268,7 +269,6 @@ class StageThree(HubbleStage):
         
         
         self.add_component(hubble_slideshow, label='c-hubble-slideshow')
-
 
         layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("tre_lin2"))
         layer_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("bes_fit1"))
@@ -562,6 +562,8 @@ class StageThree(HubbleStage):
         draw_tool = layer_viewer.toolbar.tools['hubble:linedraw'] 
         add_callback(draw_tool, 'line_drawn', self._on_trend_line_drawn)
         
+        add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
+        
         layer_toolbar = layer_viewer.toolbar
         layer_toolbar.set_tool_enabled("hubble:togglelayer", self.stage_state.marker_reached("tre_dat2"))
 
@@ -738,3 +740,8 @@ class StageThree(HubbleStage):
     def _on_trend_line_drawn(self, is_drawn):
         print("Trend line drawn: ", is_drawn)
         self.stage_state.trend_line_drawn = is_drawn
+        
+    def _on_best_fit_line_shown(self, is_active):
+        print("Best fit line shown: ", is_active)
+        if not self.stage_state.best_fit_clicked:
+            self.stage_state.best_fit_clicked = is_active
