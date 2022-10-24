@@ -48,8 +48,15 @@ class StageState(CDSState):
     hypgal_distance = CallbackProperty(100)
     hypgal_velocity = CallbackProperty(8000)
 
+    # Jon - I'm having an issue where because we call the id_slider twice -once for the student values and once for the class values, the student high/low values are getting overwritten by the call for the class slider. I think we need to add an argument to the id_slider to specify which set of ages to store with each call, but I'm not sure the most efficient way to do this.
     low_age = CallbackProperty(0)
     high_age = CallbackProperty(0)
+
+    # stu_low_age = CallbackProperty(0)
+    # stu_high_age = CallbackProperty(0)
+
+    # cla_low_age = CallbackProperty(0)
+    # cla_high_age = CallbackProperty(0)
 
     markers = CallbackProperty([
         'exp_dat1',
