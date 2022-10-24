@@ -18,14 +18,13 @@ class IDSlider(VuetifyTemplate):
     vmax = Int(1).tag(sync=True)
     vmin = Int(0).tag(sync=True)
     
-    def __init__(self, data, id_component, value_component, stage_state, *args, **kwargs):
+    def __init__(self, data, id_component, value_component, *args, **kwargs):
         # NB: We can't call this member value data
         # since VuetifyTemplate already has a data member
         # (that represents the typical Vue data)
         self.glue_data = data
         self.id_component = id_component
         self.value_component = value_component
-        self.state = stage_state
 
         self.default_color = kwargs.get("default_color", "#FF0000")
         self.highlight_ids = kwargs.get("highlight_ids", [])
@@ -34,6 +33,7 @@ class IDSlider(VuetifyTemplate):
         self.color = self.default_color
 
         self._id_change_cbs = CallbackContainer()
+        self._refresh_cbs = CallbackContainer()
 
         self.refresh()
         self._selected_changed({"new": self.selected})
@@ -49,8 +49,6 @@ class IDSlider(VuetifyTemplate):
     def refresh(self):
         self.ids = sorted(self.glue_data[self.id_component], key=self._sort_key)
         self.values = sorted(self.glue_data[self.value_component])
-        self.state.low_age = round(min(self.values))
-        self.state.high_age = round(max(self.values))
         self.vmax = len(self.values) - 1
         if(self.vmax % 2 == 0): # check if even
             self.halfvmax = self.vmax/2
@@ -61,6 +59,8 @@ class IDSlider(VuetifyTemplate):
         self.selected_id = int(self.ids[self.selected])
         self.thumb_value = self.values[self.selected]
         self.highlighted = self.selected_id in self.highlight_ids
+        for cb in self._refresh_cbs:
+            cb(self)
 
     def _sort_key(self, id):
         idx = where(self.glue_data[self.id_component] == id)[0][0]
@@ -73,6 +73,14 @@ class IDSlider(VuetifyTemplate):
 
     def remove_on_id_change(self, callback):
         self._id_change_cbs.remove(callback)
+
+    def on_refresh(self, callback, run=True):
+        self._refresh_cbs.append(callback)
+        if run:
+            callback(self)
+
+    def remove_on_refresh(self, callback):
+        self._refresh_cbs.remove(callback)
 
     @observe('selected')
     def _selected_changed(self, change):
