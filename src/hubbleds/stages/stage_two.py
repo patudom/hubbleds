@@ -16,7 +16,7 @@ from ..components import DistanceSidebar, DistanceTool, DistanceCalc, StageTwoCo
 from ..components.angsize_dosdonts_slideshow import DosDonts_SlideShow
 from ..data_management import STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
-from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, IMAGE_BASE_URL, format_fov
+from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, IMAGE_BASE_URL, distance_from_angular_size, format_fov
 
 log = logging.getLogger()
 
@@ -47,9 +47,11 @@ class StageState(CDSState):
         'ang_siz1',
         'cho_row1',
         'ang_siz2',
+        'ang_siz2b',
         'ang_siz3',
         'ang_siz4',
         'ang_siz5',
+        'ang_siz5a',
         'ang_siz6',
         'rep_rem1',
         'est_dis1',
@@ -63,13 +65,13 @@ class StageState(CDSState):
 
     step_markers = CallbackProperty([
         'ang_siz1',
-        'ang_siz3',
         'est_dis1'
     ])
 
     csv_highlights = CallbackProperty([
         'ang_siz1',
         'ang_siz2',
+        'ang_siz2b',
         'ang_siz3',
         'ang_siz4',
         'ang_siz5',
@@ -109,13 +111,14 @@ class StageState(CDSState):
 
 
 @register_stage(story="hubbles_law", index=3, steps=[
-    "ANGULAR SIZES",
     "MEASURE SIZE",
     "ESTIMATE DISTANCE"
 ])
 class StageTwo(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     START_COORDINATES = SkyCoord(213 * u.deg, 61 * u.deg, frame='icrs')
+
+    _state_cls = StageState
 
     @default('template')
     def _default_template(self):
@@ -136,7 +139,6 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state = StageState()
         dosdonts_slideshow = DosDonts_SlideShow(self.stage_state)
         self.add_component(dosdonts_slideshow, label='c-dosdonts-slideshow')
 
@@ -200,9 +202,11 @@ class StageTwo(HubbleStage):
             "guideline_angsize_meas1",
             "guideline_choose_row1",
             "guideline_angsize_meas2",
+            "guideline_angsize_meas2b",
             "guideline_angsize_meas3",
             "guideline_angsize_meas4",
             "guideline_angsize_meas5",
+            "guideline_angsize_meas5a",
             "guideline_angsize_meas6",
             "guideline_repeat_remaining_galaxies",
             "guideline_estimate_distance1",
@@ -351,7 +355,7 @@ class StageTwo(HubbleStage):
         index = self.distance_table.index
         if index is None:
             return
-        distance = round(DISTANCE_CONSTANT / self.stage_state.meas_theta, 0)
+        distance = distance_from_angular_size(self.stage_state.meas_theta)
         self.update_data_value("student_measurements", "distance", distance,
                                index)
         if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.
