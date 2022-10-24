@@ -59,7 +59,7 @@ class IDSlider(VuetifyTemplate):
         self.selected_id = int(self.ids[self.selected])
         self.thumb_value = self.values[self.selected]
         self.highlighted = self.selected_id in self.highlight_ids
-        for cb in self._refresh_cbs():
+        for cb in self._refresh_cbs:
             cb(self)
 
     def _sort_key(self, id):
