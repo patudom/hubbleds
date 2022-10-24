@@ -80,6 +80,15 @@ class StageState(CDSState):
         'con_int1',
         'age_dis1',
         'con_int2',
+        'age_uni1c',
+        'hyp_gal1c',
+        'age_uni3c',
+        'age_uni4c',
+        'you_age1c',
+        'cla_res1c',
+        'cla_age1c',
+        'age_dis1c',
+        'con_int2c',
     ])
 
     step_markers = CallbackProperty([
@@ -168,7 +177,7 @@ class StageThree(HubbleStage):
         return "Perhaps a small blurb about this stage"
 
     viewer_ids_for_data = {
-        STUDENT_DATA_LABEL: ["fit_viewer", "comparison_viewer","layer_viewer"],
+        STUDENT_DATA_LABEL: ["comparison_viewer","layer_viewer"],
         CLASS_DATA_LABEL: ["comparison_viewer","layer_viewer"],
         CLASS_SUMMARY_LABEL: ["class_distr_viewer"]
     }
@@ -211,7 +220,6 @@ class StageThree(HubbleStage):
                       'velocity')
 
         # Create viewers
-        fit_viewer = self.add_viewer(HubbleFitView, "fit_viewer", "My Data")
         layer_viewer = self.add_viewer(HubbleFitLayerView, "layer_viewer", "Our Data")
         comparison_viewer = self.add_viewer(HubbleScatterView,
                                             "comparison_viewer",
@@ -283,6 +291,11 @@ class StageThree(HubbleStage):
             "guideline_class_age_range4",
             "guideline_confidence_interval",
             "guideline_class_age_distribution",
+            "guideline_age_universe_c",  # move these to their own block
+            "guideline_hypothetical_galaxy_c",
+            "guideline_your_age_estimate_c",
+            "guideline_classmates_results_c",
+            "guideline_class_age_distribution_c",
         ]
         ext = ".vue"
         for comp in state_components:
@@ -316,6 +329,10 @@ class StageThree(HubbleStage):
             "guideline_age_universe_estimate4",
             "guideline_class_age_range",
             "guideline_confidence_interval_reflect2",
+            "guideline_age_universe_estimate3_c",
+            "guideline_age_universe_estimate4_c",
+            "guideline_class_age_range_c",
+            "guideline_confidence_interval_reflect2_c",
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
@@ -359,7 +376,7 @@ class StageThree(HubbleStage):
 
 
         not_ignore = {
-            fit_table.subset_label: [fit_viewer,layer_viewer],
+            fit_table.subset_label: [layer_viewer],
             histogram_source_label: [class_distr_viewer],
             histogram_modify_label: [comparison_viewer],
             student_slider_subset_label: [comparison_viewer]
@@ -387,8 +404,8 @@ class StageThree(HubbleStage):
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
-        velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, layer_viewer]
-        # velocity_viewers = [prodata_viewer, comparison_viewer, fit_viewer, morphology_viewer, layer_viewer]
+        velocity_viewers = [prodata_viewer, comparison_viewer, layer_viewer]
+        # velocity_viewers = [prodata_viewer, comparison_viewer, morphology_viewer, layer_viewer]
         for viewer in velocity_viewers:
             viewer.figure.axes[1].label_offset = "5em"
         
@@ -421,9 +438,6 @@ class StageThree(HubbleStage):
 
         def fit_selection_deactivate():
             self.session.edit_subset_mode.edit_subset = []
-
-        extend_tool(fit_viewer, 'bqplot:rectangle', fit_selection_activate,
-                    fit_selection_deactivate)
         
         extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
@@ -460,14 +474,13 @@ class StageThree(HubbleStage):
         vel_attr = "velocity"
         hubble1929 = self.get_data(HUBBLE_1929_DATA_LABEL)
         hstkp = self.get_data(HUBBLE_KEY_DATA_LABEL)
-        fit_viewer = self.get_viewer("fit_viewer")
         comparison_viewer = self.get_viewer("comparison_viewer")
         prodata_viewer = self.get_viewer("prodata_viewer")
         layer_viewer = self.get_viewer("layer_viewer")
         all_viewer = self.get_viewer("all_viewer")
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
-        for viewer in [fit_viewer, comparison_viewer, prodata_viewer, layer_viewer, all_viewer]:
+        for viewer in [comparison_viewer, prodata_viewer, layer_viewer, all_viewer]:
             viewer.add_data(student_data)
             # viewer.layers[-1].state.visible = False
             viewer.state.x_att = student_data.id[dist_attr]
@@ -614,8 +627,7 @@ class StageThree(HubbleStage):
                 pass
 
     def _update_viewer_style(self, dark):
-        viewers = ['fit_viewer',
-                   'layer_viewer',
+        viewers = ['layer_viewer',
                    'hubble_race_viewer',
                    'comparison_viewer',
                    'all_viewer',
@@ -627,7 +639,6 @@ class StageThree(HubbleStage):
                    ]
 
         viewer_type = ["scatter",
-                       "scatter",
                        "scatter",
                        "scatter",
                        "scatter",
