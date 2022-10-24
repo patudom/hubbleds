@@ -47,6 +47,7 @@ class StageState(CDSState):
         'ang_siz1',
         'cho_row1',
         'ang_siz2',
+        'ang_siz2b',
         'ang_siz3',
         'ang_siz4',
         'ang_siz5',
@@ -71,6 +72,7 @@ class StageState(CDSState):
     csv_highlights = CallbackProperty([
         'ang_siz1',
         'ang_siz2',
+        'ang_siz2b',
         'ang_siz3',
         'ang_siz4',
         'ang_siz5',
@@ -202,6 +204,7 @@ class StageTwo(HubbleStage):
             "guideline_angsize_meas1",
             "guideline_choose_row1",
             "guideline_angsize_meas2",
+            "guideline_angsize_meas2b",
             "guideline_angsize_meas3",
             "guideline_angsize_meas4",
             "guideline_angsize_meas5",

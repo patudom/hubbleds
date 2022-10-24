@@ -48,6 +48,7 @@
 
     <v-row
       class="d-flex align-stretch"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1']"
     >
       <v-col
         cols="12"
@@ -264,6 +265,7 @@
     </v-row>
 
     <c-guideline-confidence-interval-reflect2
+      v-if="stage_state.marker == 'con_int2'"
       v-intersect.once="scrollIntoView"/>
     <c-guideline-confidence-interval-reflect2-c
       v-if="stage_state.marker == 'con_int2c'"

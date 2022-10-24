@@ -28,6 +28,9 @@
         <c-guideline-angsize-meas2
           v-if="stage_state.marker == 'ang_siz2'"
           v-intersect.once="scrollIntoView" />
+        <c-guideline-angsize-meas2b
+          v-if="stage_state.marker == 'ang_siz2b'"
+          v-intersect.once="scrollIntoView" />
         <c-guideline-angsize-meas3
           v-if="stage_state.marker == 'ang_siz3'"
           v-intersect.once="scrollIntoView" />
@@ -68,7 +71,7 @@
           </v-col>
         </v-row>
         <v-row
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ang_siz4']"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ang_siz5']"
         >
           <v-col
             cols="6"
