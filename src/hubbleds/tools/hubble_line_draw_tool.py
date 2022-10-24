@@ -1,7 +1,7 @@
 from asyncio import events
 from echo import add_callback
 from glue.config import viewer_tool
-from numpy import isnan
+from echo import CallbackProperty
 
 from cosmicds.tools import LineDrawTool
 
@@ -9,6 +9,7 @@ from cosmicds.tools import LineDrawTool
 class HubbleLineDrawTool(LineDrawTool):
 
     tool_id = 'hubble:linedraw'
+    line_drawn = CallbackProperty(False)
     
     def __init__(self, viewer, **kwargs):
         super().__init__(viewer, **kwargs)
@@ -28,6 +29,7 @@ class HubbleLineDrawTool(LineDrawTool):
                 # print("\tclearing")
                 self.clear()
                 self.tool_tip = "Draw a trend line"
+                self.line_drawn = False
             # else:
             #         print('\ttool is active')
         # else:
@@ -38,6 +40,12 @@ class HubbleLineDrawTool(LineDrawTool):
         super().activate()
     
     def deactivate(self):
+        print('run deactivate')
+        endpoint = getattr(self, 'endpoint', None)
+        if endpoint is None:
+            self.line_drawn = False
+        else:
+            self.line_drawn = True
         super().deactivate()
         self.tool_tip = "Update trend line. Double click line to clear"
         

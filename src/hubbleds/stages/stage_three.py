@@ -38,6 +38,7 @@ class StageState(CDSState):
     relage_response = CallbackProperty(False)
     hubble_dialog_opened = CallbackProperty(False)
     class_layer_toggled = CallbackProperty(0)
+    trend_line_drawn = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -504,7 +505,12 @@ class StageThree(HubbleStage):
         # cosmicds PR157 - turn off fit line label for layer_viewer
         layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
 
-        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)      
+        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)    
+        
+        
+        
+        draw_tool = layer_viewer.toolbar.tools['hubble:linedraw'] 
+        add_callback(draw_tool, 'line_drawn', self._on_trend_line_drawn)
         
         layer_toolbar = layer_viewer.toolbar
         layer_toolbar.set_tool_enabled("hubble:togglelayer", self.stage_state.marker_reached("tre_dat2"))
@@ -678,3 +684,7 @@ class StageThree(HubbleStage):
     def _update_image_location(self, using_voila):
         prepend = "voila/files/" if using_voila else ""
         self.stage_state.image_location = prepend + "data/images/stage_three"
+
+    def _on_trend_line_drawn(self, is_drawn):
+        print("Trend line drawn: ", is_drawn)
+        self.stage_state.trend_line_drawn = is_drawn
