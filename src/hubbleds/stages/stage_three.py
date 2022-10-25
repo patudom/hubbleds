@@ -516,38 +516,42 @@ class StageThree(HubbleStage):
         if advancing and new == "you_age1":
             layer_viewer = self.get_viewer("layer_viewer")                
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+        if advancing and new == "tre_lin1":
+            layer_viewer = self.get_viewer("layer_viewer")
+            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
         if advancing and new == "tre_lin2":
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True )
-            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
         if advancing and new == "bes_fit1":
             layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)            
+            layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)   
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False         
         if advancing and new == "hyp_gal1":
             self.story_state.has_best_fit_galaxy = True
+            layer_viewer = self.get_viewer("layer_viewer")
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False   
         if advancing and new =="age_rac1":
             self._update_hypgal_info()
-        if advancing and new == "tre_lin2c":
-            layer_viewer = self.get_viewer("layer_viewer")
-            print("tre_lin2c:", layer_viewer.layers)
-            best_fit_layer = layer_viewer.layers[-1]
-            best_fit_layer.state.visible = False
-            class_layer = layer_viewer.layers[-2]
-            class_layer.state.visible = True
-            student_layer = layer_viewer.layers[-3]
-            student_layer.state.visible = False    
-            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
-        if advancing and new == "age_uni1":
-            layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
-                 
-    
+        # This is breaking the guideline for some reason
+        # if advancing and new =="cla_res1":
+        #     layer_viewer = self.get_viewer("layer_viewer")
+        #     print(layer_viewer.layers)
+        #     best_fit_layer = layer_viewer.layers[-1]
+        #     # best_fit_layer.state.visible = False
+        # if advancing and new == "tre_lin2c":
+        #     layer_viewer = self.get_viewer("layer_viewer")
+        #     print("tre_lin2c:", layer_viewer.layers)
+        #     best_fit_layer = layer_viewer.layers[-1]
+        #     best_fit_layer.state.visible = False
+        #     class_layer = layer_viewer.layers[-2]
+        #     class_layer.state.visible = True
+        #     student_layer = layer_viewer.layers[-3]
+        #     student_layer.state.visible = False    
+        #     layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True      
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
-        if(self.stage_state.class_layer_toggled == 1):
-           self.stage_state.move_marker_forward(self.stage_state.marker)
 
     def _setup_scatter_layers(self):
         dist_attr = "distance"
@@ -600,7 +604,7 @@ class StageThree(HubbleStage):
         class_layer = comparison_viewer.layers[-2]
         print(comparison_viewer.layers)
         comparison_viewer.layers[-3].state.visible = False # Turn off student's own data on comparison viewer, layer -3 here.
-        comparison_viewer.layers[-4].state.visible = False # Turn off best fit subset view on comparison viewer
+        # comparison_viewer.layers[-4].state.visible = False # Turn off best fit subset view on comparison viewer
         class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
         class_layer.state.color = 'red'
