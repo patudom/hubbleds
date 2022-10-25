@@ -91,7 +91,7 @@ class StageState(CDSState):
     ])
 
     _NONSERIALIZED_PROPERTIES = [
-        'markers', 'step_markers',
+        'markers', 'indices', 'step_markers',
         'csv_highlights', 'table_highlights',
         'distances_total', 'image_location'
     ]
