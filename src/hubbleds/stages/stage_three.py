@@ -119,6 +119,14 @@ class StageState(CDSState):
     sandbox_hist_highlights = CallbackProperty([
     ])
 
+    _NONSERIALIZED_PROPERTIES = [
+        'markers', 'indices', 'step_markers',
+        'table_highlights', 'image_location',
+        'my_galaxies_plot_highlights', 'all_galaxies_plot_highlights',
+        'my_class_hist_highlights', 'all_classes_hist_highlights',
+        'sandbox_hist_highlights'
+    ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.marker_index = 0
