@@ -1,6 +1,6 @@
 from cosmicds.tools import BqplotXZoom
 from glue.config import viewer_tool
-
+from echo import CallbackProperty
 from ..viewers import SpectrumViewerState
 
 # this decorator tells glue this is a viewer tool, so it knows what to do with
@@ -12,6 +12,7 @@ class WavelengthZoom(BqplotXZoom):
     tool_id = 'hubble:wavezoom'
     action_text = 'x axis zoom'
     tool_tip = 'Zoom in on a region of the x-axis'
+    zoom_tool_used = CallbackProperty(False)
 
     on_zoom = None
 
@@ -26,3 +27,7 @@ class WavelengthZoom(BqplotXZoom):
             self.on_zoom(old_state, self.viewer.state)
 
         self.deactivate()
+    
+    def activate(self):
+        super().activate()
+        self.zoom_tool_used = True
