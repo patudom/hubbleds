@@ -12,13 +12,13 @@
       class="mb-4"
     >
       <p>
-        Even when data are messy, it is possible to explore relationships between the quantities being graphed. Scientists do this by fitting a <strong>model</strong> to the data. 
+        Now that you've drawn what conclusions you can from looking at individual students' measurements, let's turn back to your whole class's dataset.
       </p>
       <p>
-        Since we saw a trend in the larger class data set, let's start with a trend line. A <strong>trend line</strong> follows the observed trend in the graphed data.
+        Is it easier to identify a trend in the larger dataset?
       </p>
       <p>
-        Click <v-icon>mdi-message-draw</v-icon> in the Toolbar to activate the drawing tool and try drawing a trend line through your data points.
+        Click <v-icon>mdi-message-draw</v-icon> in the Toolbar to activate the drawing tool and try drawing a trend line through your class's data points.
       </p>
     </div>
   </scaffold-alert>

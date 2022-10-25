@@ -128,18 +128,6 @@
         <c-guideline-best-fit-line-c
           v-if="stage_state.marker == 'bes_fit1c'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-c
-          v-if="stage_state.marker == 'age_uni1c'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-hypothetical-galaxy-c
-          v-if="stage_state.marker == 'hyp_gal1c'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate3-c
-          v-if="stage_state.marker == 'age_uni3c'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate4-c
-          v-if="stage_state.marker == 'age_uni4c'"
-          v-intersect.once="scrollIntoView" />
         <c-guideline-your-age-estimate-c
           v-if="stage_state.marker == 'you_age1c'"
           v-intersect.once="scrollIntoView" />
