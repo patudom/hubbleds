@@ -92,6 +92,8 @@ class StageState(CDSState):
     ])
 
     step_markers = CallbackProperty([
+        'exp_dat1',
+        'tre_lin2c'
     ])
 
     table_highlights = CallbackProperty([
@@ -147,9 +149,7 @@ class StageState(CDSState):
 
 @register_stage(story="hubbles_law", index=4, steps=[
     "MY DATA",
-    "CLASS DATA",
-    "BY GALAXY TYPE",
-    "PROFESSIONAL DATA"
+    "CLASS DATA"
 ])
 class StageThree(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
