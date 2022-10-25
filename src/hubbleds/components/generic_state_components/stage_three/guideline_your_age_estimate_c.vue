@@ -15,7 +15,7 @@
         Notice your best-fit line is now labeled with the age estimate based on your whole class's dataset.
       </p>
       <p>
-        .add questions about how it relates to your confidence interval values..
+        You can compare this way of estimating the age of the universe from your class's dataset with the "best guess" and confidence intervals you identified earlier. Notice whether the best fit age is within the bounds you chose.
       </p>
     </div>
   </scaffold-alert>

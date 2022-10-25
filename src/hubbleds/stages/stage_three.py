@@ -496,7 +496,17 @@ class StageThree(HubbleStage):
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
         if advancing and new == "hyp_gal1":
-            self.story_state.has_best_fit_galaxy = True                   
+            self.story_state.has_best_fit_galaxy = True      
+        if advancing and new == "tre_lin2c":
+            layer_viewer = self.get_viewer("layer_viewer")
+            best_fit_layer = layer_viewer.layers[-1]
+            best_fit_layer.state.visible = False
+            class_layer = layer_viewer.layers[-2]
+            class_layer.state.visible = True
+            student_layer = layer_viewer.layers[-3]
+            student_layer.state.visible = False    
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
+  
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
