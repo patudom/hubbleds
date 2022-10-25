@@ -517,9 +517,12 @@ class StageThree(HubbleStage):
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)            
         if advancing and new == "hyp_gal1":
-            self.story_state.has_best_fit_galaxy = True      
+            self.story_state.has_best_fit_galaxy = True
+        if advancing and new =="age_rac1":
+            self._update_hypgal_info()
         if advancing and new == "tre_lin2c":
             layer_viewer = self.get_viewer("layer_viewer")
+            print("tre_lin2c:", layer_viewer.layers)
             best_fit_layer = layer_viewer.layers[-1]
             best_fit_layer.state.visible = False
             class_layer = layer_viewer.layers[-2]
@@ -527,9 +530,6 @@ class StageThree(HubbleStage):
             student_layer = layer_viewer.layers[-3]
             student_layer.state.visible = False    
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
-  
-            self.story_state.has_best_fit_galaxy = True        
-
         if advancing and new == "age_uni1":
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
@@ -590,7 +590,7 @@ class StageThree(HubbleStage):
         student_layer.state.size = 8
         comparison_viewer.add_data(class_meas_data)
         class_layer = comparison_viewer.layers[-2]
-        # print(comparison_viewer.layers)
+        print(comparison_viewer.layers)
         comparison_viewer.layers[-3].state.visible = False # Turn off student's own data on comparison viewer, layer -3 here.
         comparison_viewer.layers[-4].state.visible = False # Turn off best fit subset view on comparison viewer
         class_layer.state.visible = False  # Turn off layer with the whole class
