@@ -2,7 +2,7 @@
   <scaffold-alert
     header-text="Your Age Estimate"
     @back="
-      state.marker = 'age_uni4c';
+      state.marker = 'bes_fit1c';
     "
     @next="
       state.marker = 'cla_res1c';
@@ -12,13 +12,10 @@
       class="mb-4"
     >
       <p>
-        Congratulations! &#127881 You have made your very own estimate of the age of the universe.
+        Notice your best-fit line is now labeled with the age estimate based on your whole class's dataset.
       </p>
       <p>
-        Notice your best-fit line is now labeled with your age estimate.
-      </p>
-      <p>
-        Next, we need to think about how reliable your estimate is.
+        You can compare this way of estimating the age of the universe from your class's dataset with the "best guess" and confidence intervals you identified earlier. Notice whether the best fit age is within the bounds you chose.
       </p>
     </div>
   </scaffold-alert>

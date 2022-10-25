@@ -84,10 +84,8 @@ class StageState(CDSState):
         'con_int1',
         'age_dis1',
         'con_int2',
-        'age_uni1c',
-        'hyp_gal1c',
-        'age_uni3c',
-        'age_uni4c',
+        'tre_lin2c',
+        'bes_fit1c',
         'you_age1c',
         'cla_res1c',
         'cla_age1c',
@@ -96,6 +94,8 @@ class StageState(CDSState):
     ])
 
     step_markers = CallbackProperty([
+        'exp_dat1',
+        'tre_lin2c'
     ])
 
     table_highlights = CallbackProperty([
@@ -163,9 +163,7 @@ class StageState(CDSState):
 
 @register_stage(story="hubbles_law", index=4, steps=[
     "MY DATA",
-    "CLASS DATA",
-    "BY GALAXY TYPE",
-    "PROFESSIONAL DATA"
+    "CLASS DATA"
 ])
 class StageThree(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
@@ -311,8 +309,8 @@ class StageThree(HubbleStage):
             "guideline_class_age_range4",
             "guideline_confidence_interval",
             "guideline_class_age_distribution",
-            "guideline_age_universe_c",  # move these to their own block
-            "guideline_hypothetical_galaxy_c",
+            "guideline_trend_lines_draw2_c",
+            "guideline_best_fit_line_c",
             "guideline_your_age_estimate_c",
             "guideline_classmates_results_c",
             "guideline_class_age_distribution_c",
@@ -349,8 +347,6 @@ class StageThree(HubbleStage):
             "guideline_age_universe_estimate4",
             "guideline_class_age_range",
             "guideline_confidence_interval_reflect2",
-            "guideline_age_universe_estimate3_c",
-            "guideline_age_universe_estimate4_c",
             "guideline_class_age_range_c",
             "guideline_confidence_interval_reflect2_c",
         ]
@@ -524,11 +520,29 @@ class StageThree(HubbleStage):
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True )
+            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
         if advancing and new == "bes_fit1":
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)            
         if advancing and new == "hyp_gal1":
-            self.story_state.has_best_fit_galaxy = True                   
+            self.story_state.has_best_fit_galaxy = True
+        if advancing and new =="age_rac1":
+            self._update_hypgal_info()
+        if advancing and new == "tre_lin2c":
+            layer_viewer = self.get_viewer("layer_viewer")
+            print("tre_lin2c:", layer_viewer.layers)
+            best_fit_layer = layer_viewer.layers[-1]
+            best_fit_layer.state.visible = False
+            class_layer = layer_viewer.layers[-2]
+            class_layer.state.visible = True
+            student_layer = layer_viewer.layers[-3]
+            student_layer.state.visible = False    
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
+        if advancing and new == "age_uni1":
+            layer_viewer = self.get_viewer("layer_viewer")
+            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
+                 
+    
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
@@ -584,6 +598,9 @@ class StageThree(HubbleStage):
         student_layer.state.size = 8
         comparison_viewer.add_data(class_meas_data)
         class_layer = comparison_viewer.layers[-2]
+        print(comparison_viewer.layers)
+        comparison_viewer.layers[-3].state.visible = False # Turn off student's own data on comparison viewer, layer -3 here.
+        comparison_viewer.layers[-4].state.visible = False # Turn off best fit subset view on comparison viewer
         class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
         class_layer.state.color = 'red'

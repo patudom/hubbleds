@@ -48,7 +48,7 @@
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1'] || stage_state.indices[stage_state.marker] > stage_state.indices['con_int2'] "
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1'] || stage_state.indices[stage_state.marker] > stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1c'] "
     >
       <v-col
         cols="12"
@@ -122,17 +122,11 @@
         <c-guideline-random-variability
           v-if="stage_state.marker == 'ran_var1'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-c
-          v-if="stage_state.marker == 'age_uni1c'"
+        <c-guideline-trend-lines-draw2-c
+          v-if="stage_state.marker == 'tre_lin2c'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-hypothetical-galaxy-c
-          v-if="stage_state.marker == 'hyp_gal1c'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate3-c
-          v-if="stage_state.marker == 'age_uni3c'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate4-c
-          v-if="stage_state.marker == 'age_uni4c'"
+        <c-guideline-best-fit-line-c
+          v-if="stage_state.marker == 'bes_fit1c'"
           v-intersect.once="scrollIntoView" />
         <c-guideline-your-age-estimate-c
           v-if="stage_state.marker == 'you_age1c'"
@@ -178,7 +172,7 @@
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['age_uni1c']"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['tre_lin2c']"
     > 
       <v-col
         cols="12"
@@ -265,11 +259,10 @@
       </v-col>
     </v-row>
 
-
     <!--------------------- OUR CLASS HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int1'] && stage_state.indices[stage_state.marker] < stage_state.indices['age_uni1c']"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int1'] && stage_state.indices[stage_state.marker] < stage_state.indices['tre_lin2c']" 
     >
       <v-col
         cols="12"
@@ -325,7 +318,7 @@
     </v-row>
 
     <c-guideline-confidence-interval-reflect2
-      v-if="stage_state.marker == 'con_int2'"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['age_dis1']"
       v-intersect.once="scrollIntoView"/>
     <c-guideline-confidence-interval-reflect2-c
       v-if="stage_state.marker == 'con_int2c'"
@@ -392,8 +385,6 @@
         </v-card>
       </v-col>
     </v-row> -->
- -->
-
   </v-container>
 </template>
 
