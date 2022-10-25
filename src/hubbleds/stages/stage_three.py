@@ -2,7 +2,7 @@ from functools import partial
 from os.path import join
 from pathlib import Path
 
-from numpy import asarray, histogram
+from numpy import asarray, where
 from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
@@ -12,7 +12,6 @@ from echo import CallbackProperty, add_callback, remove_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
 from hubbleds.components.id_slider import IDSlider
-from pygments import highlight
 from hubbleds.utils import IMAGE_BASE_URL
 from traitlets import default, Bool
 from ..data.styles import load_style
@@ -20,9 +19,9 @@ from ..data.styles import load_style
 from ..components import TrendsData, HubbleExp, AgeCalc
 
 from ..data_management import \
-    ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, \
+    ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
     CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, STUDENT_DATA_LABEL, HUBBLE_1929_DATA_LABEL, \
-    HUBBLE_KEY_DATA_LABEL
+    HUBBLE_KEY_DATA_LABEL, BEST_FIT_GALAXY_NAME
 from ..histogram_listener import HistogramListener
 from ..stage import HubbleStage
 from ..viewers import HubbleFitView, \
@@ -45,8 +44,8 @@ class StageState(CDSState):
 
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three")
 
-    hypgal_distance = CallbackProperty(100)
-    hypgal_velocity = CallbackProperty(8000)
+    hypgal_distance = CallbackProperty(0)
+    hypgal_velocity = CallbackProperty(0)
 
     stu_low_age = CallbackProperty(0)
     stu_high_age = CallbackProperty(0)
@@ -257,7 +256,7 @@ class StageThree(HubbleStage):
         hubble_race_viewer.state.y_att = hubble_race_data.id['velocity (km/hr)']
         hubble_race_viewer.axis_y.tick_values  = asarray([4,6,8,10])
         hubble_race_viewer._update_appearance_from_settings()
-        hubble_slideshow = HubbleExp(self.stage_state, [self.viewers["hubble_race_viewer"],self.viewers["layer_viewer"]])
+        hubble_slideshow = HubbleExp(self.stage_state, [self.viewers["hubble_race_viewer"], self.viewers["layer_viewer"]])
         
         
         self.add_component(hubble_slideshow, label='c-hubble-slideshow')
@@ -416,7 +415,8 @@ class StageThree(HubbleStage):
             fit_table.subset_label: [layer_viewer],
             histogram_source_label: [class_distr_viewer],
             histogram_modify_label: [comparison_viewer],
-            student_slider_subset_label: [comparison_viewer]
+            student_slider_subset_label: [comparison_viewer],
+            BEST_FIT_SUBSET_LABEL: [comparison_viewer, layer_viewer]
         }
 
         def label_ignore(x, label):
@@ -449,6 +449,9 @@ class StageThree(HubbleStage):
 
         # Just for accessibility while testing
         self.data_collection.histogram_listener = self.histogram_listener
+
+        # Set hypothetical galaxy info, if we have it
+        self._update_hypgal_info()
 
         # Whenever data is updated, the appropriate viewers should update their bounds
         self.hub.subscribe(self, NumericalDataChangedMessage,
@@ -499,7 +502,9 @@ class StageThree(HubbleStage):
             class_layer.state.visible = False
         if advancing and new == "you_age1":
             layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True                   
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+        if advancing and new == "hyp_gal1":
+            self.story_state.has_best_fit_galaxy = True                   
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
@@ -527,8 +532,8 @@ class StageThree(HubbleStage):
         layer_viewer.add_data(class_meas_data)
         layer_viewer.state.reset_limits()
         class_layer = layer_viewer.layers[-1]
-        class_layer.state.zorder=1
-        class_layer.state.color="blue"
+        class_layer.state.zorder = 1
+        class_layer.state.color = "blue"
         class_layer.state.visible = False
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         toggle_tool.set_layer_to_toggle(class_layer)
@@ -539,7 +544,8 @@ class StageThree(HubbleStage):
 
         add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
 
-        student_layer = comparison_viewer.layers[-1]
+        student_layer_index = -2 if len(comparison_viewer.layers) == 2 else -1
+        student_layer = comparison_viewer.layers[student_layer_index]
         student_layer.state.color = 'orange'
         student_layer.state.zorder = 3
         student_layer.state.size = 8
@@ -585,6 +591,11 @@ class StageThree(HubbleStage):
         comparison_linefit.add_ignore_condition(lambda layer: layer.layer.label != self.student_slider_subset.label)
         comparison_linefit.activate()
         comparison_toolbar.set_tool_enabled(linefit_id, False)
+
+        # Ignore the best-fit-galaxy subset in the layer viewer for line fitting
+        layer_toolbar = layer_viewer.toolbar
+        layer_linefit = layer_toolbar.tools[linefit_id]
+        layer_linefit.add_ignore_condition(lambda layer: layer.layer.label == BEST_FIT_SUBSET_LABEL)
 
     def _setup_histogram_layers(self):
         class_distr_viewer = self.get_viewer("class_distr_viewer")
@@ -657,13 +668,26 @@ class StageThree(HubbleStage):
     def all_viewers(self):
         return [layout.viewer for layout in self.viewers.values()]
 
+    def _update_hypgal_info(self):
+        data = self.get_data(STUDENT_DATA_LABEL)
+        indices = where(data["name"] == BEST_FIT_GALAXY_NAME)
+        if indices[0]:
+            index = indices[0][0]
+            self.stage_state.hypgal_velocity = data["velocity"][index]
+            self.stage_state.hypgal_distance = data["distance"][index]
+
     def _on_data_change(self, msg):
-        viewer_id = self.viewer_ids_for_data.get(msg.data.label, [])
+        label = msg.data.label
+        viewer_id = self.viewer_ids_for_data.get(label, [])
         for vid in viewer_id:
             try:
                 self.get_viewer(vid).state.reset_limits()
             except:
                 pass
+
+        if label == STUDENT_DATA_LABEL:
+            self._update_hypgal_info()
+
 
     def _update_viewer_style(self, dark):
         viewers = ['layer_viewer',

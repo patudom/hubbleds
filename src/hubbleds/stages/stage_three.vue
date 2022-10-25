@@ -413,6 +413,8 @@
 
 .v-alert .v-input--radio-group+.v-alert, .v-dialog .v-input--radio-group+.v-alert {
   background-color: #000b !important;
+}
+
 .v-slider__thumb:hover, .v-slider__thumb-label-container:hover {
   cursor: grab;
 }
