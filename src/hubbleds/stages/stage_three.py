@@ -633,6 +633,8 @@ class StageThree(HubbleStage):
         for viewer in histogram_viewers:
             label = 'Count' if viewer == class_distr_viewer else 'Proportion'
             viewer.figure.axes[1].label = label
+            viewer.figure.axes[1].tick_format = '0'
+            viewer.figure.axes[1].num_ticks = 5
             if viewer != all_distr_viewer:
                 viewer.add_data(class_summ_data)
                 layer = viewer.layers[-1]
