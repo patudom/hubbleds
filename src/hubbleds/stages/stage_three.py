@@ -492,7 +492,8 @@ class StageThree(HubbleStage):
         # cosmicds PR157 - turn off fit line label for layer_viewer
         layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
 
-        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled)        
+        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled) 
+        add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
 
         student_layer_index = -2 if len(comparison_viewer.layers) == 2 else -1
         student_layer = comparison_viewer.layers[student_layer_index]
@@ -682,3 +683,9 @@ class StageThree(HubbleStage):
     def _update_image_location(self, using_voila):
         prepend = "voila/files/" if using_voila else ""
         self.stage_state.image_location = prepend + "data/images/stage_three"
+
+    def _on_best_fit_galaxy_added(self, value):
+        layer_viewer = self.get_viewer("layer_viewer")
+        linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
+        if value and not linefit_tool.active:
+            linefit_tool.activate()
