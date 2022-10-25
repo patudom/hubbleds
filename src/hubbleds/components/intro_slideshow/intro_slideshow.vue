@@ -505,13 +505,17 @@
                     lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
                     src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
                     alt="Leavitt at Work "
+                    aspect-ratio="1.5"
+                    contain
                   ></v-img>
               </v-col>
-              <v-col cols= "5">
+              <v-col cols= "6">
                 <v-img
                     lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
                     src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
                     alt="Leavitt Plate"
+                    aspect-ratio="1.5"
+                    contain
                   ></v-img>
               </v-col>
             </v-row>
