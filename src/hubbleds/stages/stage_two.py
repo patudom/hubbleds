@@ -173,7 +173,7 @@ class StageTwo(HubbleStage):
                  disabled=True,
                  activate=self.update_distances)
         distance_table = Table(self.session,
-                               data=self.get_data('student_measurements'),
+                               data=self.get_data(STUDENT_MEASUREMENTS_LABEL),
                                glue_components=['name',
                                                 'angular_size',
                                                 'distance'],
