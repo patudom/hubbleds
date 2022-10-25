@@ -551,6 +551,9 @@ class StageThree(HubbleStage):
         student_layer.state.size = 8
         comparison_viewer.add_data(class_meas_data)
         class_layer = comparison_viewer.layers[-2]
+        # print(comparison_viewer.layers)
+        comparison_viewer.layers[-3].state.visible = False # Turn off student's own data on comparison viewer, layer -3 here.
+        comparison_viewer.layers[-4].state.visible = False # Turn off best fit subset view on comparison viewer
         class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
         class_layer.state.color = 'red'
