@@ -289,9 +289,10 @@
     </v-row>
 
     <!--------------------- ALL DATA HISTOGRAM VIEWER ----------------------->
+    <!-- cla_age1c -->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1']"
     >
       <v-col
         cols="12"
@@ -312,6 +313,13 @@
         >
           <v-lazy>
             <jupyter-widget :widget="viewers.all_distr_viewer"/>
+          </v-lazy>
+          <p>show separate viewers</p>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_distr_viewer_student"/>
+          </v-lazy>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_distr_viewer_class"/>
           </v-lazy>
         </v-card>
       </v-col>
