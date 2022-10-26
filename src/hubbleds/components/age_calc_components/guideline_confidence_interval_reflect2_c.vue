@@ -4,15 +4,17 @@
     @back="
       state.marker = 'age_dis1c';
     "
-    @next="
-      state.marker = 'con_int2c';
+    @next="() => {
+            state.marker = 'con_int2c';
+            console.log('story_state.responses.best-guess-age:', story_state.responses['best-guess-age'])
+          } 
     "
   >
     <div
       class="mb-4"
     >
 
-        Earlier, your best guess for the age of the universe was: {{ story_state.responses.best_guess_age }}.
+        Earlier, your best guess for the age of the universe was: {{ story_state.responses['best-guess-age'] }}.
 
       <p>
         Based on these results from your class, what do you think is the most likely value of the age of the universe and what is a likely range of possible values?
