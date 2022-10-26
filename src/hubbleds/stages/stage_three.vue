@@ -229,7 +229,7 @@
     <!--------------------- ALL DATA HUBBLE VIEWER - during class sequence ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c']"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c']) && stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0']"
     >
       <v-col
         cols="12"
@@ -271,6 +271,9 @@
         <c-guideline-class-age-distribution
           v-if="stage_state.marker == 'age_dis1'"
           v-intersect.once="scrollIntoView"/>
+        <c-guideline-confidence-interval-reflect2
+          v-if="stage_state.marker == 'con_int2'"
+          v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"
@@ -300,6 +303,9 @@
         <c-guideline-class-age-distribution-c
           v-if="stage_state.marker == 'age_dis1c'"
           v-intersect.once="scrollIntoView"/>
+        <c-guideline-confidence-interval-reflect2-c
+          v-if="stage_state.marker == 'con_int2c'"
+          v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"
@@ -316,30 +322,61 @@
         </v-card>
       </v-col>
     </v-row>
-
-    <c-guideline-confidence-interval-reflect2
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['age_dis1']"
-      v-intersect.once="scrollIntoView"/>
-    <c-guideline-confidence-interval-reflect2-c
-      v-if="stage_state.marker == 'con_int2c'"
-      v-intersect.once="scrollIntoView"/>
-
+  
       
       
-    <!--------------------- PROFESSIONAL DATA VIEWER ----------------------->
+    <!--------------------- PROFESSIONAL DATA VIEWER - during professional data sequence ----------------------->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] == stage_state.indices['exp_dat1']"
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['pro_dat10']"
     >
-          <!-- should be v-if="stage_state.maker == 'pro_view'" -->
       <v-col
         cols="12"
         lg="5"
       >
-        <c-guideline-prodata-discovery
-          v-if="stage_state.indices[stage_state.marker] == stage_state.indices['exp_dat1']"
+        <c-guideline-professional-data0
+          v-if="stage_state.marker == 'pro_dat0'"
           v-intersect.once="scrollIntoView"/>
-      <!-- should be v-if="stage_state.maker == 'pro_view'" -->
+        <c-guideline-professional-data1
+          v-if="stage_state.marker == 'pro_dat1'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data2
+          v-if="stage_state.marker == 'pro_dat2'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data3
+          v-if="stage_state.marker == 'pro_dat3'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data4
+          v-if="stage_state.marker == 'pro_dat4'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data5
+          v-if="stage_state.marker == 'pro_dat5'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data6
+          v-if="stage_state.marker == 'pro_dat6'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data7
+          v-if="stage_state.marker == 'pro_dat7'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data8
+          v-if="stage_state.marker == 'pro_dat8'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-professional-data9
+          v-if="stage_state.marker == 'pro_dat9'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data10
+          v-if="stage_state.marker == 'pro_dat10'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+
       </v-col>
       <v-col
         cols="12"

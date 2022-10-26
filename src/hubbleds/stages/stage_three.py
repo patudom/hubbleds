@@ -16,7 +16,7 @@ from hubbleds.utils import IMAGE_BASE_URL
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..components import TrendsData, HubbleExp, AgeCalc
+from ..components import TrendsData, HubbleExp, AgeCalc, ProData 
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
@@ -39,7 +39,8 @@ class StageState(CDSState):
     class_layer_toggled = CallbackProperty(0)
     trend_line_drawn = CallbackProperty(False)
     best_fit_clicked = CallbackProperty(False)
-    prodata_action = CallbackProperty(False)
+    prodata_response = CallbackProperty(False)
+    
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -92,7 +93,17 @@ class StageState(CDSState):
         'cla_age1c',
         'age_dis1c',
         'con_int2c',
-        'pro_view',
+        'pro_dat0',
+        'pro_dat1',
+        'pro_dat2',
+        'pro_dat3',
+        'pro_dat4',
+        'pro_dat5',
+        'pro_dat6',
+        'pro_dat7',
+        'pro_dat8',
+        'pro_dat9',
+        'pro_dat10',
     ])
 
     step_markers = CallbackProperty([
@@ -315,7 +326,7 @@ class StageThree(HubbleStage):
             "guideline_best_fit_line_c",
             "guideline_your_age_estimate_c",
             "guideline_classmates_results_c",
-            "guideline_class_age_distribution_c",
+            "guideline_class_age_distribution_c"
         ]
         ext = ".vue"
         for comp in state_components:
@@ -355,6 +366,27 @@ class StageThree(HubbleStage):
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
             component = AgeCalc(comp + ext, path, self.stage_state)
+            self.add_component(component, label=label) 
+            
+        # Set up prodata components
+        prodata_components_dir = str(Path(
+            __file__).parent.parent / "components" / "prodata_components")
+        path = join(prodata_components_dir, "")
+        prodata_components = [
+            "guideline_professional_data0",
+            "guideline_professional_data1",
+            "guideline_professional_data2",
+            "guideline_professional_data3",
+            "guideline_professional_data4",
+            "guideline_professional_data5",
+            "guideline_professional_data6",
+            "guideline_professional_data7",
+            "guideline_professional_data8",
+            "guideline_professional_data9",
+        ]
+        for comp in prodata_components:
+            label = f"c-{comp}".replace("_", "-")
+            component = ProData(comp + ext, path, self.stage_state)
             self.add_component(component, label=label) 
 
         # Grab data
