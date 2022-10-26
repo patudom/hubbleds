@@ -324,6 +324,39 @@
       v-if="stage_state.marker == 'con_int2c'"
       v-intersect.once="scrollIntoView"/>
 
+      
+      
+    <!--------------------- PROFESSIONAL DATA VIEWER ----------------------->
+    <v-row
+      class="d-flex align-stretch"
+          v-if="stage_state.indices[stage_state.marker] == stage_state.indices['exp_dat1']"
+    >
+          <!-- should be v-if="stage_state.maker == 'pro_view'" -->
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <c-guideline-prodata-discovery
+          v-if="stage_state.indices[stage_state.marker] == stage_state.indices['exp_dat1']"
+          v-intersect.once="scrollIntoView"/>
+      <!-- should be v-if="stage_state.maker == 'pro_view'" -->
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          :color="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
+          <v-lazy>
+            <jupyter-widget :widget="viewers.prodata_viewer"/>
+          </v-lazy>
+        </v-card>
+      </v-col>
+    </v-row>
+
     <!--------------------- SANDBOX HISTOGRAM VIEWER ----------------------->
     <!-- <v-row
       class="d-flex align-stretch"

@@ -39,6 +39,7 @@ class StageState(CDSState):
     class_layer_toggled = CallbackProperty(0)
     trend_line_drawn = CallbackProperty(False)
     best_fit_clicked = CallbackProperty(False)
+    prodata_action = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -91,6 +92,7 @@ class StageState(CDSState):
         'cla_age1c',
         'age_dis1c',
         'con_int2c',
+        'pro_view',
     ])
 
     step_markers = CallbackProperty([
@@ -629,11 +631,16 @@ class StageThree(HubbleStage):
         all_viewer.state.x_att = all_data.id[dist_attr]
         all_viewer.state.y_att = all_data.id[vel_attr]
 
-        prodata_viewer.add_data(student_data)
-        prodata_viewer.state.x_att = student_data.id[dist_attr]
-        prodata_viewer.state.y_att = student_data.id[vel_attr]
+
         prodata_viewer.add_data(hstkp)
+        # set hstkp data layer to red
+        hstkp_layer = prodata_viewer.layer_artist_for_data(hstkp)
+        hstkp_layer.state.color = 'red'
         prodata_viewer.add_data(hubble1929)
+        # set hubble1929 data layer to blue
+        hubble1929_layer = prodata_viewer.layer_artist_for_data(hubble1929)
+        hubble1929_layer.state.color = 'blue'
+        prodata_viewer.state.reset_limits()
 
         # In the comparison viewer, we only want to see the line for the student slider subset
         linefit_id = "hubble:linefit"
@@ -706,6 +713,7 @@ class StageThree(HubbleStage):
     #     morphology_viewer.state.y_att = all_data.id['velocity']
 
     def _on_stage_index_changed(self, index):
+        print("Stage Index: ",self.story_state.stage_index)
         if index > 0:
             self._deferred_setup()
 
