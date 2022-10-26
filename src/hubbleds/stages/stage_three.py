@@ -205,6 +205,9 @@ class StageThree(HubbleStage):
 
         self.show_team_interface = self.app_state.show_team_interface
 
+        # Change as needed during testing to start in the right place
+        self.stage_state.marker = 'con_int2'
+
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
         all_data = self.get_data(ALL_DATA_LABEL)
@@ -360,7 +363,7 @@ class StageThree(HubbleStage):
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
-            component = AgeCalc(comp + ext, path, self.stage_state)
+            component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
             self.add_component(component, label=label) 
 
         # Grab data
@@ -552,9 +555,6 @@ class StageThree(HubbleStage):
             student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
             student_layer.state.visible = False    
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
-        if advancing and new == "age_uni1":
-            layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
@@ -572,16 +572,23 @@ class StageThree(HubbleStage):
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
         for viewer in [comparison_viewer, prodata_viewer, layer_viewer, all_viewer]:
             viewer.add_data(student_data)
-            # viewer.layers[-1].state.visible = False
             viewer.state.x_att = student_data.id[dist_attr]
             viewer.state.y_att = student_data.id[vel_attr]
+    
         
+        student_layer = layer_viewer.layer_artist_for_data(student_data)
+        student_layer.state.color = '#FF7043'
+        student_layer.state.zorder = 2
+        student_layer.state.size = 8                    
+        student_layer.state.alpha = 1
         # add class measurement data and hide by default
         layer_viewer.add_data(class_meas_data)
         layer_viewer.state.reset_limits()
         class_layer = layer_viewer.layer_artist_for_data(class_meas_data)
         class_layer.state.zorder = 1
-        class_layer.state.color = "blue"
+        class_layer.state.color = "#26C6DA"
+        class_layer.state.alpha = 1
+        class_layer.state.size = 4
         class_layer.state.visible = False
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         toggle_tool.set_layer_to_toggle(class_layer)
@@ -602,18 +609,15 @@ class StageThree(HubbleStage):
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
 
         student_layer = comparison_viewer.layer_artist_for_data(student_data)
-        student_layer.state.color = 'orange'
-        student_layer.state.zorder = 3
-        student_layer.state.size = 8
+        student_layer.state.zorder = 5
         comparison_viewer.add_data(class_meas_data)
         class_layer = comparison_viewer.layer_artist_for_data(class_meas_data)
-        comparison_viewer.layer_artist_for_data(student_data).state.visible = False # Turn off student's own data on comparison viewer, layer -3 here.
+        comparison_viewer.layer_artist_for_data(student_data).state.visible = False # Turn off student's own data on comparison viewer
         if len(student_data.subsets) > 0:
             best_fit_subset = student_data.subsets[0]
             comparison_viewer.layer_artist_for_data(best_fit_subset).state.visible = False # Turn off best fit subset view on comparison viewer
         class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
-        class_layer.state.color = 'red'
         # comparison_viewer.add_subset(self.student_slider_subset)
         comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
         comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
@@ -621,19 +625,17 @@ class StageThree(HubbleStage):
 
         all_data = self.get_data(ALL_DATA_LABEL)
         student_layer = all_viewer.layer_artist_for_data(student_data)
-        student_layer.state.color = 'orange'
-        student_layer.state.zorder = 3
-        student_layer.state.size = 8
+        student_layer.state.zorder = 2
         student_layer.state.visible = False
         all_viewer.add_data(class_meas_data)
         class_layer = all_viewer.layer_artist_for_data(class_meas_data)
-        class_layer.state.zorder = 2
-        class_layer.state.size = 5
-        class_layer.state.color = 'red'
+        class_layer.state.zorder = 1
         class_layer.state.visible = False
         all_viewer.add_data(all_data)
         all_layer = all_viewer.layer_artist_for_data(all_data)
-        all_layer.state.zorder = 1
+        all_layer.state.zorder = 0
+        all_layer.state.color = "#78909C"
+        all_layer.state.size = 2
         all_layer.state.visible = False
         all_viewer.state.x_att = all_data.id[dist_attr]
         all_viewer.state.y_att = all_data.id[vel_attr]
@@ -681,7 +683,7 @@ class StageThree(HubbleStage):
             if viewer not in all_distr:
                 viewer.add_data(class_summ_data)
                 layer = viewer.layer_artist_for_data(class_summ_data)
-                layer.state.color = 'red'
+                layer.state.color = '#006C7A'
                 layer.state.alpha = 0.5
             if viewer != class_distr_viewer:
                 viewer.add_data(students_summary_data)
@@ -692,7 +694,7 @@ class StageThree(HubbleStage):
                     layer.state.visible = False
                 viewer.add_data(classes_summary_data)
                 layer = viewer.layer_artist_for_data(classes_summary_data)
-                layer.state.color = '#f0c470'
+                layer.state.color = '#FFBEA9'
                 layer.state.alpha = 0.5
                 if viewer == all_distr_viewer_student:
                     layer.state.visible = False
