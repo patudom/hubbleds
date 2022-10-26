@@ -56,9 +56,11 @@ class IDSlider(VuetifyTemplate):
         else:
             self.halfvmax = (self.vmax+1)/2
             self.tick_labels = ["Low"] + ["" for _ in range(int(self.halfvmax)-1)] + ["Age (Gyr)"]  + ["" for _ in range(int(self.halfvmax)-2)] + ["High"]
-        self.selected_id = int(self.ids[self.selected])
-        self.thumb_value = self.values[self.selected]
-        self.highlighted = self.selected_id in self.highlight_ids
+
+        if not hasattr(self, 'selected_id') or self.selected_id not in self.ids:
+            self.selected = 0
+        else:
+            self.selected = self.ids.index(self.selected_id)
         for cb in self._refresh_cbs:
             cb(self)
 
@@ -88,7 +90,7 @@ class IDSlider(VuetifyTemplate):
         old_index = change.get("old", None)
         index = change["new"]
         self.selected_id = int(self.ids[index])
-        self.thumb_value = round(self.values[self.selected])
+        self.thumb_value = round(self.values[index])
         highlighted = self.selected_id in self.highlight_ids
         old_highlighted = old_index is not None and self.ids[old_index] in self.highlight_ids
         self.highlighted = highlighted
