@@ -267,7 +267,7 @@
                 <h4
                   class="mb-2"
                 >
-                  One degree XX of angular size in the sky is a pinky's width at arm's length. 
+                  One degree of angular size in the sky is a pinky's width at arm's length. 
                 </h4>
               </div>
               <v-img
