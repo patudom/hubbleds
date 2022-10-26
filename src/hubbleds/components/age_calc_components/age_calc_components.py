@@ -9,6 +9,7 @@ from ...utils import AGE_CONSTANT
 class AgeCalc(v.VuetifyTemplate):
     template = Unicode().tag(sync=True)
     state = GlueState().tag(sync=True)
+    story_state = GlueState().tag(sync=True)
     failedValidation3 = Bool(False).tag(sync=True)
     failedValidationAgeRange = Bool(False).tag(sync=True)
     age_const = Float().tag(sync=True)
@@ -16,8 +17,9 @@ class AgeCalc(v.VuetifyTemplate):
     hint2_dialog = Bool(False).tag(sync=True)
     hint3_dialog = Bool(False).tag(sync=True)
 
-    def __init__(self, filename, path, state, *args, **kwargs):
-        self.state = state
+    def __init__(self, filename, path, stage_state, story_state, *args, **kwargs):
+        self.state = stage_state
+        self.story_state = story_state
         self.age_const = AGE_CONSTANT
         super().__init__(*args, **kwargs)
         self.template = load_template(filename, path)
