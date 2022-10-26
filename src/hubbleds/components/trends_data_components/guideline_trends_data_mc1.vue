@@ -37,6 +37,7 @@
           :correct-answers="[]"
           :neutral-answers='[0,1,2]'
           :selected-callback="(state) => { $emit('ready'); }"
+          score-tag="tre-dat-mc1"
         >
         </mc-radiogroup>
         <v-btn
@@ -58,7 +59,7 @@
           dense
           color="info darken-1"
         >
-          A trend is a pattern in data that resembles an upward <v-icon>mdi-arrow-top-right-bottom-left-bold</v-icon> or downward <v-icon>mdi-arrow-top-left-bottom-right-bold</v-icon> line. 
+          A trend is a pattern in data (for example, an upward <v-icon>mdi-arrow-top-right-bottom-left-bold</v-icon> or downward <v-icon>mdi-arrow-top-left-bottom-right-bold</v-icon> line). 
         </v-alert>
       </v-container>
     </div>
