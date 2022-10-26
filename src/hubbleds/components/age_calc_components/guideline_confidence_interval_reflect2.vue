@@ -74,7 +74,7 @@
             outlined
             rows="1"
             label="Best Guess Age"
-            tag="best-guess-age"
+            tag="best_guess_age"
           ></free-response>
         </v-col>
         <v-col>
@@ -151,7 +151,7 @@
             outlined
             rows="1"
             label="Likely Low Age"
-            tag="likely-low-age"
+            tag="likely_low_age"
           ></free-response>
         </v-col>
         <v-col
@@ -165,7 +165,7 @@
             outlined
             rows="1"
             label="Likely High Age"
-            tag="likely-high-age"
+            tag="likely_high_age"
           ></free-response>
         </v-col>
         <v-col
@@ -182,7 +182,7 @@
         auto-grow
         rows="2"
         label="My Reasoning"
-        tag="my-reasoning"
+        tag="my_reasoning"
       ></free-response>
 
       <v-row>
@@ -248,7 +248,7 @@
         auto-grow
         rows="2"
         label="My Level of Confidence"
-        tag="my-confidence"
+        tag="my_confidence"
       ></free-response>
     </div>
   </scaffold-alert>
