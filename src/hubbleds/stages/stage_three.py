@@ -254,9 +254,9 @@ class StageThree(HubbleStage):
         all_distr_viewer = self.add_viewer(HubbleHistogramView,
                                            'all_distr_viewer', "All Classes")
         all_distr_viewer_student = self.add_viewer(HubbleHistogramView,
-                                           'all_distr_viewer_student', "All Students & Classes") # really just All students, but need the title bar
+                                           'all_distr_viewer_student', "All Students") # really just All students, but need the title bar
         all_distr_viewer_class = self.add_viewer(HubbleHistogramView,
-                                           'all_distr_viewer_class', "All Classes",show_toolbar=False)
+                                           'all_distr_viewer_class', "All Classes")
         sandbox_distr_viewer = self.add_viewer(HubbleHistogramView,
                                                'sandbox_distr_viewer',
                                                "Sandbox")
@@ -667,13 +667,17 @@ class StageThree(HubbleStage):
         all_distr_viewer_class = self.get_viewer("all_distr_viewer_class")
         all_distr_viewer_student = self.get_viewer("all_distr_viewer_student")
         sandbox_distr_viewer = self.get_viewer("sandbox_distr_viewer")
+        
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
+        
         histogram_viewers = [class_distr_viewer, all_distr_viewer, sandbox_distr_viewer, all_distr_viewer_class,all_distr_viewer_student]
+        all_distr = [all_distr_viewer, all_distr_viewer_class, all_distr_viewer_student]
+        
         for viewer in histogram_viewers:
             label = 'Count' # if viewer == class_distr_viewer else 'Proportion'
-            if (viewer != all_distr_viewer) and (viewer != all_distr_viewer_class) and (viewer != all_distr_viewer_student):
+            if viewer not in all_distr:
                 viewer.add_data(class_summ_data)
                 layer = viewer.layer_artist_for_data(class_summ_data)
                 layer.state.color = 'red'
@@ -696,8 +700,8 @@ class StageThree(HubbleStage):
                 # viewer.state.y_max = 1
                 viewer.state.hist_n_bin = 20
             viewer.figure.axes[1].label = label
-            viewer.figure.axes[1].tick_format = ',0f'
-            viewer.figure.axes[1].num_ticks = 5
+            viewer.figure.axes[1].tick_format = '0'
+            # viewer.figure.axes[1].num_ticks = 5
 
         class_distr_viewer.state.x_att = class_summ_data.id['age']
         all_distr_viewer.state.x_att = students_summary_data.id['age']
@@ -705,13 +709,14 @@ class StageThree(HubbleStage):
         all_distr_viewer_student.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
         
-        all_distr_viewer_student.figure.axes[1].label = 'Count'
-        all_distr_viewer_student.figure.axes[1].tick_format = ',0f'
-        all_distr_viewer_student.figure.axes[1].num_ticks = 7
-        # set tick values
-        all_distr_viewer_student._update_ytick_values([0, 1, 2, 3, 4, 5, 6])
-        all_distr_viewer_student._update_appearance_from_settings()
-        all_distr_viewer_class._update_appearance_from_settings()
+        for v in [all_distr_viewer_student,all_distr_viewer_class]:
+            v.figure.axes[1].label = 'Count'
+            v.figure.axes[1].tick_format = ',0f'
+            v.figure.axes[1].num_ticks = 7
+            # set tick values
+            v.state.y_min = 0
+            v.state.y_max = 7
+            v._update_appearance_from_settings()
 
     # def _setup_morphology_subsets(self):
     #     # Do some stuff with the galaxy data

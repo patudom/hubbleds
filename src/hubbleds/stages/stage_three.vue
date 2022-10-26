@@ -292,7 +292,7 @@
     <!-- cla_age1c -->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1']"
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
     >
       <v-col
         cols="12"
