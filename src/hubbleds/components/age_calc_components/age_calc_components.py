@@ -18,6 +18,8 @@ class AgeCalc(v.VuetifyTemplate):
     hint2_dialog = Bool(False).tag(sync=True)
     hint3_dialog = Bool(False).tag(sync=True)
     best_guess = Unicode().tag(sync=True)
+    low_guess = Unicode().tag(sync=True)
+    high_guess = Unicode().tag(sync=True)
 
     def __init__(self, filename, path, stage_state, story_state, *args, **kwargs):
         self.state = stage_state
@@ -26,7 +28,10 @@ class AgeCalc(v.VuetifyTemplate):
         super().__init__(*args, **kwargs)
         self.template = load_template(filename, path)
 
-        add_callback(self.story_state, 'responses', self._update_best_guess)
+        add_callback(self.story_state, 'responses', self._update_guesses)
 
-    def _update_best_guess(self, responses):
+    def _update_guesses(self, responses):
         self.best_guess = responses['4']['best-guess-age']
+        self.low_guess = responses['4']['likely-low-age']
+        self.high_guess = responses['4']['likely-high-age']
+
