@@ -205,9 +205,6 @@ class StageThree(HubbleStage):
 
         self.show_team_interface = self.app_state.show_team_interface
 
-        # Change as needed during testing to start in the right place
-        self.stage_state.marker = 'con_int2'
-
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
         all_data = self.get_data(ALL_DATA_LABEL)
