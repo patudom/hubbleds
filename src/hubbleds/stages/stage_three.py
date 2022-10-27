@@ -111,6 +111,11 @@ class StageState(CDSState):
         'unc_sys1',
         'unc_sys2',
         'two_his2',
+        'lac_bia1',
+        'lac_bia2',
+        'lac_bia3',
+        'mor_dat1',
+        'acc_unc1',
         'pro_view',
         'pro_dat0',
         'pro_dat1',
@@ -363,7 +368,12 @@ class StageThree(HubbleStage):
             "guideline_uncertainties_random1",
             "guideline_uncertainties_systematic1",
             "guideline_uncertainties_systematic2",
-            "guideline_two_histograms_mc2"
+            "guideline_two_histograms_mc2",
+            "guideline_lack_bias_mc1",
+            "guideline_lack_bias_reflect2",
+            "guideline_lack_bias_reflect3",
+            "guideline_more_data_distribution",
+            "guideline_account_uncertainty"
         ]
         ext = ".vue"
         for comp in state_components:
