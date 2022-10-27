@@ -216,6 +216,8 @@ class StageThree(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.stage_state.marker = 'con_int2c'
+
         self.show_team_interface = self.app_state.show_team_interface
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
@@ -586,6 +588,34 @@ class StageThree(HubbleStage):
             student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
             student_layer.state.visible = False    
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
+        
+        # show prodata layers
+        if advancing and new == "pro_dat1":
+            prodata_viewer = self.get_viewer("prodata_viewer")
+            hubble_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_1929_DATA_LABEL))
+            hubble_layer.state.visible = True
+            prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", True)
+            prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
+        if advancing and new == 'pro_dat5':
+            # turn off best fit tool
+            prodata_viewer = self.get_viewer("prodata_viewer")
+            prodata_viewer.toolbar.tools["hubble:linefit"].activate() # deactivates the tool. activate() is a toggle
+            # turnon HST data layer
+            hst_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_KEY_DATA_LABEL))
+            hst_layer.state.visible = True
+        if advancing and new == 'pro_dat6':
+            # turn on best fit tool
+            prodata_viewer = self.get_viewer("prodata_viewer")
+            prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
+            # check if tool is active, if not activate it
+            if not prodata_viewer.toolbar.tools["hubble:linefit"].active:
+                prodata_viewer.toolbar.tools["hubble:linefit"].activate()
+        if advancing and new == 'pro_dat8':
+            # turn on labels
+            prodata_viewer = self.get_viewer("prodata_viewer")
+            prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+            
+            
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
@@ -673,14 +703,19 @@ class StageThree(HubbleStage):
 
 
         prodata_viewer.add_data(hstkp)
-        # set hstkp data layer to red
         hstkp_layer = prodata_viewer.layer_artist_for_data(hstkp)
-        hstkp_layer.state.color = 'red'
+        hstkp_layer.state.color = '#AEEA00'
+        hstkp_layer.state.visible = False
         prodata_viewer.add_data(hubble1929)
         # set hubble1929 data layer to blue
         hubble1929_layer = prodata_viewer.layer_artist_for_data(hubble1929)
-        hubble1929_layer.state.color = 'blue'
+        hubble1929_layer.state.color = '#D500F9'
+        hubble1929_layer.state.visible = False
         prodata_viewer.state.reset_limits()
+        prodata_viewer.add_data(class_meas_data)
+        student_layer = prodata_viewer.layer_artist_for_data(student_data)
+        student_layer.state.visible = False
+        
 
         # In the comparison viewer, we only want to see the line for the student slider subset
         linefit_id = "hubble:linefit"
