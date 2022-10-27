@@ -110,6 +110,11 @@ class StageState(CDSState):
         'unc_ran1',
         'unc_sys1',
         'two_his2',
+        'lac_bia1',
+        'lac_bia2',
+        'lac_bia3',
+        'mor_dat1',
+        'acc_unc1',
         'pro_view',
         'pro_dat0',
         'pro_dat1',
@@ -233,7 +238,7 @@ class StageThree(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         # Change as needed during testing to start in the right place
-        self.stage_state.marker = 'con_int2c'
+        # self.stage_state.marker = 'two_his2'
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -362,7 +367,12 @@ class StageThree(HubbleStage):
             "guideline_imperfect_measurements1",
             "guideline_uncertainties_random1",
             "guideline_uncertainties_systematic1",
-            "guideline_two_histograms_mc2"
+            "guideline_two_histograms_mc2",
+            "guideline_lack_bias_mc1",
+            "guideline_lack_bias_reflect2",
+            "guideline_lack_bias_reflect3",
+            "guideline_more_data_distribution",
+            "guideline_account_uncertainty"
         ]
         ext = ".vue"
         for comp in state_components:

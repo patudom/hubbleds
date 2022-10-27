@@ -324,7 +324,10 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row
+      class="d-flex align-stretch"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['con_int2c']) && (stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0'])"
+    >
       <v-col
         cols="12"
         lg="5"
@@ -364,6 +367,21 @@
             v-intersect.once="scrollIntoView"/>
         <c-guideline-two-histograms-mc2
             v-if="stage_state.marker == 'two_his2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-lack-bias-mc1
+            v-if="stage_state.marker == 'lac_bia1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-lack-bias-reflect2
+            v-if="stage_state.marker == 'lac_bia2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-lack-bias-reflect3
+            v-if="stage_state.marker == 'lac_bia3'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-more-data-distribution
+            v-if="stage_state.marker == 'mor_dat1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-account-uncertainty
+            v-if="stage_state.marker == 'acc_unc1'"
             v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
