@@ -28,6 +28,8 @@ from ..viewers import HubbleFitView, \
     HubbleScatterView
 from ..viewers.viewers import \
     HubbleClassHistogramView, HubbleHistogramView, HubbleFitLayerView
+    
+from bqplot import OrdinalScale, LinearScale
 
 
 class StageState(CDSState):
@@ -39,6 +41,7 @@ class StageState(CDSState):
     class_layer_toggled = CallbackProperty(0)
     trend_line_drawn = CallbackProperty(False)
     best_fit_clicked = CallbackProperty(False)
+    prodata_action = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -91,6 +94,7 @@ class StageState(CDSState):
         'cla_age1c',
         'age_dis1c',
         'con_int2c',
+        'pro_view',
     ])
 
     step_markers = CallbackProperty([
@@ -249,6 +253,10 @@ class StageThree(HubbleStage):
                                              'class_distr_viewer', "My Class")
         all_distr_viewer = self.add_viewer(HubbleHistogramView,
                                            'all_distr_viewer', "All Classes")
+        all_distr_viewer_student = self.add_viewer(HubbleHistogramView,
+                                           'all_distr_viewer_student', "All Students") # really just All students, but need the title bar
+        all_distr_viewer_class = self.add_viewer(HubbleHistogramView,
+                                           'all_distr_viewer_class', "All Classes")
         sandbox_distr_viewer = self.add_viewer(HubbleHistogramView,
                                                'sandbox_distr_viewer',
                                                "Sandbox")
@@ -311,7 +319,6 @@ class StageThree(HubbleStage):
             "guideline_class_age_distribution",
             "guideline_trend_lines_draw2_c",
             "guideline_best_fit_line_c",
-            "guideline_your_age_estimate_c",
             "guideline_classmates_results_c",
             "guideline_class_age_distribution_c",
         ]
@@ -348,11 +355,12 @@ class StageThree(HubbleStage):
             "guideline_class_age_range",
             "guideline_confidence_interval_reflect2",
             "guideline_class_age_range_c",
+            "guideline_your_age_estimate_c",
             "guideline_confidence_interval_reflect2_c",
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
-            component = AgeCalc(comp + ext, path, self.stage_state)
+            component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
             self.add_component(component, label=label) 
 
         # Grab data
@@ -544,9 +552,6 @@ class StageThree(HubbleStage):
             student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
             student_layer.state.visible = False    
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
-        if advancing and new == "age_uni1":
-            layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
@@ -564,16 +569,23 @@ class StageThree(HubbleStage):
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
         for viewer in [comparison_viewer, prodata_viewer, layer_viewer, all_viewer]:
             viewer.add_data(student_data)
-            # viewer.layers[-1].state.visible = False
             viewer.state.x_att = student_data.id[dist_attr]
             viewer.state.y_att = student_data.id[vel_attr]
+    
         
+        student_layer = layer_viewer.layer_artist_for_data(student_data)
+        student_layer.state.color = '#FF7043'
+        student_layer.state.zorder = 2
+        student_layer.state.size = 8                    
+        student_layer.state.alpha = 1
         # add class measurement data and hide by default
         layer_viewer.add_data(class_meas_data)
         layer_viewer.state.reset_limits()
         class_layer = layer_viewer.layer_artist_for_data(class_meas_data)
         class_layer.state.zorder = 1
-        class_layer.state.color = "blue"
+        class_layer.state.color = "#26C6DA"
+        class_layer.state.alpha = 1
+        class_layer.state.size = 4
         class_layer.state.visible = False
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         toggle_tool.set_layer_to_toggle(class_layer)
@@ -594,18 +606,15 @@ class StageThree(HubbleStage):
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
 
         student_layer = comparison_viewer.layer_artist_for_data(student_data)
-        student_layer.state.color = 'orange'
-        student_layer.state.zorder = 3
-        student_layer.state.size = 8
+        student_layer.state.zorder = 5
         comparison_viewer.add_data(class_meas_data)
         class_layer = comparison_viewer.layer_artist_for_data(class_meas_data)
-        comparison_viewer.layer_artist_for_data(student_data).state.visible = False # Turn off student's own data on comparison viewer, layer -3 here.
+        comparison_viewer.layer_artist_for_data(student_data).state.visible = False # Turn off student's own data on comparison viewer
         if len(student_data.subsets) > 0:
             best_fit_subset = student_data.subsets[0]
             comparison_viewer.layer_artist_for_data(best_fit_subset).state.visible = False # Turn off best fit subset view on comparison viewer
         class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
-        class_layer.state.color = 'red'
         # comparison_viewer.add_subset(self.student_slider_subset)
         comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
         comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
@@ -613,28 +622,31 @@ class StageThree(HubbleStage):
 
         all_data = self.get_data(ALL_DATA_LABEL)
         student_layer = all_viewer.layer_artist_for_data(student_data)
-        student_layer.state.color = 'orange'
-        student_layer.state.zorder = 3
-        student_layer.state.size = 8
+        student_layer.state.zorder = 2
         student_layer.state.visible = False
         all_viewer.add_data(class_meas_data)
         class_layer = all_viewer.layer_artist_for_data(class_meas_data)
-        class_layer.state.zorder = 2
-        class_layer.state.size = 5
-        class_layer.state.color = 'red'
+        class_layer.state.zorder = 1
         class_layer.state.visible = False
         all_viewer.add_data(all_data)
         all_layer = all_viewer.layer_artist_for_data(all_data)
-        all_layer.state.zorder = 1
+        all_layer.state.zorder = 0
+        all_layer.state.color = "#78909C"
+        all_layer.state.size = 2
         all_layer.state.visible = False
         all_viewer.state.x_att = all_data.id[dist_attr]
         all_viewer.state.y_att = all_data.id[vel_attr]
 
-        prodata_viewer.add_data(student_data)
-        prodata_viewer.state.x_att = student_data.id[dist_attr]
-        prodata_viewer.state.y_att = student_data.id[vel_attr]
+
         prodata_viewer.add_data(hstkp)
+        # set hstkp data layer to red
+        hstkp_layer = prodata_viewer.layer_artist_for_data(hstkp)
+        hstkp_layer.state.color = 'red'
         prodata_viewer.add_data(hubble1929)
+        # set hubble1929 data layer to blue
+        hubble1929_layer = prodata_viewer.layer_artist_for_data(hubble1929)
+        hubble1929_layer.state.color = 'blue'
+        prodata_viewer.state.reset_limits()
 
         # In the comparison viewer, we only want to see the line for the student slider subset
         linefit_id = "hubble:linefit"
@@ -652,38 +664,59 @@ class StageThree(HubbleStage):
     def _setup_histogram_layers(self):
         class_distr_viewer = self.get_viewer("class_distr_viewer")
         all_distr_viewer = self.get_viewer("all_distr_viewer")
+        all_distr_viewer_class = self.get_viewer("all_distr_viewer_class")
+        all_distr_viewer_student = self.get_viewer("all_distr_viewer_student")
         sandbox_distr_viewer = self.get_viewer("sandbox_distr_viewer")
+        
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
-        histogram_viewers = [class_distr_viewer, all_distr_viewer, sandbox_distr_viewer]
+        
+        histogram_viewers = [class_distr_viewer, all_distr_viewer, sandbox_distr_viewer, all_distr_viewer_class,all_distr_viewer_student]
+        all_distr = [all_distr_viewer, all_distr_viewer_class, all_distr_viewer_student]
+        
         for viewer in histogram_viewers:
-            label = 'Count' if viewer == class_distr_viewer else 'Proportion'
-            viewer.figure.axes[1].label = label
-            viewer.figure.axes[1].tick_format = '0'
-            viewer.figure.axes[1].num_ticks = 5
-            if viewer != all_distr_viewer:
+            label = 'Count' # if viewer == class_distr_viewer else 'Proportion'
+            if viewer not in all_distr:
                 viewer.add_data(class_summ_data)
                 layer = viewer.layer_artist_for_data(class_summ_data)
-                layer.state.color = 'red'
+                layer.state.color = '#006C7A'
                 layer.state.alpha = 0.5
             if viewer != class_distr_viewer:
                 viewer.add_data(students_summary_data)
                 layer = viewer.layer_artist_for_data(students_summary_data)
                 layer.state.color = 'blue'
                 layer.state.alpha = 0.5
+                if viewer == all_distr_viewer_class:
+                    layer.state.visible = False
                 viewer.add_data(classes_summary_data)
                 layer = viewer.layer_artist_for_data(classes_summary_data)
-                layer.state.color = '#f0c470'
+                layer.state.color = '#FFBEA9'
                 layer.state.alpha = 0.5
-                viewer.state.normalize = True
-                viewer.state.y_min = 0
-                viewer.state.y_max = 1
+                if viewer == all_distr_viewer_student:
+                    layer.state.visible = False
+                # viewer.state.normalize = True
+                # viewer.state.y_min = 0
+                # viewer.state.y_max = 1
                 viewer.state.hist_n_bin = 20
+            viewer.figure.axes[1].label = label
+            viewer.figure.axes[1].tick_format = '0'
+            # viewer.figure.axes[1].num_ticks = 5
 
         class_distr_viewer.state.x_att = class_summ_data.id['age']
         all_distr_viewer.state.x_att = students_summary_data.id['age']
+        all_distr_viewer_class.state.x_att = students_summary_data.id['age']
+        all_distr_viewer_student.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
+        
+        for v in [all_distr_viewer_student,all_distr_viewer_class]:
+            v.figure.axes[1].label = 'Count'
+            v.figure.axes[1].tick_format = ',0f'
+            v.figure.axes[1].num_ticks = 7
+            # set tick values
+            v.state.y_min = 0
+            v.state.y_max = 7
+            v._update_appearance_from_settings()
 
     # def _setup_morphology_subsets(self):
     #     # Do some stuff with the galaxy data
@@ -707,6 +740,7 @@ class StageThree(HubbleStage):
     #     morphology_viewer.state.y_att = all_data.id['velocity']
 
     def _on_stage_index_changed(self, index):
+        print("Stage Index: ",self.story_state.stage_index)
         if index > 0:
             self._deferred_setup()
 
@@ -752,6 +786,8 @@ class StageThree(HubbleStage):
                    'prodata_viewer',
                    'class_distr_viewer',
                    'all_distr_viewer',
+                   'all_distr_viewer_class',
+                   'all_distr_viewer_student',
                    'sandbox_distr_viewer',
                    ]
 
@@ -761,6 +797,8 @@ class StageThree(HubbleStage):
                        "scatter",
                        # "scatter",
                        "scatter",
+                       "histogram",
+                       "histogram",
                        "histogram",
                        "histogram",
                        "histogram"]
