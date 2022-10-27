@@ -20,6 +20,9 @@ class AgeCalc(v.VuetifyTemplate):
     best_guess = Unicode().tag(sync=True)
     low_guess = Unicode().tag(sync=True)
     high_guess = Unicode().tag(sync=True)
+    short_one = Unicode().tag(sync=True)
+    short_two= Unicode().tag(sync=True)
+    short_other = Unicode().tag(sync=True)
 
     def __init__(self, filename, path, stage_state, story_state, *args, **kwargs):
         self.state = stage_state
@@ -34,4 +37,7 @@ class AgeCalc(v.VuetifyTemplate):
         self.best_guess = responses['4']['best-guess-age']
         self.low_guess = responses['4']['likely-low-age']
         self.high_guess = responses['4']['likely-high-age']
+        self.short_one = responses['4']['shortcoming-1']
+        self.short_two = responses['4']['shortcoming-2']
+        self.short_other = responses['4']['other-shortcomings']
 

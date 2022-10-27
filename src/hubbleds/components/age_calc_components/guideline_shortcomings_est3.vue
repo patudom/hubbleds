@@ -15,6 +15,24 @@
       <p>
         Recall your thoughts about shortcomings in your estimate:
       </p>
+      <p>
+        Shortcoming #1:
+      </p>
+      <p>
+        {{ short_one}}
+      </p>
+      <p>
+        Shortcoming #2:
+      </p>
+      <p>
+        {{ short_two}}
+      </p>
+      <p>
+        Other shortcomings:
+      </p>
+      <p>
+        {{ short_other}}
+      </p>
       <free-response
         outlined
         auto-grow
