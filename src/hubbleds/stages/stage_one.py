@@ -306,7 +306,7 @@ class StageOne(HubbleStage):
         add_callback(restwave_tool, 'lambda_on', self._on_lambda_on)
         spec_toolbar.set_tool_enabled("hubble:restwave", self.stage_state.marker_reached("res_wav1"))
         spec_toolbar.set_tool_enabled("hubble:wavezoom", self.stage_state.marker_reached("obs_wav2"))
-        spec_toolbar.set_tool_enabled("bqplot:home", self.stage_state.marker_reached("obs_wav2"))
+        spec_toolbar.set_tool_enabled("cds:home", self.stage_state.marker_reached("obs_wav2"))
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_update)
         
         
@@ -332,7 +332,7 @@ class StageOne(HubbleStage):
         
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
-            spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
+            spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
         
         
             
@@ -389,7 +389,7 @@ class StageOne(HubbleStage):
         if advancing and new == "obs_wav2":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
-            spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
+            spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
 
     def _on_step_index_update(self, index):
         # If we aren't on this stage, ignore

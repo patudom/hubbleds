@@ -7,7 +7,7 @@ from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import extend_tool, load_template, update_figure_css
+from cosmicds.utils import extend_tool, load_template, update_figure_css, RepeatedTimer
 from echo import CallbackProperty, add_callback, remove_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
@@ -193,7 +193,7 @@ class StageThree(HubbleStage):
     viewer_ids_for_data = {
         STUDENT_DATA_LABEL: ["comparison_viewer","layer_viewer"],
         CLASS_DATA_LABEL: ["comparison_viewer","layer_viewer"],
-        CLASS_SUMMARY_LABEL: ["class_distr_viewer"]
+        CLASS_SUMMARY_LABEL: ["class_distr_viewer", "comparison_viewer"]
     }
 
     def __init__(self, *args, **kwargs):
@@ -391,9 +391,9 @@ class StageThree(HubbleStage):
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
 
-        def update_student_slider(msg):
-            student_slider.update_data(self, msg.data)
-        self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == CLASS_SUMMARY_LABEL, handler=update_student_slider)
+        # def update_student_slider(msg):
+        #     student_slider.update_data(self, msg.data)
+        # self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == CLASS_SUMMARY_LABEL, handler=update_student_slider)
 
         # Create the class slider
         class_slider_subset_label = "class_slider_subset"
@@ -500,6 +500,12 @@ class StageThree(HubbleStage):
             add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
         else:
             self._deferred_setup()
+
+        self.story_state.on_class_data_update(self._on_class_data_update)
+        self.story_state.on_student_data_update(self._on_student_data_update)
+
+        self.reset_limits_timer = RepeatedTimer(5, self.reset_viewer_limits)
+        self.reset_limits_timer.start()
     
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -729,18 +735,36 @@ class StageThree(HubbleStage):
             self.stage_state.hypgal_velocity = data["velocity"][index]
             self.stage_state.hypgal_distance = data["distance"][index]
 
-    def _on_data_change(self, msg):
-        label = msg.data.label
+    def reset_viewer_limits(self):
+        self._reset_limits_for_data(STUDENT_DATA_LABEL)
+        self._reset_limits_for_data(CLASS_DATA_LABEL)
+        self._reset_limits_for_data(CLASS_SUMMARY_LABEL)
+
+    def _reset_limits_for_data(self, label):
         viewer_id = self.viewer_ids_for_data.get(label, [])
         for vid in viewer_id:
             try:
-                self.get_viewer(vid).state.reset_limits()
-            except:
-                pass
+                tool = self.get_viewer(vid).reset_limits()
+                if tool is not None:
+                    tool.activate()
+                print("Reset limits for", vid)
+            except RuntimeError as e:
+                print(vid, e)
 
+    def _on_data_change(self, msg):
+        label = msg.data.label
+        # self._reset_viewer_limits(label)
         if label == STUDENT_DATA_LABEL:
             self._update_hypgal_info()
+        elif label == CLASS_SUMMARY_LABEL:
+            self.get_component("c-student-slider").refresh()
 
+
+    def _on_class_data_update(self, *args):
+        self.reset_viewer_limits()
+
+    def _on_student_data_update(self, *args):
+        self.reset_viewer_limits()
 
     def _update_viewer_style(self, dark):
         viewers = ['layer_viewer',
