@@ -4,9 +4,11 @@
     @back="
       state.marker = 'age_dis1';
     "
-    @next="
+    @next="() => {
       state.marker = 'tre_lin2c';
-    "
+      state.trend_line_drawn = false;
+      state.best_fit_clicked = false;
+    }"
   >
     <div
       class="mb-4"
@@ -74,7 +76,7 @@
             outlined
             rows="1"
             label="Best Guess Age"
-            tag="best_guess_age"
+            tag="best-guess-age"
           ></free-response>
         </v-col>
         <v-col>
@@ -151,7 +153,7 @@
             outlined
             rows="1"
             label="Likely Low Age"
-            tag="likely_low_age"
+            tag="likely-low-age"
           ></free-response>
         </v-col>
         <v-col
@@ -165,7 +167,7 @@
             outlined
             rows="1"
             label="Likely High Age"
-            tag="likely_high_age"
+            tag="likely-high-age"
           ></free-response>
         </v-col>
         <v-col
@@ -182,7 +184,7 @@
         auto-grow
         rows="2"
         label="My Reasoning"
-        tag="my_reasoning"
+        tag="my-reasoning"
       ></free-response>
 
       <v-row>
@@ -248,7 +250,7 @@
         auto-grow
         rows="2"
         label="My Level of Confidence"
-        tag="my_confidence"
+        tag="my-confidence"
       ></free-response>
     </div>
   </scaffold-alert>
