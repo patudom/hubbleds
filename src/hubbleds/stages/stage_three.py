@@ -206,7 +206,7 @@ class StageThree(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         # Change as needed during testing to start in the right place
-        self.stage_state.marker = 'con_int2c'
+        self.stage_state.marker = 'con_int2'
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -322,7 +322,6 @@ class StageThree(HubbleStage):
             "guideline_class_age_distribution",
             "guideline_trend_lines_draw2_c",
             "guideline_best_fit_line_c",
-            "guideline_your_age_estimate_c",
             "guideline_classmates_results_c",
             "guideline_class_age_distribution_c",
         ]
@@ -359,6 +358,7 @@ class StageThree(HubbleStage):
             "guideline_class_age_range",
             "guideline_confidence_interval_reflect2",
             "guideline_class_age_range_c",
+            "guideline_your_age_estimate_c",
             "guideline_confidence_interval_reflect2_c",
         ]
         for comp in age_calc_components:
