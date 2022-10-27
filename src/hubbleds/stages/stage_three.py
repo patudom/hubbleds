@@ -98,6 +98,25 @@ class StageState(CDSState):
         'cla_age1c',
         'age_dis1c',
         'con_int2c',
+        'two_his1',
+        'tru_age1',
+        'tru_age2',
+        'sho_est3',
+        'sho_est4',
+        'tru_iss1',
+        'imp_met1',
+        'imp_ass1',
+        'imp_mea1',
+        'unc_ran1',
+        'unc_sys1',
+        'unc_sys2',
+        'two_his2',
+        'lac_bia1',
+        'lac_bia2',
+        'lac_bia3',
+        'mor_dat1',
+        'acc_unc1',
+        'pro_view',
         'pro_dat0',
         'pro_dat1',
         'pro_dat2',
@@ -226,6 +245,9 @@ class StageThree(HubbleStage):
 
         self.show_team_interface = self.app_state.show_team_interface
 
+        # Change as needed during testing to start in the right place
+        self.stage_state.marker = 'unc_sys1'
+
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
         all_data = self.get_data(ALL_DATA_LABEL)
@@ -341,7 +363,24 @@ class StageThree(HubbleStage):
             "guideline_trend_lines_draw2_c",
             "guideline_best_fit_line_c",
             "guideline_classmates_results_c",
-            "guideline_class_age_distribution_c"
+            "guideline_class_age_distribution_c",
+            "guideline_two_histograms1",
+            "guideline_true_age1",
+            "guideline_true_age2",
+            "guideline_shortcomings_est_reflect4",
+            "guideline_true_age_issues1",
+            "guideline_imperfect_methods1",
+            "guideline_imperfect_assumptions1",
+            "guideline_imperfect_measurements1",
+            "guideline_uncertainties_random1",
+            "guideline_uncertainties_systematic1",
+            "guideline_uncertainties_systematic2",
+            "guideline_two_histograms_mc2",
+            "guideline_lack_bias_mc1",
+            "guideline_lack_bias_reflect2",
+            "guideline_lack_bias_reflect3",
+            "guideline_more_data_distribution",
+            "guideline_account_uncertainty"
         ]
         ext = ".vue"
         for comp in state_components:
@@ -379,6 +418,7 @@ class StageThree(HubbleStage):
             "guideline_your_age_estimate_c",
             "guideline_confidence_interval_reflect2_c",
             "guideline_story_finish",
+            "guideline_shortcomings_est3",
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
@@ -549,7 +589,7 @@ class StageThree(HubbleStage):
 
         # JC: There's apparently a way to link axes in glue-jupyter, so we should use that
         # but I'm not familiar with it, so in the interest of time, let's do this
-        for prop in ['x_min', 'x_max', 'y_min', 'y_max']: 
+        for prop in ['x_min', 'x_max']: 
             link((all_distr_viewer_student.state, prop), (all_distr_viewer_class.state, prop))
 
         # If possible, we defer some of the setup for later, to make loading faster
@@ -766,18 +806,18 @@ class StageThree(HubbleStage):
             if viewer not in all_distr:
                 viewer.add_data(class_summ_data)
                 layer = viewer.layer_artist_for_data(class_summ_data)
-                layer.state.color = '#006C7A'
+                layer.state.color = '#26C6DA'
                 layer.state.alpha = 0.5
             if viewer != class_distr_viewer:
                 viewer.add_data(students_summary_data)
                 layer = viewer.layer_artist_for_data(students_summary_data)
-                layer.state.color = 'blue'
+                layer.state.color = '#78909C'
                 layer.state.alpha = 0.5
                 if viewer == all_distr_viewer_class:
                     layer.state.visible = False
                 viewer.add_data(classes_summary_data)
                 layer = viewer.layer_artist_for_data(classes_summary_data)
-                layer.state.color = '#FFBEA9'
+                layer.state.color = '#006C7A'
                 layer.state.alpha = 0.5
                 if viewer == all_distr_viewer_student:
                     layer.state.visible = False
