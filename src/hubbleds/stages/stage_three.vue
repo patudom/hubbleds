@@ -292,7 +292,7 @@
     <!-- cla_age1c -->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['con_int2c']) && (stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0'])"
     >
       <v-col
         cols="12"
@@ -301,41 +301,88 @@
         <c-guideline-class-age-distribution-c
           v-if="stage_state.marker == 'age_dis1c'"
           v-intersect.once="scrollIntoView"/>
+        <c-guideline-two-histograms1
+            v-if="stage_state.marker == 'two_his1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-true-age1
+            v-if="stage_state.marker == 'tru_age1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-true-age2
+            v-if="stage_state.marker == 'tru_age2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-shortcomings-est3
+            v-if="stage_state.marker == 'sho_est3'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-shortcomings-est-reflect4
+            v-if="stage_state.marker == 'sho_est4'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-true-age-issues1
+            v-if="stage_state.marker == 'tru_iss1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-imperfect-methods1
+            v-if="stage_state.marker == 'imp_met1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-imperfect-assumptions1
+            v-if="stage_state.marker == 'imp_ass1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-imperfect-measurements1
+            v-if="stage_state.marker == 'imp_mea1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-uncertainties-random1
+            v-if="stage_state.marker == 'unc_ran1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-uncertainties-systematic1
+            v-if="stage_state.marker == 'unc_sys1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-uncertainties-systematic2
+            v-if="stage_state.marker == 'unc_sys2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-two-histograms-mc2
+            v-if="stage_state.marker == 'two_his2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-lack-bias-mc1
+            v-if="stage_state.marker == 'lac_bia1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-lack-bias-reflect2
+            v-if="stage_state.marker == 'lac_bia2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-lack-bias-reflect3
+            v-if="stage_state.marker == 'lac_bia3'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-more-data-distribution
+            v-if="stage_state.marker == 'mor_dat1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-account-uncertainty
+            v-if="stage_state.marker == 'acc_unc1'"
+            v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"
         lg="7"
       >
         <v-card
-          color="error"
-        >
-          <v-card-text>
-            Histogram needs y-axis labels
-          </v-card-text>
-        </v-card>
-        <v-card
           :color="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'info' : 'black'"
           :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
+          <v-lazy>
+            <!-- Change v-if marker to include when we want tos tart showing student value-->
+            <jupyter-widget :widget="viewers.all_distr_viewer_student"
+              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
+            />
+          </v-lazy>
           <v-lazy>
             <jupyter-widget :widget="viewers.all_distr_viewer_class"/>
           </v-lazy>
         </v-card>
       </v-col>
     </v-row>
-  
-      
       
     <!--------------------- PROFESSIONAL DATA VIEWER - during professional data sequence ----------------------->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['pro_dat10']"
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['fin_sto1']"
     >
-      <v-col
-        cols="12"
-        lg="5"
-      >
         <c-guideline-professional-data0
           v-if="stage_state.marker == 'pro_dat0'"
           v-intersect.once="scrollIntoView"/>
