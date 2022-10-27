@@ -11,6 +11,7 @@ from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty, add_callback, remove_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
+from glue_jupyter.link import link, dlink
 from hubbleds.components.id_slider import IDSlider
 from hubbleds.utils import IMAGE_BASE_URL
 from traitlets import default, Bool
@@ -503,6 +504,12 @@ class StageThree(HubbleStage):
         extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
 
+
+        # JC: There's apparently a way to link axes in glue-jupyter, so we should use that
+        # but I'm not familiar with it, so in the interest of time, let's do this
+        for prop in ['x_min', 'x_max', 'y_min', 'y_max']: 
+            link((all_distr_viewer_student.state, prop), (all_distr_viewer_class.state, prop))
+
         # If possible, we defer some of the setup for later, to make loading faster
         if self.story_state.stage_index != self.index:
             add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
@@ -715,6 +722,7 @@ class StageThree(HubbleStage):
         style = load_style(style_name)
         update_figure_css(all_distr_viewer_student, style_dict=style)
         update_figure_css(all_distr_viewer_class, style_dict=style)
+
 
     # def _setup_morphology_subsets(self):
     #     # Do some stuff with the galaxy data
