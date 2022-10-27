@@ -229,7 +229,7 @@
     <!--------------------- ALL DATA HUBBLE VIEWER - during class sequence ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c']"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c']) && stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0']"
     >
       <v-col
         cols="12"
@@ -324,7 +324,76 @@
         </v-card>
       </v-col>
     </v-row>
+  
+      
+      
+    <!--------------------- PROFESSIONAL DATA VIEWER - during professional data sequence ----------------------->
+    <v-row
+      class="d-flex align-stretch"
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['pro_dat10']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <c-guideline-professional-data0
+          v-if="stage_state.marker == 'pro_dat0'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-professional-data1
+          v-if="stage_state.marker == 'pro_dat1'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data2
+          v-if="stage_state.marker == 'pro_dat2'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data3
+          v-if="stage_state.marker == 'pro_dat3'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data4
+          v-if="stage_state.marker == 'pro_dat4'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data5
+          v-if="stage_state.marker == 'pro_dat5'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data6
+          v-if="stage_state.marker == 'pro_dat6'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data7
+          v-if="stage_state.marker == 'pro_dat7'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data8
+          v-if="stage_state.marker == 'pro_dat8'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-professional-data9
+          v-if="stage_state.marker == 'pro_dat9'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data10
+          v-if="stage_state.marker == 'pro_dat10'"
+          v-intersect.once="scrollIntoView"/>
 
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          :color="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
+          <v-lazy>
+            <jupyter-widget :widget="viewers.prodata_viewer"/>
+          </v-lazy>
+        </v-card>
+      </v-col>
+    </v-row>
     <c-guideline-confidence-interval-reflect2
       v-if="stage_state.marker == 'con_int2'"
       v-intersect.once="scrollIntoView"/>

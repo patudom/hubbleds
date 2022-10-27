@@ -4,10 +4,8 @@
     @back="
       state.marker = 'age_dis1c';
     "
-    @next="() => {
-            state.marker = 'con_int2c';
-            console.log('test story_state.responses.best-guess-age:', best_guess)
-          } 
+    @next="
+      state.marker = 'pro_dat0';
     "
   >
     <div

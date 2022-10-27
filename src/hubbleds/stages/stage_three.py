@@ -13,11 +13,11 @@ from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
 from glue_jupyter.link import link, dlink
 from hubbleds.components.id_slider import IDSlider
-from hubbleds.utils import IMAGE_BASE_URL
+from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..components import TrendsData, HubbleExp, AgeCalc
+from ..components import TrendsData, HubbleExp, AgeCalc, ProData 
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
@@ -42,7 +42,10 @@ class StageState(CDSState):
     class_layer_toggled = CallbackProperty(0)
     trend_line_drawn = CallbackProperty(False)
     best_fit_clicked = CallbackProperty(False)
-    prodata_action = CallbackProperty(False)
+    prodata_response = CallbackProperty(False)
+    hst_age = CallbackProperty(13)
+    our_age = CallbackProperty(0)
+    
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -95,7 +98,17 @@ class StageState(CDSState):
         'cla_age1c',
         'age_dis1c',
         'con_int2c',
-        'pro_view',
+        'pro_dat0',
+        'pro_dat1',
+        'pro_dat2',
+        'pro_dat3',
+        'pro_dat4',
+        'pro_dat5',
+        'pro_dat6',
+        'pro_dat7',
+        'pro_dat8',
+        'pro_dat9',
+        'pro_dat10',
     ])
 
     step_markers = CallbackProperty([
@@ -321,7 +334,7 @@ class StageThree(HubbleStage):
             "guideline_trend_lines_draw2_c",
             "guideline_best_fit_line_c",
             "guideline_classmates_results_c",
-            "guideline_class_age_distribution_c",
+            "guideline_class_age_distribution_c"
         ]
         ext = ".vue"
         for comp in state_components:
@@ -362,6 +375,28 @@ class StageThree(HubbleStage):
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
             component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
+            self.add_component(component, label=label) 
+            
+        # Set up prodata components
+        prodata_components_dir = str(Path(
+            __file__).parent.parent / "components" / "prodata_components")
+        path = join(prodata_components_dir, "")
+        prodata_components = [
+            "guideline_professional_data0",
+            "guideline_professional_data1",
+            "guideline_professional_data2",
+            "guideline_professional_data3",
+            "guideline_professional_data4",
+            "guideline_professional_data5",
+            "guideline_professional_data6",
+            "guideline_professional_data7",
+            "guideline_professional_data8",
+            "guideline_professional_data9",
+            "guideline_professional_data10",
+        ]
+        for comp in prodata_components:
+            label = f"c-{comp}".replace("_", "-")
+            component = ProData(comp + ext, path, self.stage_state)
             self.add_component(component, label=label) 
 
         # Grab data
@@ -559,6 +594,34 @@ class StageThree(HubbleStage):
             student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
             student_layer.state.visible = False    
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
+        
+        # show prodata layers
+        if advancing and new == "pro_dat1":
+            prodata_viewer = self.get_viewer("prodata_viewer")
+            hubble_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_1929_DATA_LABEL))
+            hubble_layer.state.visible = True
+            prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", True)
+            prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
+        if advancing and new == 'pro_dat5':
+            # turn off best fit tool
+            prodata_viewer = self.get_viewer("prodata_viewer")
+            prodata_viewer.toolbar.tools["hubble:linefit"].activate() # deactivates the tool. activate() is a toggle
+            # turnon HST data layer
+            hst_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_KEY_DATA_LABEL))
+            hst_layer.state.visible = True
+        if advancing and new == 'pro_dat6':
+            # turn on best fit tool
+            prodata_viewer = self.get_viewer("prodata_viewer")
+            prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
+            # check if tool is active, if not activate it
+            if not prodata_viewer.toolbar.tools["hubble:linefit"].active:
+                prodata_viewer.toolbar.tools["hubble:linefit"].activate()
+        if advancing and new == 'pro_dat8':
+            # turn on labels
+            prodata_viewer = self.get_viewer("prodata_viewer")
+            prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+            
+            
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
@@ -646,14 +709,19 @@ class StageThree(HubbleStage):
 
 
         prodata_viewer.add_data(hstkp)
-        # set hstkp data layer to red
         hstkp_layer = prodata_viewer.layer_artist_for_data(hstkp)
-        hstkp_layer.state.color = 'red'
+        hstkp_layer.state.color = '#AEEA00'
+        hstkp_layer.state.visible = False
         prodata_viewer.add_data(hubble1929)
         # set hubble1929 data layer to blue
         hubble1929_layer = prodata_viewer.layer_artist_for_data(hubble1929)
-        hubble1929_layer.state.color = 'blue'
+        hubble1929_layer.state.color = '#D500F9'
+        hubble1929_layer.state.visible = False
         prodata_viewer.state.reset_limits()
+        prodata_viewer.add_data(class_meas_data)
+        student_layer = prodata_viewer.layer_artist_for_data(student_data)
+        student_layer.state.visible = False
+        
 
         # In the comparison viewer, we only want to see the line for the student slider subset
         linefit_id = "hubble:linefit"
@@ -768,6 +836,7 @@ class StageThree(HubbleStage):
             index = indices[0][0]
             self.stage_state.hypgal_velocity = data["velocity"][index]
             self.stage_state.hypgal_distance = data["distance"][index]
+            self.stage_state.our_age = (AGE_CONSTANT * self.stage_state.hypgal_distance/self.stage_state.hypgal_velocity)
 
     def _on_data_change(self, msg):
         label = msg.data.label
