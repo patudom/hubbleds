@@ -15,7 +15,7 @@
       class="mb-4"
     >
       <p>
-        Why do you think scientists' measurement of the age of the universe has changed with time?
+        Why do you think scientists' measurements of the age of the universe have changed with time?
       </p>
       <v-container
         class="px-0"
@@ -85,7 +85,7 @@
           @click="
               () => {
                 state.prodata_response = false;
-                state.marker = 'pro_dat10';
+                state.marker = 'sto_fin1';
               }
             "
         >

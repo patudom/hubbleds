@@ -108,7 +108,7 @@ class StageState(CDSState):
         'pro_dat7',
         'pro_dat8',
         'pro_dat9',
-        'pro_dat10',
+        'sto_fin1',
     ])
 
     step_markers = CallbackProperty([
@@ -216,6 +216,13 @@ class StageThree(HubbleStage):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # For Beta Day 2 only, force students into reinitilized Stage 3
+        self.stage_state.marker = 'exp_dat1'
+
+        # For Beta Day 2 only - turn off lingering best fit galaxy. Note: in Pat's tests, this made one of my 5 actual data points blue. If we can't fix it, students can ignore that.
+        if self.story_state.has_best_fit_galaxy == True:
+            self.story_state.has_best_fit_galaxy = False
 
         self.show_team_interface = self.app_state.show_team_interface
 
@@ -371,6 +378,7 @@ class StageThree(HubbleStage):
             "guideline_class_age_range_c",
             "guideline_your_age_estimate_c",
             "guideline_confidence_interval_reflect2_c",
+            "guideline_story_finish",
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
@@ -392,7 +400,6 @@ class StageThree(HubbleStage):
             "guideline_professional_data7",
             "guideline_professional_data8",
             "guideline_professional_data9",
-            "guideline_professional_data10",
         ]
         for comp in prodata_components:
             label = f"c-{comp}".replace("_", "-")
@@ -581,11 +588,13 @@ class StageThree(HubbleStage):
         if advancing and new == "hyp_gal1":
             self.story_state.has_best_fit_galaxy = True
             layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False   
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False  
+            layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
         if advancing and new =="age_rac1":
             self._update_hypgal_info()
         if advancing and new == "tre_lin2c":
             layer_viewer = self.get_viewer("layer_viewer")
+            print("best fit galaxy", self.get_data(STUDENT_DATA_LABEL).subsets[0])
             best_fit_subset = self.get_data(STUDENT_DATA_LABEL).subsets[0]
             best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
             best_fit_layer.state.visible = False
@@ -593,7 +602,9 @@ class StageThree(HubbleStage):
             class_layer.state.visible = True
             student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
             student_layer.state.visible = False    
-            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+            layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
+            layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
         
         # show prodata layers
         if advancing and new == "pro_dat1":
@@ -645,7 +656,7 @@ class StageThree(HubbleStage):
         
         student_layer = layer_viewer.layer_artist_for_data(student_data)
         student_layer.state.color = '#FF7043'
-        student_layer.state.zorder = 2
+        student_layer.state.zorder = 5
         student_layer.state.size = 8                    
         student_layer.state.alpha = 1
         # add class measurement data and hide by default

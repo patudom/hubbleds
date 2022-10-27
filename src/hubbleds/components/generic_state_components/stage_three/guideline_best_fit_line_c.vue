@@ -17,6 +17,11 @@
       <p>
         Click on <v-icon>mdi-chart-timeline-variant</v-icon> in the Toolbar to display the best fit line.
       </p>
+      <v-card color=secondary class="mb-4">
+        <v-card-text>
+          Note: Due to a minor bug, you may need to click <v-icon>mdi-chart-timeline-variant</v-icon> twice
+        </v-card-text>
+      </v-card>
     </div>
     <v-divider
       class="my-4"

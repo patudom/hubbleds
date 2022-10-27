@@ -307,13 +307,6 @@
         lg="7"
       >
         <v-card
-          color="error"
-        >
-          <v-card-text>
-            Histogram needs y-axis labels
-          </v-card-text>
-        </v-card>
-        <v-card
           :color="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'info' : 'black'"
           :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
@@ -330,7 +323,7 @@
     <!--------------------- PROFESSIONAL DATA VIEWER - during professional data sequence ----------------------->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['pro_dat10']"
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['sto_fin1']"
     >
       <v-col
         cols="12"
@@ -374,8 +367,8 @@
           v-if="stage_state.marker == 'pro_dat9'"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.prodata_response = true"/>
-        <c-guideline-professional-data10
-          v-if="stage_state.marker == 'pro_dat10'"
+        <c-guideline-story-finish
+          v-if="stage_state.marker == 'sto_fin1'"
           v-intersect.once="scrollIntoView"/>
 
       </v-col>

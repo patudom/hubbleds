@@ -15,7 +15,10 @@
       class="mb-4"
     >
     <p>
-      You have completed the Hubble Data Story. You may be wondering "So what's the <strong>right</strong> answer?"
+      You have completed the Hubble Data Story with {{ story_state.total_score}} <v-icon>mdi-piggy-bank</v-icon> points. Nice work!
+    </p>
+    <p>
+      You may be wondering "So what's the <strong>right</strong> answer?"
     </p>
     <p>
       <strong>There is no right answer.</strong> The Universe doesn’t come with an answer key. There are only results which you may have more or less confidence in.
