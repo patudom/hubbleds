@@ -301,34 +301,6 @@
         <c-guideline-class-age-distribution-c
           v-if="stage_state.marker == 'age_dis1c'"
           v-intersect.once="scrollIntoView"/>
-      </v-col>
-      <v-col
-        cols="12"
-        lg="7"
-      >
-        <v-card
-          color="error"
-        >
-          <v-card-text>
-            Histogram needs y-axis labels
-          </v-card-text>
-        </v-card>
-        <v-card
-          :color="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'info' : 'black'"
-          :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
-          outlined
-        >
-          <v-lazy>
-            <jupyter-widget :widget="viewers.all_distr_viewer_class"/>
-          </v-lazy>
-        </v-card>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col
-        cols="12"
-        lg="5"
-      >
         <c-guideline-two-histograms1
             v-if="stage_state.marker == 'two_his1'"
             v-intersect.once="scrollIntoView"/>
@@ -362,6 +334,9 @@
         <c-guideline-uncertainties-systematic1
             v-if="stage_state.marker == 'unc_sys1'"
             v-intersect.once="scrollIntoView"/>
+        <c-guideline-uncertainties-systematic2
+            v-if="stage_state.marker == 'unc_sys2'"
+            v-intersect.once="scrollIntoView"/>
         <c-guideline-two-histograms-mc2
             v-if="stage_state.marker == 'two_his2'"
             v-intersect.once="scrollIntoView"/>
@@ -371,17 +346,22 @@
         lg="7"
       >
         <v-card
-          color="error"
-          height="200px"
+          :color="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
         >
-          <v-card-text>
-            placeholder for a viewer being developed.
-          </v-card-text>
+          <v-lazy>
+            <!-- Change v-if marker to include when we want tos tart showing student value-->
+            <jupyter-widget :widget="viewers.all_distr_viewer_student"
+              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
+            />
+          </v-lazy>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_distr_viewer_class"/>
+          </v-lazy>
         </v-card>
       </v-col>
     </v-row>
-  
-      
       
     <!--------------------- PROFESSIONAL DATA VIEWER - during professional data sequence ----------------------->
     <v-row
