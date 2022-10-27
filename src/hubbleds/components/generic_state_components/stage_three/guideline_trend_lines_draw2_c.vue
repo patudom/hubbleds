@@ -41,7 +41,7 @@
           back
         </v-btn>
       <v-spacer></v-spacer>
-      <v-col
+      <!-- <v-col
         cols="6"
         class="shrink"
         v-if="!state.trend_line_drawn"
@@ -51,11 +51,11 @@
         >
           Draw a trend line.
         </div>
-      </v-col>
+      </v-col> -->
       <v-col
-        class="shrink"
-        v-if="state.trend_line_drawn"
-      >
+        class="shrink">
+        <!-- TUrning off for now because trigger is not working reliably on this marker -->
+        <!-- v-if="state.trend_line_drawn" -->
         <v-btn
           class="black--text"
           color="accent"

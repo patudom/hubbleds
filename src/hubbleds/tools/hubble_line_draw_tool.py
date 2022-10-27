@@ -49,6 +49,7 @@ class HubbleLineDrawTool(LineDrawTool):
         super().deactivate()
         self.tool_tip = "Update trend line. Double click line to clear"
         
-        
+    def erase_line(self):
+        super().clear()
 
     
