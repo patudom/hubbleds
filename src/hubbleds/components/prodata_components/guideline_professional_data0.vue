@@ -6,6 +6,7 @@
     "
     @next="
       state.marker = 'pro_dat1';
+      state.prodata_response = false;
     "
   >
     <div

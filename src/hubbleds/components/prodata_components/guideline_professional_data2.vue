@@ -23,9 +23,12 @@
             'Our class got a higher age estimate than Hubble',
             'Our class got a lower age estimate than Hubble.'
           ]"
-          :feedbacks="['','']"
-          :correct-answers="[]"
-          :neutral-answers='[0,1]'
+          :feedbacks="[
+            'Correct! Because the slope of the trend in our data is shallower than the trend in Hubble\'s data, our age estimate must be higher ',
+            'Remember, the slope of the trend in our data is shallower than the trend in Hubble\'s data, so our age estimate must be higher.'
+          ]"
+          :correct-answers="[0]"
+          :neutral-answers='[1]'
           :selected-callback="(state) => { $emit('ready'); }"
           score-tag="pro-dat2"
         >
@@ -76,8 +79,8 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat3';
                 state.prodata_response = false;
+                state.marker = 'pro_dat3';
               }
             "
         >

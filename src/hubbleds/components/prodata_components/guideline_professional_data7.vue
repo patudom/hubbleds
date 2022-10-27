@@ -21,14 +21,22 @@
       >
         <mc-radiogroup
           :radio-options="['Our age estimate', 'Hubble team\'s age estimate']"
-          :feedbacks="['' '']"
-          :correct-answers="[]"
-          :neutral-answers='[0,1]'
+          :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
+          :correct-answers="[0,1]"
+          :neutral-answers='[]'
           :selected-callback="(state) => { $emit('ready'); }"
           score-tag="pro-dat7"
         >
         </mc-radiogroup>
       </v-container>
+      <free-response
+        outlined
+        auto-grow
+        rows="2"
+        label="Why?"
+        tag="prodata-free-7"
+        v-if='state.prodata_response'
+      ></free-response>
     </div>
     
     <v-divider
@@ -74,8 +82,8 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat8';
                 state.prodata_response = false;
+                state.marker = 'pro_dat8';
               }
             "
         >

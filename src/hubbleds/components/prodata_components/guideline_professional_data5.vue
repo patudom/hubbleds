@@ -13,12 +13,15 @@
     <div
       class="mb-4"
     >
-    Now let's consider more modern data from 2001. 
-      This data is from a team known as the HST Key Project,led by astronomer Wendy Freedman, 
-      which used data from the Hubble Space Telescope to measure a quantity known as the Hubble Constant
+    <p>
+      Now let's consider more modern data from 2001. 
+      This data is from a team known as the HST Key Project, led by astronomer Wendy Freedman, 
+      which used data from the Hubble Space Telescope to measure a quantity known as the <strong>Hubble constant</strong>
       (which is the inverse of the age value you calculatad).
-      
-    <p> whose data has the least amount of random uncertainty?</p>
+    </p>
+    <p> 
+      Whose data has the least amount of random uncertainty?
+    </p>
       <v-container
         class="px-0"
         fluid
@@ -30,8 +33,8 @@
             'HST Key Project'
           ]"
           :feedbacks="[
-            'Seems unlikely',
-            'Seems unlikely',
+            'Try again. ',
+            'Try again. ',
             'Correct! The HST Key Project data has the least amount of random uncertainty.'
           ]"
           :correct-answers="[2]"
@@ -86,8 +89,8 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat6';
                 state.prodata_response = false;
+                state.marker = 'pro_dat6';
               }
             "
         >

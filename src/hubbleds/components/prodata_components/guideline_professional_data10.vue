@@ -53,8 +53,8 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'done';
                 state.prodata_response = false;
+                state.marker = 'done';
               }
             "
         >

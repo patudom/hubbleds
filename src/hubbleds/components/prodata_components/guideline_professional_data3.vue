@@ -32,12 +32,12 @@
             'It\'s hard to tell',
           ]"
           :feedbacks='[
-            "Are you sure",
-            "Are you sure",
-            "Are you sure",
+            "Yes. We can see how much more our data deviates from the best fit line.",
+            "It can be hard to tell. One thing to consider is how far off your data is from the best fit line",
+            "It can be hard to tell. One thing to consider is how far off your data is from the best fit line",
           ]'
-          :correct-answers="[]"
-          :neutral-answers='[0,1,2]'
+          :correct-answers="[0]"
+          :neutral-answers='[1,2]'
           :selected-callback="(state) => { $emit('ready'); }"
           score-tag="pro-dat3"
         >
@@ -88,8 +88,8 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat4';
                 state.prodata_response = false;
+                state.marker = 'pro_dat4';
               }
             "
         >

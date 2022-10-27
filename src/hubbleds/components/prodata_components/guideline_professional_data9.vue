@@ -28,14 +28,14 @@
               'The measured age of the universe can change based on new and better data.'
           ]"
           :feedbacks="[
-            'It is possible to measure the age of the universe, but it is difficult to do so.',
-            'The universe is always getting older, but scientists can measure the age of the universe at a particular time.',
-            'What we measure the age of the universe can change based on new and better data.'
+            'It is possible to measure the age of the universe, though it can be difficult to do so.',
+            'The universe is always getting older, but scientists measure the age of the universe on scales of billions of years, far greater than time between recent measurements.',
+            'Correct! Improved data and technology allow scientists to measure the age of the universe more precisely and with less bias.'
           ]"
-          :correct-answers="[]"
-          :neutral-answers='[0,1,2]'
+          :correct-answers="[2]"
+          :neutral-answers='[0,1]'
           :selected-callback="(state) => { $emit('ready'); }"
-          score-tag="pro-datN"
+          score-tag="pro-dat9"
         >
         </mc-radiogroup>
       </v-container>
@@ -84,8 +84,8 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat10';
                 state.prodata_response = false;
+                state.marker = 'pro_dat10';
               }
             "
         >

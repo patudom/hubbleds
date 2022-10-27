@@ -27,14 +27,14 @@
       >
         <mc-radiogroup
           :radio-options="[
-            'Out age estimate',
+            'Our age estimate',
             'Hubble\'s age estimate'
           ]"
           :feedbacks="['','']"
           :correct-answers="[]"
           :neutral-answers='[0,1]'
           :selected-callback="(state) => { $emit('ready'); }"
-          score-tag="pro-dat0"
+          score-tag="pro-dat1"
         >
         </mc-radiogroup>
       </v-container>
@@ -83,8 +83,9 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat2';
                 state.prodata_response = false;
+                state.marker = 'pro_dat2';
+                
               }
             "
         >

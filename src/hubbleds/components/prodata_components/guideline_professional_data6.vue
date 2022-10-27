@@ -24,9 +24,11 @@
             'Our class got a higher age estimate than HST',
             'Our class got a lower age estimate than HST',
           ]"
-          :feedbacks="['','']"
-          :correct-answers="[]"
-          :neutral-answers='[0,1]'
+          :feedbacks="(parseFloat(state.hst_age) < parseFloat(Math.round(state.our_age).toFixed(0))) ?
+  ['Correct! The slope of best fit for our data is shallower than it is for the HST data', 'Try again! Compare the slope of best fit for our data to the slope for the HST data'] :
+  ['Try again! Compare the slope of best fit for our data to the slope for the HST data','Correct! The slope of best fit for our data is steeper than it is for the HST data', ]"
+          :correct-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.our_age).toFixed(0))) ? [0] : [1]"
+          :neutral-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.our_age).toFixed(0))) ? [1] : [0]"
           :selected-callback="(state) => { $emit('ready'); }"
           score-tag="pro-dat6"
         >
@@ -77,8 +79,8 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat7';
                 state.prodata_response = false;
+                state.marker = 'pro_dat7';
               }
             "
         >

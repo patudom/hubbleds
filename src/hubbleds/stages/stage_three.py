@@ -12,7 +12,7 @@ from echo import CallbackProperty, add_callback, remove_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
 from hubbleds.components.id_slider import IDSlider
-from hubbleds.utils import IMAGE_BASE_URL
+from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
 
@@ -40,6 +40,8 @@ class StageState(CDSState):
     trend_line_drawn = CallbackProperty(False)
     best_fit_clicked = CallbackProperty(False)
     prodata_response = CallbackProperty(False)
+    hst_age = CallbackProperty(13)
+    our_age = CallbackProperty(0)
     
 
     marker = CallbackProperty("")
@@ -769,6 +771,7 @@ class StageThree(HubbleStage):
             index = indices[0][0]
             self.stage_state.hypgal_velocity = data["velocity"][index]
             self.stage_state.hypgal_distance = data["distance"][index]
+            self.stage_state.our_age = (AGE_CONSTANT * self.stage_state.hypgal_distance/self.stage_state.hypgal_velocity)
 
     def _on_data_change(self, msg):
         label = msg.data.label
