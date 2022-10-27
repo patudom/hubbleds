@@ -241,7 +241,7 @@ class StageThree(HubbleStage):
         super().__init__(*args, **kwargs)
 
         # For Beta Day 2 only, force students into reinitilized Stage 3
-        self.stage_state.marker = 'cla_res1c'
+        self.stage_state.marker = 'exp_dat1'
 
         # For Beta Day 2 only - turn off lingering best fit galaxy. Note: in Pat's tests, this made one of my 5 actual data points blue. If we can't fix it, students can ignore that.
         if self.story_state.has_best_fit_galaxy == True:
