@@ -94,6 +94,18 @@ class StageState(CDSState):
         'cla_age1c',
         'age_dis1c',
         'con_int2c',
+        'two_his1',
+        'tru_age1',
+        'tru_age2',
+        'sho_est3',
+        'sho_est4',
+        'tru_iss1',
+        'imp_met1',
+        'imp_ass1',
+        'imp_mea1',
+        'unc_ran1',
+        'unc_sys1',
+        'two_his2',
         'pro_view',
     ])
 
@@ -206,7 +218,7 @@ class StageThree(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         # Change as needed during testing to start in the right place
-        self.stage_state.marker = 'con_int2'
+        self.stage_state.marker = 'con_int2c'
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -325,6 +337,18 @@ class StageThree(HubbleStage):
             "guideline_your_age_estimate_c",
             "guideline_classmates_results_c",
             "guideline_class_age_distribution_c",
+            "guideline_two_histograms1",
+            "guideline_true_age1",
+            "guideline_true_age2",
+            "guideline_shortcomings_est3",
+            "guideline_shortcomings_est_reflect4",
+            "guideline_true_age_issues1",
+            "guideline_imperfect_methods1",
+            "guideline_imperfect_assumptions1",
+            "guideline_imperfect_measurements1",
+            "guideline_uncertainties_random1",
+            "guideline_uncertainties_systematic1",
+            "guideline_two_histograms_mc2"
         ]
         ext = ".vue"
         for comp in state_components:

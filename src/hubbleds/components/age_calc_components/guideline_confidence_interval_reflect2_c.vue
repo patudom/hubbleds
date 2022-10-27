@@ -1,3 +1,4 @@
+<!-- this state.marker = con_int2c -->
 <template>
   <scaffold-alert
     header-text="Identify Your Confidence Interval"
@@ -5,7 +6,7 @@
       state.marker = 'age_dis1c';
     "
     @next="
-      state.marker = 'con_int2c';
+      state.marker = 'two_his1';
     "
   >
     <div
