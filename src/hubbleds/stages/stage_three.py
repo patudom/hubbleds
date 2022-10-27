@@ -809,13 +809,15 @@ class StageThree(HubbleStage):
                 layer = viewer.layer_artist_for_data(class_summ_data)
                 layer.state.color = '#26C6DA'
                 layer.state.alpha = 0.5
-            if viewer != class_distr_viewer:
+            if viewer != class_distr_viewer and viewer != all_distr_viewer_class:
                 viewer.add_data(students_summary_data)
                 layer = viewer.layer_artist_for_data(students_summary_data)
                 layer.state.color = '#78909C'
                 layer.state.alpha = 0.5
                 if viewer == all_distr_viewer_class:
                     layer.state.visible = False
+                viewer.state.hist_n_bin = 20
+            if viewer != class_distr_viewer and viewer != all_distr_viewer_student:
                 viewer.add_data(classes_summary_data)
                 layer = viewer.layer_artist_for_data(classes_summary_data)
                 layer.state.color = '#006C7A'
@@ -825,14 +827,14 @@ class StageThree(HubbleStage):
                 # viewer.state.normalize = True
                 # viewer.state.y_min = 0
                 # viewer.state.y_max = 1
-                viewer.state.hist_n_bin = 20
+                viewer.state.hist_n_bin = 6
             viewer.figure.axes[1].label = label
             viewer.figure.axes[1].tick_format = '0'
             # viewer.figure.axes[1].num_ticks = 5
 
         class_distr_viewer.state.x_att = class_summ_data.id['age']
         all_distr_viewer.state.x_att = students_summary_data.id['age']
-        all_distr_viewer_class.state.x_att = students_summary_data.id['age']
+        all_distr_viewer_class.state.x_att = classes_summary_data.id['age']
         all_distr_viewer_student.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
 
