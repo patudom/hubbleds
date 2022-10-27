@@ -16,7 +16,7 @@
         Given the messiness of our velocity vs. distance measurements, it is clear that we did not use an optimal method for making these measurements.
       </p>
       <p>
-        In particular, professional astronomers have more sophisticated ways to measure distances to things that are outside of the scope of this data story.
+        In particular, professional astronomers have more sophisticated ways to measure <strong>distances</strong> to things that are outside of the scope of this data story.
       </p>
     </div>
   </scaffold-alert>

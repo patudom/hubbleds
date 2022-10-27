@@ -381,7 +381,7 @@
     <!--------------------- PROFESSIONAL DATA VIEWER - during professional data sequence ----------------------->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['pro_dat10']"
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['fin_sto1']"
     >
         <c-guideline-professional-data0
           v-if="stage_state.marker == 'pro_dat0'"
