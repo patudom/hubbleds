@@ -34,10 +34,12 @@ class AgeCalc(v.VuetifyTemplate):
         add_callback(self.story_state, 'responses', self._update_guesses)
 
     def _update_guesses(self, responses):
-        self.best_guess = responses['4']['best-guess-age']
-        self.low_guess = responses['4']['likely-low-age']
-        self.high_guess = responses['4']['likely-high-age']
-        self.short_one = responses['4']['shortcoming-1']
-        self.short_two = responses['4']['shortcoming-2']
-        self.short_other = responses['4']['other-shortcomings']
+        if '4' in responses:
+            r4 = responses['4']
+            self.best_guess = r4.get('best-guess-age', "")
+            self.low_guess = r4.get('likely-low-age', "")
+            self.high_guess = r4.get('likely-high-age', "")
+            self.short_one = r4.get('shortcoming-1', "")
+            self.short_two = r4.get('shortcoming-2', "")
+            self.short_other = r4.get('other-shortcomings', "")
 

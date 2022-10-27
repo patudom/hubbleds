@@ -15,9 +15,6 @@
       class="mb-4"
     >
       <p>
-        First, let's look at Edwin Hubble's data from 1929.
-      </p>
-      <p>
         Whose data set has more random uncertainty?
       </p>
       

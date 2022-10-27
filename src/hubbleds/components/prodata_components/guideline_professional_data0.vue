@@ -2,7 +2,7 @@
   <scaffold-alert
     header-text="Professional Data"
     @back="
-      state.marker = 'con_int2c';
+      state.marker = 'acc_unc1';
     "
     @next="
       state.marker = 'pro_dat1';

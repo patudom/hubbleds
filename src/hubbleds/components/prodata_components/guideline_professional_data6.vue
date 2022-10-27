@@ -14,7 +14,7 @@
     <div
       class="mb-4"
     >
-      Is your age estimate higher or lower than the HST team's estimate? (Don't put age labels up)
+      Is your age estimate higher or lower than the HST team's estimate?
       <v-container
         class="px-0"
         fluid
@@ -33,6 +33,11 @@
           score-tag="pro-dat6"
         >
         </mc-radiogroup>
+      <v-card color="secondary">
+        <v-card-text>
+          It's possible this card is giving incorrect feedback. Talk to a neighbor or instructor if you are unsure.
+        </v-card-text>
+      </v-card>
       </v-container>
     </div>
     

@@ -96,6 +96,7 @@ class StageState(CDSState):
         'you_age1c',
         'cla_res1c',
         'cla_age1c',
+
         'age_dis1c',
         'con_int2c',
         'two_his1',
@@ -116,7 +117,6 @@ class StageState(CDSState):
         'lac_bia3',
         'mor_dat1',
         'acc_unc1',
-        'pro_view',
         'pro_dat0',
         'pro_dat1',
         'pro_dat2',
@@ -127,12 +127,14 @@ class StageState(CDSState):
         'pro_dat7',
         'pro_dat8',
         'pro_dat9',
-        'pro_dat10',
+        'sto_fin1',
     ])
 
     step_markers = CallbackProperty([
         'exp_dat1',
-        'tre_lin2c'
+        'tre_lin2c',
+        'two_his1',
+        'pro_dat0',
     ])
 
     table_highlights = CallbackProperty([
@@ -200,7 +202,9 @@ class StageState(CDSState):
 
 @register_stage(story="hubbles_law", index=4, steps=[
     "MY DATA",
-    "CLASS DATA"
+    "CLASS DATA",
+    "UNCERTAINTIES",
+    "PRO DATA"
 ])
 class StageThree(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
@@ -236,10 +240,14 @@ class StageThree(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.show_team_interface = self.app_state.show_team_interface
+        # For Beta Day 2 only, force students into reinitilized Stage 3
+        self.stage_state.marker = 'exp_dat1'
 
-        # Change as needed during testing to start in the right place
-        self.stage_state.marker = 'unc_sys1'
+        # For Beta Day 2 only - turn off lingering best fit galaxy. Note: in Pat's tests, this made one of my 5 actual data points blue. If we can't fix it, students can ignore that.
+        if self.story_state.has_best_fit_galaxy == True:
+            self.story_state.has_best_fit_galaxy = False
+
+        self.show_team_interface = self.app_state.show_team_interface
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -410,6 +418,7 @@ class StageThree(HubbleStage):
             "guideline_class_age_range_c",
             "guideline_your_age_estimate_c",
             "guideline_confidence_interval_reflect2_c",
+            "guideline_story_finish",
             "guideline_shortcomings_est3",
         ]
         for comp in age_calc_components:
@@ -432,7 +441,6 @@ class StageThree(HubbleStage):
             "guideline_professional_data7",
             "guideline_professional_data8",
             "guideline_professional_data9",
-            "guideline_professional_data10",
         ]
         for comp in prodata_components:
             label = f"c-{comp}".replace("_", "-")
@@ -621,11 +629,13 @@ class StageThree(HubbleStage):
         if advancing and new == "hyp_gal1":
             self.story_state.has_best_fit_galaxy = True
             layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False   
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False  
+            layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
         if advancing and new =="age_rac1":
             self._update_hypgal_info()
         if advancing and new == "tre_lin2c":
             layer_viewer = self.get_viewer("layer_viewer")
+            print("best fit galaxy", self.get_data(STUDENT_DATA_LABEL).subsets[0])
             best_fit_subset = self.get_data(STUDENT_DATA_LABEL).subsets[0]
             best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
             best_fit_layer.state.visible = False
@@ -633,7 +643,9 @@ class StageThree(HubbleStage):
             class_layer.state.visible = True
             student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
             student_layer.state.visible = False    
-            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True  
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+            layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
+            layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
         
         # show prodata layers
         if advancing and new == "pro_dat1":
@@ -685,7 +697,7 @@ class StageThree(HubbleStage):
         
         student_layer = layer_viewer.layer_artist_for_data(student_data)
         student_layer.state.color = '#FF7043'
-        student_layer.state.zorder = 2
+        student_layer.state.zorder = 5
         student_layer.state.size = 8                    
         student_layer.state.alpha = 1
         # add class measurement data and hide by default
@@ -797,13 +809,15 @@ class StageThree(HubbleStage):
                 layer = viewer.layer_artist_for_data(class_summ_data)
                 layer.state.color = '#26C6DA'
                 layer.state.alpha = 0.5
-            if viewer != class_distr_viewer:
+            if viewer != class_distr_viewer and viewer != all_distr_viewer_class:
                 viewer.add_data(students_summary_data)
                 layer = viewer.layer_artist_for_data(students_summary_data)
                 layer.state.color = '#78909C'
                 layer.state.alpha = 0.5
                 if viewer == all_distr_viewer_class:
                     layer.state.visible = False
+                viewer.state.hist_n_bin = 20
+            if viewer != class_distr_viewer and viewer != all_distr_viewer_student:
                 viewer.add_data(classes_summary_data)
                 layer = viewer.layer_artist_for_data(classes_summary_data)
                 layer.state.color = '#006C7A'
@@ -813,14 +827,14 @@ class StageThree(HubbleStage):
                 # viewer.state.normalize = True
                 # viewer.state.y_min = 0
                 # viewer.state.y_max = 1
-                viewer.state.hist_n_bin = 20
+                viewer.state.hist_n_bin = 6
             viewer.figure.axes[1].label = label
             viewer.figure.axes[1].tick_format = '0'
             # viewer.figure.axes[1].num_ticks = 5
 
         class_distr_viewer.state.x_att = class_summ_data.id['age']
         all_distr_viewer.state.x_att = students_summary_data.id['age']
-        all_distr_viewer_class.state.x_att = students_summary_data.id['age']
+        all_distr_viewer_class.state.x_att = classes_summary_data.id['age']
         all_distr_viewer_student.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
 
