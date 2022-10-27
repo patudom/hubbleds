@@ -12,7 +12,7 @@
     <div
       class="mb-4"
     >
-    Let's now turn to professional astronomers' data and see how that compares to your class's data.
+    Let's now turn to professional astronomers' data and see how that compares to your class's data (in teal).
 
     </div>
   </scaffold-alert>

@@ -14,7 +14,7 @@
     <div
       class="mb-4"
     >
-      Whose age estiamte are you more inclinded to believe?
+      Whose age estimate are you more inclined to believe?
       <v-container
         class="px-0"
         fluid

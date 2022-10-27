@@ -21,7 +21,7 @@
       >
         <mc-radiogroup
           :radio-options="[
-            'Out age estimate',
+            'Our age estimate',
             'Hubble\'s age estimate'
           ]"
           :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"

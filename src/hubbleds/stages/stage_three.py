@@ -216,8 +216,6 @@ class StageThree(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state.marker = 'con_int2c'
-
         self.show_team_interface = self.app_state.show_team_interface
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
@@ -393,6 +391,7 @@ class StageThree(HubbleStage):
             "guideline_professional_data7",
             "guideline_professional_data8",
             "guideline_professional_data9",
+            "guideline_professional_data10",
         ]
         for comp in prodata_components:
             label = f"c-{comp}".replace("_", "-")

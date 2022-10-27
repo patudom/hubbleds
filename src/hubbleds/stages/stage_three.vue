@@ -376,8 +376,7 @@
           @ready="stage_state.prodata_response = true"/>
         <c-guideline-professional-data10
           v-if="stage_state.marker == 'pro_dat10'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"/>
+          v-intersect.once="scrollIntoView"/>
 
       </v-col>
       <v-col

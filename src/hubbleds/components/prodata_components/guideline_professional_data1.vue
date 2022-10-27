@@ -14,11 +14,11 @@
       class="mb-4"
     >
     <p>
-      First, let's look at Hubble's data from 1929:
+      Edwin Hubble's own data from 1929 is shown in purple. (Your class's data is shown in teal).
     </p>
 
     <p>
-      Does your class's age estimate agree with Hubble's age estimate?  (Don't put age labels up)
+      Does your class's age estimate agree with Hubble's age estimate? It might help to display the best fit lines.
     </p>
 
     <v-container
@@ -27,12 +27,14 @@
       >
         <mc-radiogroup
           :radio-options="[
-            'Our age estimate',
-            'Hubble\'s age estimate'
+            'Yes',
+            'No',
+            'I\'m not sure',
           ]"
-          :feedbacks="['','']"
-          :correct-answers="[]"
-          :neutral-answers='[0,1]'
+          :feedbacks="['Remember, the slope of the line is related to the age measurement from this data. Are the slopes the same?','Correct. The best fit lines for our data and Edwin Hubble\'s data have very different slopes.','The slope of the line is related to the age measurement from this data. Are the slopes the same?']"
+          :incorrect-answers="[0]"
+          :correct-answers="[1]"
+          :neutral-answers='[2]'
           :selected-callback="(state) => { $emit('ready'); }"
           score-tag="pro-dat1"
         >
