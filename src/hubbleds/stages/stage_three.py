@@ -709,15 +709,12 @@ class StageThree(HubbleStage):
         all_distr_viewer_class.state.x_att = students_summary_data.id['age']
         all_distr_viewer_student.state.x_att = students_summary_data.id['age']
         sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
-        
-        for v in [all_distr_viewer_student,all_distr_viewer_class]:
-            v.figure.axes[1].label = 'Count'
-            v.figure.axes[1].tick_format = ',0f'
-            v.figure.axes[1].num_ticks = 7
-            # set tick values
-            v.state.y_min = 0
-            v.state.y_max = 7
-            v._update_appearance_from_settings()
+
+        theme = "dark" if self.app_state.dark_mode else "light"
+        style_name = f"default_histogram_{theme}"
+        style = load_style(style_name)
+        update_figure_css(all_distr_viewer_student, style_dict=style)
+        update_figure_css(all_distr_viewer_class, style_dict=style)
 
     # def _setup_morphology_subsets(self):
     #     # Do some stuff with the galaxy data
@@ -804,9 +801,9 @@ class StageThree(HubbleStage):
                        "histogram",
                        "histogram"]
 
+        theme_name = "dark" if dark else "light"
         for viewer, vtype in zip(viewers, viewer_type):
             viewer = self.get_viewer(viewer)
-            theme_name = "dark" if dark else "light"
             style = load_style(f"default_{vtype}_{theme_name}")
             update_figure_css(viewer, style_dict=style)
 
