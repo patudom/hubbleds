@@ -96,6 +96,7 @@ class StageState(CDSState):
         'you_age1c',
         'cla_res1c',
         'cla_age1c',
+
         'age_dis1c',
         'con_int2c',
         'two_his1',
@@ -116,7 +117,6 @@ class StageState(CDSState):
         'lac_bia3',
         'mor_dat1',
         'acc_unc1',
-        'pro_view',
         'pro_dat0',
         'pro_dat1',
         'pro_dat2',
@@ -132,7 +132,9 @@ class StageState(CDSState):
 
     step_markers = CallbackProperty([
         'exp_dat1',
-        'tre_lin2c'
+        'tre_lin2c',
+        'two_his1',
+        'pro_dat0',
     ])
 
     table_highlights = CallbackProperty([
@@ -200,7 +202,9 @@ class StageState(CDSState):
 
 @register_stage(story="hubbles_law", index=4, steps=[
     "MY DATA",
-    "CLASS DATA"
+    "CLASS DATA",
+    "UNCERTAINTIES",
+    "PRO DATA"
 ])
 class StageThree(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
@@ -237,16 +241,13 @@ class StageThree(HubbleStage):
         super().__init__(*args, **kwargs)
 
         # For Beta Day 2 only, force students into reinitilized Stage 3
-        self.stage_state.marker = 'exp_dat1'
+        self.stage_state.marker = 'cla_res1c'
 
         # For Beta Day 2 only - turn off lingering best fit galaxy. Note: in Pat's tests, this made one of my 5 actual data points blue. If we can't fix it, students can ignore that.
         if self.story_state.has_best_fit_galaxy == True:
             self.story_state.has_best_fit_galaxy = False
 
         self.show_team_interface = self.app_state.show_team_interface
-
-        # Change as needed during testing to start in the right place
-        self.stage_state.marker = 'unc_sys1'
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)

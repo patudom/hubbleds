@@ -292,7 +292,7 @@
     <!-- cla_age1c -->
     <v-row
       class="d-flex align-stretch"
-      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['con_int2c']) && (stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0'])"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']) && (stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0'])"
     >
       <v-col
         cols="12"
@@ -368,7 +368,7 @@
           <v-lazy>
             <!-- Change v-if marker to include when we want tos tart showing student value-->
             <jupyter-widget :widget="viewers.all_distr_viewer_student"
-              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
+              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2c']"
             />
           </v-lazy>
           <v-lazy>
@@ -383,6 +383,10 @@
       class="d-flex align-stretch"
           v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['sto_fin1']"
     >
+      <v-col
+        cols="12"
+        lg = "5"
+      >
         <c-guideline-professional-data0
           v-if="stage_state.marker == 'pro_dat0'"
           v-intersect.once="scrollIntoView"/>
