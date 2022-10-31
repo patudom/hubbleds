@@ -34,7 +34,7 @@
           ]"
           :correct-answers="[2]"
           :neutral-answers='[0,1]'
-          :selected-callback="(state) => { if (state.correct) { can_advance = true; } }"
+          :selected-callback="(status) => { if (status.correct) { can_advance = true; } }"
           score-tag="pro-dat9"
         >
         </mc-radiogroup>
