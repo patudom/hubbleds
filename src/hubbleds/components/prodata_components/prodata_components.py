@@ -21,7 +21,6 @@ class ProData(v.VuetifyTemplate):
         self.state.max_prodata_index = max(self.state.max_prodata_index, self.index)
 
     def vue_advance(self, marker):
-        print(f"Advancing to {marker}")
         self.state.marker = marker
         self._update_index()
 
