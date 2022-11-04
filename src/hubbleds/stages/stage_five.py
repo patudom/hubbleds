@@ -75,7 +75,7 @@ class StageState(CDSState):
 
 
 @register_stage(story="hubbles_law", index=6, steps=["Edwin Hubble", "Hubble Telescope"])
-class StageTest(HubbleStage):
+class StageFive(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     _state_cls = StageState
 
@@ -102,6 +102,8 @@ class StageTest(HubbleStage):
 
         self.stage_state.marker = self.stage_state.markers[0]
         
+        add_callback(self.stage_state, 'marker', self._on_marker_update, echo_old=True)
+        
         # Set up prodata components
         prodata_components_dir = str(Path(
             __file__).parent.parent / "components" / "prodata_components")
@@ -124,9 +126,12 @@ class StageTest(HubbleStage):
         
         prodata_viewer = self.add_viewer(HubbleScatterView, "prodata_viewer",
                                          "Professional Data")
+        prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", False)
         prodata_viewer.figure.axes[1].label_offset = "5em"
         
         self.setup_prodata_viewer()
+        
+        self._update_viewer_style(dark=self.app_state.dark_mode)
 
     
     def add_components_from_path(self, state_components, path, component_class = None):
@@ -159,7 +164,7 @@ class StageTest(HubbleStage):
         student_layer.state.zorder = 5
         student_layer.state.size = 8                    
         student_layer.state.alpha = 1
-        student_layer.state.visible = False
+        student_layer.state.visible = self.stage_state.marker_reached('pro_dat0')
         
         prodata_viewer.state.x_att = student_data.id['distance']
         prodata_viewer.state.y_att = student_data.id['velocity']
@@ -170,22 +175,36 @@ class StageTest(HubbleStage):
         prodata_viewer.add_data(hubble_data)
         hubble_layer = prodata_viewer.layer_artist_for_data(hubble_data)
         hubble_layer.state.color = '#D500F9'
-        hubble_layer.state.visible = False
+        hubble_layer.state.visible = self.stage_state.marker_reached('pro_dat1')
         
         
         # load hubble key data
         prodata_viewer.add_data(hst_data)
         hst_layer = prodata_viewer.layer_artist_for_data(hst_data)
         hst_layer.state.color = '#AEEA00'
-        hst_layer.state.visible = False
+        hst_layer.state.visible = self.stage_state.marker_reached('pro_dat5')
         
         prodata_viewer.state.reset_limits()
+    
+    def _update_viewer_style(self, dark):
+        viewers = ['prodata_viewer']
+
+        viewer_type = ["scatter"]
+
+        theme_name = "dark" if dark else "light"
+        for viewer, vtype in zip(viewers, viewer_type):
+            viewer = self.get_viewer(viewer)
+            style = load_style(f"default_{vtype}_{theme_name}")
+            update_figure_css(viewer, style_dict=style)
+
+    def _on_dark_mode_change(self, dark):
+        super()._on_dark_mode_change(dark)
+        self._update_viewer_style(dark)
         
+    
     def _on_marker_update(self, old, new):
-        if not self.trigger_marker_update_cb:
-            return
         
-        markers = self.stage_stage.makers
+        markers = self.stage_state.markers
         advancing = markers.index(new) > markers.index(old)
         
         if advancing:
@@ -198,10 +217,18 @@ class StageTest(HubbleStage):
                 prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", True)
                 prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
             
+            elif new == "pro_dat2":
+                # show best fits
+                if not prodata_viewer.toolbar.tools["hubble:linefit"].active: # if off
+                    prodata_viewer.toolbar.tools["hubble:linefit"].activate() # toggle on
+            # pro_dat3 is skipped
+            # elif new == "pro_dat3":
+            #     if prodata_viewer.toolbar.tools["hubble:linefit"].active:  # if on
+            #         prodata_viewer.toolbar.tools["hubble:linefit"].activate() # toggle off
             elif new == 'pro_dat5':
                 # deactivates the tool. activate() is a toggle
-                if prodata_viewer.toolbar.tools["hubble:linefit"].active:
-                    prodata_viewer.toolbar.tools["hubble:linefit"].activate()
+                if prodata_viewer.toolbar.tools["hubble:linefit"].active: # if on
+                    prodata_viewer.toolbar.tools["hubble:linefit"].activate() # toggle off
                 hst_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_KEY_DATA_LABEL))
                 hst_layer.state.visible = True
             
