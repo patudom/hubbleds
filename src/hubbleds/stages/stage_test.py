@@ -1,5 +1,5 @@
 from functools import partial
-from os.path import join, abspath
+from os.path import join
 from pathlib import Path
 
 from echo import CallbackProperty, add_callback, remove_callback
@@ -9,7 +9,8 @@ from traitlets import Bool, default
 from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import extend_tool, load_template
+from cosmicds.utils import (RepeatedTimer, extend_tool, load_template,
+                            update_figure_css)
 from hubbleds.utils import IMAGE_BASE_URL
 
 from ..components import AgeCalc, HubbleExp, ProData, TrendsData
@@ -29,30 +30,17 @@ class StageState(CDSState):
     indices = CallbackProperty({})
     
     markers = [
-        'two_his1',
-        'tru_age1',
-        'tru_age2',
-        'sho_est3',
-        'sho_est4',
-        'tru_iss1',
-        'imp_met1',
-        'imp_ass1',
-        'imp_mea1',
-        'unc_ran1',
-        'unc_sys1',
-        'unc_sys2',
-        'two_his2',
-        'lac_bia1',
-        'lac_bia2',
-        'lac_bia3',
-        'mor_dat1',
-        'acc_unc1',
+        "mar_ker1",
+        "mar_ker2",
+        "mar_ker3",
+        "mar_ker4",
+        "mar_ker5",
         ]
         
     step_markers = CallbackProperty([
-        'two_his1',
-        'unc_sys1'
-        ])
+        'mar_ker1',
+        'mar_ker3',
+    ])
     
     _NONSERIALIZED_PROPERTIES = [
         'markers', 'indices', 'step_markers', 'image_location',
@@ -78,15 +66,18 @@ class StageState(CDSState):
         self.marker = self.markers[index]
 
 
-@register_stage(story="hubbles_law", index=5, steps=["STEP 4.1", "STEP 4.2"])
+@register_stage(story="hubbles_law", index=5, steps=["TEST STEP1", "TEST STEP2"])
 class StageTest(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
-    
     _state_cls = StageState
-
+    
+    @default('stage_state')
+    def _default_state(self):
+        return StageState()
+    
     @default('template')
     def _default_template(self):
-        return load_template("stage_four.vue", __file__)
+        return load_template("stage_test.vue", __file__)
 
     @default('stage_icon')
     def _default_stage_icon(self):
@@ -94,57 +85,19 @@ class StageTest(HubbleStage):
 
     @default('title')
     def _default_title(self):
-        return "Understanding Uncertainty"
+        return "Test"
 
     @default('subtitle')
     def _default_subtitle(self):
-        return "Comparing with the class data"
+        return "Testing"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
         self.show_team_interface = self.app_state.show_team_interface
-        self.stage_state.marker = self.stage_state.markers[0]
-        
-        state_components = [
-            "guideline_class_age_distribution",
-            "guideline_trend_lines_draw2_c",
-            "guideline_best_fit_line_c",
-            "guideline_classmates_results_c",
-            "guideline_class_age_distribution_c",
-            "guideline_two_histograms1",
-            "guideline_true_age1",
-            "guideline_true_age2",
-            "guideline_shortcomings_est_reflect4",
-            "guideline_true_age_issues1",
-            "guideline_imperfect_methods1",
-            "guideline_imperfect_assumptions1",
-            "guideline_imperfect_measurements1",
-            "guideline_uncertainties_random1",
-            "guideline_uncertainties_systematic1",
-            "guideline_uncertainties_systematic2",
-            "guideline_two_histograms_mc2",
-            "guideline_lack_bias_mc1",
-            "guideline_lack_bias_reflect2",
-            "guideline_lack_bias_reflect3",
-            "guideline_more_data_distribution",
-            "guideline_account_uncertainty"
-        ]
-        
 
-        state_components_dir = str(Path(__file__).parent.parent / "components" / "generic_state_components" / "stage_three")
-        path = join(state_components_dir, "")
-        
-        self.add_components_from_path(state_components, path)
-        
-        # load data
-        dist_attr = "distance"
-        vel_attr = "velocity"
-        hubble1929 = self.get_data(HUBBLE_1929_DATA_LABEL)
-        hstkp = self.get_data(HUBBLE_KEY_DATA_LABEL)
-        student_data = self.get_data(STUDENT_DATA_LABEL)
-        class_meas_data = self.get_data(CLASS_DATA_LABEL)
-        
-
+        self.add_viewer(label="layer_viewer")
+    
     def add_components_from_path(self, state_components, path):
         
         ext = ".vue"
@@ -155,4 +108,13 @@ class StageTest(HubbleStage):
                                               self.stage_state)
             self.add_component(component, label=label)
 
+
+    def _on_marker_update(self, old, new):
+        if not self.trigger_marker_update_cb:
+            return
         
+        markers = self.stage_stage.makers
+        advancing = markers.index(new) > markers.index(old)
+        
+        if advancing:
+            pass
