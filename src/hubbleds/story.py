@@ -283,11 +283,11 @@ class HubblesLaw(Story):
             if subset is not None:
                 subset.subset_state = subset_state
             else:
-                # Once glue-core 1.6 is released, we can use color, alpha kwargs here
-                subset = student_data.new_subset(label=BEST_FIT_SUBSET_LABEL, subset=subset_state)
-                subset.style.color = "blue"
-                subset.style.alpha = 1
-                subset.style.markersize = 10
+                student_data.new_subset(label=BEST_FIT_SUBSET_LABEL,
+                                                 subset=subset_state,
+                                                 color="blue",
+                                                 alpha=1,
+                                                 markersize=10)
 
         for cb in self._on_student_data_update_cbs:
             cb()
