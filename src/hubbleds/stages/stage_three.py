@@ -62,6 +62,8 @@ class StageState(CDSState):
     cla_low_age = CallbackProperty(0)
     cla_high_age = CallbackProperty(0)
 
+    max_prodata_index = CallbackProperty(0)
+
     markers = CallbackProperty([
         'exp_dat1',
         'tre_dat1',
@@ -442,9 +444,9 @@ class StageThree(HubbleStage):
             "guideline_professional_data8",
             "guideline_professional_data9",
         ]
-        for comp in prodata_components:
+        for index, comp in enumerate(prodata_components):
             label = f"c-{comp}".replace("_", "-")
-            component = ProData(comp + ext, path, self.stage_state)
+            component = ProData(comp + ext, path, self.stage_state, index)
             self.add_component(component, label=label) 
 
         # Grab data
