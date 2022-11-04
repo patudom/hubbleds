@@ -57,7 +57,7 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat3';
+                state.marker = 'pro_dat2';
               }
             "
         >
