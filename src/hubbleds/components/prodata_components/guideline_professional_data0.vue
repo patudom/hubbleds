@@ -5,7 +5,8 @@
       state.marker = 'acc_unc1';
     "
     @next="
-      advance('pro_dat1');
+      state.marker = 'pro_dat1';
+      state.prodata_response = false;
     "
   >
     <div

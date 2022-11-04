@@ -93,7 +93,8 @@
           elevation="2"
           @click="
               () => {
-                advance('pro_dat9');
+                state.prodata_response = false;
+                state.marker = 'pro_dat9';
               }
             "
         >

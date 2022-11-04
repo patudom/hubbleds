@@ -35,7 +35,7 @@
           ]'
           :correct-answers="[0]"
           :neutral-answers='[1,2]'
-          :selected-callback="(status) => { if (status.correct) { can_advance = true; } }"
+          :selected-callback="(state) => { $emit('ready'); }"
           score-tag="pro-dat3"
         >
         </mc-radiogroup>
@@ -67,7 +67,7 @@
       <v-col
         cols="6"
         class="shrink"
-        v-if="!can_advance"
+        v-if="!state.prodata_response"
       >
         <div
           style="font-size: 16px;"
@@ -77,7 +77,7 @@
       </v-col>
       <v-col
         class="shrink"
-        v-if="can_advance"
+        v-if="state.prodata_response"
       >
         <v-btn
           class="black--text"
@@ -85,7 +85,8 @@
           elevation="2"
           @click="
               () => {
-                advance('pro_dat4');
+                state.prodata_response = false;
+                state.marker = 'pro_dat4';
               }
             "
         >

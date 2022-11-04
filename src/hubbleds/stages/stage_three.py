@@ -62,8 +62,6 @@ class StageState(CDSState):
     cla_low_age = CallbackProperty(0)
     cla_high_age = CallbackProperty(0)
 
-    max_prodata_index = CallbackProperty(0)
-
     markers = CallbackProperty([
         'exp_dat1',
         'tre_dat1',
