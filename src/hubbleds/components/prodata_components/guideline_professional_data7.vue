@@ -24,7 +24,7 @@
           :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
           :correct-answers="[0,1]"
           :neutral-answers='[]'
-          :selected-callback="(state) => { $emit('ready'); }"
+          :selected-callback="(option) => { if (option.correct) { can_advance = true };  }"
           score-tag="pro-dat7"
         >
         </mc-radiogroup>
@@ -35,7 +35,7 @@
         rows="2"
         label="Why?"
         tag="prodata-free-7"
-        v-if='state.prodata_response'
+        v-if='can_advance'
       ></free-response>
     </div>
     
@@ -64,7 +64,7 @@
       <v-col
         cols="6"
         class="shrink"
-        v-if="!state.prodata_response"
+        v-if="!can_advance"
       >
         <div
           style="font-size: 16px;"
@@ -74,7 +74,7 @@
       </v-col>
       <v-col
         class="shrink"
-        v-if="state.prodata_response"
+        v-if="can_advance"
       >
         <v-btn
           class="black--text"
@@ -82,7 +82,6 @@
           elevation="2"
           @click="
               () => {
-                state.prodata_response = false;
                 state.marker = 'pro_dat8';
               }
             "

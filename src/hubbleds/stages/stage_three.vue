@@ -392,39 +392,31 @@
           v-intersect.once="scrollIntoView"/>
         <c-guideline-professional-data1
           v-if="stage_state.marker == 'pro_dat1'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"/>
+          v-intersect.once="scrollIntoView""/>
         <c-guideline-professional-data2
           v-if="stage_state.marker == 'pro_dat2'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"/>
+          v-intersect.once="scrollIntoView"/>
         <c-guideline-professional-data3
           v-if="stage_state.marker == 'pro_dat3'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"/>
+          v-intersect.once="scrollIntoView"/>
         <c-guideline-professional-data4
           v-if="stage_state.marker == 'pro_dat4'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"/>
+          v-intersect.once="scrollIntoView"/>
         <c-guideline-professional-data5
           v-if="stage_state.marker == 'pro_dat5'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"/>
+          v-intersect.once="scrollIntoView"/>
         <c-guideline-professional-data6
           v-if="stage_state.marker == 'pro_dat6'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"/>
+          v-intersect.once="scrollIntoView"/>
         <c-guideline-professional-data7
           v-if="stage_state.marker == 'pro_dat7'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"/>
+          v-intersect.once="scrollIntoView"/>
         <c-guideline-professional-data8
           v-if="stage_state.marker == 'pro_dat8'"
           v-intersect.once="scrollIntoView"/>
         <c-guideline-professional-data9
           v-if="stage_state.marker == 'pro_dat9'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"/>
+          v-intersect.once="scrollIntoView"/>
         <c-guideline-story-finish
           v-if="stage_state.marker == 'sto_fin1'"
           v-intersect.once="scrollIntoView"/>
