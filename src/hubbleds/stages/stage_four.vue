@@ -1,6 +1,5 @@
 <template>
   <v-container>
-    <!-- add special button to put stage_state and story_state in the console -->
     <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
@@ -17,32 +16,192 @@
       </v-col>
     </v-row>
 
-    <!--------------------- TABLE ROW ----------------------->
+    
+    <!--------------------- OUR DATA HUBBLE VIEWER ----------------------->
+
     <v-row
       class="d-flex align-stretch"
+      v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1'] || stage_state.indices[stage_state.marker] > stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1c'] "
     >
       <v-col
         cols="12"
         lg="5"
       >
 
+        <c-guideline-random-variability
+          v-if="stage_state.marker == 'ran_var1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-trend-lines-draw2-c
+          v-if="stage_state.marker == 'tre_lin2c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-best-fit-line-c
+          v-if="stage_state.marker == 'bes_fit1c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-your-age-estimate-c
+          v-if="stage_state.marker == 'you_age1c'"
+          v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
         cols="12"
         lg="7"
       >
-        
+        <v-card
+          :color="stage_state.my_galaxies_plot_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.my_galaxies_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
           <v-lazy>
-            <jupyter-widget :widget="viewers.prodata_viewer"/>
+            <jupyter-widget :widget="viewers.layer_viewer"/>
+          </v-lazy>
+        </v-card>
+        <v-row>
+          <v-col
+            cols="10"
+            offset="1"
+          >
+            <c-hubble-slideshow 
+              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']" />  
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+    <!-- <v-row>
+      <v-col>
+        <v-card
+          color="error"
+        >
+          <v-card-text>
+            NOTE: Graphs that appear below this card are still a work in progress. When this stage is finished, students will not see the graphs below until they reach the relevant part in the sequencing.
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row> -->
+
+    <!--------------------- SLIDER VERSION: OUR DATA HUBBLE VIEWER ----------------------->
+
+    <v-row
+      class="d-flex align-stretch"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['tre_lin2c']"
+    > 
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <c-guideline-classmates-results
+          v-if="stage_state.marker == 'cla_res1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-relationship-age-slope-mc
+          v-if="stage_state.marker == 'rel_age1'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.relage_response = true"  />
+        <c-guideline-class-age-range
+          v-if="stage_state.marker == 'cla_age1'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-range2
+          v-if="stage_state.marker == 'cla_age2'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-range3
+          v-if="stage_state.marker == 'cla_age3'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-class-age-range4
+          v-if="stage_state.marker == 'cla_age4'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-confidence-interval
+          v-if="stage_state.marker == 'con_int1'"
+          v-intersect.once="scrollIntoView"/>
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          :color="stage_state.all_galaxies_plot_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.all_galaxies_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
+          <v-lazy>
+            <jupyter-widget
+              :widget="viewers.comparison_viewer"
+              class="comparison_viewer"
+              />
+          </v-lazy>
+          <c-student-slider 
+            class="slider_card"
+            />
+        </v-card>
+        <c-hubble-slideshow 
+          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
+        />  
+      </v-col>
+    </v-row>
+
+    <!--------------------- ALL DATA HUBBLE VIEWER - during class sequence ----------------------->
+    <v-row
+      class="d-flex align-stretch"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c']) && stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <c-guideline-classmates-results-c
+          v-if="stage_state.marker == 'cla_res1c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-class-age-range-c
+          v-if="stage_state.marker == 'cla_age1c'"
+          v-intersect.once="scrollIntoView"/>
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          outlined
+        >
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_viewer"/>
+          </v-lazy>
+          <c-class-slider 
+            class="slider_card"
+            />
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!--------------------- OUR CLASS HISTOGRAM VIEWER ----------------------->
+    <v-row
+      class="d-flex align-stretch"
+      v-if="stage_state.marker == 'age_dis1' || stage_state.marker == 'con_int2'" 
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <c-guideline-class-age-distribution
+          v-if="stage_state.marker == 'age_dis1'"
+          v-intersect.once="scrollIntoView"/>
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          :color="stage_state.my_class_hist_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.my_class_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
+          <v-lazy>
+            <jupyter-widget :widget="viewers.class_distr_viewer"/>
           </v-lazy>
         </v-card>
       </v-col>
     </v-row>
 
-    
     <!--------------------- ALL DATA HISTOGRAM VIEWER ----------------------->
+    <!-- cla_age1c -->
     <v-row
       class="d-flex align-stretch"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']) && (stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0'])"
     >
       <v-col
         cols="12"
@@ -110,7 +269,11 @@
         cols="12"
         lg="7"
       >
-        
+        <v-card
+          :color="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
           <v-lazy>
             <!-- Change v-if marker to include when we want tos tart showing student value-->
             <jupyter-widget :widget="viewers.all_distr_viewer_student"
@@ -123,8 +286,15 @@
         </v-card>
       </v-col>
     </v-row>
-    
-    
+
+    <c-guideline-confidence-interval-reflect2
+      v-if="stage_state.marker == 'con_int2'"
+      v-intersect.once="scrollIntoView"/>
+    <c-guideline-confidence-interval-reflect2-c
+      v-if="stage_state.marker == 'con_int2c'"
+      v-intersect.once="scrollIntoView"/>
+
+
   </v-container>
 </template>
 

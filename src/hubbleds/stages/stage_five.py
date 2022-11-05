@@ -79,6 +79,9 @@ class StageFive(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     _state_cls = StageState
 
+    @default('stage_state')
+    def _default_state(self):
+        return StageState()
         
     @default('template')
     def _default_template(self):
