@@ -251,6 +251,8 @@ class StageFour(HubbleStage):
         all_distr_viewer_class = self.add_viewer(label='all_distr_viewer_class')
         sandbox_distr_viewer = self.add_viewer(label='sandbox_distr_viewer')
 
+        line_fit_tool = layer_viewer.toolbar.tools['hubble:linefit']
+        add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
 
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
@@ -282,6 +284,28 @@ class StageFour(HubbleStage):
             "guideline_class_age_range3",
             "guideline_class_age_range4",
             "guideline_confidence_interval",
+            "guideline_class_age_distribution",
+            "guideline_trend_lines_draw2_c",
+            "guideline_best_fit_line_c",
+            "guideline_classmates_results_c",
+            "guideline_class_age_distribution_c",
+            "guideline_two_histograms1",
+            "guideline_true_age1",
+            "guideline_true_age2",
+            "guideline_shortcomings_est_reflect4",
+            "guideline_true_age_issues1",
+            "guideline_imperfect_methods1",
+            "guideline_imperfect_assumptions1",
+            "guideline_imperfect_measurements1",
+            "guideline_uncertainties_random1",
+            "guideline_uncertainties_systematic1",
+            "guideline_uncertainties_systematic2",
+            "guideline_two_histograms_mc2",
+            "guideline_lack_bias_mc1",
+            "guideline_lack_bias_reflect2",
+            "guideline_lack_bias_reflect3",
+            "guideline_more_data_distribution",
+            "guideline_account_uncertainty"
         ]
         ext = ".vue"
         for comp in state_components:
@@ -475,17 +499,7 @@ class StageFour(HubbleStage):
         extend_tool(class_distr_viewer, 'bqplot:xrange',
                     hist_selection_activate, hist_selection_deactivate)
 
-        # We want the hub_fit_viewer to be selecting for the same subset as the table
-        def fit_selection_activate():
-            table = self.get_widget('fit_table')
-            table.initialize_subset_if_needed()
-            self.session.edit_subset_mode.edit_subset = [table.subset]
 
-        def fit_selection_deactivate():
-            self.session.edit_subset_mode.edit_subset = []
-        
-        extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
-                    fit_selection_deactivate)
 
 
         # JC: There's apparently a way to link axes in glue-jupyter, so we should use that
@@ -499,11 +513,6 @@ class StageFour(HubbleStage):
         else:
             self._deferred_setup()
 
-        self.story_state.on_class_data_update(self._on_class_data_update)
-        self.story_state.on_student_data_update(self._on_student_data_update)
-
-        # self.reset_limits_timer = RepeatedTimer(5, self.reset_viewer_limits)
-        # self.reset_limits_timer.start()
     
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -525,42 +534,26 @@ class StageFour(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
-        
-        # # show prodata layers
-        # if advancing and new == "pro_dat1":
-        #     prodata_viewer = self.get_viewer("prodata_viewer")
-        #     hubble_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_1929_DATA_LABEL))
-        #     hubble_layer.state.visible = True
-        #     prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", True)
-        #     prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
-        # if advancing and new == 'pro_dat5':
-        #     # turn off best fit tool
-        #     prodata_viewer = self.get_viewer("prodata_viewer")
-        #     prodata_viewer.toolbar.tools["hubble:linefit"].activate() # deactivates the tool. activate() is a toggle
-        #     # turnon HST data layer
-        #     hst_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_KEY_DATA_LABEL))
-        #     hst_layer.state.visible = True
-        # if advancing and new == 'pro_dat6':
-        #     # turn on best fit tool
-        #     prodata_viewer = self.get_viewer("prodata_viewer")
-        #     prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
-        #     # check if tool is active, if not activate it
-        #     if not prodata_viewer.toolbar.tools["hubble:linefit"].active:
-        #         prodata_viewer.toolbar.tools["hubble:linefit"].activate()
-        # if advancing and new == 'pro_dat8':
-        #     # turn on labels
-        #     prodata_viewer = self.get_viewer("prodata_viewer")
-        #     prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
-            
-            
-    
+       
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
 
     def _setup_scatter_layers(self):
-        # already done in stage 3
-        pass
+        layer_viewer = self.get_viewer("layer_viewer")
+        draw_tool = layer_viewer.toolbar.tools['hubble:linedraw'] 
+        add_callback(draw_tool, 'line_drawn', self._on_trend_line_drawn)
+        
+        line_fit_tool = layer_viewer.toolbar.tools['hubble:linefit']
+        add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
+        
+        layer_toolbar = layer_viewer.toolbar
+        layer_toolbar.set_tool_enabled("hubble:togglelayer", True)
+        
+        toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
+        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled) 
+        add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
 
+        
     def _setup_histogram_layers(self):
         # already done in stage 3
         pass
@@ -577,7 +570,6 @@ class StageFour(HubbleStage):
     def _deferred_setup(self):
         self._setup_scatter_layers()
         self._setup_histogram_layers()
-        # self._setup_morphology_subsets()
 
     @property
     def all_viewers(self):
@@ -604,9 +596,10 @@ class StageFour(HubbleStage):
                 tool = self.get_viewer(vid).reset_limits()
                 if tool is not None:
                     tool.activate()
-                print("Reset limits for", vid)
+                # print("Reset limits for", vid)
             except RuntimeError as e:
-                print(vid, e)
+                pass
+                # print(vid, e)
 
     def _on_data_change(self, msg):
         label = msg.data.label

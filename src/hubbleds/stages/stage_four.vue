@@ -138,7 +138,7 @@
     <!--------------------- ALL DATA HUBBLE VIEWER - during class sequence ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c']) && stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0']"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c'])"
     >
       <v-col
         cols="12"
@@ -201,7 +201,7 @@
     <!-- cla_age1c -->
     <v-row
       class="d-flex align-stretch"
-      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']) && (stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0'])"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c'])"
     >
       <v-col
         cols="12"
