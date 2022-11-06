@@ -30,6 +30,8 @@ class ExplorationTool(v.VueTemplate):
 
     def __init__(self, *args, **kwargs):
         self.widget = WWTJupyterWidget(hide_all_chrome=True)
+        self.widget.foreground = 'Digitized Sky Survey (Color)'
+        self.widget.background = 'Digitized Sky Survey (Color)'
         self.widget._set_message_type_callback('wwt_view_state',
                                                self._handle_view_message)
         self.last_update = datetime.now()
