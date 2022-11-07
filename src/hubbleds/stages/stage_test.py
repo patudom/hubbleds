@@ -79,7 +79,7 @@ class StageState(CDSState):
         self.marker = self.markers[index]
 
 
-@register_stage(story="hubbles_law", index=5, steps=["TEST STEP1", "TEST STEP2"])
+@register_stage(story="hubbles_law", index=7, steps=["TEST STEP1", "TEST STEP2"])
 class StageTest(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     _state_cls = StageState
@@ -115,7 +115,11 @@ class StageTest(HubbleStage):
         
         # add some state components
         state_components = ["example_component_1", "example_component_2"]
-        self.add_components_from_path(state_components, self.path, ExampleComponent)
+        state_components_dir = str(
+            Path(
+                __file__).parent.parent / "components" / "example_component")
+        path = join(state_components_dir, "")
+        self.add_components_from_path(state_components, path, ExampleComponent)
         
         # add a veiwer from a previous stage
         self.add_viewer(label="layer_viewer")
