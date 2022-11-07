@@ -73,14 +73,15 @@ class StageState(CDSState):
         'con_int1',
         'age_dis1',
         'con_int2',
+        
         'tre_lin2c',
         'bes_fit1c',
         'you_age1c',
         'cla_res1c',
         'cla_age1c',
-
         'age_dis1c',
         'con_int2c',
+        
         'two_his1',
         'tru_age1',
         'tru_age2',
@@ -139,15 +140,12 @@ class StageState(CDSState):
     all_classes_hist_highlights = CallbackProperty([
     ])
 
-    sandbox_hist_highlights = CallbackProperty([
-    ])
 
     _NONSERIALIZED_PROPERTIES = [
         'markers', 'indices', 'step_markers',
         'table_highlights', 'image_location',
         'my_galaxies_plot_highlights', 'all_galaxies_plot_highlights',
         'my_class_hist_highlights', 'all_classes_hist_highlights',
-        'sandbox_hist_highlights'
     ]
 
     def __init__(self, *args, **kwargs):
@@ -216,6 +214,12 @@ class StageFour(HubbleStage):
 
         
         self.show_team_interface = self.app_state.show_team_interface
+        
+        # for testing so that we don't break when looking for best fit galaxy
+        if self.app_state.allow_advancing:
+            if not self.story_state.has_best_fit_galaxy:
+                self.story_state.has_best_fit_galaxy = True
+                self.story_state.update_student_data()
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -243,11 +247,12 @@ class StageFour(HubbleStage):
         layer_viewer = self.add_viewer(label='layer_viewer')
         comparison_viewer = self.add_viewer(label='comparison_viewer')
         all_viewer = self.add_viewer(label='all_viewer')
-        class_distr_viewer = self.add_viewer(label='class_distr_viewer')
-        all_distr_viewer = self.add_viewer(label='all_distr_viewer')
-        all_distr_viewer_student = self.add_viewer(label='all_distr_viewer_student')
-        all_distr_viewer_class = self.add_viewer(label='all_distr_viewer_class')
-        sandbox_distr_viewer = self.add_viewer(label='sandbox_distr_viewer')
+        class_distr_viewer = self.add_viewer(HubbleClassHistogramView,
+                                             'class_distr_viewer', "My Class")
+        all_distr_viewer_student = self.add_viewer(HubbleHistogramView,
+                                           'all_distr_viewer_student', "All Students") # really just All students, but need the title bar
+        all_distr_viewer_class = self.add_viewer(HubbleHistogramView,
+                                           'all_distr_viewer_class', "All Classes")
 
         line_fit_tool = layer_viewer.toolbar.tools['hubble:linefit']
         add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
@@ -529,10 +534,61 @@ class StageFour(HubbleStage):
         add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled) 
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
 
-        
+    
     def _setup_histogram_layers(self):
-        # already done in stage 3
-        pass
+        class_distr_viewer = self.get_viewer("class_distr_viewer")
+        all_distr_viewer_class = self.get_viewer("all_distr_viewer_class")
+        all_distr_viewer_student = self.get_viewer("all_distr_viewer_student")
+        
+        class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
+        students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
+        classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
+        
+        histogram_viewers = [class_distr_viewer, all_distr_viewer_class,all_distr_viewer_student]
+        all_distr = [all_distr_viewer_class, all_distr_viewer_student]
+        
+        for viewer in histogram_viewers:
+            label = 'Count' # if viewer == class_distr_viewer else 'Proportion'
+            if viewer not in all_distr:
+                viewer.add_data(class_summ_data)
+                layer = viewer.layer_artist_for_data(class_summ_data)
+                layer.state.color = '#26C6DA'
+                layer.state.alpha = 0.5
+            if viewer != class_distr_viewer and viewer != all_distr_viewer_class:
+                viewer.add_data(students_summary_data)
+                layer = viewer.layer_artist_for_data(students_summary_data)
+                layer.state.color = '#78909C'
+                layer.state.alpha = 0.5
+                if viewer == all_distr_viewer_class:
+                    layer.state.visible = False
+                viewer.state.hist_n_bin = 20
+            if viewer != class_distr_viewer and viewer != all_distr_viewer_student:
+                viewer.add_data(classes_summary_data)
+                layer = viewer.layer_artist_for_data(classes_summary_data)
+                layer.state.color = '#006C7A'
+                layer.state.alpha = 0.5
+                if viewer == all_distr_viewer_student:
+                    layer.state.visible = False
+                # viewer.state.normalize = True
+                # viewer.state.y_min = 0
+                # viewer.state.y_max = 1
+                viewer.state.hist_n_bin = 6
+            viewer.figure.axes[1].label = label
+            viewer.figure.axes[1].tick_format = '0'
+            # viewer.figure.axes[1].num_ticks = 5
+
+        class_distr_viewer.state.x_att = class_summ_data.id['age']
+        all_distr_viewer_class.state.x_att = classes_summary_data.id['age']
+        all_distr_viewer_student.state.x_att = students_summary_data.id['age']
+
+        theme = "dark" if self.app_state.dark_mode else "light"
+        style_name = f"default_histogram_{theme}"
+        style = load_style(style_name)
+        update_figure_css(all_distr_viewer_student, style_dict=style)
+        update_figure_css(all_distr_viewer_class, style_dict=style)
+
+
+    
 
     def _deferred_setup(self):
         self._setup_scatter_layers()
@@ -564,10 +620,8 @@ class StageFour(HubbleStage):
                    'comparison_viewer',
                    'all_viewer',
                    'class_distr_viewer',
-                   'all_distr_viewer',
                    'all_distr_viewer_class',
                    'all_distr_viewer_student',
-                   'sandbox_distr_viewer',
                    ]
 
         viewer_type = ["scatter",
@@ -575,9 +629,7 @@ class StageFour(HubbleStage):
                        "scatter",
                        "histogram",
                        "histogram",
-                       "histogram",
-                       "histogram",
-                       "histogram"]
+                       "histogram",]
 
         theme_name = "dark" if dark else "light"
         for viewer, vtype in zip(viewers, viewer_type):

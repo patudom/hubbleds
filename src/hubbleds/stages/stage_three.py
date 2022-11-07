@@ -165,15 +165,12 @@ class StageState(CDSState):
     all_classes_hist_highlights = CallbackProperty([
     ])
 
-    sandbox_hist_highlights = CallbackProperty([
-    ])
 
     _NONSERIALIZED_PROPERTIES = [
         'markers', 'indices', 'step_markers',
         'table_highlights', 'image_location',
         'my_galaxies_plot_highlights', 'all_galaxies_plot_highlights',
         'my_class_hist_highlights', 'all_classes_hist_highlights',
-        'sandbox_hist_highlights'
     ]
 
     def __init__(self, *args, **kwargs):
@@ -226,7 +223,7 @@ class StageThree(HubbleStage):
     viewer_ids_for_data = {
         STUDENT_DATA_LABEL: ["comparison_viewer","layer_viewer"],
         CLASS_DATA_LABEL: ["comparison_viewer","layer_viewer"],
-        CLASS_SUMMARY_LABEL: ["class_distr_viewer", "comparison_viewer"]
+        CLASS_SUMMARY_LABEL: [ "comparison_viewer"]
     }
 
     def __init__(self, *args, **kwargs):
@@ -276,22 +273,10 @@ class StageThree(HubbleStage):
                                             "comparison_viewer",
                                             "Data Comparison")
         all_viewer = self.add_viewer(HubbleScatterView, "all_viewer", "All Data")
-        # morphology_viewer = self.add_viewer(HubbleScatterView,
-        #                                     "morphology_viewer",
-        #                                     "Galaxy Morphology")
+
         prodata_viewer = self.add_viewer(HubbleScatterView, "prodata_viewer",
                                          "Professional Data")
-        class_distr_viewer = self.add_viewer(HubbleClassHistogramView,
-                                             'class_distr_viewer', "My Class")
-        all_distr_viewer = self.add_viewer(HubbleHistogramView,
-                                           'all_distr_viewer', "All Classes")
-        all_distr_viewer_student = self.add_viewer(HubbleHistogramView,
-                                           'all_distr_viewer_student', "All Students") # really just All students, but need the title bar
-        all_distr_viewer_class = self.add_viewer(HubbleHistogramView,
-                                           'all_distr_viewer_class', "All Classes")
-        sandbox_distr_viewer = self.add_viewer(HubbleHistogramView,
-                                               'sandbox_distr_viewer',
-                                               "Sandbox")
+        
         hubble_race_viewer = self.add_viewer(HubbleScatterView,
                                                 "hubble_race_viewer",
                                                  "Race")
@@ -439,76 +424,11 @@ class StageThree(HubbleStage):
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
 
-        # Set up the listener to sync the histogram <--> scatter viewers
-
-        # Set up the functionality for the histogram <---> scatter sync
-        # We add a listener for when a subset is modified/created on
-        # the histogram viewer as well as extend the xrange tool for the
-        # histogram to always affect this subset
-        histogram_source_label = "histogram_source_subset"
-        histogram_modify_label = "histogram_modify_subset"
-        self.histogram_listener = HistogramListener(self.story_state,
-                                                    None,
-                                                    class_summ_data,
-                                                    None,
-                                                    class_meas_data,
-                                                    source_subset_label=histogram_source_label,
-                                                    modify_subset_label=histogram_modify_label)
-
-        # Create the student slider
-        student_slider_subset_label = "student_slider_subset"
-        self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
-        student_slider = IDSlider(class_summ_data, "student_id", "age", highlight_ids=[self.story_state.student_user["id"]])
-        self.add_component(student_slider, "c-student-slider")
-        def student_slider_change(id, highlighted):
-            self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
-            color = student_slider.highlight_color if highlighted else student_slider.default_color
-            self.student_slider_subset.style.color = color
-        def student_slider_refresh(slider):
-            self.stage_state.stu_low_age = round(min(slider.values))
-            self.stage_state.stu_high_age = round(max(slider.values))
-
-        student_slider.on_id_change(student_slider_change)
-        student_slider.on_refresh(student_slider_refresh)
-
-        # def update_student_slider(msg):
-        #     student_slider.update_data(self, msg.data)
-        # self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == CLASS_SUMMARY_LABEL, handler=update_student_slider)
-
-        # Create the class slider
-        class_slider_subset_label = "class_slider_subset"
-        self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
-        class_slider = IDSlider(classes_summary_data, "class_id", "age")
-        self.add_component(class_slider, "c-class-slider")
-        def class_slider_change(id, highlighted):
-            self.class_slider_subset.subset_state = all_data['class_id'] == id
-            color = class_slider.highlight_color if highlighted else class_slider.default_color
-            self.class_slider_subset.style.color = color
-        def class_slider_refresh(slider):
-            self.stage_state.cla_low_age = round(min(slider.values))
-            self.stage_state.cla_high_age = round(max(slider.values))
-
-        class_slider.on_id_change(class_slider_change)
-        class_slider.on_refresh(class_slider_refresh)
-
-        self.hub.subscribe(self, NumericalDataChangedMessage,
-                           filter=lambda msg: msg.data.label == STUDENT_DATA_LABEL,
-                           handler=student_slider.refresh)
-        self.hub.subscribe(self, NumericalDataChangedMessage,
-                           filter=lambda msg: msg.data.label == CLASS_SUMMARY_LABEL,
-                           handler=class_slider.refresh)
-
-        def update_class_slider(msg):
-            class_slider.update_data(self, msg.data)
-        self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == ALL_CLASS_SUMMARIES_LABEL, handler=update_class_slider)    
-
+        
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
 
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
-            histogram_source_label: [class_distr_viewer],
-            histogram_modify_label: [comparison_viewer],
-            student_slider_subset_label: [comparison_viewer],
             BEST_FIT_SUBSET_LABEL: [comparison_viewer, layer_viewer]
         }
 
@@ -524,11 +444,7 @@ class StageThree(HubbleStage):
         # layers from the table selection have the same label, but we only want student_data selected
         layer_viewer.ignore(lambda layer: layer.label == "fit_table_selected" and layer.data != student_data)
 
-        def comparison_ignorer(x):
-            return x.label == histogram_modify_label and x.data != self.histogram_listener.modify_data
-
-        comparison_viewer.ignore(comparison_ignorer)
-
+        
         # load all the initial styles
         self._update_viewer_style(dark=self.app_state.dark_mode)
 
@@ -540,9 +456,7 @@ class StageThree(HubbleStage):
             viewer.figure.axes[1].label_offset = "5em"
         
 
-        # Just for accessibility while testing
-        self.data_collection.histogram_listener = self.histogram_listener
-
+        
         # Set hypothetical galaxy info, if we have it
         self._update_hypgal_info()
 
@@ -550,19 +464,7 @@ class StageThree(HubbleStage):
         self.hub.subscribe(self, NumericalDataChangedMessage,
                            handler=self._on_data_change)
 
-        def hist_selection_activate():
-            if self.histogram_listener.source_subset is None:
-                self.histogram_listener.source_subset = self.data_collection.new_subset_group(
-                    label=self.histogram_listener.source_subset_label)
-            self.session.edit_subset_mode.edit_subset = [
-                self.histogram_listener.source_subset]
-
-        def hist_selection_deactivate():
-            self.session.edit_subset_mode.edit_subset = []
-
-        extend_tool(class_distr_viewer, 'bqplot:xrange',
-                    hist_selection_activate, hist_selection_deactivate)
-
+        
         # We want the hub_fit_viewer to be selecting for the same subset as the table
         def fit_selection_activate():
             table = self.get_widget('fit_table')
@@ -575,11 +477,6 @@ class StageThree(HubbleStage):
         extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
 
-
-        # JC: There's apparently a way to link axes in glue-jupyter, so we should use that
-        # but I'm not familiar with it, so in the interest of time, let's do this
-        for prop in ['x_min', 'x_max']: 
-            link((all_distr_viewer_student.state, prop), (all_distr_viewer_class.state, prop))
 
         # If possible, we defer some of the setup for later, to make loading faster
         if self.story_state.stage_index < self.index:
@@ -773,7 +670,6 @@ class StageThree(HubbleStage):
         linefit_id = "hubble:linefit"
         comparison_toolbar = comparison_viewer.toolbar
         comparison_linefit = comparison_toolbar.tools[linefit_id]
-        comparison_linefit.add_ignore_condition(lambda layer: layer.layer.label != self.student_slider_subset.label)
         comparison_linefit.activate()
         comparison_toolbar.set_tool_enabled(linefit_id, False)
 
@@ -783,60 +679,7 @@ class StageThree(HubbleStage):
         layer_linefit.add_ignore_condition(lambda layer: layer.layer.label == BEST_FIT_SUBSET_LABEL)
 
     def _setup_histogram_layers(self):
-        class_distr_viewer = self.get_viewer("class_distr_viewer")
-        all_distr_viewer = self.get_viewer("all_distr_viewer")
-        all_distr_viewer_class = self.get_viewer("all_distr_viewer_class")
-        all_distr_viewer_student = self.get_viewer("all_distr_viewer_student")
-        sandbox_distr_viewer = self.get_viewer("sandbox_distr_viewer")
-        
-        class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
-        students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
-        classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
-        
-        histogram_viewers = [class_distr_viewer, all_distr_viewer, sandbox_distr_viewer, all_distr_viewer_class,all_distr_viewer_student]
-        all_distr = [all_distr_viewer, all_distr_viewer_class, all_distr_viewer_student]
-        
-        for viewer in histogram_viewers:
-            label = 'Count' # if viewer == class_distr_viewer else 'Proportion'
-            if viewer not in all_distr:
-                viewer.add_data(class_summ_data)
-                layer = viewer.layer_artist_for_data(class_summ_data)
-                layer.state.color = '#26C6DA'
-                layer.state.alpha = 0.5
-            if viewer != class_distr_viewer and viewer != all_distr_viewer_class:
-                viewer.add_data(students_summary_data)
-                layer = viewer.layer_artist_for_data(students_summary_data)
-                layer.state.color = '#78909C'
-                layer.state.alpha = 0.5
-                if viewer == all_distr_viewer_class:
-                    layer.state.visible = False
-                viewer.state.hist_n_bin = 20
-            if viewer != class_distr_viewer and viewer != all_distr_viewer_student:
-                viewer.add_data(classes_summary_data)
-                layer = viewer.layer_artist_for_data(classes_summary_data)
-                layer.state.color = '#006C7A'
-                layer.state.alpha = 0.5
-                if viewer == all_distr_viewer_student:
-                    layer.state.visible = False
-                # viewer.state.normalize = True
-                # viewer.state.y_min = 0
-                # viewer.state.y_max = 1
-                viewer.state.hist_n_bin = 6
-            viewer.figure.axes[1].label = label
-            viewer.figure.axes[1].tick_format = '0'
-            # viewer.figure.axes[1].num_ticks = 5
-
-        class_distr_viewer.state.x_att = class_summ_data.id['age']
-        all_distr_viewer.state.x_att = students_summary_data.id['age']
-        all_distr_viewer_class.state.x_att = classes_summary_data.id['age']
-        all_distr_viewer_student.state.x_att = students_summary_data.id['age']
-        sandbox_distr_viewer.state.x_att = students_summary_data.id['age']
-
-        theme = "dark" if self.app_state.dark_mode else "light"
-        style_name = f"default_histogram_{theme}"
-        style = load_style(style_name)
-        update_figure_css(all_distr_viewer_student, style_dict=style)
-        update_figure_css(all_distr_viewer_class, style_dict=style)
+        pass
 
 
     # def _setup_morphology_subsets(self):
@@ -923,26 +766,14 @@ class StageThree(HubbleStage):
                    'hubble_race_viewer',
                    'comparison_viewer',
                    'all_viewer',
-                   # 'morphology_viewer',
                    'prodata_viewer',
-                   'class_distr_viewer',
-                   'all_distr_viewer',
-                   'all_distr_viewer_class',
-                   'all_distr_viewer_student',
-                   'sandbox_distr_viewer',
                    ]
 
         viewer_type = ["scatter",
                        "scatter",
                        "scatter",
                        "scatter",
-                       # "scatter",
-                       "scatter",
-                       "histogram",
-                       "histogram",
-                       "histogram",
-                       "histogram",
-                       "histogram"]
+                       "scatter",]
 
         theme_name = "dark" if dark else "light"
         for viewer, vtype in zip(viewers, viewer_type):
@@ -950,10 +781,6 @@ class StageThree(HubbleStage):
             style = load_style(f"default_{vtype}_{theme_name}")
             update_figure_css(viewer, style_dict=style)
 
-        # spectrum_viewer = self.get_viewer("spectrum_viewer")
-        # theme_name = "dark" if dark else "light"
-        # style = load_style(f"default_spectrum_{theme_name}")
-        # update_figure_css(spectrum_viewer, style_dict=style)
 
     def _on_dark_mode_change(self, dark):
         super()._on_dark_mode_change(dark)
