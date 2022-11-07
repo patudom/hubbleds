@@ -11,4 +11,3 @@ from .hubble_exp_universe import HubbleExp
 from .stage_two_complete import StageTwoComplete
 from .age_calc_components import AgeCalc
 from .prodata_components import ProData
-from .example_component import ExampleComponent
