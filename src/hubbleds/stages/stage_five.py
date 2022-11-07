@@ -102,8 +102,8 @@ class StageFive(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.show_team_interface = self.app_state.show_team_interface
-
-        self.stage_state.marker = self.stage_state.markers[0]
+        
+        # self.stage_state.marker = self.stage_state.markers[0]
         
         add_callback(self.stage_state, 'marker', self._on_marker_update, echo_old=True)
         
