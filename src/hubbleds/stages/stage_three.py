@@ -62,6 +62,8 @@ class StageState(CDSState):
     cla_low_age = CallbackProperty(0)
     cla_high_age = CallbackProperty(0)
 
+    max_prodata_index = CallbackProperty(0)
+
     markers = CallbackProperty([
         'exp_dat1',
         'tre_dat1',
@@ -435,9 +437,9 @@ class StageThree(HubbleStage):
             "guideline_professional_data8",
             "guideline_professional_data9",
         ]
-        for comp in prodata_components:
+        for index, comp in enumerate(prodata_components):
             label = f"c-{comp}".replace("_", "-")
-            component = ProData(comp + ext, path, self.stage_state)
+            component = ProData(comp + ext, path, self.stage_state, index)
             self.add_component(component, label=label) 
 
         # Grab data
@@ -595,8 +597,8 @@ class StageThree(HubbleStage):
         self.story_state.on_class_data_update(self._on_class_data_update)
         self.story_state.on_student_data_update(self._on_student_data_update)
 
-        self.reset_limits_timer = RepeatedTimer(5, self.reset_viewer_limits)
-        self.reset_limits_timer.start()
+        # self.reset_limits_timer = RepeatedTimer(5, self.reset_viewer_limits)
+        # self.reset_limits_timer.start()
     
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
