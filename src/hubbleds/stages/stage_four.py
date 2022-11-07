@@ -195,7 +195,7 @@ class StageFour(HubbleStage):
 
     @default('title')
     def _default_title(self):
-        return "Understanding Uncertainty"
+        return "Class results & Uncertainty"
 
     @default('subtitle')
     def _default_subtitle(self):
@@ -209,9 +209,7 @@ class StageFour(HubbleStage):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        # if self.stage_state.marker_before('ran_var1'):
-        #     self.stage_state.marker = 'ran_var1'
+    
         
         add_callback(self.stage_state, 'stage_four_complete',
                      self._on_stage_four_complete)
@@ -350,26 +348,6 @@ class StageFour(HubbleStage):
             component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
             self.add_component(component, label=label) 
             
-        # # Set up prodata components
-        # prodata_components_dir = str(Path(
-        #     __file__).parent.parent / "components" / "prodata_components")
-        # path = join(prodata_components_dir, "")
-        # prodata_components = [
-        #     "guideline_professional_data0",
-        #     "guideline_professional_data1",
-        #     "guideline_professional_data2",
-        #     "guideline_professional_data3",
-        #     "guideline_professional_data4",
-        #     "guideline_professional_data5",
-        #     "guideline_professional_data6",
-        #     "guideline_professional_data7",
-        #     "guideline_professional_data8",
-        #     "guideline_professional_data9",
-        # ]
-        # for comp in prodata_components:
-        #     label = f"c-{comp}".replace("_", "-")
-        #     component = ProData(comp + ext, path, self.stage_state)
-        #     self.add_component(component, label=label) 
 
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
@@ -535,9 +513,7 @@ class StageFour(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
        
-    def _on_class_layer_toggled(self, used):
-        self.stage_state.class_layer_toggled = used 
-
+    
     def _setup_scatter_layers(self):
         layer_viewer = self.get_viewer("layer_viewer")
         draw_tool = layer_viewer.toolbar.tools['hubble:linedraw'] 
@@ -558,15 +534,6 @@ class StageFour(HubbleStage):
         # already done in stage 3
         pass
 
-   
-    def _on_stage_index_changed(self, index):
-        print("Stage Index: ",self.story_state.stage_index)
-        if index > 0:
-            self._deferred_setup()
-
-            # Remove this callback once we're done
-            remove_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
-
     def _deferred_setup(self):
         self._setup_scatter_layers()
         self._setup_histogram_layers()
@@ -574,21 +541,7 @@ class StageFour(HubbleStage):
     @property
     def all_viewers(self):
         return [layout.viewer for layout in self.viewers.values()]
-
-    def _update_hypgal_info(self):
-        data = self.get_data(STUDENT_DATA_LABEL)
-        indices = where(data["name"] == BEST_FIT_GALAXY_NAME)
-        if indices[0]:
-            index = indices[0][0]
-            self.stage_state.hypgal_velocity = data["velocity"][index]
-            self.stage_state.hypgal_distance = data["distance"][index]
-            self.stage_state.our_age = (AGE_CONSTANT * self.stage_state.hypgal_distance/self.stage_state.hypgal_velocity)
-
-    def reset_viewer_limits(self):
-        self._reset_limits_for_data(STUDENT_DATA_LABEL)
-        self._reset_limits_for_data(CLASS_DATA_LABEL)
-        self._reset_limits_for_data(CLASS_SUMMARY_LABEL)
-
+     
     def _reset_limits_for_data(self, label):
         viewer_id = self.viewer_ids_for_data.get(label, [])
         for vid in viewer_id:
@@ -600,29 +553,16 @@ class StageFour(HubbleStage):
             except RuntimeError as e:
                 pass
                 # print(vid, e)
-
-    def _on_data_change(self, msg):
-        label = msg.data.label
-        # self._reset_viewer_limits(label)
-        if label == STUDENT_DATA_LABEL:
-            self._update_hypgal_info()
-        elif label == CLASS_SUMMARY_LABEL:
-            self.get_component("c-student-slider").refresh()
-
-
-    def _on_class_data_update(self, *args):
-        self.reset_viewer_limits()
-
-    def _on_student_data_update(self, *args):
-        self.reset_viewer_limits()
-
+   
+    def reset_viewer_limits(self):
+        self._reset_limits_for_data(STUDENT_DATA_LABEL)
+        self._reset_limits_for_data(CLASS_DATA_LABEL)
+        self._reset_limits_for_data(CLASS_SUMMARY_LABEL)
+    
     def _update_viewer_style(self, dark):
         viewers = ['layer_viewer',
-                #    'hubble_race_viewer',
                    'comparison_viewer',
                    'all_viewer',
-                   # 'morphology_viewer',
-                #    'prodata_viewer',
                    'class_distr_viewer',
                    'all_distr_viewer',
                    'all_distr_viewer_class',
@@ -631,11 +571,8 @@ class StageFour(HubbleStage):
                    ]
 
         viewer_type = ["scatter",
-                    #    "scatter",
                        "scatter",
                        "scatter",
-                       # "scatter",
-                    #    "scatter",
                        "histogram",
                        "histogram",
                        "histogram",
@@ -647,22 +584,25 @@ class StageFour(HubbleStage):
             viewer = self.get_viewer(viewer)
             style = load_style(f"default_{vtype}_{theme_name}")
             update_figure_css(viewer, style_dict=style)
-
-        # spectrum_viewer = self.get_viewer("spectrum_viewer")
-        # theme_name = "dark" if dark else "light"
-        # style = load_style(f"default_spectrum_{theme_name}")
-        # update_figure_css(spectrum_viewer, style_dict=style)
-
-    def _on_dark_mode_change(self, dark):
-        super()._on_dark_mode_change(dark)
-        self._update_viewer_style(dark)
+    
 
     def table_selected_color(self, dark):
         return "colors.lightBlue.darken4"
+    
+    def _update_hypgal_info(self):
+        data = self.get_data(STUDENT_DATA_LABEL)
+        indices = where(data["name"] == BEST_FIT_GALAXY_NAME)
+        if indices[0]:
+            index = indices[0][0]
+            self.stage_state.hypgal_velocity = data["velocity"][index]
+            self.stage_state.hypgal_distance = data["distance"][index]
+            self.stage_state.our_age = (AGE_CONSTANT * self.stage_state.hypgal_distance/self.stage_state.hypgal_velocity)
+
 
     def _update_image_location(self, using_voila):
         prepend = "voila/files/" if using_voila else ""
         self.stage_state.image_location = prepend + "data/images/stage_three"
+    
 
     def _on_trend_line_drawn(self, is_drawn):
         print("Trend line drawn: ", is_drawn)
@@ -685,3 +625,33 @@ class StageFour(HubbleStage):
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.stage_state.stage_four_complete = False
+            
+    def _on_data_change(self, msg):
+        label = msg.data.label
+        # self._reset_viewer_limits(label)
+        if label == STUDENT_DATA_LABEL:
+            self._update_hypgal_info()
+        elif label == CLASS_SUMMARY_LABEL:
+            self.get_component("c-student-slider").refresh()
+
+
+    def _on_class_data_update(self, *args):
+        self.reset_viewer_limits()
+
+    def _on_student_data_update(self, *args):
+        self.reset_viewer_limits()
+    
+    def _on_dark_mode_change(self, dark):
+        super()._on_dark_mode_change(dark)
+        self._update_viewer_style(dark)
+        
+    def _on_class_layer_toggled(self, used):
+        self.stage_state.class_layer_toggled = used 
+    
+    def _on_stage_index_changed(self, index):
+        print("Stage Index: ",self.story_state.stage_index)
+        if index > 0:
+            self._deferred_setup()
+
+            # Remove this callback once we're done
+            remove_callback(self.story_state, 'stage_index', self._on_stage_index_changed)

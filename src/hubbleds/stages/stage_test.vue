@@ -1,6 +1,23 @@
 <template>
   <v-container>
     <jupyter-widget :widget="viewers.layer_viewer"/>
+    
+    <!-- Example Components -->
+    <v-row 
+      class="d-flex align-stretch"
+      >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <c-example-component-1
+          v-if="stage_state.marker == 'ex_com1'"
+          v-intersect.once="scrollIntoView" />
+        <c-example-component-2
+          v-if="stage_state.marker == 'ex_com2'"
+          v-intersect.once="scrollIntoView" />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
