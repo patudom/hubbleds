@@ -2,11 +2,11 @@
   <scaffold-alert
     header-text="Professional Data"
     @back="
-      state.marker = 'acc_unc1';
+      state.marker = 'pro_dat0';
     "
     @next="
       state.marker = 'pro_dat1';
-      state.prodata_response = false;
+      
     "
   >
     <div

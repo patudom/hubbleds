@@ -16,109 +16,18 @@
       </v-col>
     </v-row>
 
-    <!--------------------- TABLE ROW ----------------------->
-    <v-row
-      class="d-flex align-stretch"
-    >
-      <v-col
-        cols="12"
-        lg="5"
-      >
-        <c-guideline-explore-data
-          v-if="stage_state.marker == 'exp_dat1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate3
-          v-if="stage_state.marker == 'age_uni3'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate4
-          v-if="stage_state.marker == 'age_uni4'"
-          v-intersect.once="scrollIntoView" />
-      </v-col>
-      <v-col
-        cols="12"
-        lg="7"
-      >
-        <v-card
-          :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
-          :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
-          outlined
-        >
-          <v-lazy>
-            <jupyter-widget :widget="widgets.fit_table"/>
-          </v-lazy>
-        </v-card>
-      </v-col>
-    </v-row>
-
+    
     <!--------------------- OUR DATA HUBBLE VIEWER ----------------------->
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1'] || stage_state.indices[stage_state.marker] > stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1c'] "
+      v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1'] || stage_state.indices[stage_state.marker] > stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1c'] "
     >
       <v-col
         cols="12"
         lg="5"
       >
-        <c-guideline-trends-data-mc1
-          v-if="stage_state.marker == 'tre_dat1'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.trend_response = true" />
-        <c-guideline-trends-data2
-          v-if="stage_state.marker == 'tre_dat2'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.trend_response = true" />
-        <c-guideline-trends-data-mc3
-          v-if="stage_state.marker == 'tre_dat3'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.trend_response = true" />
-        <c-guideline-relationship-vel-dist-mc
-          v-if="stage_state.marker == 'rel_vel1'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.relvel_response = true" />
-        <c-guideline-trend-lines1
-          v-if="stage_state.marker == 'tre_lin1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-trend-lines-draw2
-          v-if="stage_state.marker == 'tre_lin2'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-best-fit-line
-          v-if="stage_state.marker == 'bes_fit1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-hubbles-expanding-universe1
-          v-if="stage_state.marker == 'hub_exp1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-hubbles-expanding-universe2
-          v-if="stage_state.marker == 'hub_exp2'"
-          v-intersect.once="scrollIntoView" />          
-        <c-guideline-running-race-mc
-          v-if="stage_state.marker == 'run_rac1'"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.race_response = true" />
-        <c-guideline-runners-vel-dist
-          v-if="stage_state.marker == 'run_vel1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe
-          v-if="stage_state.marker == 'age_uni1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-hypothetical-galaxy
-          v-if="stage_state.marker == 'hyp_gal1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-race-equation
-          v-if="stage_state.marker == 'age_rac1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-equation2
-          v-if="stage_state.marker == 'age_uni2'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-your-age-estimate
-          v-if="stage_state.marker == 'you_age1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-shortcomings-est-reflect1
-          v-if="stage_state.marker == 'sho_est1'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-shortcomings-est2
-          v-if="stage_state.marker == 'sho_est2'"
-          v-intersect.once="scrollIntoView" />
+
         <c-guideline-random-variability
           v-if="stage_state.marker == 'ran_var1'"
           v-intersect.once="scrollIntoView" />
@@ -229,7 +138,7 @@
     <!--------------------- ALL DATA HUBBLE VIEWER - during class sequence ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c']) && stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0']"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c'])"
     >
       <v-col
         cols="12"
@@ -262,7 +171,7 @@
     <!--------------------- OUR CLASS HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int1'] && stage_state.indices[stage_state.marker] < stage_state.indices['tre_lin2c']" 
+      v-if="stage_state.marker == 'age_dis1' || stage_state.marker == 'con_int2'" 
     >
       <v-col
         cols="12"
@@ -292,7 +201,7 @@
     <!-- cla_age1c -->
     <v-row
       class="d-flex align-stretch"
-      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']) && (stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0'])"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c'])"
     >
       <v-col
         cols="12"
@@ -377,14 +286,13 @@
         </v-card>
       </v-col>
     </v-row>
-      
+
     <c-guideline-confidence-interval-reflect2
       v-if="stage_state.marker == 'con_int2'"
       v-intersect.once="scrollIntoView"/>
     <c-guideline-confidence-interval-reflect2-c
       v-if="stage_state.marker == 'con_int2c'"
       v-intersect.once="scrollIntoView"/>
-
 
 
   </v-container>

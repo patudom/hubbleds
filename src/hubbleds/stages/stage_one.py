@@ -39,6 +39,7 @@ class StageState(CDSState):
     waveline_set = CallbackProperty(False)
     obswaves_total = CallbackProperty(0)
     velocities_total = CallbackProperty(0)
+    zoom_tool_activated = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -304,6 +305,8 @@ class StageOne(HubbleStage):
         restwave_tool = spec_toolbar.tools["hubble:restwave"]
         add_callback(restwave_tool, 'lambda_used', self._on_lambda_used)
         add_callback(restwave_tool, 'lambda_on', self._on_lambda_on)
+        wavezooom_tool = spec_toolbar.tools["hubble:wavezoom"]
+        add_callback(wavezooom_tool, 'zoom_tool_activated', self._on_zoom_tool_activated)
         spec_toolbar.set_tool_enabled("hubble:restwave", self.stage_state.marker_reached("res_wav1"))
         spec_toolbar.set_tool_enabled("hubble:wavezoom", self.stage_state.marker_reached("obs_wav2"))
         spec_toolbar.set_tool_enabled("cds:home", self.stage_state.marker_reached("obs_wav2"))
@@ -333,7 +336,6 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
-        
         
             
 
@@ -433,6 +435,9 @@ class StageOne(HubbleStage):
 
     def _on_lambda_on(self, on):
         self.stage_state.lambda_on = on
+    
+    def _on_zoom_tool_activated(self, used):
+        self.stage_state.zoom_tool_activated = used
 
     def _select_from_data(self, dc_name):
         data = self.get_data(dc_name)

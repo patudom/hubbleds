@@ -3,3 +3,6 @@ from .stage_one import *
 from .stage_two_intro import *
 from .stage_two import *
 from .stage_three import *
+from .stage_four import *
+from .stage_five import *
+
