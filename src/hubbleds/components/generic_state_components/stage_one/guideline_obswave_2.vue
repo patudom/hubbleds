@@ -13,11 +13,16 @@
     <div
       class="mb-4"
     >
-    <p>
-        <strong>Tips:</strong> You can re-measure the wavelength as many times as you like. 
+      <p
+        v-if=!state.zoom_tool_activated>  
+        To improve the precision in your measurement, zoom in to the wavelength range around the {{ state.galaxy.element }} line using the <v-icon>mdi-select-search</v-icon> icon in the toolbar.
       </p>
-      <p>  
-        If you want even more precision in your measurement, zoom in to a specific wavelength range in the viewer using the <v-icon>mdi-select-search</v-icon> icon in the toolbar.
+      <p
+        v-if=state.zoom_tool_activated>  
+        If you accidentally zoomed in too far or in the wrong spot, you can click <v-icon>mdi-cached</v-icon> to reset the view to the full range of wavelengths.
+      </p>
+      <p>
+        <strong>Tip:</strong> You can re-measure the wavelength as many times as you like. 
       </p>
     </div>
     <v-divider
@@ -46,17 +51,17 @@
       <v-col
         cols="6"
         class="shrink"
-        v-if="!state.zoom_tool_used"
+        v-if="!state.zoom_tool_activated"
       >
         <div
           style="font-size: 16px;"
         >
-          Zoom in around the red <strong>{{ state.galaxy.element }} </strong> marker.
+          Click <v-icon>mdi-select-search</v-icon> to activate tool. Click and drag across the red <strong>{{ state.galaxy.element }} </strong> marker to zoom in.
         </div>
       </v-col>
       <v-col
         class="shrink"
-        v-if="state.zoom_tool_used"
+        v-if="state.zoom_tool_activated"
       >
         <v-btn
           class="black--text"

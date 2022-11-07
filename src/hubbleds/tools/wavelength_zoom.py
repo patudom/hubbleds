@@ -12,7 +12,7 @@ class WavelengthZoom(BqplotXZoom):
     tool_id = 'hubble:wavezoom'
     action_text = 'x axis zoom'
     tool_tip = 'Zoom in on a region of the x-axis'
-    zoom_tool_used = CallbackProperty(False)
+    zoom_tool_activated = CallbackProperty(False)
 
     on_zoom = None
 
@@ -30,4 +30,4 @@ class WavelengthZoom(BqplotXZoom):
     
     def activate(self):
         super().activate()
-        self.zoom_tool_used = True
+        self.zoom_tool_activated = True
