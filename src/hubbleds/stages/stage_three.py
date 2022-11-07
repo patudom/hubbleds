@@ -17,7 +17,7 @@ from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..components import TrendsData, HubbleExp, AgeCalc, ProData 
+from ..components import TrendsData, HubbleExp, AgeCalc 
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
@@ -273,9 +273,6 @@ class StageThree(HubbleStage):
                                             "comparison_viewer",
                                             "Data Comparison")
         all_viewer = self.add_viewer(HubbleScatterView, "all_viewer", "All Data")
-
-        prodata_viewer = self.add_viewer(HubbleScatterView, "prodata_viewer",
-                                         "Professional Data")
         
         hubble_race_viewer = self.add_viewer(HubbleScatterView,
                                                 "hubble_race_viewer",
@@ -399,27 +396,7 @@ class StageThree(HubbleStage):
             component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
             self.add_component(component, label=label) 
             
-        # Set up prodata components
-        prodata_components_dir = str(Path(
-            __file__).parent.parent / "components" / "prodata_components")
-        path = join(prodata_components_dir, "")
-        prodata_components = [
-            "guideline_professional_data0",
-            "guideline_professional_data1",
-            "guideline_professional_data2",
-            "guideline_professional_data3",
-            "guideline_professional_data4",
-            "guideline_professional_data5",
-            "guideline_professional_data6",
-            "guideline_professional_data7",
-            "guideline_professional_data8",
-            "guideline_professional_data9",
-        ]
-        for comp in prodata_components:
-            label = f"c-{comp}".replace("_", "-")
-            component = ProData(comp + ext, path, self.stage_state)
-            self.add_component(component, label=label) 
-
+        
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
@@ -450,8 +427,7 @@ class StageThree(HubbleStage):
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
-        velocity_viewers = [prodata_viewer, comparison_viewer, layer_viewer, all_viewer]
-        # velocity_viewers = [prodata_viewer, comparison_viewer, morphology_viewer, layer_viewer]
+        velocity_viewers = [comparison_viewer, layer_viewer, all_viewer]
         for viewer in velocity_viewers:
             viewer.figure.axes[1].label_offset = "5em"
         
@@ -537,32 +513,6 @@ class StageThree(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
-        
-        # show prodata layers
-        if advancing and new == "pro_dat1":
-            prodata_viewer = self.get_viewer("prodata_viewer")
-            hubble_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_1929_DATA_LABEL))
-            hubble_layer.state.visible = True
-            prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", True)
-            prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
-        if advancing and new == 'pro_dat5':
-            # turn off best fit tool
-            prodata_viewer = self.get_viewer("prodata_viewer")
-            prodata_viewer.toolbar.tools["hubble:linefit"].activate() # deactivates the tool. activate() is a toggle
-            # turnon HST data layer
-            hst_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_KEY_DATA_LABEL))
-            hst_layer.state.visible = True
-        if advancing and new == 'pro_dat6':
-            # turn on best fit tool
-            prodata_viewer = self.get_viewer("prodata_viewer")
-            prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
-            # check if tool is active, if not activate it
-            if not prodata_viewer.toolbar.tools["hubble:linefit"].active:
-                prodata_viewer.toolbar.tools["hubble:linefit"].activate()
-        if advancing and new == 'pro_dat8':
-            # turn on labels
-            prodata_viewer = self.get_viewer("prodata_viewer")
-            prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             
             
     
@@ -575,12 +525,11 @@ class StageThree(HubbleStage):
         hubble1929 = self.get_data(HUBBLE_1929_DATA_LABEL)
         hstkp = self.get_data(HUBBLE_KEY_DATA_LABEL)
         comparison_viewer = self.get_viewer("comparison_viewer")
-        prodata_viewer = self.get_viewer("prodata_viewer")
         layer_viewer = self.get_viewer("layer_viewer")
         all_viewer = self.get_viewer("all_viewer")
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
-        for viewer in [comparison_viewer, prodata_viewer, layer_viewer, all_viewer]:
+        for viewer in [comparison_viewer, layer_viewer, all_viewer]:
             viewer.add_data(student_data)
             viewer.state.x_att = student_data.id[dist_attr]
             viewer.state.y_att = student_data.id[vel_attr]
@@ -651,19 +600,7 @@ class StageThree(HubbleStage):
         all_viewer.state.y_att = all_data.id[vel_attr]
 
 
-        prodata_viewer.add_data(hstkp)
-        hstkp_layer = prodata_viewer.layer_artist_for_data(hstkp)
-        hstkp_layer.state.color = '#AEEA00'
-        hstkp_layer.state.visible = False
-        prodata_viewer.add_data(hubble1929)
-        # set hubble1929 data layer to blue
-        hubble1929_layer = prodata_viewer.layer_artist_for_data(hubble1929)
-        hubble1929_layer.state.color = '#D500F9'
-        hubble1929_layer.state.visible = False
-        prodata_viewer.state.reset_limits()
-        prodata_viewer.add_data(class_meas_data)
-        student_layer = prodata_viewer.layer_artist_for_data(student_data)
-        student_layer.state.visible = False
+        
         
 
         # In the comparison viewer, we only want to see the line for the student slider subset
@@ -765,12 +702,10 @@ class StageThree(HubbleStage):
         viewers = ['layer_viewer',
                    'hubble_race_viewer',
                    'comparison_viewer',
-                   'all_viewer',
-                   'prodata_viewer',
+                   'all_viewer'
                    ]
 
         viewer_type = ["scatter",
-                       "scatter",
                        "scatter",
                        "scatter",
                        "scatter",]

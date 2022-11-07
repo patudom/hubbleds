@@ -106,7 +106,9 @@ class StageFive(HubbleStage):
         # self.stage_state.marker = self.stage_state.markers[0]
         
         add_callback(self.stage_state, 'marker', self._on_marker_update, echo_old=True)
-        
+        self.story_state.on_class_data_update(self._on_class_data_update)
+        self.story_state.on_student_data_update(self._on_student_data_update)
+
         # Set up prodata components
         prodata_components_dir = str(Path(
             __file__).parent.parent / "components" / "prodata_components")
@@ -199,7 +201,7 @@ class StageFive(HubbleStage):
         hst_layer.state.color = '#AEEA00'
         hst_layer.state.visible = self.stage_state.marker_reached('pro_dat5')
         
-        prodata_viewer.state.reset_limits()
+        prodata_viewer.reset_limits()
     
     def _update_viewer_style(self, dark):
         viewers = ['prodata_viewer']
@@ -215,7 +217,16 @@ class StageFive(HubbleStage):
     def _on_dark_mode_change(self, dark):
         super()._on_dark_mode_change(dark)
         self._update_viewer_style(dark)
-        
+    
+    def reset_viewer_limits(self):
+        prodata_viewer = self.get_viewer("prodata_viewer")
+        prodata_viewer.reset_limits()
+    
+    def _on_class_data_update(self, *args):
+        self.reset_viewer_limits()
+    
+    def _on_student_data_update(self, *args):
+        self.reset_viewer_limits()
     
     def _on_marker_update(self, old, new):
         
