@@ -528,7 +528,9 @@ class StageFour(HubbleStage):
         add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
         
         layer_toolbar = layer_viewer.toolbar
-        layer_toolbar.set_tool_enabled("hubble:togglelayer", True)
+        # turn this on if we are in this stage
+        if self.story_state.stage_index == self.index: 
+            layer_toolbar.set_tool_enabled("hubble:togglelayer", True)
         
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled) 

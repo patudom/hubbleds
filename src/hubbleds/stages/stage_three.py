@@ -552,7 +552,6 @@ class StageThree(HubbleStage):
         class_layer.state.visible = False
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         toggle_tool.set_layer_to_toggle(class_layer)
-        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', not self.stage_state.marker_before("tre_dat2"))
 
         # cosmicds PR157 - turn off fit line label for layer_viewer
         layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
