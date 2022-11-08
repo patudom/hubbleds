@@ -310,6 +310,8 @@ class StageOne(HubbleStage):
         spec_toolbar.set_tool_enabled("hubble:restwave", self.stage_state.marker_reached("res_wav1"))
         spec_toolbar.set_tool_enabled("hubble:wavezoom", self.stage_state.marker_reached("obs_wav2"))
         spec_toolbar.set_tool_enabled("cds:home", self.stage_state.marker_reached("obs_wav2"))
+        if self.stage_state.galaxy:
+            self._on_galaxy_update(self.stage_state.galaxy)
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_update)
         
         
