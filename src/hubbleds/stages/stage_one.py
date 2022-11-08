@@ -305,8 +305,8 @@ class StageOne(HubbleStage):
         restwave_tool = spec_toolbar.tools["hubble:restwave"]
         add_callback(restwave_tool, 'lambda_used', self._on_lambda_used)
         add_callback(restwave_tool, 'lambda_on', self._on_lambda_on)
-        wavezooom_tool = spec_toolbar.tools["hubble:wavezoom"]
-        add_callback(wavezooom_tool, 'zoom_tool_activated', self._on_zoom_tool_activated)
+        wavezoom_tool = spec_toolbar.tools["hubble:wavezoom"]
+        add_callback(wavezoom_tool, 'zoom_tool_activated', self._on_zoom_tool_activated)
         spec_toolbar.set_tool_enabled("hubble:restwave", self.stage_state.marker_reached("res_wav1"))
         spec_toolbar.set_tool_enabled("hubble:wavezoom", self.stage_state.marker_reached("obs_wav2"))
         spec_toolbar.set_tool_enabled("cds:home", self.stage_state.marker_reached("obs_wav2"))
@@ -339,12 +339,11 @@ class StageOne(HubbleStage):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
         
-            
+        
 
     def _on_measurements_changed(self, msg):
-        self._update_state_from_measurements()
+        self._update_state_from_measurements_debounced()
 
-    @debounce(wait=2)
     def _update_state_from_measurements(self):
         student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         self.stage_state.gals_total = int(student_measurements.size)
@@ -352,6 +351,10 @@ class StageOne(HubbleStage):
         self.stage_state.obswaves_total = measwaves[measwaves != None].size
         velocities = student_measurements["velocity"]
         self.stage_state.velocities_total = velocities[velocities != None].size
+
+    @debounce(wait=2)
+    def _update_state_from_measurements_debounced(self):
+        self._update_state_from_measurements()
 
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
