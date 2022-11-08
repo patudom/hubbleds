@@ -30,6 +30,13 @@
       align="center"
       no-gutters
     >
+      <v-col
+        class="shrink"
+        cols="6"
+        >
+        <span style="font-size: 16px;">Press <v-icon>mdi-menu</v-icon> in the upper left to return to a previous stage</span>
+        
+      </v-col>
       <v-spacer></v-spacer>
       <v-col
         class="shrink"
