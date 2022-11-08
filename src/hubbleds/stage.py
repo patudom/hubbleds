@@ -35,9 +35,10 @@ class HubbleStage(Stage):
         return prepared
 
     def submit_measurement(self, measurement):
-        prepared = self._prepare_measurement(measurement)
-        requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/submit-measurement",
-                     json=prepared)
+        if self.app_state.update_db:
+            prepared = self._prepare_measurement(measurement)
+            requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/submit-measurement",
+                        json=prepared)
 
     def remove_measurement(self, galaxy_name):
         name = str(galaxy_name)
@@ -47,7 +48,7 @@ class HubbleStage(Stage):
         self.remove_data_values("student_measurements", "name", condition,
                                 single=True)
         user = self.app_state.student
-        if user.get("id", None) is not None:
+        if self.app_state.update_db and user.get("id", None) is not None:
             requests.delete(
                 f"{API_URL}/{HUBBLE_ROUTE_PATH}/measurement/{user['id']}/{galaxy_name}")
 
