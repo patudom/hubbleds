@@ -31,6 +31,9 @@ class StageState(CDSState):
     marker = CallbackProperty("")
     indices = CallbackProperty({})
     
+    max_prodata_index = CallbackProperty(0)
+
+    
     markers = [
         'pro_dat0',
         'pro_dat1',
@@ -126,7 +129,7 @@ class StageFive(HubbleStage):
             "guideline_professional_data9",
             ]
             
-        self.add_components_from_path(prodata_components, path, ProData)
+        self.add_prodata_components_from_path(prodata_components, path, ProData)
         
         # Set up age_calc component
         ext = ".vue"
@@ -151,15 +154,13 @@ class StageFive(HubbleStage):
         self._update_viewer_style(dark=self.app_state.dark_mode)
 
     
-    def add_components_from_path(self, state_components, path, component_class = None):
-        if component_class is None:
-            component_class = GenericStateComponent
+    def add_prodata_components_from_path(self, state_components, path, component_class = ProData):
         ext = ".vue"
-        for comp in state_components:
+        for index, comp in enumerate(state_components):
             label = f"c-{comp}".replace("_", "-")
 
             component = component_class(comp + ext, path,
-                                              self.stage_state)
+                                              self.stage_state, index)
             self.add_component(component, label=label)
 
 
