@@ -495,7 +495,14 @@ class StageFour(HubbleStage):
             add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
         else:
             self._deferred_setup()
-
+            
+        # turn this off this subset
+        if self.story_state.stage_index < self.index:
+            student_slider_subset_label = "student_slider_subset"
+            # get layer with label == student_slider_subset_label
+            student_slider_subset_layer = [layer for layer in layer_viewer.layers if student_slider_subset_label in layer.layer.label][0]
+            student_slider_subset_layer.visible = False
+        
     
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -535,6 +542,7 @@ class StageFour(HubbleStage):
         toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
         add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled) 
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
+
 
     
     def _setup_histogram_layers(self):
