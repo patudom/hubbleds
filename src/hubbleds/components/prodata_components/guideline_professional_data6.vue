@@ -29,7 +29,7 @@
   ['Try again! Compare the slope of best fit for our data to the slope for the HST data','Correct! The slope of best fit for our data is steeper than it is for the HST data', ]"
           :correct-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.our_age).toFixed(0))) ? [0] : [1]"
           :neutral-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.our_age).toFixed(0))) ? [1] : [0]"
-          :selected-callback="(option) => { if (option.correct) { can_advance = true };  }"
+          :selected-callback="(status) => { if (status.correct) { can_advance = true; } }"
           score-tag="pro-dat6"
         >
         </mc-radiogroup>
@@ -84,7 +84,7 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat7';
+                advance('pro_dat7');
               }
             "
         >

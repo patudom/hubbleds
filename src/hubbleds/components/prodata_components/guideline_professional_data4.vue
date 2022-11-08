@@ -27,7 +27,7 @@
           :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
           :correct-answers="[0,1]"
           :neutral-answers='[]'
-          :selected-callback="(option) => { if (option.correct) { can_advance = true };  }"
+          :selected-callback="(status) => { if (status.correct) { can_advance = true; } }"
           score-tag="pro-dat4"
         >
         </mc-radiogroup>
@@ -85,7 +85,7 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat5';
+                advance('pro_dat5');
               }
             "
         >

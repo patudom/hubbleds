@@ -29,7 +29,7 @@
           ]"
           :correct-answers="[0]"
           :neutral-answers='[1]'
-          :selected-callback="(option) => { if (option.correct) { can_advance = true };  }"
+          :selected-callback="(status) => { if (status.correct) { can_advance = true; } }"
           score-tag="pro-dat2"
         >
         </mc-radiogroup>
@@ -79,7 +79,7 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat4';
+                advance('pro_dat4');
               }
             "
         >

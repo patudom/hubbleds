@@ -93,7 +93,7 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'pro_dat9';
+                advance('pro_dat9');
               }
             "
         >
