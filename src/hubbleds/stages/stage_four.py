@@ -216,7 +216,7 @@ class StageFour(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
         
         # for testing so that we don't break when looking for best fit galaxy
-        if self.app_state.allow_advancing:
+        if self.app_state.allow_advancing & (self.story_state.stage_index >= self.index):
             if not self.story_state.has_best_fit_galaxy:
                 self.story_state.has_best_fit_galaxy = True
                 self.story_state.update_student_data()
