@@ -219,7 +219,8 @@ class StageOne(HubbleStage):
         sdss_data = self.get_data(SDSS_DATA_LABEL)
         selected = self.get_data(STUDENT_MEASUREMENTS_LABEL).to_dataframe()
         selection_tool = SelectionTool(data=sdss_data, state=self.stage_state,
-                                       selected_data=selected)
+                                       selected_data=selected,
+                                       show_galaxies=self.stage_state.marker_reached("sel_gal1"))
         self.add_component(selection_tool, label='c-selection-tool')
         selection_tool.on_galaxy_selected = self._on_galaxy_selected
         selection_tool._on_reset_view = self._on_selection_viewer_reset

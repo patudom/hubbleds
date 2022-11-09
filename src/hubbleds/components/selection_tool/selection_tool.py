@@ -43,14 +43,17 @@ class SelectionTool(v.VueTemplate):
         self.motions_left = 2
         self.gals_max = kwargs.get("galaxies_max", 5)
         
+        self.sdss_layer = None
         show_galaxy_layer = kwargs.get("show_galaxies", False)
         if show_galaxy_layer:
             self.show_galaxies()
-        else:
-            self.sdss_layer = None
 
-        self.selected_data = DataFrame()
         self.selected_layer = None
+        self.selected_data = kwargs.get("selected_data", None)
+        if self.selected_data is None:
+            self.selected_data = DataFrame()
+        if self.selected_data.shape[0] > 0:
+            self._create_selected_layer()
         self.current_galaxy = {}
         self.candidate_galaxy = {}
         self._on_galaxy_selected = None
@@ -103,6 +106,12 @@ class SelectionTool(v.VueTemplate):
         self.selected_data = self.selected_data.append(galaxy,
                                                        ignore_index=True)
         self.selected_count = self.selected_data.shape[0]
+        self._create_selected_layer()
+        if self._on_galaxy_selected is not None:
+            self._on_galaxy_selected(galaxy)
+        self.state.gal_selected = False
+
+    def _create_selected_layer(self):
         self.table = Table.from_pandas(self.selected_data)
         layer = self.widget.layers.add_table_layer(self.table)
         layer.marker_type = "gaussian"
@@ -111,9 +120,6 @@ class SelectionTool(v.VueTemplate):
         if self.selected_layer is not None:
             self.widget.layers.remove_layer(self.selected_layer)
         self.selected_layer = layer
-        if self._on_galaxy_selected is not None:
-            self._on_galaxy_selected(galaxy)
-        self.state.gal_selected = False
 
     def vue_select_current_galaxy(self, _args=None):
         self.select_galaxy(self.current_galaxy)
