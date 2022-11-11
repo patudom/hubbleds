@@ -28,7 +28,7 @@
               <v-col>
                 <div>
                   <p>
-                    You’ve now uncovered evidence that galaxies are for the most part moving AWAY from our Milky Way galaxy. To scientists in the 1920’s, this led to a radical shift in their world view. Once they knew galaxies do not, in fact, move about randomly, they needed to come up with a new explanation for this surprising phenomenon.
+                    You’ve now uncovered evidence that <b>galaxies</b> are for the most part <b>moving AWAY from our Milky Way galaxy</b>. To scientists in the 1920s, this led to a <b>radical shift in their world view</b>. Once they knew galaxies do not, in fact, move about randomly, they needed to come up with a <b>new explanation for this surprising phenomenon.</b>
                   </p>
                 </div>
               </v-col>
@@ -47,10 +47,10 @@
               <v-col>
                 <div>                    
                   <p>
-                    Edwin Hubble was an astronomer who was interested in these galaxies. After looking at Slipher’s velocity measurements, Hubble wondered if there is a relationship between the galaxies’ velocities and their distances from the Milky Way. 
+                    <b>Edwin Hubble</b> was an astronomer who was interested in these galaxies. After looking at Slipher’s velocity measurements, Hubble wondered if there is a <b>relationship between</b> the galaxies’ <b>velocities</b> and their <b>distances</b> from the Milky Way. 
                   </p>
                   <p>
-                    Measuring distances to objects in space is one of the most challenging things to do in astronomy. In the next section, you will learn a method for determining distances to galaxies.
+                    Measuring <b>distances</b> to objects in space is one of the most challenging things to do in astronomy. In the next section, you will learn a method for determining distances to galaxies.
                   </p>
                 </div>
               </v-col>
@@ -121,7 +121,7 @@
                 </h3>
                 <div>
                   <p>  
-                  From looking at these images, can you determine which person and which galaxy are closer to the viewer? What visual clues and assumptions do you need to make this estimation?
+                  From looking at these images, can you guess (or know) which person and which galaxy are <b>closer</b> to the viewer? Think about what visual cues you are using and what assumptions you are making as you ponder your answer.
                   </p>
                 </div>
               </v-col>
@@ -296,7 +296,7 @@
                 </h3>
                 <div>
                   <p>
-                    As with the people, if we know the physical length of a galaxy, then its angular size tells us its distance from us. 
+                    As with the people, if we know the physical size of a galaxy, then its angular size tells us its distance from us. 
                   </p>
                   <p>
                     For very far away objects like galaxies, the relationship is described by the formula:
@@ -311,11 +311,11 @@
                       <div
                         class="JaxEquation"
                       >
-                        $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$  
+                        $$ \small{\text{Galaxy's Angular Size } (\theta) = \frac{\text{Galaxy's Physical Size } (L)}{\text{Galaxy's Distance } (D)}} $$  
                       </div>
-                      <h6>
+                      <h5>
                         (ask your instructor for more information if you want to know how to use trigonometry to derive this formula).
-                      </h6> 
+                      </h5> 
                     </v-card-text>
                   </v-card>
                 </div>
@@ -335,7 +335,7 @@
             <p
               class="mt-4"
             >
-              For galaxies that are the <strong>same physical length</strong>, the larger the distance, the smaller galaxy will appear in angular size.   
+              For galaxies that are the <strong>same physical size</strong>, the larger the distance, the smaller the galaxy will appear in angular size.   
             </p>
           </v-container>
         </v-card-text>
@@ -369,7 +369,7 @@
                         <div
                           class="JaxEquation"
                         >
-                          $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$ 
+                          $$ \small{\text{Galaxy's Angular Size } (\theta) = \frac{\text{Galaxy's Physical Size } (L)}{\text{Galaxy's Distance } (D)}} $$ 
                         </div>
                       </v-card-text>
                     </v-card>
@@ -379,7 +379,7 @@
                       <p
                         class="mt-4"
                       >
-                        Assume galaxies A and B in this image have the <strong>same physical length</strong>. What can you determine about their relative distances?
+                        Assume galaxies A and B in this image have the <strong>same physical size</strong>. What can you determine about their relative distances?
                       </p>
                       <!-- Whoops, is there any way to pass on the formatting info in the feedback responses without treating them as strings? -->
                       <mc-radiogroup
@@ -453,7 +453,7 @@
                         <div
                           class="JaxEquation"
                         >
-                          $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$ 
+                          $$ \small{\text{Galaxy's Angular Size } (\theta) = \frac{\text{Galaxy's Physical Size } (L)}{\text{Galaxy's Distance } (D)}} $$ 
                         </div>
                       </v-card-text>
                     </v-card>
@@ -490,7 +490,7 @@
                       Reflect
                     </h3>                           
                     <p>
-                      Use the image to estimate <strong>how much</strong> closer Galaxy A is than Galaxy B. Assume galaxies A and B have the <strong>same physical length</strong>.
+                      Use the image to estimate <strong>how much</strong> closer Galaxy A is than Galaxy B. Assume galaxies A and B have the <strong>same physical size</strong>.
                     </p>
                     <v-card
                       class="mt-auto white--text"
@@ -503,7 +503,7 @@
                         <div
                           class="JaxEquation"
                         >
-                          $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$ 
+                          $$ \small{\text{Galaxy's Angular Size } (\theta) = \frac{\text{Galaxy's Physical Size } (L)}{\text{Galaxy's Distance } (D)}} $$ 
                         </div>
                       </v-card-text>
                     </v-card>
@@ -575,7 +575,7 @@
                   <div
                     class="JaxEquation"
                   >
-                    $$ \small{\text{Galaxy's Angular Size} (\theta) = \frac{\text{Galaxy's Physical Length} (L)}{\text{Galaxy's Distance} (D)}} $$ 
+                    $$ \small{\text{Galaxy's Angular Size } (\theta) = \frac{\text{Galaxy's Physical Size } (L)}{\text{Galaxy's Distance } (D)}} $$ 
                   </div>
                   <p>
                     With some algebra and unit conversions, this becomes: 
@@ -591,7 +591,7 @@
                       <div
                         class="JaxEquation"
                       >
-                        $$ \small{\text{Galaxy Distance} =  210,000 \cdot \frac{\text{physical length of galaxy}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
+                        $$ \small{\text{Galaxy Distance} =  210,000 \cdot \frac{\text{Galaxy's physical size}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
                       </div>
                     </v-card-text>
                   </v-card>
@@ -617,7 +617,7 @@
                 <h3
                   class="mb-4"
                 >
-                  Physical Length of a Galaxy
+                  Physical size of a Galaxy
                 </h3>
                 <v-card
                   class="white--text"
@@ -630,7 +630,7 @@
                     <div
                       class="JaxEquation"
                     >
-                      $$ \small{\text{Galaxy Distance} = 210,000 \cdot \frac{\text{physical length of galaxy}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
+                      $$ \small{\text{Galaxy Distance} = 210,000 \cdot \frac{\text{Galaxy's physical size}}{\text{Galaxy’s angular size ($\theta$, in arcseconds)}}} $$
                     </div>
                   </v-card-text>
                 </v-card>
@@ -641,7 +641,7 @@
                 <p>
                   This equation from the previous slide requires two pieces of information to determine the distance to a galaxy:
                   <ol>
-                    <li>the <strong>physical length</strong> of the galaxy</li>
+                    <li>the <strong>physical size</strong> of the galaxy</li>
                     <li>the <strong>angular size</strong> of the galaxy</li> 
                   </ol>
                 </p>
@@ -652,7 +652,7 @@
                 cols="9"
               >
                 <p>
-                  In this data story, we are going to make an assumption that all galaxies are the <strong>same physical length as the Milky Way galaxy</strong>:
+                  In this data story, we are going to make an assumption that all galaxies are the <strong>same physical size as the Milky Way galaxy</strong>:
                 </p>
                 <v-card
                   class="mb-3 white--text"
@@ -665,7 +665,7 @@
                     <div
                       class="JaxEquation"
                     >
-                      $$ \text{physical length of Milky Way galaxy, }  L = 100,000 \text{ light years}  = 0.03 \text{ Mpc} $$
+                      $$ \text{Physical size of Milky Way galaxy, }  L = 100,000 \text{ light years}$$
                     </div>
                   </v-card-text>
                 </v-card>
@@ -691,7 +691,7 @@
                 <h3
                   class="mb-4"
                 >
-                  Milky Way Length in Mpc
+                  Milky Way Size in Mpc
                 </h3>
                 <p>
                   When measuring very large distances, astronomers use a unit called a Megaparsec (Mpc). 
@@ -703,7 +703,7 @@
                 cols="8"
               >
                 <p>
-                  If we substitute the physical length of the Milky Way in our equation, we get:
+                  If we substitute the physical size of the Milky Way (L=0.03 Mpc) in our equation, we get:
                 </p>
                 <v-card
                   class="mb-3 white--text"
@@ -716,7 +716,7 @@
                     <div
                       class="JaxEquation"
                     >
-                      $$ \mathbf{\text{ Distance in Mpc} = \frac{ {{ Math.round(distance_const) }} }{ \text{galaxy angular size (}\theta \text{ in arcseconds)}}} $$
+                      $$ \mathbf{\text{ Distance in Mpc} = \frac{ {{ Math.round(distance_const) }} }{ \text{galaxy's angular size (}\theta \text{ in arcseconds)}}} $$
                     </div>
                   </v-card-text>
                 </v-card>
