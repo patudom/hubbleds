@@ -14,7 +14,7 @@
       class="mb-4"
     >
       <p>
-        Click on a row to choose a galaxy whose distance we will estimate. Once you click, your selected galaxy will appear in the Comic Sky Viewer.
+        Click on a row to choose a galaxy whose distance we will estimate.
       </p>
     </div>
     
