@@ -429,6 +429,6 @@ class HubblesLaw(Story):
         super().setup_for_student(app_state)
         if self.student_user["id"] in range(2989, 3018):
             print("Warning! You are using the ID of a beta test student.")
-        app_state.update_db = False
+            app_state.update_db = False
         self.fetch_student_data()
         self.fetch_class_data()
