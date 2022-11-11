@@ -31,7 +31,7 @@
             >
               <v-col cols="6">
                 <p>
-                  Welcome to the <b> "Hubble's Law" Cosmic Data Story</b> where you will use real astronomical data- old and new- to (literally!) investigate the mysteries of our Universe. In particular, let's ask:
+                  Welcome to the <b><i>Hubble's Law</i> Cosmic Data Story</b> where you will use real astronomical data&#8212;old and new&#8212;to investigate the mysteries of our Universe. In particular, let's ask:
                 </p>
                 <v-card
                   class="justify-center pa-2 mx-12 my-8"
@@ -51,13 +51,13 @@
                   </p>
                 </v-card>
                 <p>
-                  When scientists collect data to answer questions no one has answered, or even asked yet, there is definitely no answer key in the back of some book. So, as you explore in this data story as a scientist, you will want to <b> question the reliability </b> of your results.  Are the <b> data </b> really <b> good enough </b> to support a conclusion? <b> How can you know if they are good enough?
+                  When scientists collect data to answer questions no one has answered yet, there is no answer key in the back of some book. So, as you explore this data story, you will learn how to <b>evaluate the reliability</b> of your results. Are the data really good enough to support a conclusion? <b>How can you know?</b> 
                 </p>
                 <p>
-                  Just as scientists constantly must, you'll need to <b> determine what can be concluded </b> from the data at-hand, and <b> how much confidence </b> you should have in your conclusions.
+                  Just as scientists constantly must, you'll <b>determine what can be concluded</b> from the data at-hand, and <b>how much confidence</b> you can have in your conclusions.
                 </p>
                 <p>
-                  Let's get started
+                  Let's get started.
                 </p>
               </v-col>
               <v-col cols="6">
@@ -66,9 +66,12 @@
                   src="https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg"
                   alt="Hubble Telescope"
                 ></v-img>
-                <p class="text-center grey--text" >
-                  <i>Ever wonder who the Hubble Space is named for, and why? </i>
-                <p>
+                <div
+                  class="text-center mt-2 grey--text"
+                  style="width: 100%;"
+                >
+                  <i>Ever wonder who the Hubble Space Telescope is named for, and why?</i>
+                </div>
               </v-col>
             </v-row>
           </v-container>
@@ -83,7 +86,7 @@
             <v-row>
               <v-col cols="6">
                 <p>
-                  Imagine that you are an eminent astronomer living in the early 1920s. You and your colleagues around the world, including Albert Einstein, would agree that the <b> universe is unchanging and everlasting. </b> In other words, you expect that the universe always has been and will be the way it is the way you see it now. This picture of an unchanging universe had rarely been questioned throughout human history, thanks in large part to <b> Aristotle </b> , who embraced perfection and permanence. 
+                  Imagine that you are an astronomer living in the <b>early 1920s</b>. You and your colleagues around the world, including Albert Einstein, would agree that the <b>universe is unchanging</b> and <b>everlasting.</b> In other words, you expect that the universe always has been and will be the way it is the way you see it now. This picture of an unchanging universe had rarely been questioned throughout human history, thanks in large part to <b>Aristotle</b>, who embraced perfection and permanence. 
                 </p>
                 </v-col>
                 <v-col cols="6">
@@ -92,9 +95,12 @@
                   src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/School_of_Athens.jpg"
                   alt="School of Athens"
                 ></v-img>
-                <p class="text-center grey--text">
-                  <i> Figure caption: Plato (red robe) and his pupil Aristotle (blue robe) at the center of “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Aristotle lived from 384-322 BC, and his theory of an unchanging Universe persisted until the time of Edwin Hubble, 23 centuries later. </i>
-                </p>
+                <div
+                  class="text-center mt-2 grey--text"
+                  style="width: 100%;"
+                >
+                  <i>Plato (red robe) and his pupil Aristotle (blue robe) at the center of “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Aristotle lived from 384-322 BC, and his theory of an unchanging universe persisted until the time of Edwin Hubble, 23 centuries later. </i>
+                </div>
               </v-col>
                 </p>
               </v-col>
@@ -114,13 +120,13 @@
                   style="min-height: 120px;"
                 >
                   <p>
-                    The frame below provides an <b> interactive view </b>of the cosmic sky, using images from real observations.
+                    The frame below provides an <b>interactive view </b>of the night sky, using images from real observations.
                   </p>
                   <p>
-                    Take note that the bright-dark-bright band you see going diagonally across the frame (before you try the controls!) is caused by stars and dust in our home galaxy,  called <b> "The Milky Way". </b>  Later, we’ll talk about the shapes of galaxies–but for now, just know that our Milky Way is actually a “spiral disk galaxy,” shaped, overall, like a very thin <b> pancake </b> .  The Milky Way as seen on Earth’s night sky only looks like a stripe because our Solar system is buried deep within the Milky Way’s disk, so our view is like that of a (magically-semi-transparent) pancake viewed from inside of its fluffy goodness. 
+                    The brighter band you see going diagonally across the frame (before you try the controls) is caused by stars and dust in our home galaxy, called the <b>Milky Way.</b>
                   </p>
                   <p>
-                    Now that you know all that, go ahead and <b> pan and zoom </b> (try out clicking and dragging) to see parts of the sky beyond this starter view.  
+                    You can explore this view and see what is in the night sky, as astronomers have been doing for centuries. <b>Pan</b> (click and drag) and <b>zoom</b> (scroll in and out) to see parts of the sky beyond this view.
                 </div>
                 <div
                   class="mb-2 mx-4"
@@ -129,7 +135,7 @@
                     <v-col
                       cols="8"
                       offset-lg="1"
-                    >   
+                    > 
                       <c-exploration-tool id="exploration-tool">
                     </v-col>
                     <v-col
@@ -180,6 +186,14 @@
                       </v-row>
                     </v-col>
                   </v-row>
+                  <v-row>
+                    <div
+                      class="text-center grey--text"
+                      style="width: 100%;"
+                    >
+                      <i>Interactive view provided by WorldWide Telescope</i>
+                    </div>
+                  </v-row>
                 </div>
               </v-col>
             </v-row>
@@ -198,10 +212,10 @@
                   style="min-height: 120px;"
                 >
                   <p>
-                    As you explore the cosmic sky, you may see stars and fuzzy blobs called nebulae. In the 1700's, French astronomer Charles Messier cataloged as many nebulae as he could find. They are known as "Messier Objects" and are identified by their catalog number. For example, M13 represents the 13th Messier Object in the catalog.
+                    As you explore the cosmic sky, you may see stars and fuzzy blobs called <b>nebulae</b>. In the 1700's, French astronomer Charles Messier cataloged as many nebulae as he could find. They are known as Messier Objects and are identified by their catalog number. For example, M13 represents the 13th Messier Object in the catalog.
                   </p>
                   <p>
-                    Click on the buttons to the right to <b> view some Messier Objects</b>. (Also, fun fact, “nebula” means “cloud,” or “fog,” in Latin.)
+                    Click on the buttons to the right to <b>view some Messier Objects</b>. (Fun fact: “nebula” means “cloud” or “fog” in Latin.)
                   </p>
                 </div>
                 <div
@@ -344,6 +358,14 @@
                       </v-row>
                     </v-col>
                   </v-row>
+                  <v-row>
+                    <div
+                      class="text-center grey--text"
+                      style="width: 100%;"
+                    >
+                      <i>Interactive view provided by WorldWide Telescope</i>
+                    </div>
+                  </v-row>
                 </div>
               </v-col>
             </v-row>
@@ -362,10 +384,10 @@
                   style="min-height: 120px;"
                 >
                   <p>
-                    <b>M31</b> and <b>M51</b> are examples of a particular type of nebula that interested astronomers in the early 1900’s. They were known as <b>“spiral nebulae"</b> because of their distinctive spiral shape. In 1920, there was a <b>“Great Debate”</b> between astronomers <b>Harlow Shapley</b> and Allegheny Observatory's <b> Heber Curtis </b> questioning whether the spiral nebulae were perhaps <b>young solar systems</b> being born within our own Milky Way galaxy or were <b>“island universes”</b> beyond our Milky Way.
+                    <b>M31</b> and <b>M51</b> are examples of a particular type of nebula that interested astronomers in the early 1900s. They were known as <b>spiral nebulae</b> because of their distinctive spiral shape. In 1920, there was a Great Debate between astronomers Harlow Shapley and Heber Curtis questioning whether the spiral nebulae were perhaps young solar systems being born within our Milky Way galaxy or were "island universes” beyond it.
                   </p>
                   <p>
-                    Do you have some idea if the <b> nebulae you’ve explored</b> are within the Milky Way or beyond it? (Hint: we haven’t told you anything yet about how you might tell!) 
+                    While you view these spiral nebulae, ponder what you would need to know to determine if they are within the Milky Way or beyond it. (Don't worry if you don't know. You will learn in this Data Story.) 
                   </p>
                 </div>
                 <div
@@ -375,7 +397,7 @@
                     <v-col
                       cols="8"
                       offset-lg="1"
-                    >   
+                    >
                       <c-exploration-tool2 id="exploration-tool2">
                     </v-col>
                     <v-col
@@ -483,6 +505,14 @@
                       </v-row>
                     </v-col>
                   </v-row>
+                  <v-row>
+                    <div
+                      class="text-center grey--text"
+                      style="width: 100%;"
+                    >
+                      <i>Interactive view provided by WorldWide Telescope</i>
+                    </div>
+                  </v-row> 
                 </div>
               </v-col>
             </v-row>
@@ -498,35 +528,59 @@
             <v-row>
               <v-col>
                 <p>
-                  Between 1907&#8211;1921, Harvard astronomer <b>Henrietta Leavitt</b> discovered and observed Cepheid variable starsin a nebula (now known to be a small nearby galaxy) called the “Small Magellanic Cloud”. By carefully analyzing changes in the Cepheid stars’ brightness over time, she discovered that <b> fainter Cepheids vary more slowly, systematically,  than brighter ones </b>, as shown in her <b>graph </b> here. This important discovery made it possible to determine distances to far-away nebulae and finally resolve the Shapley-Curtis Great Debate: it turned out that many of the nebulae are far beyond the Milky Way and constitute individual <b>galaxies in their own right</b>.
-                </p>
-                <p>
-                  Ironically, one of the astronomers who used Leavitt’s relationship soon after it was discovered, to measure distances, was Harlow Shapley, who did not take long to realize he had taken the wrong side in the famous Great Debate. 
-                </p>
-                <p
-                  class="text-center grey--text"
-                >
+                  Between 1907&#8211;1921, Harvard astronomer <b>Henrietta Leavitt</b> observed Cepheid variable stars in a nebula called the Small Magellanic Cloud (SMC). By analyzing changes in the Cepheid stars’ brightness over time, she discovered that <b>fainter Cepheids vary more slowly than brighter ones</b>, as shown in her graph below. This important discovery made it possible to determine distances to spiral nebulae and finally resolve the Shapley-Curtis Great Debate: it turned out that spiral nebulae are far beyond the Milky Way and constitute <b>individual galaxies</b> in their own right.
                 </p>
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols= "6">
-                <v-img
-                    lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
-                    src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
-                    alt="Leavitt at Work "
-                    height = "350"
-                  ></v-img>
-                <i> Henrietta Swan Leavitt </i>
+              <v-col cols= "8">
+                <v-row>
+                  <v-img
+                      lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
+                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
+                      alt="Leavitt at Work "
+                      max-height = "350"
+                      contain
+                    ></v-img>
+                  <div
+                    class="text-center mt-3 grey--text"
+                    style="width: 100%;"
+                  >
+                    <i> Astronomer Henrietta Swan Leavitt </i>
+                  </div>
+                </v-row>
               </v-col>
-              <v-col cols= "6">
-                <v-img
-                    lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
-                    src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
-                    alt="Leavitt Plate"
-                    height = "350"
+              <v-col cols= "4">
+                <v-row>
+                  <v-img
+                      lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
+                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
+                      alt="Leavitt Plate"
+                      max-height = "200"
+                      contain
+                    ></v-img>
+                  <div
+                    class="text-center mb-6 mt-2 grey--text"
+                    style="width: 100%;"
+                  >
+                    <i> Glass plate showing Cepheid variable stars in SMC studied by Leavitt</i>
+                  </div>
+                </v-row>
+                <v-row>
+                  <v-img
+                      lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
+                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
+                      alt="Leavitt graph"
+                      max-height = "200"
+                      contain
                   ></v-img>
-                <i> A field of stars studied by Henrietta Leavitt</i>
+                  <div
+                    class="text-center mt-3 grey--text"
+                    style="width: 100%;"
+                  >
+                    <i>Graph from Leavitt's 1912 paper showing the relationship between period and brightness of Cepheid variables.</i>
+                  </div>
+                </v-row>
               </v-col>
             </v-row>
           </v-container>
@@ -544,18 +598,26 @@
                   Around this same time, astronomer <b>Vesto Slipher</b> observed spiral nebulae using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer.
                 </p>
                 <p>
-                  Recall that the prevailing view in the early 1900’s was that the universe is unchanging and eternal. As a result, the dominant expectation was that distant nebulae are either not moving at all, or if they are moving then they are moving randomly.
+                  Recall that the prevailing view in the early 1900s was that the universe is unchanging and eternal. As a result, the dominant expectation was that distant spiral nebulae are either not moving at all, or if they are moving then they are moving randomly.
                 </p>
                 <p>
                   It’s time for you to collect some of your own data, form conclusions, and compare your conclusions to what Vesto Slipher found.
                 </p>
               </v-col>
-              <v-col cols="6">
+              <v-col cols="5">
                 <v-img
                   lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/V.M.Slipher.gif"
                   src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/V.M.Slipher.gif"
                   alt="Vesto Slipher"
+                  max-height = "400"
+                  contain
                 ></v-img>
+                  <div
+                    class="text-center mt-3 grey--text"
+                    style="width: 100%;"
+                  >
+                    <i>Astronomer Vesto Slipher</i>
+                  </div>
               </v-col>
             </v-row>
           </v-container>
