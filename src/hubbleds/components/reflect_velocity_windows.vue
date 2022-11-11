@@ -66,9 +66,6 @@
                     <p>
                       Scientists do not work in a vacuum and neither should you. You can consult colleagues (i.e. classmates or lab partners) and instructors for help.
                     </p>
-                    <p>
-                      You can drag this window out of the way to see your data.
-                    <p>
                   </v-col>
                 </v-row>
               </v-container>
@@ -104,7 +101,10 @@
                       How do the observed wavelengths of your galaxies' spectral lines compare with their rest wavelengths?
                     </p>
                     <p>
-                      Choose the best response below. (Note: You can grab this window by the header and move it to the side if you want to see content behind it.)
+                      Choose the best response below. 
+                    </p>
+                    <p>
+                      <b>Note: If this window is in the way of your data table, click the header and drag it to a different part of the screen.</b>
                     </p>
                     <mc-radiogroup
                       :radio-options="[
