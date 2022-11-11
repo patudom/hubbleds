@@ -22,7 +22,7 @@ from ..data.styles import load_style
 from ..data_management import SDSS_DATA_LABEL, SPECTRUM_DATA_LABEL, \
     STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
-from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, MG_REST_LAMBDA
+from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, MG_REST_LAMBDA, velocity_from_wavelengths
 from ..viewers import SpectrumView
 
 log = logging.getLogger()
@@ -39,6 +39,7 @@ class StageState(CDSState):
     waveline_set = CallbackProperty(False)
     obswaves_total = CallbackProperty(0)
     velocities_total = CallbackProperty(0)
+    zoom_tool_activated = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -61,6 +62,7 @@ class StageState(CDSState):
         'sel_gal3',
         'cho_row1',
         'mee_spe1',
+        'spe_tut1',
         'res_wav1',
         'obs_wav1',
         'obs_wav2',
@@ -109,7 +111,7 @@ class StageState(CDSState):
     ])
 
     _NONSERIALIZED_PROPERTIES = [
-        'markers', 'step_markers', 'csv_highlights',
+        'markers', 'indices', 'step_markers', 'csv_highlights',
         'table_highlights', 'spec_highlights',
         'gals_total', 'obswaves_total',
         'velocities_total', 'image_location'
@@ -123,6 +125,15 @@ class StageState(CDSState):
     def marker_before(self, marker):
         return self.indices[self.marker] < self.indices[marker]
 
+    def marker_after(self, marker):
+        return self.indices[self.marker] > self.indices[marker]
+
+    def marker_reached(self, marker):
+        return self.indices[self.marker] >= self.indices[marker]
+
+    def marker_index(self, marker):
+        return self.indices[marker]
+
 
 @register_stage(story="hubbles_law", index=1, steps=[
     # "Explore celestial sky",
@@ -134,6 +145,8 @@ class StageState(CDSState):
 class StageOne(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
+
+    _state_cls = StageState
 
     @default('template')
     def _default_template(self):
@@ -154,9 +167,8 @@ class StageOne(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.stage_state = StageState()
         self.show_team_interface = self.app_state.show_team_interface
-
+        
         # Set up any Data-based state values
         self._update_state_from_measurements()
         self.hub.subscribe(self, NumericalDataChangedMessage,
@@ -166,15 +178,16 @@ class StageOne(HubbleStage):
         # Set up viewers
         spectrum_viewer = self.add_viewer(
             SpectrumView, label="spectrum_viewer")
-        sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
-        add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
+        if spectrum_viewer.toolbar.tools.get("hubble:specflag") is not None:
+            sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
+            add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
 
 
         add_velocities_tool = \
             dict(id="update-velocities",
                  icon="mdi-run-fast",
                  tooltip="Fill in velocities",
-                 disabled=True,
+                 disabled=self.stage_state.marker_before('dop_cal6'),
                  activate=self.update_velocities)
         galaxy_table = Table(self.session,
                              data=self.get_data(STUDENT_MEASUREMENTS_LABEL),
@@ -288,12 +301,44 @@ class StageOne(HubbleStage):
                      self.enable_velocity_tool)
 
         spectrum_viewer = self.get_viewer("spectrum_viewer")
-        restwave_tool = spectrum_viewer.toolbar.tools["hubble:restwave"]
+        spec_toolbar = spectrum_viewer.toolbar
+        restwave_tool = spec_toolbar.tools["hubble:restwave"]
         add_callback(restwave_tool, 'lambda_used', self._on_lambda_used)
         add_callback(restwave_tool, 'lambda_on', self._on_lambda_on)
-        for tool_id in ["hubble:restwave", "hubble:wavezoom", "bqplot:home"]:
-            spectrum_viewer.toolbar.set_tool_enabled(tool_id, False)
+        wavezooom_tool = spec_toolbar.tools["hubble:wavezoom"]
+        add_callback(wavezooom_tool, 'zoom_tool_activated', self._on_zoom_tool_activated)
+        spec_toolbar.set_tool_enabled("hubble:restwave", self.stage_state.marker_reached("res_wav1"))
+        spec_toolbar.set_tool_enabled("hubble:wavezoom", self.stage_state.marker_reached("obs_wav2"))
+        spec_toolbar.set_tool_enabled("cds:home", self.stage_state.marker_reached("obs_wav2"))
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_update)
+        
+        
+        ## INIIALIZE STATE VARIABLES WHEN LOADING A STORED STATE
+        # reset the state varaibles when we load a story state
+        self.stage_state.spec_tutorial_opened = self.stage_state.marker_reached('spe_tut1')
+        self.stage_state.spec_viewer_reached = self.stage_state.marker_reached('cho_row1')
+        self.stage_state.doppler_calc_reached = self.stage_state.marker_reached('dop_cal3')
+        
+        # intialze viewers to provide story state
+        if self.stage_state.marker_reached('sel_gal1'):
+            selection_tool.show_galaxies()
+            selection_tool.widget.center_on_coordinates(
+                self.START_COORDINATES, fov = 60 * u.deg, instant=True)
+        
+        if self.stage_state.marker_reached("res_wav1"):
+            spectrum_viewer.toolbar.set_tool_enabled("hubble:restwave", True)
+        
+        if self.stage_state.marker_reached("obs_wav1"):
+            spectrum_viewer.add_event_callback(spectrum_viewer._on_mouse_moved, events=['mousemove'])
+            spectrum_viewer.add_event_callback(spectrum_viewer._on_click, events=['click'])
+            spectrum_viewer.add_event_callback(self.on_spectrum_click, events=['click'])
+        
+        if self.stage_state.marker_reached("obs_wav2"):
+            spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
+            spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
+        
+        
+            
 
     def _on_measurements_changed(self, msg):
         self._update_state_from_measurements()
@@ -316,6 +361,8 @@ class StageOne(HubbleStage):
             self.story_state.step_complete = True
             self.story_state.step_index = self.stage_state.step_markers.index(
                 new)
+        if advancing and new == "dop_cal6":
+            self.stage_state.doppler_calc_complete = True
         if advancing and old == "sel_gal1":
             self.selection_tool.show_galaxies()
             self.selection_tool.widget.center_on_coordinates(
@@ -345,7 +392,7 @@ class StageOne(HubbleStage):
         if advancing and new == "obs_wav2":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
-            spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
+            spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
 
     def _on_step_index_update(self, index):
         # If we aren't on this stage, ignore
@@ -389,6 +436,9 @@ class StageOne(HubbleStage):
 
     def _on_lambda_on(self, on):
         self.stage_state.lambda_on = on
+    
+    def _on_zoom_tool_activated(self, used):
+        self.stage_state.zoom_tool_activated = used
 
     def _select_from_data(self, dc_name):
         data = self.get_data(dc_name)
@@ -521,9 +571,9 @@ class StageOne(HubbleStage):
         data = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         index = self.galaxy_table.index
         if index is not None:
-            lamb_obs = data["restwave"][index]
+            lamb_rest = data["restwave"][index]
             lamb_meas = data["measwave"][index]
-            velocity = round((3 * (10 ** 5) * (lamb_meas / lamb_obs - 1)), 0)
+            velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
             self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
                                    velocity, index)
             self.story_state.update_student_data()
@@ -543,8 +593,6 @@ class StageOne(HubbleStage):
         return self.get_component('c-spectrum-slideshow')
 
     def _update_image_location(self, using_voila):
-        print("In _update_image_location")
-        print(using_voila)
         prepend = "voila/files/" if using_voila else ""
         self.stage_state.image_location = prepend + "data/images/stage_one_spectrum"
 
@@ -592,21 +640,21 @@ class StageOne(HubbleStage):
         self._empty_spectrum_viewer()
 
         spectrum_viewer = self.get_viewer("spectrum_viewer")
-        sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
-        with ignore_callback(sf_tool, "flagged"):
-            sf_tool.flagged = False
+        if spectrum_viewer.toolbar.tools.get("hubble:specflag") is not None:
+            sf_tool = spectrum_viewer.toolbar.tools["hubble:specflag"]
+            with ignore_callback(sf_tool, "flagged"):
+                sf_tool.flagged = False
 
     def update_velocities(self, table, tool):
         data = table.glue_data
         for item in table.items:
             index = table.indices_from_items([item])[0]
             if index is not None and data["velocity"][index] is None:
-                lamb_obs = data["restwave"][index]
+                lamb_rest = data["restwave"][index]
                 lamb_meas = data["measwave"][index]
-                if lamb_obs is None or lamb_meas is None:
+                if lamb_rest is None or lamb_meas is None:
                     continue
-                velocity = round((3 * (10 ** 5) * (lamb_meas / lamb_obs - 1)),
-                                 0)
+                velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
                 self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
                                        velocity, index)
         self.story_state.update_student_data()

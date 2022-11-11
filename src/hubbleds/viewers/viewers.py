@@ -20,7 +20,7 @@ class HubbleScatterViewerState(ScatterViewerState):
 
 
 class HubbleFitViewerState(HubbleScatterViewerState):
-
+    
     def reset_limits(self):
         with delay_callback(self, 'x_min', 'x_max', 'y_min', 'y_max'):
             super().reset_limits()
@@ -32,7 +32,7 @@ HubbleFitView = cds_viewer(
     BqplotScatterView,
     name="HubbleFitView",
     viewer_tools=[
-        "bqplot:home",
+        "cds:home",
         "bqplot:rectzoom",
         "bqplot:rectangle",
         "cds:linedraw",
@@ -46,11 +46,11 @@ HubbleFitLayerView = cds_viewer(
     BqplotScatterView,
     name="HubbleFitLayerView",
     viewer_tools=[
-        "bqplot:home",
-        "hubble:togglelayer",
-        'bqplot:rectangle',
-        "cds:linedraw",
+        # "cds:home",
+        # 'bqplot:rectangle',
         "hubble:linefit",
+        "hubble:linedraw",
+        "hubble:togglelayer",
     ],
     label='Layer View',
     state_cls=HubbleFitViewerState
@@ -60,7 +60,7 @@ HubbleScatterView = cds_viewer(
     BqplotScatterView,
     name="HubbleScatterView",
     viewer_tools=[
-        'bqplot:home',
+        'cds:home',
         'bqplot:rectzoom',
         'hubble:linefit'
     ],
@@ -72,7 +72,7 @@ HubbleHistogramView = cds_viewer(
     BqplotHistogramView,
     name="HubbleHistogramView",
     viewer_tools=[
-        "bqplot:home",
+        "cds:home",
         "bqplot:xzoom",
     ],
     label="Class Histogram"
@@ -82,7 +82,7 @@ HubbleClassHistogramView = cds_viewer(
     BqplotHistogramView,
     name="HubbleClassHistogramView",
     viewer_tools=[
-        "bqplot:home",
+        "cds:home",
         "bqplot:xzoom",
         "bqplot:xrange"
     ],

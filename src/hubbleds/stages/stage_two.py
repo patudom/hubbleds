@@ -16,7 +16,7 @@ from ..components import DistanceSidebar, DistanceTool, DistanceCalc, StageTwoCo
 from ..components.angsize_dosdonts_slideshow import DosDonts_SlideShow
 from ..data_management import STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
-from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, IMAGE_BASE_URL, format_fov
+from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, IMAGE_BASE_URL, distance_from_angular_size, format_fov
 
 log = logging.getLogger()
 
@@ -47,9 +47,11 @@ class StageState(CDSState):
         'ang_siz1',
         'cho_row1',
         'ang_siz2',
+        'ang_siz2b',
         'ang_siz3',
         'ang_siz4',
         'ang_siz5',
+        'ang_siz5a',
         'ang_siz6',
         'rep_rem1',
         'est_dis1',
@@ -63,13 +65,13 @@ class StageState(CDSState):
 
     step_markers = CallbackProperty([
         'ang_siz1',
-        'ang_siz3',
         'est_dis1'
     ])
 
     csv_highlights = CallbackProperty([
         'ang_siz1',
         'ang_siz2',
+        'ang_siz2b',
         'ang_siz3',
         'ang_siz4',
         'ang_siz5',
@@ -89,14 +91,13 @@ class StageState(CDSState):
     ])
 
     _NONSERIALIZED_PROPERTIES = [
-        'markers', 'step_markers',
+        'markers', 'indices', 'step_markers',
         'csv_highlights', 'table_highlights',
         'distances_total', 'image_location'
     ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.marker_index = 0
         self.marker = self.markers[0]
         self.indices = {marker: idx for idx, marker in enumerate(self.markers)}
 
@@ -106,16 +107,26 @@ class StageState(CDSState):
     def move_marker_forward(self, marker_text, _value=None):
         index = min(self.markers.index(marker_text) + 1, len(self.markers) - 1)
         self.marker = self.markers[index]
+    
+    def marker_after(self, marker):
+        return self.indices[self.marker] > self.indices[marker]
+
+    def marker_reached(self, marker):
+        return self.indices[self.marker] >= self.indices[marker]
+
+    def marker_index(self, marker):
+        return self.indices[marker]
 
 
 @register_stage(story="hubbles_law", index=3, steps=[
-    "ANGULAR SIZES",
     "MEASURE SIZE",
     "ESTIMATE DISTANCE"
 ])
 class StageTwo(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     START_COORDINATES = SkyCoord(213 * u.deg, 61 * u.deg, frame='icrs')
+
+    _state_cls = StageState
 
     @default('template')
     def _default_template(self):
@@ -135,8 +146,10 @@ class StageTwo(HubbleStage):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        
+        
 
-        self.stage_state = StageState()
         dosdonts_slideshow = DosDonts_SlideShow(self.stage_state)
         self.add_component(dosdonts_slideshow, label='c-dosdonts-slideshow')
 
@@ -160,7 +173,7 @@ class StageTwo(HubbleStage):
                  disabled=True,
                  activate=self.update_distances)
         distance_table = Table(self.session,
-                               data=self.get_data('student_measurements'),
+                               data=self.get_data(STUDENT_MEASUREMENTS_LABEL),
                                glue_components=['name',
                                                 'angular_size',
                                                 'distance'],
@@ -200,9 +213,11 @@ class StageTwo(HubbleStage):
             "guideline_angsize_meas1",
             "guideline_choose_row1",
             "guideline_angsize_meas2",
+            "guideline_angsize_meas2b",
             "guideline_angsize_meas3",
             "guideline_angsize_meas4",
             "guideline_angsize_meas5",
+            "guideline_angsize_meas5a",
             "guideline_angsize_meas6",
             "guideline_repeat_remaining_galaxies",
             "guideline_estimate_distance1",
@@ -243,7 +258,15 @@ class StageTwo(HubbleStage):
                      self._make_measurement)
         add_callback(self.stage_state, 'distance_calc_count',
                      self.add_student_distance)
-
+        
+       
+        # ang_siz2 -> cho_row1, est_dis3 -> cho_row2
+        for marker in ['ang_siz2', 'est_dis3']:
+            if self.stage_state.marker_reached(marker):
+                marker_index = self.stage_state.markers.index(marker)
+                new_index = marker_index - 1
+                self.stage_state.marker = self.stage_state.marker[new_index]
+        
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
             return
@@ -351,7 +374,7 @@ class StageTwo(HubbleStage):
         index = self.distance_table.index
         if index is None:
             return
-        distance = round(DISTANCE_CONSTANT / self.stage_state.meas_theta, 0)
+        distance = distance_from_angular_size(self.stage_state.meas_theta)
         self.update_data_value("student_measurements", "distance", distance,
                                index)
         if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.

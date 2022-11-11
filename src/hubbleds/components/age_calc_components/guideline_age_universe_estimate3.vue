@@ -16,21 +16,8 @@
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
     >
       <p>
-        Enter the <strong>distance</strong> (in <strong>Mpc</strong>) and <strong>velocity</strong> (in <strong>km/s</strong>) of your hypothetical galaxy in the boxes.
+        Enter the <strong>distance</strong> (in <strong>Mpc</strong>) and <strong>velocity</strong> (in <strong>km/s</strong>) of your hypothetical "Best Fit Galaxy" in the boxes.
       </p>
-      <v-card
-        color="error"
-        class="ma-4"
-      >
-        <v-card-text>
-          Until the "best-fit galaxy" functionality is hooked up, Pat has arbitrarily assigned 
-          <ul>
-            <li>Dist = 100 Mpc</li>
-            <li>vel = 8000 km/s</li>
-          </ul>
-          as the "correct" values here.
-        </v-card-text>
-      </v-card>
       <div
         class="JaxEquation my-8"
       >
@@ -119,7 +106,7 @@
       dense
       color="info darken-1"
     >
-      Not quite. Make sure you are entering the values for the highlighted galaxy, with distance in the top box and velocity in the bottom box.
+      Not quite. Make sure you are entering the values for the "Best Fit Galaxy" (in the bottom row of your table), with distance in the top box and velocity in the bottom box.
     </v-alert>
     <v-divider
       class="my-4"

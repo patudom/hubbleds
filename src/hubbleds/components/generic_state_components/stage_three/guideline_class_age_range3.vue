@@ -17,8 +17,8 @@
         color="info lighten-1"
         elevation="0"
       >        
-        $$ \text{Low age: } \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.low_age).toFixed(0) }} } } \text{ Gyr} $$
-        $$ \text{High age: } \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.high_age).toFixed(0) }} } } \text{ Gyr} $$
+        $$ \text{Low age: } \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.stu_low_age).toFixed(0) }} } } \text{ Gyr} $$
+        $$ \text{High age: } \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.stu_high_age).toFixed(0) }} } } \text{ Gyr} $$
       </v-card>
       <p class="mt-4">
         Also, the universe’s age could have been anywhere from thousands of years to trillions or more years. The fact that everyone in your class got an age within 10’s of billions of years of each other is actually pretty well constrained.

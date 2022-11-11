@@ -260,11 +260,16 @@
             <v-row 
               justify="center"
             >
-              <h4
-                class="mb-2"
+              <div
+                class="text-center"
+                style="width: 100%;"
               >
-                One degree of angular size in the sky is a pinky's width at arm's length. 
-              </h4>
+                <h4
+                  class="mb-2"
+                >
+                  One degree of angular size in the sky is a pinky's width at arm's length. 
+                </h4>
+              </div>
               <v-img
                 class="mx-a"
                 contain

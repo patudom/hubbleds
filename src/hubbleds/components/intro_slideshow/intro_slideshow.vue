@@ -510,7 +510,7 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols= "4">
+              <v-col cols= "6">
                 <v-img
                     lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
                     src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
@@ -519,23 +519,14 @@
                   ></v-img>
                 <i> Henrietta Swan Leavitt </i>
               </v-col>
-              <v-col cols= "4">
+              <v-col cols= "6">
                 <v-img
                     lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
                     src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
                     alt="Leavitt Plate"
                     height = "350"
                   ></v-img>
-                <i> Henritta Leavitt's Plates </i>
-              </v-col>
-              <v-col cols= "4">
-                <v-img
-                    lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
-                    src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
-                    alt="Leavitt graph"
-                    height = "350"
-                  ></v-img>
-                <i> Graph  from Leavitt's 1912 paper. The horizontal axis is the logarithm of the period of the corresponding Cepheid, and the vertical axis is its apparent magnitude. The lines drawn correspond to the stars' minimum and maximum brightness. </i>
+                <i> A field of stars studied by Henrietta Leavitt</i>
               </v-col>
             </v-row>
           </v-container>

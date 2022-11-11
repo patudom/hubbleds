@@ -16,12 +16,6 @@
       <p>
         Notice your galaxy’s angular size is now displayed in the table.
       </p>
-      <p>
-        You may adjust your measurement by clicking on the ends of the green line and moving them to a new location.
-      </p>
-      <p>
-        Click <strong>MEASUREMENT DOS AND DONTS</strong> for tips on how to ensure the most accurate results.
-      </p>
     </div>
 
     <v-divider
@@ -45,26 +39,14 @@
         </v-btn>
       <v-spacer></v-spacer>
       <v-col
-        cols="6"
         class="shrink"
-        v-if="!state.dos_donts_opened"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Click the <strong>MEASUREMENT DOS AND DONTS</strong> button.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.dos_donts_opened"
       >
         <v-btn
           class="black--text"
           color="accent"
           elevation="2"
           @click="
-            state.marker = 'ang_siz6'
+            state.marker = 'ang_siz5a'
           "
         >
           next

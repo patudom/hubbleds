@@ -27,6 +27,12 @@
         <c-guideline-explore-data
           v-if="stage_state.marker == 'exp_dat1'"
           v-intersect.once="scrollIntoView" />
+        <c-guideline-age-universe-estimate3
+          v-if="stage_state.marker == 'age_uni3'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-age-universe-estimate4
+          v-if="stage_state.marker == 'age_uni4'"
+          v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
         cols="12"
@@ -48,7 +54,7 @@
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1']"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['exp_dat1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1'] || stage_state.indices[stage_state.marker] > stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1c'] "
     >
       <v-col
         cols="12"
@@ -104,12 +110,6 @@
         <c-guideline-age-universe-equation2
           v-if="stage_state.marker == 'age_uni2'"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate3
-          v-if="stage_state.marker == 'age_uni3'"
-          v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate4
-          v-if="stage_state.marker == 'age_uni4'"
-          v-intersect.once="scrollIntoView" />
         <c-guideline-your-age-estimate
           v-if="stage_state.marker == 'you_age1'"
           v-intersect.once="scrollIntoView" />
@@ -121,6 +121,15 @@
           v-intersect.once="scrollIntoView" />
         <c-guideline-random-variability
           v-if="stage_state.marker == 'ran_var1'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-trend-lines-draw2-c
+          v-if="stage_state.marker == 'tre_lin2c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-best-fit-line-c
+          v-if="stage_state.marker == 'bes_fit1c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-your-age-estimate-c
+          v-if="stage_state.marker == 'you_age1c'"
           v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
@@ -136,9 +145,15 @@
             <jupyter-widget :widget="viewers.layer_viewer"/>
           </v-lazy>
         </v-card>
-        <c-hubble-slideshow 
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
-        />  
+        <v-row>
+          <v-col
+            cols="10"
+            offset="1"
+          >
+            <c-hubble-slideshow 
+              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']" />  
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <!-- <v-row>
@@ -157,7 +172,7 @@
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1']"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['tre_lin2c']"
     > 
       <v-col
         cols="12"
@@ -211,10 +226,43 @@
       </v-col>
     </v-row>
 
+    <!--------------------- ALL DATA HUBBLE VIEWER - during class sequence ----------------------->
+    <v-row
+      class="d-flex align-stretch"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['you_age1c']) && stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <c-guideline-classmates-results-c
+          v-if="stage_state.marker == 'cla_res1c'"
+          v-intersect.once="scrollIntoView" />
+        <c-guideline-class-age-range-c
+          v-if="stage_state.marker == 'cla_age1c'"
+          v-intersect.once="scrollIntoView"/>
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          outlined
+        >
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_viewer"/>
+          </v-lazy>
+          <c-class-slider 
+            class="slider_card"
+            />
+        </v-card>
+      </v-col>
+    </v-row>
+
     <!--------------------- OUR CLASS HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int1']"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int1'] && stage_state.indices[stage_state.marker] < stage_state.indices['tre_lin2c']" 
     >
       <v-col
         cols="12"
@@ -240,24 +288,73 @@
       </v-col>
     </v-row>
 
-    <c-guideline-confidence-interval-reflect2
-      v-if="stage_state.marker == 'con_int2'"
-      v-intersect.once="scrollIntoView"/>
-
-
-
     <!--------------------- ALL DATA HISTOGRAM VIEWER ----------------------->
+    <!-- cla_age1c -->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
+      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']) && (stage_state.indices[stage_state.marker] < stage_state.indices['pro_dat0'])"
     >
       <v-col
         cols="12"
         lg="5"
       >
-        <v-btn
-          block
-        >PLACEHOLDER 5 {{ stage_state.marker }}</v-btn>
+        <c-guideline-class-age-distribution-c
+          v-if="stage_state.marker == 'age_dis1c'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-two-histograms1
+            v-if="stage_state.marker == 'two_his1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-true-age1
+            v-if="stage_state.marker == 'tru_age1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-true-age2
+            v-if="stage_state.marker == 'tru_age2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-shortcomings-est3
+            v-if="stage_state.marker == 'sho_est3'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-shortcomings-est-reflect4
+            v-if="stage_state.marker == 'sho_est4'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-true-age-issues1
+            v-if="stage_state.marker == 'tru_iss1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-imperfect-methods1
+            v-if="stage_state.marker == 'imp_met1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-imperfect-assumptions1
+            v-if="stage_state.marker == 'imp_ass1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-imperfect-measurements1
+            v-if="stage_state.marker == 'imp_mea1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-uncertainties-random1
+            v-if="stage_state.marker == 'unc_ran1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-uncertainties-systematic1
+            v-if="stage_state.marker == 'unc_sys1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-uncertainties-systematic2
+            v-if="stage_state.marker == 'unc_sys2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-two-histograms-mc2
+            v-if="stage_state.marker == 'two_his2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-lack-bias-mc1
+            v-if="stage_state.marker == 'lac_bia1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-lack-bias-reflect2
+            v-if="stage_state.marker == 'lac_bia2'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-lack-bias-reflect3
+            v-if="stage_state.marker == 'lac_bia3'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-more-data-distribution
+            v-if="stage_state.marker == 'mor_dat1'"
+            v-intersect.once="scrollIntoView"/>
+        <c-guideline-account-uncertainty
+            v-if="stage_state.marker == 'acc_unc1'"
+            v-intersect.once="scrollIntoView"/>
       </v-col>
       <v-col
         cols="12"
@@ -269,14 +366,94 @@
           outlined
         >
           <v-lazy>
-            <jupyter-widget :widget="viewers.all_distr_viewer"/>
+            <!-- Change v-if marker to include when we want tos tart showing student value-->
+            <jupyter-widget :widget="viewers.all_distr_viewer_student"
+              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2c']"
+            />
+          </v-lazy>
+          <v-lazy>
+            <jupyter-widget :widget="viewers.all_distr_viewer_class"/>
           </v-lazy>
         </v-card>
       </v-col>
     </v-row>
+      
+    <!--------------------- PROFESSIONAL DATA VIEWER - during professional data sequence ----------------------->
+    <v-row
+      class="d-flex align-stretch"
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['pro_dat0'] && stage_state.indices[stage_state.marker] <= stage_state.indices['sto_fin1']"
+    >
+      <v-col
+        cols="12"
+        lg = "5"
+      >
+        <c-guideline-professional-data0
+          v-if="stage_state.marker == 'pro_dat0'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-professional-data1
+          v-if="stage_state.marker == 'pro_dat1'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data2
+          v-if="stage_state.marker == 'pro_dat2'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data3
+          v-if="stage_state.marker == 'pro_dat3'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data4
+          v-if="stage_state.marker == 'pro_dat4'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data5
+          v-if="stage_state.marker == 'pro_dat5'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data6
+          v-if="stage_state.marker == 'pro_dat6'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data7
+          v-if="stage_state.marker == 'pro_dat7'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-professional-data8
+          v-if="stage_state.marker == 'pro_dat8'"
+          v-intersect.once="scrollIntoView"/>
+        <c-guideline-professional-data9
+          v-if="stage_state.marker == 'pro_dat9'"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.prodata_response = true"/>
+        <c-guideline-story-finish
+          v-if="stage_state.marker == 'sto_fin1'"
+          v-intersect.once="scrollIntoView"/>
+
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-card
+          :color="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.all_classes_hist_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
+          <v-lazy>
+            <jupyter-widget :widget="viewers.prodata_viewer"/>
+          </v-lazy>
+        </v-card>
+      </v-col>
+    </v-row>
+    <c-guideline-confidence-interval-reflect2
+      v-if="stage_state.marker == 'con_int2'"
+      v-intersect.once="scrollIntoView"/>
+    <c-guideline-confidence-interval-reflect2-c
+      v-if="stage_state.marker == 'con_int2c'"
+      v-intersect.once="scrollIntoView"/>
 
     <!--------------------- SANDBOX HISTOGRAM VIEWER ----------------------->
-    <v-row
+    <!-- <v-row
       class="d-flex align-stretch"
           v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
@@ -302,14 +479,15 @@
           </v-lazy>
         </v-card>
       </v-col>
-    </v-row>
+    </v-row> -->
 
     <!--------------------- MORPHOLOGY HUBBLE VIEWER ----------------------->
     <!-- <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
     >
-      <v-col
+          <!-- v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']" -->
+
+      <!-- <v-col
         cols="12"
         lg="5"
       >
@@ -329,36 +507,12 @@
           <v-lazy>
             <jupyter-widget :widget="viewers.morphology_viewer"/>
           </v-lazy>
+          <c-class-slider
+            class="slider_card"
+          />
         </v-card>
       </v-col>
     </v-row> -->
-
-    <!--------------------- ALL DATA HUBBLE VIEWER ----------------------->
-    <v-row
-      class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']"
-    >
-      <v-col
-        cols="12"
-        lg="5"
-      >
-        <v-btn
-          block
-        >PLACEHOLDER 8 {{ stage_state.marker }}</v-btn>
-      </v-col>
-      <v-col
-        cols="12"
-        lg="7"
-      >
-        <v-card
-          outlined
-        >
-          <v-lazy>
-            <jupyter-widget :widget="viewers.all_viewer"/>
-          </v-lazy>
-        </v-card>
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 
@@ -378,6 +532,8 @@
 
 .v-alert .v-input--radio-group+.v-alert, .v-dialog .v-input--radio-group+.v-alert {
   background-color: #000b !important;
+}
+
 .v-slider__thumb:hover, .v-slider__thumb-label-container:hover {
   cursor: grab;
 }

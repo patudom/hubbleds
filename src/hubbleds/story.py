@@ -2,6 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
+from fsspec import Callback
 import requests
 
 import ipyvuetify as v
@@ -11,13 +12,15 @@ from cosmicds.phases import Story
 from cosmicds.registries import story_registry
 from cosmicds.utils import API_URL, RepeatedTimer
 from echo import DictCallbackProperty, CallbackProperty
+from echo.callback_container import CallbackContainer
 from glue.core import Data
 from glue.core.component import CategoricalComponent, Component
 from glue.core.data_factories.fits import fits_reader
+from glue.core.subset import CategorySubsetState
 
-from .data_management import CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, SDSS_DATA_LABEL, STATE_TO_MEAS, STATE_TO_SUMM, \
-    STUDENT_DATA_LABEL, STUDENT_MEASUREMENTS_LABEL
-from .utils import HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line
+from .data_management import BEST_FIT_SUBSET_LABEL, CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, SDSS_DATA_LABEL, STATE_TO_MEAS, STATE_TO_SUMM, \
+    STUDENT_DATA_LABEL, STUDENT_MEASUREMENTS_LABEL, BEST_FIT_GALAXY_NAME
+from .utils import H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line
 
 
 @story_registry(name="hubbles_law")
@@ -26,7 +29,7 @@ class HubblesLaw(Story):
     measurements = DictCallbackProperty({})
     calculations = DictCallbackProperty({})
     validation_failure_counts = DictCallbackProperty({})
-    responses = DictCallbackProperty({})
+    has_best_fit_galaxy = CallbackProperty(False)
 
     measurement_keys = [
         "obs_wave_value",
@@ -53,6 +56,12 @@ class HubblesLaw(Story):
         super().__init__(*args, **kwargs)
 
         self._set_theme()
+
+        self._on_class_data_update_cbs = CallbackContainer()
+        self._on_student_data_update_cbs = CallbackContainer()
+        self._on_timer_cbs = CallbackContainer()
+
+        self.add_callback('has_best_fit_galaxy', self.update_student_data)
 
         # Load data needed for Hubble's Law
         data_dir = Path(__file__).parent / "data"
@@ -96,8 +105,8 @@ class HubblesLaw(Story):
         HubblesLaw.prune_none(all_data)
         self.data_collection.append(all_data)
 
-        all_student_summ_data = self.data_from_summaries(all_student_summaries, "all_student_summaries")
-        all_class_summ_data = self.data_from_summaries(all_class_summaries, "all_class_summaries")
+        all_student_summ_data = self.data_from_summaries(all_student_summaries, label="all_student_summaries", id_key="student_id")
+        all_class_summ_data = self.data_from_summaries(all_class_summaries, label="all_class_summaries", id_key="class_id")
         self.data_collection.append(all_student_summ_data)
         self.data_collection.append(all_class_summ_data)
         for comp in ['age', 'H0']:
@@ -141,8 +150,13 @@ class HubblesLaw(Story):
             HubblesLaw.make_data_writeable(data)
 
         self.class_last_modified = None
-        self.class_data_timer = RepeatedTimer(30, self.fetch_class_data)
+        self.class_data_timer = RepeatedTimer(5, self._on_timer)
         self.class_data_timer.start()
+
+    def _on_timer(self):
+        self.fetch_class_data()
+        for cb in self._on_timer_cbs:
+            cb()
 
     def _set_theme(self):
         v.theme.dark = True
@@ -190,6 +204,32 @@ class HubblesLaw(Story):
             HubblesLaw.make_data_writeable(data)
         return dc[name]
 
+    def _best_fit_galaxy(self, measurements):
+        distances = measurements["distance"]
+        velocities = measurements["velocity"]
+        line = fit_line(distances, velocities)
+        if line is None:
+            return None
+
+        dmin = min(distances)
+        dmax = max(distances)
+        d = round(0.5 * (dmin + dmax))
+        v = round(line.slope.value * d)
+        return {
+            "name": BEST_FIT_GALAXY_NAME,
+            "distance": d,
+            "velocity": v,
+            "ra": 0, "decl": 0,
+            "type": "Sp",
+            "measwave": 0,
+            "restwave": H_ALPHA_REST_LAMBDA,
+            "z": 0, "angular_size": 0,
+            "element": "H-α",
+            "student_id": self.student_user["id"],
+            "last_modified": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+
     def update_data(self, label, new_data):
         dc = self.data_collection
         if label in dc:
@@ -203,7 +243,7 @@ class HubblesLaw(Story):
             HubblesLaw.make_data_writeable(data) 
             dc.append(data)
 
-    def update_student_data(self):
+    def update_student_data(self, *args):
         dc = self.data_collection
         meas_data = dc[STUDENT_MEASUREMENTS_LABEL]
         df = meas_data.to_dataframe()
@@ -216,6 +256,12 @@ class HubblesLaw(Story):
         if not all(len(v) > 0 for v in components.values()):
             return
 
+        # Add the best-fit galaxy, if appropriate
+        if self.has_best_fit_galaxy:
+            bfg = self._best_fit_galaxy(components)
+            for col, data in components.items():
+                data.append(bfg.get(col, None))
+
         new_data = Data(label=STUDENT_DATA_LABEL)
         for col, data in components.items():
             categorical = col in self.categorical_cols
@@ -226,6 +272,26 @@ class HubblesLaw(Story):
         student_data = dc[STUDENT_DATA_LABEL]
         student_data.update_values_from_data(new_data)
         HubblesLaw.make_data_writeable(student_data)
+
+        # Make sure that the best-fit galaxy subset is correct
+        if self.has_best_fit_galaxy:
+            c = student_data.get_component("name")
+            indices = np.where(c.labels == bfg["name"])[0]
+            codes = c.codes[indices]
+            subset_state = CategorySubsetState(student_data.id["name"], codes)
+            subset = next((s for s in student_data.subsets if s.label == BEST_FIT_SUBSET_LABEL), None)
+            if subset is not None:
+                subset.subset_state = subset_state
+            else:
+                student_data.new_subset(label=BEST_FIT_SUBSET_LABEL,
+                                                 subset=subset_state,
+                                                 color="blue",
+                                                 alpha=1,
+                                                 markersize=10)
+
+        for cb in self._on_student_data_update_cbs:
+            cb()
+                
 
     @staticmethod
     def prune_none(data):
@@ -259,8 +325,13 @@ class HubblesLaw(Story):
                 components["name"][i] = name[:-len(self.name_ext)]
         return Data(**components)
 
-    def data_from_summaries(self, summaries, label=None):
+    def data_from_summaries(self, summaries, id_key=None, label=None):
         components = { STATE_TO_SUMM.get(k, k) : [summary.get(k, None) for summary in summaries] for k in self.summary_keys }
+        if id_key is not None:
+            ids = [summary.get(id_key, None) for summary in summaries]
+            ids = [x for x in ids if x is not None]
+            components.update({ id_key: ids})
+
         data = Data(**components)
         if label is not None:
             data.label = label
@@ -271,11 +342,11 @@ class HubblesLaw(Story):
         res_json = response.json()
         return res_json["measurements"]
 
-    def fetch_measurement_data_and_update(self, url, label, prune_none=False, make_writeable=False, check_update=None):
+    def fetch_measurement_data_and_update(self, url, label, prune_none=False, make_writeable=False, check_update=None, callbacks=None):
         measurements = self.fetch_measurements(url)
         need_update = check_update is None or check_update(measurements)
         if not need_update:
-            return
+            return None
         new_data = self.data_from_measurements(measurements)
         new_data.label = label
         if prune_none:
@@ -285,8 +356,13 @@ class HubblesLaw(Story):
         if make_writeable:
             HubblesLaw.make_data_writeable(data)
 
-    def update_summary_data(self, meas_label, summ_label, id_field):
-        measurements = self.data_collection[meas_label]
+        if callbacks is not None:
+            for cb in callbacks:
+                cb()
+
+        return new_data
+
+    def update_summary_data(self, measurements, summ_label, id_field):
         dists = defaultdict(list)
         vels = defaultdict(list)
         d = measurements["distance"]
@@ -321,16 +397,33 @@ class HubblesLaw(Story):
         self.fetch_measurement_data_and_update(student_meas_url, STUDENT_MEASUREMENTS_LABEL, make_writeable=True)
         self.update_student_data()
 
+    def on_class_data_update(self, cb):
+        self._on_class_data_update_cbs.append(cb)
+
+    def on_student_data_update(self, cb):
+        self._on_student_data_update_cbs.append(cb)
+
+    def on_timer(self, cb):
+        self._on_timer_cbs.append(cb)
+
     def fetch_class_data(self):
+        #print("Fetching class data")
         def check_update(measurements):
-            last_modified = max([datetime.fromisoformat(x["last_modified"][:-1]) for x in measurements])
-            need_update = self.class_last_modified is None or last_modified > self.class_last_modified
+            #print(sorted([[x["student_id"], x["last_modified"]] for x in measurements], key=lambda x: x[1], reverse=True)[0])
+            last_modified = max([datetime.fromisoformat(x["last_modified"][:-1]) for x in measurements], default=None)
+            #print(self.class_last_modified)
+            #print(last_modified)
+            # if not (self.class_last_modified is None or last_modified is None):
+            #     print(last_modified > self.class_last_modified)
+            need_update = self.class_last_modified is None or last_modified is None or last_modified > self.class_last_modified
             if need_update:
                 self.class_last_modified = last_modified
+            #print("Do we need an update? ", need_update)
             return need_update
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
-        self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, check_update=check_update)
-        self.update_summary_data(CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, "student_id")
+        updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, check_update=check_update, callbacks=self._on_class_data_update_cbs)
+        if updated is not None:
+            self.update_summary_data(updated, CLASS_SUMMARY_LABEL, "student_id")
 
     def setup_for_student(self, app_state):
         super().setup_for_student(app_state)
