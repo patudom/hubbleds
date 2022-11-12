@@ -33,6 +33,17 @@
       align="center"
       no-gutters
     >
+      <v-col
+        class="shrink"
+        cols="7"
+        >
+        <span style="font-size: 16px;">Use left menu to return to Introduction.<br>(Press <v-icon>mdi-menu</v-icon> in upper left if menu is not open)</span>
+        
+      </v-col>
+      <v-spacer></v-spacer>
+      <v-col
+        class="shrink"
+      >
       <v-spacer></v-spacer>
       <v-col
         class="shrink"
