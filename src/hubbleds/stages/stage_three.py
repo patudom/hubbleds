@@ -7,11 +7,11 @@ from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import extend_tool, load_template, update_figure_css, RepeatedTimer
+from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty, add_callback, remove_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
-from glue_jupyter.link import link, dlink
+from glue_jupyter.link import link
 from hubbleds.components.id_slider import IDSlider
 from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
@@ -25,12 +25,9 @@ from ..data_management import \
     HUBBLE_KEY_DATA_LABEL, BEST_FIT_GALAXY_NAME
 from ..histogram_listener import HistogramListener
 from ..stage import HubbleStage
-from ..viewers import HubbleFitView, \
-    HubbleScatterView
+from ..viewers import HubbleScatterView
 from ..viewers.viewers import \
     HubbleClassHistogramView, HubbleHistogramView, HubbleFitLayerView
-    
-from bqplot import OrdinalScale, LinearScale
 
 
 class StageState(CDSState):
@@ -901,13 +898,7 @@ class StageThree(HubbleStage):
     def _reset_limits_for_data(self, label):
         viewer_id = self.viewer_ids_for_data.get(label, [])
         for vid in viewer_id:
-            try:
-                tool = self.get_viewer(vid).reset_limits()
-                if tool is not None:
-                    tool.activate()
-                print("Reset limits for", vid)
-            except RuntimeError as e:
-                print(vid, e)
+            self.get_viewer(vid).state.reset_limits()
 
     def _on_data_change(self, msg):
         label = msg.data.label
@@ -919,10 +910,12 @@ class StageThree(HubbleStage):
 
 
     def _on_class_data_update(self, *args):
-        self.reset_viewer_limits()
+        if self.story_state.stage_index == self.index:
+            self.reset_viewer_limits()
 
     def _on_student_data_update(self, *args):
-        self.reset_viewer_limits()
+        if self.story_state.stage_index == self.index:
+            self.reset_viewer_limits()
 
     def _update_viewer_style(self, dark):
         viewers = ['layer_viewer',
