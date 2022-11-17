@@ -57,8 +57,6 @@ class HubblesLaw(Story):
 
         self._set_theme()
 
-        self._on_class_data_update_cbs = CallbackContainer()
-        self._on_student_data_update_cbs = CallbackContainer()
         self._on_timer_cbs = CallbackContainer()
 
         self.add_callback('has_best_fit_galaxy', self.update_student_data)
@@ -288,9 +286,6 @@ class HubblesLaw(Story):
                                                  color="blue",
                                                  alpha=1,
                                                  markersize=10)
-
-        for cb in self._on_student_data_update_cbs:
-            cb()
                 
 
     @staticmethod
@@ -397,12 +392,6 @@ class HubblesLaw(Story):
         self.fetch_measurement_data_and_update(student_meas_url, STUDENT_MEASUREMENTS_LABEL, make_writeable=True)
         self.update_student_data()
 
-    def on_class_data_update(self, cb):
-        self._on_class_data_update_cbs.append(cb)
-
-    def on_student_data_update(self, cb):
-        self._on_student_data_update_cbs.append(cb)
-
     def on_timer(self, cb):
         self._on_timer_cbs.append(cb)
 
@@ -421,7 +410,7 @@ class HubblesLaw(Story):
             #print("Do we need an update? ", need_update)
             return need_update
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
-        updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, check_update=check_update, callbacks=self._on_class_data_update_cbs)
+        updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, check_update=check_update)
         if updated is not None:
             self.update_summary_data(updated, CLASS_SUMMARY_LABEL, "student_id")
 
