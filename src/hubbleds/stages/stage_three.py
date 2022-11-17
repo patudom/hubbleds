@@ -580,6 +580,14 @@ class StageThree(HubbleStage):
                     fit_selection_deactivate)
 
 
+        # Functions to call on data updates
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == STUDENT_DATA_LABEL,
+                           handler=self._on_student_data_update)
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
+                           handler=self._on_class_data_update)
+
         # JC: There's apparently a way to link axes in glue-jupyter, so we should use that
         # but I'm not familiar with it, so in the interest of time, let's do this
         for prop in ['x_min', 'x_max']: 
@@ -591,11 +599,6 @@ class StageThree(HubbleStage):
         else:
             self._deferred_setup()
 
-        self.story_state.on_class_data_update(self._on_class_data_update)
-        self.story_state.on_student_data_update(self._on_student_data_update)
-
-        # self.reset_limits_timer = RepeatedTimer(5, self.reset_viewer_limits)
-        # self.reset_limits_timer.start()
     
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -911,11 +914,11 @@ class StageThree(HubbleStage):
 
     def _on_class_data_update(self, *args):
         if self.story_state.stage_index == self.index:
-            self.reset_viewer_limits()
+            self._reset_limits_for_data(CLASS_DATA_LABEL)
 
     def _on_student_data_update(self, *args):
         if self.story_state.stage_index == self.index:
-            self.reset_viewer_limits()
+            self._reset_limits_for_data(STUDENT_DATA_LABEL)
 
     def _update_viewer_style(self, dark):
         viewers = ['layer_viewer',
