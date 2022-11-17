@@ -13,9 +13,9 @@ class ClassLayerToggleTool(LayerToggleTool):
     def activate(self):
         super().activate()
 
-        if self.layer_to_toggle.visible and self.toggled_count == 1:
+        if self.layer.visible and self.toggled_count == 1:
             x_att = str(self.viewer.state.x_att)
             y_att = str(self.viewer.state.y_att)
-            self.viewer.state.x_att = self.layer_to_toggle.layer.id[x_att]
-            self.viewer.state.y_att = self.layer_to_toggle.layer.id[y_att]
+            self.viewer.state.x_att = self.layer.layer.id[x_att]
+            self.viewer.state.y_att = self.layer.layer.id[y_att]
             self.viewer.state.reset_limits()
