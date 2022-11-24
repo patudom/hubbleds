@@ -14,10 +14,13 @@
       class="mb-4"
     >
       <p>
-        You will explore your data through different representations, including spatial images, tables, spectrum graphs, and scatter plots.
+        <b> These orange boxes will GUIDE you as you move through the story. </b>
       <p>
       </p>
-        <strong>Guidelines</strong> for your exploration will appear in these orange boxes. Next to them you will find relevant data views, highlighted with an orange background.
+        The information in the guideline boxes will suggest what you should focus on, or what you should do next.  
+      </p>
+      <p>
+        The images, tables, or graph where the guideline suggests action will also be highlighted with an <b> orange outline </b>
       </p>
     </div>
     
@@ -30,6 +33,17 @@
       align="center"
       no-gutters
     >
+      <v-col
+        class="shrink"
+        cols="7"
+        >
+        <span style="font-size: 16px;">Use left menu to return to Introduction.<br>(Press <v-icon>mdi-menu</v-icon> in upper left if menu is not open)</span>
+        
+      </v-col>
+      <v-spacer></v-spacer>
+      <v-col
+        class="shrink"
+      >
       <v-spacer></v-spacer>
       <v-col
         class="shrink"
