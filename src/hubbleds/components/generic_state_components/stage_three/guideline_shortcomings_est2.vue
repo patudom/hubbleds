@@ -4,10 +4,10 @@
     @back="
       state.marker = 'sho_est1';
     "
-    @next="
-      state.marker = 'ran_var1';
-    "
+    @next="state.stage_three_complete = true;"
+          
   >
+  <!-- state.marker = 'ran_var1'; -->
     <div
       class="mb-4"
     >

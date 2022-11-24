@@ -6,7 +6,7 @@
       state.marker = 'mor_dat1';
     "
     @next="
-      state.marker = 'pro_dat0';
+      state.stage_four_complete = true;
     "
   >
     <div
