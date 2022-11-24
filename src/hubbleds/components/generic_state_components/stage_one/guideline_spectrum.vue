@@ -12,22 +12,25 @@
     </h3>
     <div
       class="mb-4"
-      v-if="!(state.spec_tutorial_opened || state.marker == 'spe_tut1')"
     >
       <p>
-        Here is a <i>spectrum</i> of light measured from your chosen galaxy.
+        Here is a <b>spectrum</b> of light measured from your chosen galaxy.
       </p>
       <p>
-        Not familiar with spectra? Click the <strong>SPECTRUM TUTORIAL</strong> button to learn what spectra can tell us about galaxies.
+        (If you scroll up to the Cosmic Sky Viewer, you will see your chosen galaxy displayed there too.)
+      </p>
+    </div>
+    <div
+      v-if="!(state.spec_tutorial_opened || state.marker == 'spe_tut1')"
+    >    
+      <p>
+        Click the <strong>SPECTRUM TUTORIAL</strong> button to learn what spectra can tell us about galaxies.
       </p>
     </div>
     <div
       class="mb-4"
       v-if="state.spec_tutorial_opened || state.marker == 'spe_tut1'"
     >
-      <p>
-        Here is a spectrum of light measured from your chosen galaxy.
-      </p>
       <p>
         You can reopen the <strong>SPECTRUM TUTORIAL</strong> any time you need a refresher about spectra.
       </p>

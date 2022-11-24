@@ -600,7 +600,7 @@ class StageThree(HubbleStage):
         advancing = markers.index(new) > markers.index(old)
         if advancing and new == "tre_dat2":
             layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', True)
+            layer_viewer.toolbar.set_tool_enabled('hubble:toggleclass', True)
         if advancing and new == "tre_lin1":
             layer_viewer = self.get_viewer("layer_viewer")
             class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -611,7 +611,7 @@ class StageThree(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
         if advancing and new == "tre_lin1":
             layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', False)
+            layer_viewer.toolbar.set_tool_enabled('hubble:toggleclass', False)
         if advancing and new == "tre_lin2":
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
@@ -670,7 +670,7 @@ class StageThree(HubbleStage):
             
     
     def _on_class_layer_toggled(self, used):
-        self.stage_state.class_layer_toggled = used 
+        self.stage_state.class_layer_toggled = used
 
     def _setup_scatter_layers(self):
         dist_attr = "distance"
@@ -703,9 +703,9 @@ class StageThree(HubbleStage):
         class_layer.state.alpha = 1
         class_layer.state.size = 4
         class_layer.state.visible = False
-        toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
+        toggle_tool = layer_viewer.toolbar.tools['hubble:toggleclass']
         toggle_tool.set_layer_to_toggle(class_layer)
-        layer_viewer.toolbar.set_tool_enabled('hubble:togglelayer', not self.stage_state.marker_before("tre_dat2"))
+        layer_viewer.toolbar.set_tool_enabled('hubble:toggleclass', not self.stage_state.marker_before("tre_dat2"))
 
         # cosmicds PR157 - turn off fit line label for layer_viewer
         layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
@@ -717,8 +717,8 @@ class StageThree(HubbleStage):
         add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
         
         layer_toolbar = layer_viewer.toolbar
-        layer_toolbar.set_tool_enabled("hubble:togglelayer", self.stage_state.marker_reached("tre_dat2"))
-        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled) 
+        layer_toolbar.set_tool_enabled("hubble:toggleclass", self.stage_state.marker_reached("tre_dat2"))
+        add_callback(toggle_tool, 'toggled_count', self._on_class_layer_toggled) 
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
 
         student_layer = comparison_viewer.layer_artist_for_data(student_data)
