@@ -496,16 +496,6 @@ class StageFour(HubbleStage):
         else:
             self._deferred_setup()
             
-        # turn this off this subset
-        if self.story_state.stage_index < self.index:
-            student_slider_subset_label = "student_slider_subset"
-            # get layer with label == student_slider_subset_label
-            try: 
-                student_slider_subset_layer = [layer for layer in layer_viewer.layers if student_slider_subset_label in layer.layer.label][0]
-                student_slider_subset_layer.visible = False
-            except IndexError:
-                # there is not student slider subset layer
-                pass
     
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -545,6 +535,14 @@ class StageFour(HubbleStage):
         toggle_tool = layer_viewer.toolbar.tools['hubble:toggleclass']
         add_callback(toggle_tool, 'toggled_count', self._on_class_layer_toggled) 
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
+        
+        # We want to turn this off here so that a it doesn't show up in previous stages
+
+        student_slider_subset_label = "student_slider_subset"
+        student_slider_subset_layer = [layer for layer in layer_viewer.layers if student_slider_subset_label in layer.layer.label]
+        student_slider_subset_layer = next(student_slider_subset_layer.__iter__(), None) # get the first element or None if empty
+        if student_slider_subset_layer is not None:
+            student_slider_subset_layer.visible = False
 
 
     
