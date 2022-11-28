@@ -540,10 +540,10 @@ class StageFour(HubbleStage):
         layer_toolbar = layer_viewer.toolbar
         # turn this on if we are in this stage
         if self.story_state.stage_index == self.index: 
-            layer_toolbar.set_tool_enabled("hubble:togglelayer", True)
+            layer_toolbar.set_tool_enabled("hubble:toggleclass", True)
         
-        toggle_tool = layer_viewer.toolbar.tools['hubble:togglelayer']
-        add_callback(toggle_tool, 'class_layer_toggled', self._on_class_layer_toggled) 
+        toggle_tool = layer_viewer.toolbar.tools['hubble:toggleclass']
+        add_callback(toggle_tool, 'toggled_count', self._on_class_layer_toggled) 
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
 
 
