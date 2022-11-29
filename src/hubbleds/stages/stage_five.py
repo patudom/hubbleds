@@ -4,6 +4,7 @@ from pathlib import Path
 
 from echo import CallbackProperty, add_callback, remove_callback
 from glue_jupyter.link import dlink, link
+from glue.core.message import NumericalDataChangedMessage
 from traitlets import Bool, default
 
 from cosmicds.components.generic_state_component import GenericStateComponent
@@ -109,8 +110,6 @@ class StageFive(HubbleStage):
         # self.stage_state.marker = self.stage_state.markers[0]
         
         add_callback(self.stage_state, 'marker', self._on_marker_update, echo_old=True)
-        self.story_state.on_class_data_update(self._on_class_data_update)
-        self.story_state.on_student_data_update(self._on_student_data_update)
 
         # Set up prodata components
         prodata_components_dir = str(Path(
@@ -152,6 +151,14 @@ class StageFive(HubbleStage):
         self.setup_prodata_viewer()
         
         self._update_viewer_style(dark=self.app_state.dark_mode)
+        
+        # Functions to call on data updates
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == STUDENT_DATA_LABEL,
+                           handler=self._on_student_data_update)
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
+                           handler=self._on_class_data_update)
 
     
     def add_prodata_components_from_path(self, state_components, path, component_class = ProData):
@@ -202,7 +209,7 @@ class StageFive(HubbleStage):
         hst_layer.state.color = '#AEEA00'
         hst_layer.state.visible = self.stage_state.marker_reached('pro_dat5')
         
-        prodata_viewer.reset_limits()
+        prodata_viewer.state.reset_limits()
     
     def _update_viewer_style(self, dark):
         viewers = ['prodata_viewer']
@@ -221,7 +228,7 @@ class StageFive(HubbleStage):
     
     def reset_viewer_limits(self):
         prodata_viewer = self.get_viewer("prodata_viewer")
-        prodata_viewer.reset_limits()
+        prodata_viewer.state.reset_limits()
     
     def _on_class_data_update(self, *args):
         self.reset_viewer_limits()

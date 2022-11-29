@@ -609,22 +609,6 @@ class StageFour(HubbleStage):
     def all_viewers(self):
         return [layout.viewer for layout in self.viewers.values()]
      
-    def _reset_limits_for_data(self, label):
-        viewer_id = self.viewer_ids_for_data.get(label, [])
-        for vid in viewer_id:
-            try:
-                tool = self.get_viewer(vid).reset_limits()
-                if tool is not None:
-                    tool.activate()
-                # print("Reset limits for", vid)
-            except RuntimeError as e:
-                pass
-                # print(vid, e)
-   
-    def reset_viewer_limits(self):
-        self._reset_limits_for_data(STUDENT_DATA_LABEL)
-        self._reset_limits_for_data(CLASS_DATA_LABEL)
-        self._reset_limits_for_data(CLASS_SUMMARY_LABEL)
     
     def _update_viewer_style(self, dark):
         viewers = ['layer_viewer',
@@ -688,14 +672,26 @@ class StageFour(HubbleStage):
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.stage_state.stage_four_complete = False
-            
+    
+    def _reset_limits_for_data(self, label):
+        viewer_id = self.viewer_ids_for_data.get(label, [])
+        for vid in viewer_id:
+            self.get_viewer(vid).state.reset_limits()
+   
+    def reset_viewer_limits(self):
+        self._reset_limits_for_data(STUDENT_DATA_LABEL)
+        self._reset_limits_for_data(CLASS_DATA_LABEL)
+        self._reset_limits_for_data(CLASS_SUMMARY_LABEL)
+    
+    
     def _on_data_change(self, msg):
         label = msg.data.label
-        # self._reset_viewer_limits(label)
-        if label == STUDENT_DATA_LABEL:
-            self._update_hypgal_info()
-        elif label == CLASS_SUMMARY_LABEL:
-            self.get_component("c-student-slider").refresh()
+        if self.story_state.stage_index == self.index:
+            if label == STUDENT_DATA_LABEL:
+                self._update_hypgal_info()
+            elif label == CLASS_SUMMARY_LABEL:
+                self.get_component("c-student-slider").refresh()
+            self._reset_limits_for_data(label)
 
 
     def _on_class_data_update(self, *args):
