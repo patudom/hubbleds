@@ -10,7 +10,7 @@
     >
       Input Wavelengths
     </h3> 
-    {{ marker }} {{ lambda_obs }} {{ lambda_rest }} {{ show_doppler_calc_dialog }} {{ failedValidation4 }} {{ failedValidation5 }}
+    {{ state.marker }} {{ state.lambda_obs }} {{ state.lambda_rest }} {{ state.doppler_calc_dialog }} {{ state.doppler_calc_state.failedValidation4 }} {{ state.doppler_calc_state.failedValidation5 }}
     <div
       class="mb-4"
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
@@ -106,11 +106,11 @@
     </div>
     <v-divider
       class="my-4"
-      v-if="failedValidation4"
+      v-if="state.doppler_calc_state.failedValidation4"
     >
     </v-divider>
       <v-alert
-        v-if="failedValidation4"
+        v-if="state.doppler_calc_state.failedValidation4"
         dense
         color="info darken-1"
       >
@@ -130,7 +130,7 @@
           color="accent"
           elevation="2"
           @click="
-            marker = 'dop_cal3';
+            state.marker = 'dop_cal3';
           "
         >
           back
@@ -145,9 +145,9 @@
           color="accent"
           elevation="2"
           @click="() => {
-            const expectedAnswers = [lambda_obs, lambda_rest];
-            marker = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? 'dop_cal5' : 'dop_cal4';
-            show_doppler_calc_dialog = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? true: false;   
+            const expectedAnswers = [state.lambda_obs, state.lambda_rest];
+            state.marker = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? 'dop_cal5' : 'dop_cal4';
+            state.doppler_calc_dialog = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? true: false;
           }"
         >
           next
@@ -197,7 +197,8 @@ mjx-mstyle {
 
 <script>
 module.exports = {
-    methods: {
+  props: ['state'],
+  methods: {
     getValue(inputID) {
       const input = document.getElementById(inputID);
       if (!input) { return null; }
@@ -211,7 +212,7 @@ module.exports = {
     validateAnswersJS(inputIDs, expectedAnswers) {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
-        this.failedValidation4 = (value && value === expectedAnswers[index]) ? false : true;
+        this.state.doppler_calc_state.failedValidation4 = (value && value === expectedAnswers[index]) ? false : true;
         return value && value === expectedAnswers[index];
       });
     }

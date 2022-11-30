@@ -41,6 +41,19 @@ class StageState(CDSState):
     velocities_total = CallbackProperty(0)
     zoom_tool_activated = CallbackProperty(False)
 
+    doppler_calc_state = DictCallbackProperty({
+        'step': 0,
+        'length': 6,
+        'currentTitle': "Doppler Calculation",
+        'failedValidation4': False,
+        'failedValidation5': False,
+        'interactSteps5': [3, 4],
+        'maxStepCompleted5': 0,
+        'studentc': 0,
+        'student_vel_calc': False,
+        'complete': False
+    })
+
     marker = CallbackProperty("")
     indices = DictCallbackProperty()
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_one_spectrum")
@@ -272,23 +285,25 @@ class StageOne(HubbleStage):
         #     self.add_component(component, label=label)
 
         # Set up doppler calc components
-        doppler_calc_components_dir = str(Path(
-            __file__).parent.parent / "components" / "doppler_calc_components")
-        path = join(doppler_calc_components_dir, "")
-        doppler_components = [
-            "guideline_doppler_calc_4",
-            "slideshow_doppler_calc_5",
-            "guideline_doppler_calc_6"
-        ]
-        for comp in doppler_components:
-            label = f"c-{comp}".replace("_", "-")
-            component = DopplerCalc(comp + ext, path, self.stage_state, self.story_state)
-            self.add_component(component, label=label)
+        # doppler_calc_components_dir = str(Path(
+        #     __file__).parent.parent / "components" / "doppler_calc_components")
+        # path = join(doppler_calc_components_dir, "")
+        # doppler_components = [
+        #     "guideline_doppler_calc_4",
+        #     "slideshow_doppler_calc_5",
+        #     "guideline_doppler_calc_6"
+        # ]
+        # for comp in doppler_components:
+        #     label = f"c-{comp}".replace("_", "-")
+        #     component = DopplerCalc(comp + ext, path, self.stage_state, self.story_state)
+        #     self.add_component(component, label=label)
+        #
+        # # execute add_student_velocity when student_vel_calc in c-doppler-calc-5-slideshow is updated.
+        # doppler_slideshow = self.get_component("c-slideshow-doppler-calc-5")
+        # doppler_slideshow.observe(self.add_student_velocity,
+        #                           names=["student_vel_calc"])
 
-        # execute add_student_velocity when student_vel_calc in c-doppler-calc-5-slideshow is updated.
-        doppler_slideshow = self.get_component("c-slideshow-doppler-calc-5")
-        doppler_slideshow.observe(self.add_student_velocity,
-                                  names=["student_vel_calc"])
+        # add_callback(self.stage_state, )
 
         # Callbacks
         def update_count(change):

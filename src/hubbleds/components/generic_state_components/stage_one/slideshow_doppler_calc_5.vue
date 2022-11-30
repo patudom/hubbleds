@@ -19,7 +19,7 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <span
-          @click="() => { state.doppler_calc_dialog = false; if (step == length-1)  {step = 0}; }"
+          @click="() => { state.doppler_calc_dialog = false; if (state.doppler_calc_state.step == length-1)  {state.doppler_calc_state.step = 0}; }"
         >
           <v-btn
             icon
@@ -32,7 +32,7 @@
       </v-toolbar>
 
       <v-window
-        v-model="step"
+        v-model="state.doppler_calc_state.step"
         vertical
         style="height: 70vh;"
         class="overflow-auto"
@@ -577,7 +577,7 @@
                 <v-row
                   no-gutters
                   class="my-1"
-                  v-if="!failedValidation5"
+                  v-if="!state.doppler_calc_state.failedValidation5"
                 >
                   <v-col
                     cols="2"
@@ -593,7 +593,7 @@
                 <v-row
                   no-gutters
                   class="my-1 yellow--text font-weight-bold"
-                  v-if="failedValidation5"
+                  v-if="state.doppler_calc_state.failedValidation5"
                   v-intersect="(entries, _observer, intersecting) => {
                     if (!intersecting) return;
                     const targets = entries.filter(entry => entry.isIntersecting).map(entry => entry.target);
@@ -770,10 +770,10 @@
 
       <v-card-actions>
         <v-btn
-          :disabled="step === 0"
+          :disabled="state.doppler_calc_state.step === 0"
           color="accent"
           class="black--text"
-          @click="step--"
+          @click="state.doppler_calc_state.step--"
         >
           Back
         </v-btn>
@@ -781,7 +781,7 @@
         <v-spacer></v-spacer>
         
         <v-item-group
-          v-model="step"
+          v-model="state.doppler_calc_state.step"
           class="text-center"
           mandatory
         >
@@ -804,22 +804,22 @@
         <v-spacer></v-spacer>
 
         <v-btn
-          v-if="step < 4"
-          :disabled="step > maxStepCompleted5"
+          v-if="state.doppler_calc_state.step < 4"
+          :disabled="state.doppler_calc_state.step > maxStepCompleted5"
           class="black--text"
           color="accent"
-          @click="step++;"
+          @click="state.doppler_calc_state.step++;"
         >
-          {{ (step < 2 ) ? 'calculate' : 'next' }}
+          {{ (state.doppler_calc_state.step < 2 ) ? 'calculate' : 'next' }}
         </v-btn>
         <v-btn
-          v-if="step == 4"
+          v-if="state.doppler_calc_state.step == 4"
           class="black--text"
           color="accent"
           elevation="2"
           @click="() => {
             const lambdas = [state.lambda_obs, state.lambda_rest];
-            validateLightSpeed(['speed_light']) ? step++ : null;
+            validateLightSpeed(['speed_light']) ? state.doppler_calc_state.step++ : null;
             storeStudentc(['speed_light']);
             state.student_vel = storeStudentVel(studentc, lambdas);
           }"
@@ -827,7 +827,7 @@
           calculate
         </v-btn>
         <v-btn
-          v-if="step==5"
+          v-if="state.doppler_calc_state.step==5"
           color="accent"
           class="black--text"
           v-model="student_vel_calc"
@@ -835,9 +835,9 @@
           @click="() => { 
             $emit('submit'); 
             state.doppler_calc_dialog = false; 
-            step = 0; 
+            state.doppler_calc_state.step = 0;
             state.marker='dop_cal6'; 
-            student_vel_calc = true}"
+            state.doppler_calc_state.student_vel_calc = true}"
         >
           Done
         </v-btn>
@@ -884,6 +884,7 @@ mjx-mpadded {
 
 <script>
 module.exports = {
+  props: ['state'],
   methods: {
     getValue(inputID) {
       const input = document.getElementById(inputID);
@@ -913,9 +914,9 @@ module.exports = {
   },
   watch: {
     step(newStep, oldStep) {
-        const isInteractStep = this.interactSteps5.includes(newStep);
+        const isInteractStep = state.doppler_calc_state.interactSteps5.includes(newStep);
         const newCompleted = isInteractStep ? newStep - 1 : newStep;
-        this.maxStepCompleted5 = Math.max(this.maxStepCompleted5, newCompleted)
+        state.doppler_calc_state.maxStepCompleted5 = Math.max(state.doppler_calc_state.maxStepCompleted5, newCompleted)
     }
   }
 };

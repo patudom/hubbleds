@@ -94,15 +94,16 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
-        <c-guideline-doppler-calc-4
+        <guideline-doppler-calc-4
           v-if="stage_state.marker == 'dop_cal4' || stage_state.marker == 'dop_cal5'"
           v-intersect.once="scrollIntoView"
+          :state="stage_state"
         />
-        <c-slideshow-doppler-calc-5
+        <slideshow-doppler-calc-5
           v-if="stage_state.marker == 'dop_cal5'"
           v-intersect.once="scrollIntoView"
         />
-        <c-guideline-doppler-calc-6
+        <guideline-doppler-calc-6
           v-if="stage_state.marker == 'dop_cal6'"
           v-intersect.once="scrollIntoView"
         />
