@@ -1,13 +1,15 @@
 <template>
-  <scaffold-alert
-    header-text="Random Variability"
-    @back="
-      state.marker = 'sho_est2';
-    "
-    @next="
-      state.marker = 'cla_res1';
-    "
+  <v-alert
+    color="info"
+    class="mb-4 mx-auto"
+    max-width="800"
+    elevation="6"
   >
+    <h3
+      class="mb-4"
+    >
+    Random Variability
+    </h3>
     <div
       class="mb-4"
     >
@@ -19,7 +21,37 @@
       </p>
       <p>
         Let’s look at the results from each student in your class to see what we mean by this.
-      </p>
-    </div>
-  </scaffold-alert>
+      </p>    </div>
+    <v-divider
+      class="my-4"
+    >
+    </v-divider>
+
+    <v-row
+      align="center"
+      no-gutters
+    >
+      
+      <v-spacer></v-spacer>
+      
+      <v-col
+        class="shrink"
+      >
+        <v-btn
+          class="black--text"
+          color="accent"
+          elevation="2"
+          @click="
+              () => {
+                state.marker = 'cla_res1';
+              }
+            "
+        >
+          next
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-alert>
 </template>
+
+
