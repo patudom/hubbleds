@@ -240,36 +240,36 @@ class StageOne(HubbleStage):
         # spectrum_slideshow.observe(self._on_slideshow_complete, names=['spectrum_slideshow_complete'])
 
         # Set up the generic state components
-        state_components_dir = str(
-            Path(
-                __file__).parent.parent / "components" / "generic_state_components" / "stage_one")
-        path = join(state_components_dir, "")
-        state_components = [
-            "guideline_intro_guidelines",
-            "guideline_select_galaxies_1",
-            "guideline_select_galaxies_2",
-            "guideline_select_galaxies_3",
-            "guideline_notice_galaxy_table",
-            "guideline_choose_row",
-            "guideline_spectrum",
-            "guideline_restwave",
-            "guideline_obswave_1",
-            "guideline_obswave_2",
-            "guideline_remaining_gals",
-            "guideline_reflect_on_data",
-            "guideline_doppler_calc_0",
-            "guideline_doppler_calc_1",
-            "guideline_doppler_calc_2",
-            "guideline_doppler_calc_3"
-        ]
-        ext = ".vue"
-        for comp in state_components:
-            label = f"c-{comp}".replace("_", "-")
-
-            # comp + ext = filename; path = folder where they live.
-            component = GenericStateComponent(comp + ext, path,
-                                              self.stage_state)
-            self.add_component(component, label=label)
+        # state_components_dir = str(
+        #     Path(
+        #         __file__).parent.parent / "components" / "generic_state_components" / "stage_one")
+        # path = join(state_components_dir, "")
+        # state_components = [
+        #     "guideline_intro_guidelines",
+        #     "guideline_select_galaxies_1",
+        #     "guideline_select_galaxies_2",
+        #     "guideline_select_galaxies_3",
+        #     "guideline_notice_galaxy_table",
+        #     "guideline_choose_row",
+        #     "guideline_spectrum",
+        #     "guideline_restwave",
+        #     "guideline_obswave_1",
+        #     "guideline_obswave_2",
+        #     "guideline_remaining_gals",
+        #     "guideline_reflect_on_data",
+        #     "guideline_doppler_calc_0",
+        #     "guideline_doppler_calc_1",
+        #     "guideline_doppler_calc_2",
+        #     "guideline_doppler_calc_3"
+        # ]
+        # ext = ".vue"
+        # for comp in state_components:
+        #     label = f"c-{comp}".replace("_", "-")
+        #
+        #     # comp + ext = filename; path = folder where they live.
+        #     component = GenericStateComponent(comp + ext, path,
+        #                                       self.stage_state)
+        #     self.add_component(component, label=label)
 
         # Set up doppler calc components
         doppler_calc_components_dir = str(Path(
