@@ -10,7 +10,7 @@
     >
       Input Wavelengths
     </h3> 
-
+    {{ marker }} {{ lambda_obs }} {{ lambda_rest }} {{ show_doppler_calc_dialog }} {{ failedValidation4 }} {{ failedValidation5 }}
     <div
       class="mb-4"
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
@@ -130,7 +130,7 @@
           color="accent"
           elevation="2"
           @click="
-            state.marker = 'dop_cal3';
+            marker = 'dop_cal3';
           "
         >
           back
@@ -145,9 +145,9 @@
           color="accent"
           elevation="2"
           @click="() => {
-            const expectedAnswers = [state.lambda_obs, state.lambda_rest];
-            state.marker = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? 'dop_cal5' : 'dop_cal4';
-            state.doppler_calc_dialog = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? true: false;   
+            const expectedAnswers = [lambda_obs, lambda_rest];
+            marker = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? 'dop_cal5' : 'dop_cal4';
+            show_doppler_calc_dialog = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? true: false;   
           }"
         >
           next
@@ -196,8 +196,7 @@ mjx-mstyle {
 
 
 <script>
-export default {
-
+module.exports = {
     methods: {
     getValue(inputID) {
       const input = document.getElementById(inputID);

@@ -294,6 +294,7 @@ class StageOne(HubbleStage):
         def update_count(change):
             if self.stage_state.gals_total > 0 and self.stage_state.marker == "sel_gal2":
                 self.stage_state.marker = "sel_gal3"
+
             self.stage_state.gals_total = change["new"]
 
         selection_tool.observe(update_count, names=['selected_count'])
@@ -346,8 +347,6 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
-        
-        
 
     def _on_measurements_changed(self, msg):
         self._update_state_from_measurements_debounced()
@@ -462,6 +461,11 @@ class StageOne(HubbleStage):
             galaxy = {c: data[c][index] for c in components}
             self.selection_tool.select_galaxy(galaxy)
 
+    def vue_complete_stage_one(self, _args=None):
+        with delay_callback(self.story_state, 'stage_index'):
+            self.story_state.step_complete = True
+            self.story_state.stage_index = 2
+
     def vue_fill_data(self, _args=None):
         self._select_from_data("dummy_student_data")
         self.galaxy_table.selected = []
@@ -507,6 +511,15 @@ class StageOne(HubbleStage):
             self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "restwave",
                                    restwave, index)
             self.stage_state.element = element
+
+    def _spectrum_slideshow_marker_changed(self, msg):
+        self.stage_state.marker = msg['new']
+
+    def _spectrum_slideshow_tutorial_opened(self, msg):
+        self.stage_state.spec_tutorial_opened = msg['new']
+
+    def _on_doppler_dialog_changed(self, msg):
+        self.stage_state.doppler_calc_dialog = msg['new']
 
     def galaxy_table_selected_change(self, change):
         if change["new"] == change["old"]:
@@ -640,6 +653,9 @@ class StageOne(HubbleStage):
         item = self.galaxy_table.selected[0]
         galaxy_name = item["name"]
         self.remove_measurement(galaxy_name)
+
+    def _on_selection_tool_selected(self, change):
+        self.stage_state.gal_selected = change['new']
 
     def _on_spectrum_flagged(self, flagged):
         if not flagged:

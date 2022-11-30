@@ -10,8 +10,6 @@ class DopplerCalc(v.VuetifyTemplate):
     step = Int(0).tag(sync=True)
     length = Int(6).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
-    state = GlueState().tag(sync=True)
-    story_state = GlueState().tag(sync=True)
     failedValidation4 = Bool(False).tag(sync=True)
     failedValidation5 = Bool(False).tag(sync=True)
     interactSteps5 = List([3, 4]).tag(sync=True)
@@ -19,6 +17,10 @@ class DopplerCalc(v.VuetifyTemplate):
     studentc = Float(0).tag(sync=True)
     student_vel_calc = Bool(False).tag(
         sync=True)  # stage_one.py listens for whether this value changes
+    complete = Bool(False).tag(sync=True)
+    lambda_obs = Float(0, allow_none=True).tag(sync=True)
+    lambda_rest = Float(0, allow_none=True).tag(sync=True)
+    show_doppler_calc_dialog = Bool(False).tag(sync=True)
 
     _titles = [
         "Doppler Calculation",
@@ -30,9 +32,7 @@ class DopplerCalc(v.VuetifyTemplate):
     ]
     _default_title = "Doppler Calculation"
 
-    def __init__(self, filename, path, stage_state, story_state, *args, **kwargs):
-        self.state = stage_state
-        self.story_state = story_state
+    def __init__(self, filename, path, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.template = load_template(filename, path)
         self.currentTitle = self._default_title
@@ -46,7 +46,8 @@ class DopplerCalc(v.VuetifyTemplate):
 
         self.observe(update_title, names=["step"])
 
-    def vue_complete_stage_one(self, _args=None):
-        with delay_callback(self.story_state, 'stage_index'):
-            self.story_state.step_complete = True
-            self.story_state.stage_index = 2
+    def lambda_obs_changed(self, value):
+        self.lambda_obs = value
+
+    def lambda_rest_changed(self, value):
+        self.lambda_rest = value

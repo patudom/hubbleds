@@ -76,7 +76,8 @@ class SelectionTool(v.VueTemplate):
                 gal_names = [k for k in self.selected_data["name"]]
                 if self.current_galaxy["name"] in gal_names:
                     self.candidate_galaxy = {}
-            self.state.gal_selected = True
+
+            self.selected = True
 
         self.widget.set_selection_change_callback(wwt_cb)
 
@@ -108,7 +109,7 @@ class SelectionTool(v.VueTemplate):
         self._create_selected_layer()
         if self._on_galaxy_selected is not None:
             self._on_galaxy_selected(galaxy)
-        self.state.gal_selected = False
+        self.selected = False
 
     def _create_selected_layer(self):
         self.table = Table.from_pandas(self.selected_data)
@@ -130,7 +131,7 @@ class SelectionTool(v.VueTemplate):
                                           instant=True)
         self.current_galaxy = {}
         self.candidate_galaxy = {}
-        self.state.gal_selected = False
+        self.selected = False
 
     def go_to_location(self, ra, dec, fov=GALAXY_FOV):
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')

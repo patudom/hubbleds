@@ -883,7 +883,7 @@ mjx-mpadded {
 
 
 <script>
-export default = {
+module.exports = {
   methods: {
     getValue(inputID) {
       const input = document.getElementById(inputID);
