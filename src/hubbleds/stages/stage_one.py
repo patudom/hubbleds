@@ -11,7 +11,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import load_template, update_figure_css, debounce
-from echo import add_callback, ignore_callback, CallbackProperty
+from echo import add_callback, ignore_callback, CallbackProperty, DictCallbackProperty, ListCallbackProperty, delay_callback
 from glue.core import Data
 from glue.core.message import NumericalDataChangedMessage
 from numpy import isin
@@ -42,11 +42,11 @@ class StageState(CDSState):
     zoom_tool_activated = CallbackProperty(False)
 
     marker = CallbackProperty("")
-    indices = CallbackProperty({})
+    indices = DictCallbackProperty()
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_one_spectrum")
     lambda_rest = CallbackProperty(0)
     lambda_obs = CallbackProperty(0)
-    galaxy = CallbackProperty({})
+    galaxy = DictCallbackProperty()
     reflection_complete = CallbackProperty(False)
     doppler_calc_reached = CallbackProperty(False)
     doppler_calc_dialog = CallbackProperty(
@@ -55,7 +55,7 @@ class StageState(CDSState):
     doppler_calc_complete = CallbackProperty(
         False)  # Did student finish the doppler calculation?
 
-    markers = CallbackProperty([
+    markers = ListCallbackProperty([
         'mee_gui1',
         'sel_gal1',
         'sel_gal2',
@@ -77,20 +77,20 @@ class StageState(CDSState):
         'dop_cal6'
     ])
 
-    step_markers = CallbackProperty([
+    step_markers = ListCallbackProperty([
         'mee_gui1',
         'mee_spe1',
         'ref_dat1',
         'dop_cal0',
     ])
 
-    csv_highlights = CallbackProperty([
+    csv_highlights = ListCallbackProperty([
         'sel_gal1',
         'sel_gal2',
         'sel_gal3',
     ])
 
-    table_highlights = CallbackProperty([
+    table_highlights = ListCallbackProperty([
         'cho_row1',
         'dop_cal3',
         'dop_cal4',
@@ -98,7 +98,7 @@ class StageState(CDSState):
         'dop_cal6',
     ])
 
-    spec_highlights = CallbackProperty([
+    spec_highlights = ListCallbackProperty([
         'mee_spe1',
         'res_wav1',
         'obs_wav1',
@@ -553,7 +553,6 @@ class StageOne(HubbleStage):
         """ clear selection from galaxy table"""
         self.galaxy_table.selected = []
         self.stage_state.sel_gal_index = None
-            
 
     def on_spectrum_click(self, event):
         specview = self.get_viewer("spectrum_viewer")
