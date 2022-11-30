@@ -25,13 +25,12 @@ class SelectionTool(v.VueTemplate):
     selected_count = Int().tag(sync=True)
     dialog = Bool(False).tag(sync=True)
     flagged = Bool(False).tag(sync=True)
-    state = GlueState().tag(sync=True)
+    selected = Bool(False).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
 
-    def __init__(self, data, state, *args, **kwargs):
-        self.state = state
+    def __init__(self, data, *args, **kwargs):
         self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self.widget.background = 'SDSS: Sloan Digital Sky Survey (Optical)'
         self.widget.foreground = 'SDSS: Sloan Digital Sky Survey (Optical)'

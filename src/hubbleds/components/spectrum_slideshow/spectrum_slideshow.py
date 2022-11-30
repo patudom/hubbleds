@@ -13,11 +13,9 @@ class SpectrumSlideshow(v.VuetifyTemplate):
     length = Int(11).tag(sync=True)
     dialog = Bool(False).tag(sync=True)
     # currentTitle = Unicode("").tag(sync=True)
-    state = GlueState().tag(sync=True)
+    # state = GlueState().tag(sync=True)
 
     # exploration_complete = Bool(False).tag(sync=True)
 
-    def __init__(self, story_state, *args, **kwargs):
-        self.state = story_state
-
+    def __init__(self, image_location, *args, **kwargs):
         super().__init__(*args, **kwargs)
