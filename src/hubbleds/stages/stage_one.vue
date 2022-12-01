@@ -27,7 +27,6 @@
         lg="4"
         :style="$vuetify.breakpoint.lg ? 'max-height: 100px' : 'max-height: 2500px'"
       >
-        {{stage_state.marker}} {{stage_state.gals_total}} {{stage_state.gal_selected}}
         <guideline-intro-guidelines
           v-if="stage_state.marker == 'mee_gui1'"
           v-intersect.once="scrollIntoView"
