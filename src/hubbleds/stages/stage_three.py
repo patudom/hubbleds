@@ -4,6 +4,7 @@ from pathlib import Path
 
 from numpy import asarray, where
 from cosmicds.components.generic_state_component import GenericStateComponent
+from cosmicds.components.layer_toggle import LayerToggle
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
@@ -275,6 +276,13 @@ class StageThree(HubbleStage):
         hubble_race_viewer = self.add_viewer(HubbleScatterView,
                                                 "hubble_race_viewer",
                                                  "Race")
+
+        layer_toggle = LayerToggle(layer_viewer, names={
+        STUDENT_DATA_LABEL: "My Data",
+        CLASS_DATA_LABEL: "Class Data"
+        })
+        # layer_toggle.add_ignore_condition(lambda layer: layer.layer.label == CLASS_DATA_LABEL)        
+        self.add_component(layer_toggle, label="c-layer-toggle")     
                                                  
         for key in hubble_race_viewer.toolbar.tools:
             hubble_race_viewer.toolbar.set_tool_enabled(key, False)
@@ -617,6 +625,12 @@ class StageThree(HubbleStage):
         layer_toolbar = layer_viewer.toolbar
         layer_linefit = layer_toolbar.tools[linefit_id]
         layer_linefit.add_ignore_condition(lambda layer: layer.layer.label == BEST_FIT_SUBSET_LABEL)
+
+        layer_toggle = self.get_component("c-layer-toggle")
+        student_layer = layer_viewer.layer_artist_for_data(student_data)
+        class_layer = layer_viewer.layer_artist_for_data(class_meas_data)
+        layer_toggle.set_layer_order([student_layer, class_layer])        
+
 
     def _setup_histogram_layers(self):
         pass

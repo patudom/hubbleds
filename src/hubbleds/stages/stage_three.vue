@@ -22,7 +22,7 @@
     >
       <v-col
         cols="12"
-        lg="5"
+        lg="4"
       >
         <c-guideline-explore-data
           v-if="stage_state.marker == 'exp_dat1'"
@@ -36,7 +36,7 @@
       </v-col>
       <v-col
         cols="12"
-        lg="7"
+        lg="8"
       >
         <v-card
           :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
@@ -58,7 +58,7 @@
     >
       <v-col
         cols="12"
-        lg="5"
+        lg="4"
       >
         <c-guideline-trends-data-mc1
           v-if="stage_state.marker == 'tre_dat1'"
@@ -134,16 +134,23 @@
       </v-col>
       <v-col
         cols="12"
-        lg="7"
+        lg="8"
       >
         <v-card
           :color="stage_state.my_galaxies_plot_highlights.includes(stage_state.marker) ? 'info' : 'black'"
           :class="stage_state.my_galaxies_plot_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <v-lazy>
-            <jupyter-widget :widget="viewers.layer_viewer"/>
-          </v-lazy>
+          <v-row>
+            <v-col cols="3">
+              <c-layer-toggle/>
+            </v-col>
+            <v-col>
+              <v-lazy>
+                <jupyter-widget :widget="viewers.layer_viewer"/>
+              </v-lazy>
+            </v-col>
+          </v-row>
         </v-card>
         <v-row>
           <v-col
