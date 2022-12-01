@@ -58,22 +58,26 @@ class SelectionTool(v.VueTemplate):
         self._on_galaxy_selected = None
 
         def wwt_cb(wwt, updated):
-            if 'most_recent_source' not in updated or self.selected_data.shape[
-                0] >= self.gals_max:
+            if ('most_recent_source' not in updated or
+                    self.selected_data.shape[0] >= self.gals_max):
                 return
 
             source = wwt.most_recent_source
             galaxy = source["layerData"]
+
             for k in ["ra", "decl", "z"]:
                 galaxy[k] = float(galaxy[k])
-            galaxy['element'] = galaxy['element'].replace("?",
-                                                          "α")  # Hacky fix for now
+
+            galaxy['element'] = galaxy['element'].replace("?", "α")  # Hacky fix for now
             fov = min(wwt.get_fov(), GALAXY_FOV)
+
             self.go_to_location(galaxy["ra"], galaxy["decl"], fov=fov)
             self.current_galaxy = galaxy
             self.candidate_galaxy = galaxy
+
             if not self.selected_data.empty:
                 gal_names = [k for k in self.selected_data["name"]]
+
                 if self.current_galaxy["name"] in gal_names:
                     self.candidate_galaxy = {}
 
