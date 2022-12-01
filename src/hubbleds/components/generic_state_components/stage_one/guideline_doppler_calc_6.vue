@@ -1,57 +1,59 @@
 <template>
   <v-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
+      class="mb-4 mx-auto"
+      color="info"
+      elevation="6"
+      max-width="800"
   >
     <h3
-      class="mb-4"
+        class="mb-4"
     >
       Velocity Calculation
     </h3>
     <div
-      class="mb-4"
-      v-intersect="(entries, _observer, intersecting) => {
+        v-if="state.velocities_total < 5"
+        v-intersect="(entries, _observer, intersecting) => {
         if (!intersecting) return;
         const targets = entries.filter(entry => entry.isIntersecting).map(entry => entry.target);
         MathJax.typesetPromise(targets);            
       }"
-      v-if="state.velocities_total < 5"
+        class="mb-4"
     >
       <p>
         Notice your calculated velocity is now entered in the table.
       </p>
       <div
-        class="JaxEquation"
+          class="JaxEquation"
       >
-        $$ v = {{ state.student_vel.toFixed(0).toLocaleString() }} \text{ km/s}$$ 
+        $$ v = {{ state.student_vel.toFixed(0).toLocaleString() }} \text{ km/s}$$
       </div>
       <p>
-        Now that you know how to use the Doppler equation, click the <v-icon>mdi-run-fast</v-icon> icon in the table header to have the velocities of the remaining galaxies calculated as well.
+        Now that you know how to use the Doppler equation, click the
+        <v-icon>mdi-run-fast</v-icon>
+        icon in the table header to have the velocities of the remaining galaxies calculated as well.
       </p>
     </div>
     <div
-      class="mb-4"
-      v-if="state.velocities_total == 5"
+        v-if="state.velocities_total === 5"
+        class="mb-4"
     >
       Great work! You have completed Stage 1. Proceed to Stage 2.
-    </div>   
+    </div>
     <v-divider
-      class="my-4"
+        class="my-4"
     >
     </v-divider>
 
     <v-row
-      align="center"
-      no-gutters
+        align="center"
+        no-gutters
     >
       <v-col>
         <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
+            class="black--text"
+            color="accent"
+            elevation="2"
+            @click="
             state.marker = 'dop_cal3';
           "
         >
@@ -59,28 +61,30 @@
         </v-btn>
       </v-col>
       <v-spacer></v-spacer>
-      
+
       <v-col
-        cols="4"
-        class="shrink"
-        v-if="state.velocities_total < 5"
+          v-if="state.velocities_total < 5"
+          class="shrink"
+          cols="4"
       >
         <div
-          style="font-size: 16px;"
+            style="font-size: 16px;"
         >
-          Click the <v-icon>mdi-run-fast</v-icon> icon.
+          Click the
+          <v-icon>mdi-run-fast</v-icon>
+          icon.
         </div>
       </v-col>
       <v-col
-        class="shrink"
-        v-if="state.velocities_total == 5"
+          v-if="state.velocities_total === 5"
+          class="shrink"
       >
         <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="complete_stage_one()"
-          >
+            class="black--text"
+            color="accent"
+            elevation="2"
+            @click="state.completed = true"
+        >
           stage 2
         </v-btn>
       </v-col>
@@ -99,6 +103,6 @@
 
 <script>
 module.exports = {
- props: ['state']
+  props: ['state']
 }
 </script>
