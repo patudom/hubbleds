@@ -80,32 +80,34 @@
         :style="$vuetify.breakpoint.lg ? 'max-height: 400px' : 'max-height: 2500px'"
       >
         <guideline-notice-galaxy-table 
-          v-if="stage_state.marker == 'sel_gal2' & stage_state.gals_total == 1"
+          v-if="stage_state.marker === 'sel_gal2' & stage_state.gals_total === 1"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-choose-row
-          v-if="stage_state.marker == 'cho_row1'"
+          v-if="stage_state.marker === 'cho_row1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-doppler-calc-3
-          v-if="stage_state.marker == 'dop_cal3'"
+          v-if="stage_state.marker === 'dop_cal3'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-doppler-calc-4
-          v-if="stage_state.marker == 'dop_cal4' || stage_state.marker == 'dop_cal5'"
+          v-if="stage_state.marker === 'dop_cal4' || stage_state.marker === 'dop_cal5'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <slideshow-doppler-calc-5
-          v-if="stage_state.marker == 'dop_cal5'"
+          v-if="stage_state.marker === 'dop_cal5'"
           v-intersect.once="scrollIntoView"
+          :state="stage_state"
         />
         <guideline-doppler-calc-6
-          v-if="stage_state.marker == 'dop_cal6'"
+          v-if="stage_state.marker === 'dop_cal6'"
           v-intersect.once="scrollIntoView"
+          :state="stage_state"
         />
       </v-col>
       <v-col
@@ -128,47 +130,47 @@
         lg="4"
       >
         <guideline-spectrum
-          v-if="stage_state.marker == 'mee_spe1' || stage_state.marker == 'spe_tut1'"
+          v-if="stage_state.marker === 'mee_spe1' || stage_state.marker === 'spe_tut1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-restwave
-          v-if="stage_state.marker == 'res_wav1'"
+          v-if="stage_state.marker === 'res_wav1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-obswave-1
-          v-if="stage_state.marker == 'obs_wav1'"
+          v-if="stage_state.marker === 'obs_wav1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-obswave-2
-          v-if="stage_state.marker == 'obs_wav2'"
+          v-if="stage_state.marker === 'obs_wav2'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-remaining-gals
-          v-if="stage_state.marker == 'rep_rem1'"
+          v-if="stage_state.marker === 'rep_rem1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-reflect-on-data
-          v-if="stage_state.marker == 'ref_dat1'"
+          v-if="stage_state.marker === 'ref_dat1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-doppler-calc-0
-          v-if="stage_state.marker == 'dop_cal0'"
+          v-if="stage_state.marker === 'dop_cal0'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-doppler-calc-1
-          v-if="stage_state.marker == 'dop_cal1'"
+          v-if="stage_state.marker === 'dop_cal1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-doppler-calc-2
-          v-if="stage_state.marker == 'dop_cal2'"
+          v-if="stage_state.marker === 'dop_cal2'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
