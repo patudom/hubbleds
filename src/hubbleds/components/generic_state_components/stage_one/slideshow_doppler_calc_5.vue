@@ -19,7 +19,7 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <span
-            @click="() => { state.doppler_calc_dialog = false; if (state.doppler_calc_state.step === length-1)  {state.doppler_calc_state.step = 0}; }"
+            @click="() => { state.doppler_calc_dialog = false; if (state.doppler_calc_state.step === state.doppler_calc_state.length-1)  {state.doppler_calc_state.step = 0}; }"
         >
           <v-btn
               icon
@@ -808,7 +808,7 @@
             mandatory
         >
           <v-item
-              v-for="n in length"
+              v-for="n in state.doppler_calc_state.length"
               :key="`btn-${n}`"
               v-slot="{ active, toggle }"
           >
@@ -921,7 +921,7 @@ module.exports = {
     },
 
     storeStudentc(inputID) {
-      return state.doppler_calc_state.studentc = this.parseAnswer(inputID);
+      return this.state.doppler_calc_state.studentc = this.parseAnswer(inputID);
     },
 
     storeStudentVel(studentc, lambdas) {
@@ -931,7 +931,7 @@ module.exports = {
     validateLightSpeed(inputIDs) {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
-        state.doppler_calc_state.failedValidation5 = (value <= 3e5 && value >= 299790) ? false : true;
+        this.state.doppler_calc_state.failedValidation5 = (value <= 3e5 && value >= 299790) ? false : true;
         return value <= 3e5 && value >= 299790;
       });
     }
