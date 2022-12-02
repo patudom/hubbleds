@@ -10,6 +10,7 @@
     >
       Select Your Galaxies
     </h3>
+
     <div
       v-if="state.gals_total == 0 & !state.gal_selected"
       class="mb-4"
@@ -115,3 +116,9 @@
     </v-row>
   </v-alert>
 </template>
+
+<script>
+module.exports = {
+ props: ['state']
+}
+</script>

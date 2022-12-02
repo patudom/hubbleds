@@ -25,13 +25,12 @@ class SelectionTool(v.VueTemplate):
     selected_count = Int().tag(sync=True)
     dialog = Bool(False).tag(sync=True)
     flagged = Bool(False).tag(sync=True)
-    state = GlueState().tag(sync=True)
+    selected = Bool(False).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
 
-    def __init__(self, data, state, *args, **kwargs):
-        self.state = state
+    def __init__(self, data, *args, **kwargs):
         self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self.widget.background = 'SDSS: Sloan Digital Sky Survey (Optical)'
         self.widget.foreground = 'SDSS: Sloan Digital Sky Survey (Optical)'
@@ -59,25 +58,30 @@ class SelectionTool(v.VueTemplate):
         self._on_galaxy_selected = None
 
         def wwt_cb(wwt, updated):
-            if 'most_recent_source' not in updated or self.selected_data.shape[
-                0] >= self.gals_max:
+            if ('most_recent_source' not in updated or
+                    self.selected_data.shape[0] >= self.gals_max):
                 return
 
             source = wwt.most_recent_source
             galaxy = source["layerData"]
+
             for k in ["ra", "decl", "z"]:
                 galaxy[k] = float(galaxy[k])
-            galaxy['element'] = galaxy['element'].replace("?",
-                                                          "α")  # Hacky fix for now
+
+            galaxy['element'] = galaxy['element'].replace("?", "α")  # Hacky fix for now
             fov = min(wwt.get_fov(), GALAXY_FOV)
+
             self.go_to_location(galaxy["ra"], galaxy["decl"], fov=fov)
             self.current_galaxy = galaxy
             self.candidate_galaxy = galaxy
+
             if not self.selected_data.empty:
                 gal_names = [k for k in self.selected_data["name"]]
+
                 if self.current_galaxy["name"] in gal_names:
                     self.candidate_galaxy = {}
-            self.state.gal_selected = True
+
+            self.selected = True
 
         self.widget.set_selection_change_callback(wwt_cb)
 
@@ -109,7 +113,7 @@ class SelectionTool(v.VueTemplate):
         self._create_selected_layer()
         if self._on_galaxy_selected is not None:
             self._on_galaxy_selected(galaxy)
-        self.state.gal_selected = False
+        self.selected = False
 
     def _create_selected_layer(self):
         self.table = Table.from_pandas(self.selected_data)
@@ -131,7 +135,7 @@ class SelectionTool(v.VueTemplate):
                                           instant=True)
         self.current_galaxy = {}
         self.candidate_galaxy = {}
-        self.state.gal_selected = False
+        self.selected = False
 
     def go_to_location(self, ra, dec, fov=GALAXY_FOV):
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
