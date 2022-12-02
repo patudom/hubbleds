@@ -10,8 +10,7 @@
     >
       Input Wavelengths
     </h3>
-    {{ state.marker }} {{ state.lambda_obs }} {{ state.lambda_rest }} {{ state.doppler_calc_dialog }}
-    {{ state.doppler_calc_state.failedValidation4 }} {{ state.doppler_calc_state.failedValidation5 }}
+
     <div
         v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
         class="mb-4"

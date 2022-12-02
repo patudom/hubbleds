@@ -10,7 +10,7 @@
     >
       Select Your Galaxies
     </h3>
-    {{state.marker}} {{state.gals_total}} {{state.gal_selected}}
+
     <div
       v-if="state.gals_total == 0 & !state.gal_selected"
       class="mb-4"
