@@ -12,8 +12,6 @@ from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty, add_callback, remove_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
-from glue_jupyter.link import link
-from hubbleds.components.id_slider import IDSlider
 from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
@@ -21,28 +19,21 @@ from ..data.styles import load_style
 from ..components import TrendsData, HubbleExp, AgeCalc 
 
 from ..data_management import \
-    ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
-    CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, STUDENT_DATA_LABEL, HUBBLE_1929_DATA_LABEL, \
-    HUBBLE_KEY_DATA_LABEL, BEST_FIT_GALAXY_NAME
-from ..histogram_listener import HistogramListener
+    BEST_FIT_SUBSET_LABEL, \
+    CLASS_DATA_LABEL, STUDENT_DATA_LABEL, BEST_FIT_GALAXY_NAME
 from ..stage import HubbleStage
 from ..viewers import HubbleScatterView
-from ..viewers.viewers import \
-    HubbleClassHistogramView, HubbleHistogramView, HubbleFitLayerView
+from ..viewers.viewers import HubbleFitLayerView
 
 
 class StageState(CDSState):
     trend_response = CallbackProperty(False)
     relvel_response = CallbackProperty(False)
     race_response = CallbackProperty(False)
-    relage_response = CallbackProperty(False)
     hubble_dialog_opened = CallbackProperty(False)
     class_layer_toggled = CallbackProperty(0)
     trend_line_drawn = CallbackProperty(False)
     best_fit_clicked = CallbackProperty(False)
-    prodata_response = CallbackProperty(False)
-    hst_age = CallbackProperty(13)
-    our_age = CallbackProperty(0)
     stage_three_complete = CallbackProperty(False)
 
     marker = CallbackProperty("")
@@ -56,10 +47,6 @@ class StageState(CDSState):
 
     stu_low_age = CallbackProperty(0)
     stu_high_age = CallbackProperty(0)
-
-    cla_low_age = CallbackProperty(0)
-    cla_high_age = CallbackProperty(0)
-
 
     markers = CallbackProperty([
         'exp_dat1',
@@ -80,53 +67,6 @@ class StageState(CDSState):
         'you_age1',
         'sho_est1',
         'sho_est2', # last marker now
-        'ran_var1',
-        'cla_res1',
-        'rel_age1',
-        'cla_age1',
-        'cla_age2',
-        'cla_age3',
-        'cla_age4',
-        'con_int1',
-        'age_dis1',
-        'con_int2',
-        'tre_lin2c',
-        'bes_fit1c',
-        'you_age1c',
-        'cla_res1c',
-        'cla_age1c',
-
-        'age_dis1c',
-        'con_int2c',
-        'two_his1',
-        'tru_age1',
-        'tru_age2',
-        'sho_est3',
-        'sho_est4',
-        'tru_iss1',
-        'imp_met1',
-        'imp_ass1',
-        'imp_mea1',
-        'unc_ran1',
-        'unc_sys1',
-        'unc_sys2',
-        'two_his2',
-        'lac_bia1',
-        'lac_bia2',
-        'lac_bia3',
-        'mor_dat1',
-        'acc_unc1',
-        'pro_dat0',
-        'pro_dat1',
-        'pro_dat2',
-        'pro_dat3',
-        'pro_dat4',
-        'pro_dat5',
-        'pro_dat6',
-        'pro_dat7',
-        'pro_dat8',
-        'pro_dat9',
-        'sto_fin1',
     ])
 
     step_markers = CallbackProperty([
@@ -155,21 +95,10 @@ class StageState(CDSState):
         'sho_est1',
     ])
 
-    all_galaxies_plot_highlights = CallbackProperty([
-    ])
-
-    my_class_hist_highlights = CallbackProperty([
-    ])
-
-    all_classes_hist_highlights = CallbackProperty([
-    ])
-
-
     _NONSERIALIZED_PROPERTIES = [
         'markers', 'indices', 'step_markers',
         'table_highlights', 'image_location',
         'my_galaxies_plot_highlights', 'all_galaxies_plot_highlights',
-        'my_class_hist_highlights', 'all_classes_hist_highlights',
     ]
 
     def __init__(self, *args, **kwargs):
@@ -190,8 +119,6 @@ class StageState(CDSState):
     def move_marker_forward(self, marker_text, _value=None):
         index = min(self.markers.index(marker_text) + 1, len(self.markers) - 1)
         self.marker = self.markers[index]
-    
-
 
 @register_stage(story="hubbles_law", index=4, steps=["MY DATA"])
 class StageThree(HubbleStage):
@@ -220,9 +147,8 @@ class StageThree(HubbleStage):
         return "Perhaps a small blurb about this stage"
 
     viewer_ids_for_data = {
-        STUDENT_DATA_LABEL: ["comparison_viewer","layer_viewer"],
-        CLASS_DATA_LABEL: ["comparison_viewer","layer_viewer"],
-        CLASS_SUMMARY_LABEL: [ "comparison_viewer"]
+        STUDENT_DATA_LABEL: ["layer_viewer"],
+        CLASS_DATA_LABEL: ["layer_viewer"],
     }
 
     def __init__(self, *args, **kwargs):
@@ -234,8 +160,6 @@ class StageThree(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
-        class_meas_data = self.get_data(CLASS_DATA_LABEL)
-        all_data = self.get_data(ALL_DATA_LABEL)
 
         fit_table = Table(self.session,
                           data=student_data,
@@ -251,27 +175,8 @@ class StageThree(HubbleStage):
                           )
         self.add_widget(fit_table, label="fit_table")
 
-        # Set up links between various data sets
-
-        dist_attr = "distance"
-        vel_attr = "velocity"
-        for field in [dist_attr, vel_attr]:
-            self.add_link(CLASS_DATA_LABEL, field, ALL_DATA_LABEL, field)
-        self.add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL,
-                      'Distance (Mpc)')
-        self.add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL,
-                      'Velocity (km/s)')
-        self.add_link(HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)', STUDENT_DATA_LABEL,
-                      'distance')
-        self.add_link(HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)', STUDENT_DATA_LABEL,
-                      'velocity')
-
         # Create viewers
         layer_viewer = self.add_viewer(HubbleFitLayerView, "layer_viewer", "Our Data")
-        comparison_viewer = self.add_viewer(HubbleScatterView,
-                                            "comparison_viewer",
-                                            "Data Comparison")
-        all_viewer = self.add_viewer(HubbleScatterView, "all_viewer", "All Data")
         
         hubble_race_viewer = self.add_viewer(HubbleScatterView,
                                                 "hubble_race_viewer",
@@ -300,7 +205,6 @@ class StageThree(HubbleStage):
         hubble_race_viewer._update_appearance_from_settings()
         hubble_slideshow = HubbleExp(self.stage_state, [self.viewers["hubble_race_viewer"], self.viewers["layer_viewer"]])
         
-        
         self.add_component(hubble_slideshow, label='c-hubble-slideshow')
 
         layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("tre_lin2"))
@@ -328,36 +232,7 @@ class StageThree(HubbleStage):
             "guideline_age_race_equation",
             "guideline_your_age_estimate",
             "guideline_shortcomings_est_reflect1",
-            "guideline_shortcomings_est2",
-            "guideline_random_variability",
-            "guideline_classmates_results",
-            "guideline_relationship_age_slope_mc",
-            "guideline_class_age_range2",
-            "guideline_class_age_range3",
-            "guideline_class_age_range4",
-            "guideline_confidence_interval",
-            "guideline_class_age_distribution",
-            "guideline_trend_lines_draw2_c",
-            "guideline_best_fit_line_c",
-            "guideline_classmates_results_c",
-            "guideline_class_age_distribution_c",
-            "guideline_two_histograms1",
-            "guideline_true_age1",
-            "guideline_true_age2",
-            "guideline_shortcomings_est_reflect4",
-            "guideline_true_age_issues1",
-            "guideline_imperfect_methods1",
-            "guideline_imperfect_assumptions1",
-            "guideline_imperfect_measurements1",
-            "guideline_uncertainties_random1",
-            "guideline_uncertainties_systematic1",
-            "guideline_uncertainties_systematic2",
-            "guideline_two_histograms_mc2",
-            "guideline_lack_bias_mc1",
-            "guideline_lack_bias_reflect2",
-            "guideline_lack_bias_reflect3",
-            "guideline_more_data_distribution",
-            "guideline_account_uncertainty"
+            "guideline_shortcomings_est2"
         ]
         ext = ".vue"
         for comp in state_components:
@@ -391,28 +266,15 @@ class StageThree(HubbleStage):
             "guideline_age_universe_estimate4",
             "guideline_class_age_range",
             "guideline_confidence_interval_reflect2",
-            "guideline_class_age_range_c",
-            "guideline_your_age_estimate_c",
-            "guideline_confidence_interval_reflect2_c",
-            "guideline_story_finish",
-            "guideline_shortcomings_est3",
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
             component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
             self.add_component(component, label=label) 
-            
-        
-        # Grab data
-        class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
-        classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
-
-        
-        classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
 
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
-            BEST_FIT_SUBSET_LABEL: [comparison_viewer, layer_viewer]
+            BEST_FIT_SUBSET_LABEL: [layer_viewer]
         }
 
         def label_ignore(x, label):
@@ -427,17 +289,14 @@ class StageThree(HubbleStage):
         # layers from the table selection have the same label, but we only want student_data selected
         layer_viewer.ignore(lambda layer: layer.label == "fit_table_selected" and layer.data != student_data)
 
-        
         # load all the initial styles
         self._update_viewer_style(dark=self.app_state.dark_mode)
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
-        velocity_viewers = [comparison_viewer, layer_viewer, all_viewer]
+        velocity_viewers = [layer_viewer]
         for viewer in velocity_viewers:
             viewer.figure.axes[1].label_offset = "5em"
-        
-
         
         # Set hypothetical galaxy info, if we have it
         self._update_hypgal_info()
@@ -446,7 +305,6 @@ class StageThree(HubbleStage):
         self.hub.subscribe(self, NumericalDataChangedMessage,
                            handler=self._on_data_change)
 
-        
         # We want the hub_fit_viewer to be selecting for the same subset as the table
         def fit_selection_activate():
             table = self.get_widget('fit_table')
@@ -508,21 +366,6 @@ class StageThree(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
         if advancing and new =="age_rac1":
             self._update_hypgal_info()
-        if advancing and new == "tre_lin2c":
-            layer_viewer = self.get_viewer("layer_viewer")
-            print("best fit galaxy", self.get_data(STUDENT_DATA_LABEL).subsets[0])
-            best_fit_subset = self.get_data(STUDENT_DATA_LABEL).subsets[0]
-            best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
-            best_fit_layer.state.visible = False
-            class_layer = layer_viewer.layer_artist_for_data(self.get_data(CLASS_DATA_LABEL))
-            class_layer.state.visible = True
-            student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
-            student_layer.state.visible = False    
-            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
-            layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
-            layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
-            
-            
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used
@@ -530,18 +373,13 @@ class StageThree(HubbleStage):
     def _setup_scatter_layers(self):
         dist_attr = "distance"
         vel_attr = "velocity"
-        hubble1929 = self.get_data(HUBBLE_1929_DATA_LABEL)
-        hstkp = self.get_data(HUBBLE_KEY_DATA_LABEL)
-        comparison_viewer = self.get_viewer("comparison_viewer")
         layer_viewer = self.get_viewer("layer_viewer")
-        all_viewer = self.get_viewer("all_viewer")
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
-        for viewer in [comparison_viewer, layer_viewer, all_viewer]:
+        for viewer in [layer_viewer]:
             viewer.add_data(student_data)
             viewer.state.x_att = student_data.id[dist_attr]
             viewer.state.y_att = student_data.id[vel_attr]
-    
         
         student_layer = layer_viewer.layer_artist_for_data(student_data)
         student_layer.state.color = '#FF7043'
@@ -560,9 +398,7 @@ class StageThree(HubbleStage):
         toggle_tool = layer_viewer.toolbar.tools['hubble:toggleclass']
         toggle_tool.set_layer_to_toggle(class_layer)
 
-
         layer_viewer.toolbar.set_tool_enabled('hubble:toggleclass', not self.stage_state.marker_before("tre_dat2"))
-
 
         # cosmicds PR157 - turn off fit line label for layer_viewer
         layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
@@ -578,51 +414,9 @@ class StageThree(HubbleStage):
         add_callback(toggle_tool, 'toggled_count', self._on_class_layer_toggled) 
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
 
-        student_layer = comparison_viewer.layer_artist_for_data(student_data)
-        student_layer.state.zorder = 5
-        comparison_viewer.add_data(class_meas_data)
-        class_layer = comparison_viewer.layer_artist_for_data(class_meas_data)
-        comparison_viewer.layer_artist_for_data(student_data).state.visible = False # Turn off student's own data on comparison viewer
-        if len(student_data.subsets) > 0:
-            best_fit_subset = student_data.subsets[0]
-            comparison_viewer.layer_artist_for_data(best_fit_subset).state.visible = False # Turn off best fit subset view on comparison viewer
-        class_layer.state.visible = False  # Turn off layer with the whole class
-        class_layer.state.zorder = 2
-        # comparison_viewer.add_subset(self.student_slider_subset)
-        comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
-        comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
-        comparison_viewer.state.reset_limits()
-
-        all_data = self.get_data(ALL_DATA_LABEL)
-        student_layer = all_viewer.layer_artist_for_data(student_data)
-        student_layer.state.zorder = 2
-        student_layer.state.visible = False
-        all_viewer.add_data(class_meas_data)
-        class_layer = all_viewer.layer_artist_for_data(class_meas_data)
-        class_layer.state.zorder = 1
-        class_layer.state.visible = False
-        all_viewer.add_data(all_data)
-        all_layer = all_viewer.layer_artist_for_data(all_data)
-        all_layer.state.zorder = 0
-        all_layer.state.color = "#78909C"
-        all_layer.state.size = 2
-        all_layer.state.visible = False
-        all_viewer.state.x_att = all_data.id[dist_attr]
-        all_viewer.state.y_att = all_data.id[vel_attr]
-
-
-        
-        
-
-        # In the comparison viewer, we only want to see the line for the student slider subset
-        linefit_id = "hubble:linefit"
-        comparison_toolbar = comparison_viewer.toolbar
-        comparison_linefit = comparison_toolbar.tools[linefit_id]
-        comparison_linefit.activate()
-        comparison_toolbar.set_tool_enabled(linefit_id, False)
-
         # Ignore the best-fit-galaxy subset in the layer viewer for line fitting
         layer_toolbar = layer_viewer.toolbar
+        linefit_id = "hubble:linefit"
         layer_linefit = layer_toolbar.tools[linefit_id]
         layer_linefit.add_ignore_condition(lambda layer: layer.layer.label == BEST_FIT_SUBSET_LABEL)
 
@@ -630,32 +424,6 @@ class StageThree(HubbleStage):
         student_layer = layer_viewer.layer_artist_for_data(student_data)
         class_layer = layer_viewer.layer_artist_for_data(class_meas_data)
         layer_toggle.set_layer_order([student_layer, class_layer])        
-
-
-    def _setup_histogram_layers(self):
-        pass
-
-
-    # def _setup_morphology_subsets(self):
-    #     # Do some stuff with the galaxy data
-    #     type_field = 'type'
-    #     morphology_viewer = self.get_viewer("morphology_viewer")
-    #     all_viewer = self.get_viewer("all_viewer")
-    #     all_data = self.get_data(ALL_DATA_LABEL)
-    #     all_viewer.ignore(lambda layer: layer.label in ["Elliptical", "Spiral", "Irregular"])
-    #     elliptical_subset = all_data.new_subset(all_data.id[type_field] == 'E',
-    #                                             label='Elliptical',
-    #                                             color='orange')
-    #     spiral_subset = all_data.new_subset(all_data.id[type_field] == 'Sp',
-    #                                         label='Spiral', color='green')
-    #     irregular_subset = all_data.new_subset(all_data.id[type_field] == 'Ir',
-    #                                            label='Irregular', color='red')
-    #     morphology_subsets = [elliptical_subset, spiral_subset,
-    #                           irregular_subset]
-    #     for subset in morphology_subsets:
-    #         morphology_viewer.add_subset(subset)
-    #     morphology_viewer.state.x_att = all_data.id['distance']
-    #     morphology_viewer.state.y_att = all_data.id['velocity']
 
     def _on_stage_index_changed(self, index):
         print("Stage Index: ",self.story_state.stage_index)
@@ -667,8 +435,6 @@ class StageThree(HubbleStage):
 
     def _deferred_setup(self):
         self._setup_scatter_layers()
-        self._setup_histogram_layers()
-        # self._setup_morphology_subsets()
 
     @property
     def all_viewers(self):
@@ -686,22 +452,17 @@ class StageThree(HubbleStage):
     def reset_viewer_limits(self):
         self._reset_limits_for_data(STUDENT_DATA_LABEL)
         self._reset_limits_for_data(CLASS_DATA_LABEL)
-        self._reset_limits_for_data(CLASS_SUMMARY_LABEL)
 
     def _reset_limits_for_data(self, label):
         viewer_id = self.viewer_ids_for_data.get(label, [])
         for vid in viewer_id:
             self.get_viewer(vid).state.reset_limits()
 
-
     def _on_data_change(self, msg):
         label = msg.data.label
         # self._reset_viewer_limits(label)
         if label == STUDENT_DATA_LABEL:
             self._update_hypgal_info()
-        elif label == CLASS_SUMMARY_LABEL:
-            self.get_component("c-student-slider").refresh()
-
 
     def _on_class_data_update(self, *args):
         if self.story_state.stage_index == self.index:
@@ -714,13 +475,9 @@ class StageThree(HubbleStage):
     def _update_viewer_style(self, dark):
         viewers = ['layer_viewer',
                    'hubble_race_viewer',
-                   'comparison_viewer',
-                   'all_viewer'
                    ]
 
         viewer_type = ["scatter",
-                       "scatter",
-                       "scatter",
                        "scatter",]
 
         theme_name = "dark" if dark else "light"
@@ -728,7 +485,6 @@ class StageThree(HubbleStage):
             viewer = self.get_viewer(viewer)
             style = load_style(f"default_{vtype}_{theme_name}")
             update_figure_css(viewer, style_dict=style)
-
 
     def _on_dark_mode_change(self, dark):
         super()._on_dark_mode_change(dark)
@@ -749,13 +505,12 @@ class StageThree(HubbleStage):
         print("Best fit line shown: ", is_active)
         if not self.stage_state.best_fit_clicked:
             self.stage_state.best_fit_clicked = is_active
+
     def _on_best_fit_galaxy_added(self, value):
         layer_viewer = self.get_viewer("layer_viewer")
         linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
         if value and not linefit_tool.active:
             linefit_tool.activate()
-    
-
     
     def _on_stage_three_complete(self, change):
         if change:
