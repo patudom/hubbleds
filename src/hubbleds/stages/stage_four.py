@@ -21,8 +21,8 @@ from ..components import TrendsData, HubbleExp, AgeCalc, ProData
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
-    CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, STUDENT_DATA_LABEL, HUBBLE_1929_DATA_LABEL, \
-    HUBBLE_KEY_DATA_LABEL, BEST_FIT_GALAXY_NAME
+    CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, STUDENT_DATA_LABEL, \
+    BEST_FIT_GALAXY_NAME
 from ..histogram_listener import HistogramListener
 from ..stage import HubbleStage
 from ..viewers import HubbleFitView, \
@@ -34,16 +34,7 @@ from bqplot import OrdinalScale, LinearScale
 
 
 class StageState(CDSState):
-    trend_response = CallbackProperty(False)
-    relvel_response = CallbackProperty(False)
-    race_response = CallbackProperty(False)
     relage_response = CallbackProperty(False)
-    hubble_dialog_opened = CallbackProperty(False)
-    class_layer_toggled = CallbackProperty(0)
-    trend_line_drawn = CallbackProperty(False)
-    best_fit_clicked = CallbackProperty(False)
-    hst_age = CallbackProperty(13)
-    our_age = CallbackProperty(0)
     
     stage_four_complete = CallbackProperty(False)
     
@@ -55,9 +46,6 @@ class StageState(CDSState):
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
-
-    stu_low_age = CallbackProperty(0)
-    stu_high_age = CallbackProperty(0)
 
     cla_low_age = CallbackProperty(0)
     cla_high_age = CallbackProperty(0)
@@ -113,24 +101,6 @@ class StageState(CDSState):
         'exp_dat1',
     ])
 
-    my_galaxies_plot_highlights = CallbackProperty([
-        'tre_dat1',
-        'tre_dat2',
-        'tre_dat3',
-        'rel_vel1',
-        'hub_exp1',
-        'tre_lin1',
-        'tre_lin2',
-        'bes_fit1',
-        'age_uni1',
-        'hyp_gal1',
-        'age_rac1',
-        'age_uni2',
-        'age_uni3',
-        'you_age1',
-        'sho_est1',
-    ])
-
     all_galaxies_plot_highlights = CallbackProperty([
     ])
 
@@ -166,8 +136,6 @@ class StageState(CDSState):
     def move_marker_forward(self, marker_text, _value=None):
         index = min(self.markers.index(marker_text) + 1, len(self.markers) - 1)
         self.marker = self.markers[index]
-    
-
 
 @register_stage(story="hubbles_law", index=5, steps=[
     "CLASS AGE",
@@ -267,19 +235,6 @@ class StageFour(HubbleStage):
                 __file__).parent.parent / "components" / "generic_state_components" / "stage_three")
         path = join(state_components_dir, "")
         state_components = [
-            "guideline_explore_data",
-            "guideline_trends_data2",
-            "guideline_relationship_vel_dist_mc",
-            "guideline_trend_lines1",
-            "guideline_trend_lines_draw2",
-            "guideline_best_fit_line",
-            "guideline_hubbles_expanding_universe1",
-            "guideline_age_universe",
-            "guideline_hypothetical_galaxy",
-            "guideline_age_race_equation",
-            "guideline_your_age_estimate",
-            "guideline_shortcomings_est_reflect1",
-            "guideline_shortcomings_est2",
             "guideline_random_variability",
             "guideline_classmates_results",
             "guideline_relationship_age_slope_mc",
@@ -319,29 +274,11 @@ class StageFour(HubbleStage):
                                               self.stage_state)
             self.add_component(component, label=label)
 
-        # Set up trends_data components
-        trends_data_components_dir = str(Path(
-            __file__).parent.parent / "components" / "trends_data_components")
-        path = join(trends_data_components_dir, "")
-        trends_data_components = [
-            "guideline_trends_data_mc1",
-            "guideline_trends_data_mc3"
-        ]
-        for comp in trends_data_components:
-            label = f"c-{comp}".replace("_", "-")
-            component = TrendsData(comp + ext, path, self.stage_state)
-            self.add_component(component, label=label)
-
         # Set up age_calc components
         age_calc_components_dir = str(Path(
             __file__).parent.parent / "components" / "age_calc_components")
         path = join(age_calc_components_dir, "")
         age_calc_components = [
-            "guideline_age_universe_equation2",
-            "guideline_age_universe_estimate3",
-            "guideline_age_universe_estimate4",
-            "guideline_class_age_range",
-            "guideline_confidence_interval_reflect2",
             "guideline_class_age_range_c",
             "guideline_your_age_estimate_c",
             "guideline_confidence_interval_reflect2_c",
@@ -353,7 +290,6 @@ class StageFour(HubbleStage):
             component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
             self.add_component(component, label=label) 
             
-
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
@@ -458,7 +394,6 @@ class StageFour(HubbleStage):
         for viewer in velocity_viewers:
             viewer.figure.axes[1].label_offset = "5em"
         
-
         # Just for accessibility while testing
         self.data_collection.histogram_listener = self.histogram_listener
 
@@ -482,9 +417,6 @@ class StageFour(HubbleStage):
         extend_tool(class_distr_viewer, 'bqplot:xrange',
                     hist_selection_activate, hist_selection_deactivate)
 
-
-
-
         # JC: There's apparently a way to link axes in glue-jupyter, so we should use that
         # but I'm not familiar with it, so in the interest of time, let's do this
         for prop in ['x_min', 'x_max']: 
@@ -496,7 +428,6 @@ class StageFour(HubbleStage):
         else:
             self._deferred_setup()
             
-    
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
             return
@@ -518,9 +449,35 @@ class StageFour(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
        
-    
     def _setup_scatter_layers(self):
+        dist_attr = "distance"
+        vel_attr = "velocity"
         layer_viewer = self.get_viewer("layer_viewer")
+        comparison_viewer = self.get_viewer("comparison_viewer")
+        student_data = self.get_data(STUDENT_DATA_LABEL)
+        class_meas_data = self.get_data(CLASS_DATA_LABEL)
+        for viewer in [comparison_viewer, layer_viewer, all_viewer]:
+            viewer.add_data(student_data)
+            viewer.state.x_att = student_data.id[dist_attr]
+            viewer.state.y_att = student_data.id[vel_attr]
+
+        student_layer = layer_viewer.layer_artist_for_data(student_data)
+        student_layer.state.color = '#FF7043'
+        student_layer.state.zorder = 5
+        student_layer.state.size = 8                    
+        student_layer.state.alpha = 1
+        # add class measurement data and hide by default
+        layer_viewer.add_data(class_meas_data)
+        layer_viewer.state.reset_limits()
+        class_layer = layer_viewer.layer_artist_for_data(class_meas_data)
+        class_layer.state.zorder = 1
+        class_layer.state.color = "#26C6DA"
+        class_layer.state.alpha = 1
+        class_layer.state.size = 4
+        class_layer.state.visible = False
+        toggle_tool = layer_viewer.toolbar.tools['hubble:toggleclass']
+        toggle_tool.set_layer_to_toggle(class_layer)
+
         draw_tool = layer_viewer.toolbar.tools['hubble:linedraw'] 
         add_callback(draw_tool, 'line_drawn', self._on_trend_line_drawn)
         
@@ -543,8 +500,6 @@ class StageFour(HubbleStage):
         student_slider_subset_layer = next(student_slider_subset_layer.__iter__(), None) # get the first element or None if empty
         if student_slider_subset_layer is not None:
             student_slider_subset_layer.visible = False
-
-
     
     def _setup_histogram_layers(self):
         class_distr_viewer = self.get_viewer("class_distr_viewer")
@@ -596,10 +551,7 @@ class StageFour(HubbleStage):
         style_name = f"default_histogram_{theme}"
         style = load_style(style_name)
         update_figure_css(all_distr_viewer_student, style_dict=style)
-        update_figure_css(all_distr_viewer_class, style_dict=style)
-
-
-    
+        update_figure_css(all_distr_viewer_class, style_dict=style)    
 
     def _deferred_setup(self):
         self._setup_scatter_layers()
@@ -609,7 +561,6 @@ class StageFour(HubbleStage):
     def all_viewers(self):
         return [layout.viewer for layout in self.viewers.values()]
      
-    
     def _update_viewer_style(self, dark):
         viewers = ['layer_viewer',
                    'comparison_viewer',
@@ -631,7 +582,6 @@ class StageFour(HubbleStage):
             viewer = self.get_viewer(viewer)
             style = load_style(f"default_{vtype}_{theme_name}")
             update_figure_css(viewer, style_dict=style)
-    
 
     def table_selected_color(self, dark):
         return "colors.lightBlue.darken4"
@@ -645,11 +595,9 @@ class StageFour(HubbleStage):
             self.stage_state.hypgal_distance = data["distance"][index]
             self.stage_state.our_age = (AGE_CONSTANT * self.stage_state.hypgal_distance/self.stage_state.hypgal_velocity)
 
-
     def _update_image_location(self, using_voila):
         prepend = "voila/files/" if using_voila else ""
         self.stage_state.image_location = prepend + "data/images/stage_three"
-    
 
     def _on_trend_line_drawn(self, is_drawn):
         print("Trend line drawn: ", is_drawn)
@@ -683,7 +631,6 @@ class StageFour(HubbleStage):
         self._reset_limits_for_data(CLASS_DATA_LABEL)
         self._reset_limits_for_data(CLASS_SUMMARY_LABEL)
     
-    
     def _on_data_change(self, msg):
         label = msg.data.label
         if self.story_state.stage_index == self.index:
@@ -692,7 +639,6 @@ class StageFour(HubbleStage):
             elif label == CLASS_SUMMARY_LABEL:
                 self.get_component("c-student-slider").refresh()
             self._reset_limits_for_data(label)
-
 
     def _on_class_data_update(self, *args):
         self.reset_viewer_limits()
