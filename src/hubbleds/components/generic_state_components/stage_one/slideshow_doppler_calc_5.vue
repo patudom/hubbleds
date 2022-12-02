@@ -936,11 +936,16 @@ module.exports = {
       });
     }
   },
+  computed: {
+    step() {
+      return this.state.doppler_calc_state.step;
+    }
+  },
   watch: {
     step(newStep, oldStep) {
-      const isInteractStep = state.doppler_calc_state.interactSteps5.includes(newStep);
+      const isInteractStep = this.state.doppler_calc_state.interactSteps5.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
-      state.doppler_calc_state.maxStepCompleted5 = Math.max(state.doppler_calc_state.maxStepCompleted5, newCompleted)
+      this.state.doppler_calc_state.maxStepCompleted5 = Math.max(this.state.doppler_calc_state.maxStepCompleted5, newCompleted)
     }
   }
 };
