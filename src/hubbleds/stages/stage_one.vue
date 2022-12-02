@@ -28,27 +28,27 @@
         :style="$vuetify.breakpoint.lg ? 'max-height: 100px' : 'max-height: 2500px'"
       >
         <guideline-intro-guidelines
-          v-if="stage_state.marker == 'mee_gui1'"
+          v-if="stage_state.marker === 'mee_gui1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-select-galaxies-1
-          v-if="stage_state.marker == 'sel_gal1'"
+          v-if="stage_state.marker === 'sel_gal1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-select-galaxies-2
-          v-if="stage_state.marker == 'sel_gal2' & stage_state.gals_total == 0"
+          v-if="stage_state.marker === 'sel_gal2' & stage_state.gals_total === 0"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-select-galaxies-3
-          v-if="stage_state.marker == 'sel_gal3'"
+          v-if="stage_state.marker === 'sel_gal3'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <v-btn
-          v-if="show_team_interface && (stage_state.marker == 'sel_gal2' || 'sel_gal3' && stage_state.gals_total < stage_state.gals_max)"
+          v-if="show_team_interface && (stage_state.marker === 'sel_gal2' || 'sel_gal3' && stage_state.gals_total < stage_state.gals_max)"
           color="error"
           class="black--text"
           block
@@ -205,7 +205,7 @@
           >
             <!-- REFLECTION Dialog -->
             <reflect-velocity-windows
-              v-if="(stage_state.obswaves_total >= 5) && !(stage_state.marker == 'rep_rem1')"
+              v-if="(stage_state.obswaves_total >= 5) && !(stage_state.marker === 'rep_rem1')"
               button-text="reflect"
               close-text="submit"
               :state="stage_state"
@@ -217,7 +217,7 @@
             </reflect-velocity-windows>
             <!-- Placeholder for Reflection button -->
             <v-btn
-              v-if="(stage_state.obswaves_total < 5) || (stage_state.marker == 'rep_rem1')"
+              v-if="(stage_state.obswaves_total < 5) || (stage_state.marker === 'rep_rem1')"
               disabled
               block
               color="info"

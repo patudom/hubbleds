@@ -257,12 +257,6 @@ class StageOne(HubbleStage):
         spectrum_slideshow.observe(self._spectrum_slideshow_tutorial_opened,
                                    names=['opened'])
 
-        # Execute add_student_velocity when student_vel_calc in
-        # c-doppler-calc-5-slideshow is updated.
-        # doppler_slideshow = self.get_component("c-slideshow-doppler-calc-5")
-        # doppler_slideshow.observe(self.add_student_velocity,
-        #                           names=["student_vel_calc"])
-
         add_callback(self.stage_state, 'student_vel',
                      self.add_student_velocity)
         add_callback(self.stage_state, 'completed',
