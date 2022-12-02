@@ -35,7 +35,7 @@
           <v-spacer></v-spacer>
           <!-- @click="() => { dialog = false; if (step == 7)  {step = 0}; }" -->
           <span
-            @click="() => { $emit('submit'); dialog = false; reflection_complete = true}"
+            @click="closeDialog()"
           >
             <v-btn
               icon
@@ -410,6 +410,22 @@ module.exports = {
       }
     },
   },
+
+  methods: {
+    closeDialog(force = false) {
+    // component does not have show_team_interface or allow_advancing variable available, so it can't be bypassed
+      reachedEnd = this.max_step_completed >= this.interact_steps[this.interact_steps.length - 1];
+      if (reachedEnd || force) {
+        console.log('closing doppler reflection sequence');
+        this.$emit('submit');
+        this.dialog = false;
+        this.reflection_complete = true
+      } else {
+        console.log('user has not reached end of sequence')
+      }
+      }
+  },
+
   watch: {
     step(newStep, oldStep) {
         const isInteractStep = this.interact_steps.includes(newStep);
