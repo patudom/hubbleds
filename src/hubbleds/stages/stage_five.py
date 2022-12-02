@@ -17,10 +17,7 @@ from hubbleds.utils import IMAGE_BASE_URL
 
 from ..components import AgeCalc, HubbleExp, ProData, TrendsData
 from ..data.styles import load_style
-from ..data_management import (ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL,
-                               ALL_STUDENT_SUMMARIES_LABEL,
-                               BEST_FIT_GALAXY_NAME, BEST_FIT_SUBSET_LABEL,
-                               CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL,
+from ..data_management import (ALL_DATA_LABEL, CLASS_DATA_LABEL,
                                HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL,
                                STUDENT_DATA_LABEL)
 from ..stage import HubbleStage
@@ -31,9 +28,11 @@ class StageState(CDSState):
     
     marker = CallbackProperty("")
     indices = CallbackProperty({})
+
+    hst_age = CallbackProperty(13)
+    our_age = CallbackProperty(0)
     
     max_prodata_index = CallbackProperty(0)
-
     
     markers = [
         'pro_dat0',
@@ -151,7 +150,7 @@ class StageFive(HubbleStage):
         self.setup_prodata_viewer()
         
         self._update_viewer_style(dark=self.app_state.dark_mode)
-        
+
         # Functions to call on data updates
         self.hub.subscribe(self, NumericalDataChangedMessage,
                            filter=lambda msg: msg.data.label == STUDENT_DATA_LABEL,
@@ -160,7 +159,6 @@ class StageFive(HubbleStage):
                            filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
                            handler=self._on_class_data_update)
 
-    
     def add_prodata_components_from_path(self, state_components, path, component_class = ProData):
         ext = ".vue"
         for index, comp in enumerate(state_components):
@@ -169,7 +167,6 @@ class StageFive(HubbleStage):
             component = component_class(comp + ext, path,
                                               self.stage_state, index)
             self.add_component(component, label=label)
-
 
     def setup_prodata_viewer(self):
         # load the prodata_viewer
@@ -180,7 +177,21 @@ class StageFive(HubbleStage):
         class_data = self.get_data(CLASS_DATA_LABEL)
         hubble_data = self.get_data(HUBBLE_1929_DATA_LABEL)
         hst_data = self.get_data(HUBBLE_KEY_DATA_LABEL)
-        
+
+        # Set up links between various data sets
+
+        dist_attr = "distance"
+        vel_attr = "velocity"
+        for field in [dist_attr, vel_attr]:
+            self.add_link(CLASS_DATA_LABEL, field, ALL_DATA_LABEL, field)
+        self.add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL,
+                      'Distance (Mpc)')
+        self.add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL,
+                      'Velocity (km/s)')
+        self.add_link(HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)', STUDENT_DATA_LABEL,
+                      'distance')
+        self.add_link(HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)', STUDENT_DATA_LABEL,
+                      'velocity')
         
         # load data into the viewer and style
         prodata_viewer.add_data(student_data)
@@ -191,17 +202,16 @@ class StageFive(HubbleStage):
         student_layer.state.alpha = 1
         student_layer.state.visible = self.stage_state.marker_reached('pro_dat0')
         
+        prodata_viewer.add_data(class_data)
+
         prodata_viewer.state.x_att = student_data.id['distance']
         prodata_viewer.state.y_att = student_data.id['velocity']
-        
-        
         
         # load hubble 1929 data
         prodata_viewer.add_data(hubble_data)
         hubble_layer = prodata_viewer.layer_artist_for_data(hubble_data)
         hubble_layer.state.color = '#D500F9'
         hubble_layer.state.visible = self.stage_state.marker_reached('pro_dat1')
-        
         
         # load hubble key data
         prodata_viewer.add_data(hst_data)
@@ -244,7 +254,6 @@ class StageFive(HubbleStage):
         if advancing:
             prodata_viewer = self.get_viewer("prodata_viewer")
         
-    
             if  new == "pro_dat1": # show hubble 1929 data. enable line fit tool
                 hubble_layer = prodata_viewer.layer_artist_for_data(self.get_data(HUBBLE_1929_DATA_LABEL))
                 hubble_layer.state.visible = True
