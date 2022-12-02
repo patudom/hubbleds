@@ -422,6 +422,7 @@ module.exports = {
         this.reflection_complete = true
       } else {
         console.log('user has not reached end of sequence')
+        this.dialog = false;
       }
       }
   },
