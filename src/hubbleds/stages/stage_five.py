@@ -1,8 +1,7 @@
-from functools import partial
 from os.path import join
 from pathlib import Path
 
-from echo import CallbackProperty, add_callback, remove_callback
+from echo import CallbackProperty, add_callback
 from glue_jupyter.link import dlink, link
 from glue.core.message import NumericalDataChangedMessage
 from traitlets import Bool, default
@@ -15,7 +14,7 @@ from cosmicds.utils import (RepeatedTimer, extend_tool, load_template,
                             update_figure_css)
 from hubbleds.utils import IMAGE_BASE_URL
 
-from ..components import AgeCalc, HubbleExp, ProData, TrendsData
+from ..components import AgeCalc, ProData
 from ..data.styles import load_style
 from ..data_management import (ALL_DATA_LABEL, CLASS_DATA_LABEL,
                                HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL,
@@ -202,7 +201,7 @@ class StageFive(HubbleStage):
         student_layer.state.alpha = 1
         student_layer.state.visible = self.stage_state.marker_reached('pro_dat0')
         
-        prodata_viewer.add_data(class_data)
+        # prodata_viewer.add_data(class_data)
 
         prodata_viewer.state.x_att = student_data.id['distance']
         prodata_viewer.state.y_att = student_data.id['velocity']
