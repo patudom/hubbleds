@@ -2,22 +2,21 @@ from functools import partial
 from os.path import join
 from pathlib import Path
 
-from numpy import asarray, where
+from numpy import where
 from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import extend_tool, load_template, update_figure_css, RepeatedTimer
+from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty, add_callback, remove_callback
 from glue.core.message import NumericalDataChangedMessage
-from glue.core.data import Data
-from glue_jupyter.link import link, dlink
+from glue_jupyter.link import link
 from hubbleds.components.id_slider import IDSlider
 from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..components import TrendsData, HubbleExp, AgeCalc, ProData 
+from ..components import AgeCalc
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
@@ -35,6 +34,8 @@ from bqplot import OrdinalScale, LinearScale
 
 class StageState(CDSState):
     relage_response = CallbackProperty(False)
+    class_trend_line_drawn = CallbackProperty(False)
+    class_best_fit_clicked = CallbackProperty(False)
     
     stage_four_complete = CallbackProperty(False)
     
@@ -46,6 +47,9 @@ class StageState(CDSState):
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
+
+    stu_low_age = CallbackProperty(0)
+    stu_high_age = CallbackProperty(0)
 
     cla_low_age = CallbackProperty(0)
     cla_high_age = CallbackProperty(0)
@@ -99,6 +103,9 @@ class StageState(CDSState):
 
     table_highlights = CallbackProperty([
         'exp_dat1',
+    ])
+    
+    my_galaxies_plot_highlights = CallbackProperty([
     ])
 
     all_galaxies_plot_highlights = CallbackProperty([
@@ -208,22 +215,21 @@ class StageFour(HubbleStage):
         self.add_widget(fit_table, label="fit_table")
 
         # Set up links between various data sets
-
-
+        dist_attr = "distance"
+        vel_attr = "velocity"
+        for field in [dist_attr, vel_attr]:
+            self.add_link(CLASS_DATA_LABEL, field, ALL_DATA_LABEL, field)
 
         # Create viewers
         layer_viewer = self.add_viewer(label='layer_viewer')
-        comparison_viewer = self.add_viewer(label='comparison_viewer')
-        all_viewer = self.add_viewer(label='all_viewer')
+        comparison_viewer = self.add_viewer(HubbleScatterView, "comparison_viewer", "Data Comparison")
+        all_viewer = self.add_viewer(HubbleScatterView, "all_viewer", "All Data")
         class_distr_viewer = self.add_viewer(HubbleClassHistogramView,
                                              'class_distr_viewer', "My Class")
         all_distr_viewer_student = self.add_viewer(HubbleHistogramView,
                                            'all_distr_viewer_student', "All Students") # really just All students, but need the title bar
         all_distr_viewer_class = self.add_viewer(HubbleHistogramView,
                                            'all_distr_viewer_class', "All Classes")
-
-        line_fit_tool = layer_viewer.toolbar.tools['hubble:linefit']
-        add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
 
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
@@ -279,6 +285,8 @@ class StageFour(HubbleStage):
             __file__).parent.parent / "components" / "age_calc_components")
         path = join(age_calc_components_dir, "")
         age_calc_components = [
+            "guideline_class_age_range",
+            "guideline_confidence_interval_reflect2",
             "guideline_class_age_range_c",
             "guideline_your_age_estimate_c",
             "guideline_confidence_interval_reflect2_c",
@@ -326,9 +334,8 @@ class StageFour(HubbleStage):
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
 
-        # def update_student_slider(msg):
-        #     student_slider.update_data(self, msg.data)
-        # self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == CLASS_SUMMARY_LABEL, handler=update_student_slider)
+        layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("tre_lin2c"))
+        layer_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("bes_fit1c"))
 
         # Create the class slider
         class_slider_subset_label = "class_slider_subset"
@@ -348,10 +355,10 @@ class StageFour(HubbleStage):
 
         self.hub.subscribe(self, NumericalDataChangedMessage,
                            filter=lambda msg: msg.data.label == STUDENT_DATA_LABEL,
-                           handler=student_slider.refresh)
+                           handler=student_slider_refresh)
         self.hub.subscribe(self, NumericalDataChangedMessage,
                            filter=lambda msg: msg.data.label == CLASS_SUMMARY_LABEL,
-                           handler=class_slider.refresh)
+                           handler=class_slider_refresh)
 
         def update_class_slider(msg):
             class_slider.update_data(self, msg.data)
@@ -417,6 +424,18 @@ class StageFour(HubbleStage):
         extend_tool(class_distr_viewer, 'bqplot:xrange',
                     hist_selection_activate, hist_selection_deactivate)
 
+        # We want the hub_fit_viewer to be selecting for the same subset as the table
+        def fit_selection_activate():
+            table = self.get_widget('fit_table')
+            table.initialize_subset_if_needed()
+            self.session.edit_subset_mode.edit_subset = [table.subset]
+
+        def fit_selection_deactivate():
+            self.session.edit_subset_mode.edit_subset = []
+        
+        extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
+                    fit_selection_deactivate)
+
         # JC: There's apparently a way to link axes in glue-jupyter, so we should use that
         # but I'm not familiar with it, so in the interest of time, let's do this
         for prop in ['x_min', 'x_max']: 
@@ -433,11 +452,12 @@ class StageFour(HubbleStage):
             return
         markers = self.stage_state.markers
         advancing = markers.index(new) > markers.index(old)
-            
+
+        layer_viewer = self.get_viewer("layer_viewer")
+
         if advancing and new == "tre_lin2c":
-            layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
-            print("best fit galaxy", self.get_data(STUDENT_DATA_LABEL).subsets[0])
+            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True )
             best_fit_subset = self.get_data(STUDENT_DATA_LABEL).subsets[0]
             best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
             best_fit_layer.state.visible = False
@@ -445,15 +465,19 @@ class StageFour(HubbleStage):
             class_layer.state.visible = True
             student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
             student_layer.state.visible = False    
-            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
-            layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
+
+        if advancing and new == "bes_fit1c":
+            layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
+            layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)     
+            layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
        
     def _setup_scatter_layers(self):
         dist_attr = "distance"
         vel_attr = "velocity"
         layer_viewer = self.get_viewer("layer_viewer")
         comparison_viewer = self.get_viewer("comparison_viewer")
+        all_viewer = self.get_viewer("all_viewer")
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
         for viewer in [comparison_viewer, layer_viewer, all_viewer]:
@@ -462,21 +486,18 @@ class StageFour(HubbleStage):
             viewer.state.y_att = student_data.id[vel_attr]
 
         student_layer = layer_viewer.layer_artist_for_data(student_data)
-        student_layer.state.color = '#FF7043'
-        student_layer.state.zorder = 5
-        student_layer.state.size = 8                    
-        student_layer.state.alpha = 1
-        # add class measurement data and hide by default
-        layer_viewer.add_data(class_meas_data)
-        layer_viewer.state.reset_limits()
+        student_layer.state.visible = False # Don't need to display this in Stage 4.
         class_layer = layer_viewer.layer_artist_for_data(class_meas_data)
-        class_layer.state.zorder = 1
-        class_layer.state.color = "#26C6DA"
-        class_layer.state.alpha = 1
-        class_layer.state.size = 4
-        class_layer.state.visible = False
+        class_layer.state.visible = True
         toggle_tool = layer_viewer.toolbar.tools['hubble:toggleclass']
         toggle_tool.set_layer_to_toggle(class_layer)
+
+        layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
+
+        if(self.story_state.has_best_fit_galaxy):
+            best_fit_subset = self.get_data(STUDENT_DATA_LABEL).subsets[0]
+            best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
+            best_fit_layer.state.visible = False
 
         draw_tool = layer_viewer.toolbar.tools['hubble:linedraw'] 
         add_callback(draw_tool, 'line_drawn', self._on_trend_line_drawn)
@@ -493,6 +514,40 @@ class StageFour(HubbleStage):
         add_callback(toggle_tool, 'toggled_count', self._on_class_layer_toggled) 
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
         
+        student_layer = comparison_viewer.layer_artist_for_data(student_data)
+        student_layer.state.zorder = 5
+        comparison_viewer.add_data(class_meas_data)
+        class_layer = comparison_viewer.layer_artist_for_data(class_meas_data)
+        comparison_viewer.layer_artist_for_data(student_data).state.visible = False # Turn off student's own data on comparison viewer
+        if len(student_data.subsets) > 0:
+            best_fit_subset = student_data.subsets[0]
+            comparison_viewer.layer_artist_for_data(best_fit_subset).state.visible = False # Turn off best fit subset view on comparison viewer
+        class_layer.state.visible = False  # Turn off layer with the whole class
+        class_layer.state.zorder = 2
+        # comparison_viewer.add_subset(self.student_slider_subset)
+        comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
+        comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
+        comparison_viewer.state.reset_limits()
+
+        comparison_viewer.toolbar.tools["hubble:linefit"].activate() 
+
+        all_data = self.get_data(ALL_DATA_LABEL)
+        student_layer = all_viewer.layer_artist_for_data(student_data)
+        student_layer.state.zorder = 2
+        student_layer.state.visible = False
+        all_viewer.add_data(class_meas_data)
+        class_layer = all_viewer.layer_artist_for_data(class_meas_data)
+        class_layer.state.zorder = 1
+        class_layer.state.visible = False
+        all_viewer.add_data(all_data)
+        all_layer = all_viewer.layer_artist_for_data(all_data)
+        all_layer.state.zorder = 0
+        all_layer.state.color = "#78909C"
+        all_layer.state.size = 2
+        all_layer.state.visible = False
+        all_viewer.state.x_att = all_data.id[dist_attr]
+        all_viewer.state.y_att = all_data.id[vel_attr]
+
         # We want to turn this off here so that a it doesn't show up in previous stages
 
         student_slider_subset_label = "student_slider_subset"
@@ -601,12 +656,13 @@ class StageFour(HubbleStage):
 
     def _on_trend_line_drawn(self, is_drawn):
         print("Trend line drawn: ", is_drawn)
-        self.stage_state.trend_line_drawn = is_drawn
+        self.stage_state.class_trend_line_drawn = is_drawn
         
     def _on_best_fit_line_shown(self, is_active):
         print("Best fit line shown: ", is_active)
-        if not self.stage_state.best_fit_clicked:
-            self.stage_state.best_fit_clicked = is_active
+        if not self.stage_state.class_best_fit_clicked:
+            self.stage_state.class_best_fit_clicked = is_active
+
     def _on_best_fit_galaxy_added(self, value):
         layer_viewer = self.get_viewer("layer_viewer")
         linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
@@ -655,7 +711,7 @@ class StageFour(HubbleStage):
     
     def _on_stage_index_changed(self, index):
         print("Stage Index: ",self.story_state.stage_index)
-        if index > 0:
+        if index > 4:
             self._deferred_setup()
 
             # Remove this callback once we're done
