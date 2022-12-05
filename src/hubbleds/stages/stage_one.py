@@ -339,8 +339,9 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
-        
-        
+
+        # Uncomment this to pre-fill galaxy data for convenience when testing later stages
+        # self.vue_fill_data()        
 
     def _on_measurements_changed(self, msg):
         self._update_state_from_measurements_debounced()
