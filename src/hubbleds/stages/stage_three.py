@@ -45,9 +45,6 @@ class StageState(CDSState):
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
 
-    stu_low_age = CallbackProperty(0)
-    stu_high_age = CallbackProperty(0)
-
     markers = CallbackProperty([
         'exp_dat1',
         'tre_dat1',
@@ -160,6 +157,7 @@ class StageThree(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
+        class_meas_data = self.get_data(CLASS_DATA_LABEL)
 
         fit_table = Table(self.session,
                           data=student_data,
@@ -183,9 +181,9 @@ class StageThree(HubbleStage):
                                                  "Race")
 
         layer_toggle = LayerToggle(layer_viewer, names={
-        STUDENT_DATA_LABEL: "My Data",
-        CLASS_DATA_LABEL: "Class Data"
-        })
+            STUDENT_DATA_LABEL: "My Data",
+            CLASS_DATA_LABEL: "Class Data"
+            })
         # layer_toggle.add_ignore_condition(lambda layer: layer.layer.label == CLASS_DATA_LABEL)        
         self.add_component(layer_toggle, label="c-layer-toggle")     
                                                  
@@ -264,8 +262,6 @@ class StageThree(HubbleStage):
             "guideline_age_universe_equation2",
             "guideline_age_universe_estimate3",
             "guideline_age_universe_estimate4",
-            "guideline_class_age_range",
-            "guideline_confidence_interval_reflect2",
         ]
         for comp in age_calc_components:
             label = f"c-{comp}".replace("_", "-")
