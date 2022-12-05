@@ -3,7 +3,7 @@
     block
     color="secondary"
     elevation="2"
-    @click.stop="() => { dialog = true; state.spec_tutorial_opened = true; state.marker = 'spe_tut1' }"
+    @click.stop="() => { dialog = true; opened = true; marker = 'spe_tut1' }"
   >
     Spectrum tutorial
 
@@ -31,7 +31,7 @@
               () => {
                 $emit('close');
                 dialog = false;
-                if (step == 8) {
+                if (step === 8) {
                   step = 0;
                 }
               }
@@ -95,7 +95,7 @@
                       id="grating_and_prism"
                       class="mb-4 mx-a mt-n3"
                       contain
-                      :src="`${state.image_location}/refraction_diffraction_spectra.png`"
+                      :src="`${image_location}/refraction_diffraction_spectra.png`"
                     ></v-img>
                   </v-col>
                 </v-row>
@@ -142,13 +142,13 @@
                       <v-img
                         class="mb-4 mx-a"
                         contain
-                        :src="`${state.image_location}/LED_White_spectool.png`"
+                        :src="`${image_location}/LED_White_spectool.png`"
                       ></v-img>
                       <h4>Light spectrum for sodium vapor bulb</h4>
                       <v-img
                         class="mx-a"
                         contain
-                        :src="`${state.image_location}/Sodium_Vapor_spectool.png`"
+                        :src="`${image_location}/Sodium_Vapor_spectool.png`"
                       ></v-img>
                     </v-card>
                   </v-col>
@@ -192,13 +192,13 @@
                       <v-img
                         class="mb-4 mx-a"
                         contain
-                        :src="`${state.image_location}/LED_White_w_highlight_spectool.png`"
+                        :src="`${image_location}/LED_White_w_highlight_spectool.png`"
                       ></v-img>
                       <h4>Light spectrum for sodium vapor bulb</h4>
                       <v-img
                         class="mx-a"
                         contain
-                        :src="`${state.image_location}/Sodium_Vapor_w_highlight_spectool.png`"
+                        :src="`${image_location}/Sodium_Vapor_w_highlight_spectool.png`"
                       ></v-img>
                     </v-card>
                   </v-col>
@@ -242,13 +242,13 @@
                       <v-img
                         class="mb-4 mx-a"
                         contain
-                        :src="`${state.image_location}/LED_White_w_neghighlight_spectool.png`"
+                        :src="`${image_location}/LED_White_w_neghighlight_spectool.png`"
                       ></v-img>
                       <h4>Light spectrum for sodium vapor bulb</h4>
                       <v-img
                         class="mx-a"
                         contain
-                        :src="`${state.image_location}/Sodium_Vapor_w_neghighlight_spectool.png`"
+                        :src="`${image_location}/Sodium_Vapor_w_neghighlight_spectool.png`"
                       ></v-img>
                     </v-card>
                   </v-col>
@@ -294,7 +294,7 @@
                       <v-img
                         class="mx-a"
                         contain
-                        :src="`${state.image_location}/siren_moving_white.png`"
+                        :src="`${image_location}/siren_moving_white.png`"
                       ></v-img>
                     </v-card>
                   </v-col>
@@ -340,7 +340,7 @@
                       <v-img
                         class="mx-a"
                         contain
-                        :src="`${state.image_location}/doppler_shift_light_white.png`"
+                        :src="`${image_location}/doppler_shift_light_white.png`"
                       ></v-img>
                     </v-card>
                   </v-col>
@@ -392,19 +392,19 @@
                           <v-img
                             class="mx-a"
                             contain
-                            :src="`${state.image_location}/carbon_atom_model.png`"
+                            :src="`${image_location}/carbon_atom_model.png`"
                           ></v-img>
                           <v-img
                             class="mt-auto mx-a"
                             contain
-                            :src="`${state.image_location}/nitrogen_atom_model.png`"
+                            :src="`${image_location}/nitrogen_atom_model.png`"
                           ></v-img>
                         </v-col>
                         <v-col cols="8">
                           <v-img
                             class="mx-a"
                             contain
-                            :src="`${state.image_location}/stsci_spectrum_element_montage.jpg`"
+                            :src="`${image_location}/stsci_spectrum_element_montage.jpg`"
                           ></v-img>
                         </v-col>
                         <v-col cols="2" class="d-flex flex-column" height="100%">
@@ -413,7 +413,7 @@
                               <v-img
                                 class="mx-a"
                                 contain
-                                :src="`${state.image_location}/oxygen_atom_model.png`"
+                                :src="`${image_location}/oxygen_atom_model.png`"
                               ></v-img>
                             </v-col>
                           </v-row>
@@ -422,7 +422,7 @@
                               <v-img
                                 class="mt-auto mx-a"
                                 contain
-                                :src="`${state.image_location}/iron_atom_model.png`"
+                                :src="`${image_location}/iron_atom_model.png`"
                               ></v-img>
                             </v-col>
                           </v-row>
@@ -484,13 +484,13 @@
                       <v-img
                         class="mb-4 mx-a"
                         contain
-                        :src="`${state.image_location}/hydrogen_emission_spectool.png`"
+                        :src="`${image_location}/hydrogen_emission_spectool.png`"
                       ></v-img>
                       <h4>Hydrogen absorption spectrum</h4>
                       <v-img
                         class="mx-a"
                         contain
-                        :src="`${state.image_location}/hydrogen_absorption_spectool.png`"
+                        :src="`${image_location}/hydrogen_absorption_spectool.png`"
                       ></v-img>
                     </v-card>
                   </v-col>
@@ -539,7 +539,7 @@
                       </div>
                       <v-img
                         contain
-                        :src="`${state.image_location}/restobs1_dotted.png`"
+                        :src="`${image_location}/restobs1_dotted.png`"
                       >
                       </v-img>
                     </v-card>
@@ -589,7 +589,7 @@
                       </div>
                       <v-img
                         contain
-                        :src="`${state.image_location}/restobs2_dotted.png`"
+                        :src="`${image_location}/restobs2_dotted.png`"
                       >
                       </v-img>
                     </v-card>
