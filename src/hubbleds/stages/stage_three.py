@@ -365,6 +365,8 @@ class StageThree(HubbleStage):
     
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used
+        if self.stage_state.marker == 'tre_dat2':
+            self.stage_state.marker = 'tre_dat3'
 
     def _setup_scatter_layers(self):
         dist_attr = "distance"
