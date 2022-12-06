@@ -28,10 +28,12 @@
         What do you think of this galaxy?
       </p>
       <p>
-        If it looks good to you, click the <v-icon>mdi-plus</v-icon> button to add it to your galaxy collection.
+        If it looks good to you, click the <v-btn mx-3 icon dark small disabled
+            class="black--text" elevation="1" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-plus</v-icon></v-btn> button to add it to your galaxy collection.
       </p>
       <p>
-        If you’d rather look for another galaxy, click the <v-icon>mdi-cached</v-icon> button to reset the view and choose a different green dot.
+        If you’d rather look for another galaxy, click the <v-btn mx-3 icon dark small disabled
+            class="black--text" elevation="1" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> button to reset the view and choose a different green dot.
       </p>
     </div>
     
