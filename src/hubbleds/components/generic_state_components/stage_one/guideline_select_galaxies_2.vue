@@ -74,9 +74,9 @@
         class="shrink"
       >
         <div
-          style="font-size: 16px;"
+          style="font-size: 16px; border-left: solid 3px #FFD740; padding-left: 10px; color: #FFF8E1;"
         >
-          Click on any green dot.
+          <strong style="color: white;">Click</strong> on any green dot.
         </div>
       </v-col>
       <v-col
@@ -85,9 +85,9 @@
         class="shrink"
       >
         <div
-          style="font-size: 16px;"
+          style="font-size: 16px; border-left: solid 3px #FFD740; padding-left: 10px; color: #FFF8E1;"
         >
-          Click <v-icon>mdi-plus</v-icon> to add galaxy or <v-icon>mdi-cached</v-icon> to choose another
+          <strong style="color: white;">Click</strong> <v-icon>mdi-plus</v-icon> to add galaxy or <v-icon>mdi-cached</v-icon> to choose another
         </div>
       </v-col>
     </v-row>
