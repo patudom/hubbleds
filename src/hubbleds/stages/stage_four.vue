@@ -66,23 +66,11 @@
             cols="10"
             offset="1"
           >
-            <c-hubble-slideshow 
-              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']" />  
+            <c-hubble-slideshow/>  
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-    <!-- <v-row>
-      <v-col>
-        <v-card
-          color="error"
-        >
-          <v-card-text>
-            NOTE: Graphs that appear below this card are still a work in progress. When this stage is finished, students will not see the graphs below until they reach the relevant part in the sequencing.
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row> -->
 
     <!--------------------- SLIDER VERSION: OUR DATA HUBBLE VIEWER ----------------------->
 
@@ -136,9 +124,7 @@
             class="slider_card"
             />
         </v-card>
-        <c-hubble-slideshow 
-          v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
-        />  
+        <c-hubble-slideshow         />  
       </v-col>
     </v-row>
 
@@ -282,8 +268,9 @@
           outlined
         >
           <v-lazy>
-            <!-- Change v-if marker to include when we want tos tart showing student value-->
-            <jupyter-widget :widget="viewers.all_distr_viewer_student"
+            <!-- Change v-if marker to include when we want to start showing student value -->
+
+           <jupyter-widget :widget="viewers.all_distr_viewer_student"
               v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2c']"
             />
           </v-lazy>
