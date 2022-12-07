@@ -385,7 +385,7 @@
 
 <script>
 module.exports = {
-  props: ["buttonText", "titleText", "closeText"],
+  props: ["state", "buttonText", "titleText", "closeText"],
   data: function () {
     return {
       step: 0,
