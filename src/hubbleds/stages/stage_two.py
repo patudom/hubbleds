@@ -42,6 +42,10 @@ class StageState(CDSState):
     show_ruler = CallbackProperty(False)
     meas_theta = CallbackProperty(0)
     distance_calc_count = CallbackProperty(0)
+    
+    # distance calc component variables
+    distance_const = CallbackProperty(DISTANCE_CONSTANT)
+    failedValidation3 = CallbackProperty(False)
 
     markers = CallbackProperty([
         'ang_siz1',
@@ -151,10 +155,10 @@ class StageTwo(HubbleStage):
         
 
         dosdonts_slideshow = DosDonts_SlideShow(self.stage_state)
-        self.add_component(dosdonts_slideshow, label='c-dosdonts-slideshow')
+        self.add_component(dosdonts_slideshow, label='dosdonts-slideshow')
 
         two_complete = StageTwoComplete(self.stage_state)
-        self.add_component(two_complete, label='c-guideline-stage-two-complete')
+        self.add_component(two_complete, label='guideline-stage-two-complete')
 
         two_complete.observe(self._on_stage_complete,
                                     names=['stage_two_complete'])
@@ -162,7 +166,7 @@ class StageTwo(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         self.add_component(DistanceTool(self.stage_state),
-                           label="c-distance-tool")
+                           label="distance-tool")
 
         
 
@@ -193,7 +197,7 @@ class StageTwo(HubbleStage):
             self.distance_table_selected_change, names=["selected"])
 
         self.add_component(DistanceSidebar(self.stage_state),
-                           label="c-distance-sidebar")
+                           label="distance-sidebar")
         self.distance_tool.observe(self._angular_size_update,
                                    names=["angular_size"])
         self.distance_tool.observe(self._angular_height_update,
@@ -204,34 +208,9 @@ class StageTwo(HubbleStage):
         self.distance_tool.observe(self._distance_tool_flagged,
                                    names=["flagged"])
 
-        # Set up the generic state components
-        state_components_dir = str(
-            Path(
-                __file__).parent.parent / "components" / "generic_state_components" / "stage_two")
-        path = join(state_components_dir, "")
-        state_components = [
-            "guideline_angsize_meas1",
-            "guideline_choose_row1",
-            "guideline_angsize_meas2",
-            "guideline_angsize_meas2b",
-            "guideline_angsize_meas3",
-            "guideline_angsize_meas4",
-            "guideline_angsize_meas5",
-            "guideline_angsize_meas5a",
-            "guideline_angsize_meas6",
-            "guideline_repeat_remaining_galaxies",
-            "guideline_estimate_distance1",
-            "guideline_choose_row2",
-            "guideline_fill_remaining_galaxies"
-        ]
+        
         ext = ".vue"
-        for comp in state_components:
-            label = f"c-{comp}".replace("_", "-")
-
-            # comp + ext = filename; path = folder where they live.
-            component = GenericStateComponent(comp + ext, path,
-                                              self.stage_state)
-            self.add_component(component, label=label)
+        
 
         # Set up distance calc components
         distance_calc_components_dir = str(Path(
@@ -243,7 +222,7 @@ class StageTwo(HubbleStage):
             "guideline_estimate_distance4"
         ]
         for comp in distance_components:
-            label = f"c-{comp}".replace("_", "-")
+            label = f"{comp}".replace("_", "-")
             component = DistanceCalc(comp + ext, path, self.stage_state)
             self.add_component(component, label=label)
 
@@ -412,11 +391,11 @@ class StageTwo(HubbleStage):
 
     @property
     def distance_sidebar(self):
-        return self.get_component("c-distance-sidebar")
+        return self.get_component("distance-sidebar")
 
     @property
     def distance_tool(self):
-        return self.get_component("c-distance-tool")
+        return self.get_component("distance-tool")
 
     @property
     def distance_table(self):
@@ -424,7 +403,7 @@ class StageTwo(HubbleStage):
 
     @property
     def last_guideline(self):
-        return self.get_component('c-guideline-stage-two-complete')
+        return self.get_component('guideline-stage-two-complete')
 
     def _on_stage_complete(self, change):
         if change["new"]:

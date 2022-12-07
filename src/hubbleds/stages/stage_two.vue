@@ -22,35 +22,45 @@
         cols="12"
         lg="4"
       >
-        <c-guideline-angsize-meas1
-          v-if="stage_state.marker == 'ang_siz1'"
+        <guideline-angsize-meas1
+          v-if="stage_state.marker == 'ang_siz1'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-angsize-meas2
-          v-if="stage_state.marker == 'ang_siz2'"
+        <guideline-angsize-meas2
+          v-if="stage_state.marker == 'ang_siz2'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-angsize-meas2b
-          v-if="stage_state.marker == 'ang_siz2b'"
+        <guideline-angsize-meas2b
+          v-if="stage_state.marker == 'ang_siz2b'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-angsize-meas3
-          v-if="stage_state.marker == 'ang_siz3'"
+        <guideline-angsize-meas3
+          v-if="stage_state.marker == 'ang_siz3'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-angsize-meas4
-          v-if="stage_state.marker == 'ang_siz4'"
+        <guideline-angsize-meas4
+          v-if="stage_state.marker == 'ang_siz4'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-angsize-meas5a
-          v-if="stage_state.marker == 'ang_siz5a'"
+        <guideline-angsize-meas5a
+          v-if="stage_state.marker == 'ang_siz5a'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-angsize-meas6
-          v-if="stage_state.marker == 'ang_siz6'"
+        <guideline-angsize-meas6
+          v-if="stage_state.marker == 'ang_siz6'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-repeat-remaining-galaxies
-          v-if="stage_state.marker == 'rep_rem1'"
+        <guideline-repeat-remaining-galaxies
+          v-if="stage_state.marker == 'rep_rem1'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-estimate-distance1
-          v-if="stage_state.marker == 'est_dis1'"
+        <guideline-estimate-distance1
+          v-if="stage_state.marker == 'est_dis1'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-estimate-distance2
-          v-if="stage_state.marker == 'est_dis2'"
+        <guideline-estimate-distance2
+          v-if="stage_state.marker == 'est_dis2'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
@@ -66,7 +76,7 @@
               :class="stage_state.csv_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
               outlined
             >
-              <c-distance-tool />
+              <distance-tool />
             </v-card>
           </v-col>
         </v-row>
@@ -77,7 +87,7 @@
             cols="6"
             offset="3"
           >
-            <c-dosdonts-slideshow />
+            <dosdonts-slideshow />
           </v-col>
         </v-row>
       </v-col>
@@ -87,7 +97,7 @@
         offset-lg="4"
         v-if="stage_state.distance_sidebar"
       >
-        <c-distance-sidebar />
+        <distance-sidebar />
       </v-col>
     </v-row>
     <v-row>
@@ -95,26 +105,33 @@
         cols="12"
         lg="4"
       >
-        <c-guideline-choose-row1
-          v-if="stage_state.marker == 'cho_row1'"
+        <guideline-choose-row1
+          v-if="stage_state.marker == 'cho_row1'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-angsize-meas5
-          v-if="stage_state.marker == 'ang_siz5'"
+        <guideline-angsize-meas5
+          v-if="stage_state.marker == 'ang_siz5'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-choose-row2
-          v-if="stage_state.marker == 'cho_row2'"
+        <guideline-choose-row2
+          v-if="stage_state.marker == 'cho_row2'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />    
-        <c-guideline-estimate-distance3
-          v-if="stage_state.marker == 'est_dis3'"
+        <guideline-estimate-distance3
+          v-if="stage_state.marker == 'est_dis3'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-estimate-distance4
-          v-if="stage_state.marker == 'est_dis4'"
+        <guideline-estimate-distance4
+          v-if="stage_state.marker == 'est_dis4'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-fill-remaining-galaxies
-          v-if="stage_state.marker == 'fil_rem1'"
+        <guideline-fill-remaining-galaxies
+          v-if="stage_state.marker == 'fil_rem1'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-stage-two-complete
-          v-if="stage_state.marker == 'two_com1'"
+        <guideline-stage-two-complete
+          v-if="stage_state.marker == 'two_com1'" 
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
