@@ -16,7 +16,7 @@ from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..components import TrendsData, HubbleExp, AgeCalc 
+from ..components import HubbleExp 
 
 from ..data_management import \
     BEST_FIT_SUBSET_LABEL, \
