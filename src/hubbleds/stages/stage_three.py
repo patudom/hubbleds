@@ -9,7 +9,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty, add_callback, remove_callback
+from echo import CallbackProperty, add_callback, remove_callback, DictCallbackProperty
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
 from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
@@ -45,6 +45,25 @@ class StageState(CDSState):
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
 
+
+    #TrendsData ver
+    define_trend = CallbackProperty(False)
+    
+    age_calc_state = DictCallbackProperty({
+        'failedValidation3': False,
+        'failedValidationAgeRange': False,
+        'age_const': float(AGE_CONSTANT),
+        'hint1_dialog': False,
+        'hint2_dialog': False,
+        'hint3_dialog': False,
+        'best_guess': '',
+        'low_guess': '',
+        'high_guess': '',
+        'short_one': '',
+        'short_two': '',
+        'short_other': ''
+    })
+    
     markers = CallbackProperty([
         'exp_dat1',
         'tre_dat1',
@@ -213,60 +232,65 @@ class StageThree(HubbleStage):
         self.trigger_marker_update_cb = True
 
         # Set up the generic state components
-        state_components_dir = str(
-            Path(
-                __file__).parent.parent / "components" / "generic_state_components" / "stage_three")
-        path = join(state_components_dir, "")
-        state_components = [
-            "guideline_explore_data",
-            "guideline_trends_data2",
-            "guideline_relationship_vel_dist_mc",
-            "guideline_trend_lines1",
-            "guideline_trend_lines_draw2",
-            "guideline_best_fit_line",
-            "guideline_hubbles_expanding_universe1",
-            "guideline_age_universe",
-            "guideline_hypothetical_galaxy",
-            "guideline_age_race_equation",
-            "guideline_your_age_estimate",
-            "guideline_shortcomings_est_reflect1",
-            "guideline_shortcomings_est2"
-        ]
-        ext = ".vue"
-        for comp in state_components:
-            label = f"c-{comp}".replace("_", "-")
+        # state_components_dir = str(
+        #     Path(
+        #         __file__).parent.parent / "components" / "generic_state_components" / "stage_three")
+        # path = join(state_components_dir, "")
+        # state_components = [
+        #     "guideline_explore_data",
+        #     "guideline_trends_data2",
+        #     "guideline_relationship_vel_dist_mc",
+        #     "guideline_trend_lines1",
+        #     "guideline_trend_lines_draw2",
+        #     "guideline_best_fit_line",
+        #     "guideline_hubbles_expanding_universe1",
+        #     "guideline_age_universe",
+        #     "guideline_hypothetical_galaxy",
+        #     "guideline_age_race_equation",
+        #     "guideline_your_age_estimate",
+        #     "guideline_shortcomings_est_reflect1",
+        #     "guideline_shortcomings_est2"
+        # ]
+        # ext = ".vue"
+        # for comp in state_components:
+        #     label = f"c-{comp}".replace("_", "-")
 
-            # comp + ext = filename; path = folder where they live.
-            component = GenericStateComponent(comp + ext, path,
-                                              self.stage_state)
-            self.add_component(component, label=label)
+        #     # comp + ext = filename; path = folder where they live.
+        #     component = GenericStateComponent(comp + ext, path,
+        #                                       self.stage_state)
+        #     self.add_component(component, label=label)
 
         # Set up trends_data components
-        trends_data_components_dir = str(Path(
-            __file__).parent.parent / "components" / "trends_data_components")
-        path = join(trends_data_components_dir, "")
-        trends_data_components = [
-            "guideline_trends_data_mc1",
-            "guideline_trends_data_mc3"
-        ]
-        for comp in trends_data_components:
-            label = f"c-{comp}".replace("_", "-")
-            component = TrendsData(comp + ext, path, self.stage_state)
-            self.add_component(component, label=label)
+        # trends_data_components_dir = str(Path(
+        #     __file__).parent.parent / "components" / "trends_data_components")
+        # path = join(trends_data_components_dir, "")
+        # trends_data_components = [
+        #     "guideline_trends_data_mc1",
+        #     "guideline_trends_data_mc3"
+        # ]
+        # for comp in trends_data_components:
+        #     label = f"c-{comp}".replace("_", "-")
+        #     component = TrendsData(comp + ext, path, self.stage_state)
+        #     self.add_component(component, label=label)
 
         # Set up age_calc components
-        age_calc_components_dir = str(Path(
-            __file__).parent.parent / "components" / "age_calc_components")
-        path = join(age_calc_components_dir, "")
-        age_calc_components = [
-            "guideline_age_universe_equation2",
-            "guideline_age_universe_estimate3",
-            "guideline_age_universe_estimate4",
-        ]
-        for comp in age_calc_components:
-            label = f"c-{comp}".replace("_", "-")
-            component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
-            self.add_component(component, label=label) 
+        # age_calc_components_dir = str(Path(
+        #     __file__).parent.parent / "components" / "age_calc_components")
+        # path = join(age_calc_components_dir, "")
+        # age_calc_components = [
+        #     "guideline_age_universe_equation2",
+        #     "guideline_age_universe_estimate3",
+        #     "guideline_age_universe_estimate4",
+        # ]
+        # for comp in age_calc_components:
+        #     label = f"c-{comp}".replace("_", "-")
+        #     component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
+        #     self.add_component(component, label=label) 
+        
+        # add_callback(self.story_state, 'responses', self.age_calc_update_guesses)
+
+        
+
 
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
@@ -509,6 +533,17 @@ class StageThree(HubbleStage):
         linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
         if value and not linefit_tool.active:
             linefit_tool.activate()
+    
+    # AgeCalc
+    def age_calc_update_guesses(self, responses):
+        if '4' in responses:
+            r4 = responses['4']
+            self.best_guess = r4.get('best-guess-age', "")
+            self.low_guess = r4.get('likely-low-age', "")
+            self.high_guess = r4.get('likely-high-age', "")
+            self.short_one = r4.get('shortcoming-1', "")
+            self.short_two = r4.get('shortcoming-2', "")
+            self.short_other = r4.get('other-shortcomings', "")
     
     def _on_stage_three_complete(self, change):
         if change:

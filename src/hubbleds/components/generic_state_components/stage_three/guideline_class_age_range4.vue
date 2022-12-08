@@ -32,3 +32,9 @@
     margin: 3px auto !important;
   }
 </style>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

@@ -27,15 +27,7 @@
           </v-toolbar-title>
           <v-spacer></v-spacer>
           <span
-            @click="
-              () => {
-                $emit('close');
-                dialog = false;
-                if (step == length-1) {
-                  step = 0;
-                }
-              }
-            "
+            @click="closeDialog()"
           >
             <v-btn icon>
               <v-icon> mdi-close </v-icon>
@@ -248,14 +240,33 @@
 
 <script>
 export default = {
+
+  props: ['state'],
+  
   watch: {
     step(newStep) {
       const isInteractStep = this.interactSteps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
       this.maxStepCompleted = Math.max(this.maxStepCompleted, newCompleted);
     },
+  },
+
+  methods: {
+    closeDialog() {
+      console.log(this)
+      if (this.maxStepCompleted == this.length - 1) {
+        this.$emit('close');
+        this.dialog = false;
+        if (this.step == this.length - 1) {
+          this.step = 0;
+        }
+      }
+    }
   }
+
+  
 };
+
 </script>
 
 <style>

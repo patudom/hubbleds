@@ -55,3 +55,9 @@
 </template>
 
 
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

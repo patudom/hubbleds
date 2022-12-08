@@ -1,11 +1,11 @@
 <template>
   <scaffold-alert
-    header-text="Age of the Race"
+    header-text="Age of the Universe"
     @back="
-      state.marker = 'hyp_gal1';
+      state.marker = 'age_rac1';
     "
     @next="
-      state.marker = 'age_uni2';
+      state.marker = 'age_uni3';
     "
   >
     <div
@@ -13,7 +13,7 @@
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
     >
       <p>
-        Recall from our runners, that the "age" of the runners' race can be found from:
+        In the units astronomers use, we can write this as:
       </p>
       <v-card
         outlined
@@ -28,7 +28,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ t = \frac{d}{v} $$
+                $$ t \text{ (in Gyr)}= {{ Math.round(state.age_calc_state.age_const) }}  \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
               </div>
             </v-col>
           </v-row>
@@ -45,7 +45,7 @@
             <v-col
               cols="10"
             >
-              time that has passed (age of the race)
+              age of the universe, in Gyr. (1 Gyr = 1 billion years)
             </v-col>
           </v-row>
           <v-row
@@ -60,7 +60,7 @@
             <v-col
               cols="10"
             >
-              distance the runner has run
+              distance the galaxy has traveled (distance to the galaxy, in Mpc)
             </v-col>
           </v-row>
           <v-row
@@ -75,14 +75,41 @@
             <v-col
               cols="10"
             >
-              velocity of the runner
+              velocity of the galaxy (in km/s)
             </v-col>
           </v-row>
         </v-container>
       </v-card>
+      <p>
+
+      </p>
+      <!--
+
+      <p>
+        To simplify the units astronomers use, we can write this as:
+      </p>
+      <p>
+        Time (age of universe Gyr) = Distance in Mpc / velocity in km/s * :conversion factor to give time in Gyr:
+      </p>
+      <p>
+        (A Gyr = 1 billion years).
+      </p>
+      <p>
+        Use the distance and velocity of your “best fit galaxy” to calculate the age of the universe.
+      </p>
+      <p>
+        Age measured with my dataset = _________ Gyr.
+      </p>
+      -->
     </div>
   </scaffold-alert>
 </template>
+
+<style>
+  .JaxEquation .MathJax {
+    margin: 20px auto !important;
+  }
+</style>
 
 <script>
 module.exports = {

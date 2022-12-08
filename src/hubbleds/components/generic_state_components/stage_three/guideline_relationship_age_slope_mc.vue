@@ -33,7 +33,7 @@
             'Try again. Drag the slider slowly toward the left (lower age) and observe what happens to the slope of the graphed data. Then drag the slider to the right (higher age) and observe what happens to the slope.'
           ]"
           :correct-answers="[0]"
-          :selected-callback="(state) => { $emit('ready'); }"
+          :selected-callback="(state) => { if (state.correct) { $emit('ready'); } }"
           score-tag="age-slope-trend"
         >
         </mc-radiogroup>
@@ -89,3 +89,9 @@
     </v-row>
   </v-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>
