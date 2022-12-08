@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    header-text="Observed Wavelength"
+    @back="() => { state.marker = 'obs_wav1'; }"
+    @next="() => { state.marker = 'rep_rem1'; }"
+    :can-advance="(state) => state.zoom_tool_activated"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Observed Wavelength
-    </h3>
+  <template #next-content>
+    Click <v-icon>mdi-select-search</v-icon> to activate tool. Click and drag across the red <strong>{{ state.galaxy.element }} </strong> marker to zoom in.
+  </template>
+
     <div
       class="mb-4"
     >
@@ -25,57 +29,7 @@
         <strong>Tip:</strong> You can re-measure the wavelength as many times as you like. 
       </p>
     </div>
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'obs_wav1';
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="!state.zoom_tool_activated"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Click <v-icon>mdi-select-search</v-icon> to activate tool. Click and drag across the red <strong>{{ state.galaxy.element }} </strong> marker to zoom in.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.zoom_tool_activated"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'rep_rem1';
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 
