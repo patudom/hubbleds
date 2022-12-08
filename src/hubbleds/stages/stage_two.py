@@ -46,6 +46,9 @@ class StageState(CDSState):
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
     failedValidation3 = CallbackProperty(False)
+    
+    # stage two complete component variables
+    stage_two_complete = CallbackProperty(False)
 
     markers = CallbackProperty([
         'ang_siz1',
@@ -157,12 +160,13 @@ class StageTwo(HubbleStage):
         dosdonts_slideshow = DosDonts_SlideShow(self.stage_state)
         self.add_component(dosdonts_slideshow, label='dosdonts-slideshow')
 
-        two_complete = StageTwoComplete(self.stage_state)
-        self.add_component(two_complete, label='guideline-stage-two-complete')
-
-        two_complete.observe(self._on_stage_complete,
-                                    names=['stage_two_complete'])
-
+        # two_complete = StageTwoComplete(self.stage_state)
+        # self.add_component(two_complete, label='guideline-stage-two-complete')
+        
+        # two_complete.observe(self._on_stage_complete,
+        #                             names=['stage_two_complete'])
+        add_callback(self.stage_state, 'stage_two_complete', self._on_stage_complete)
+        
         self.show_team_interface = self.app_state.show_team_interface
 
         self.add_component(DistanceTool(self.stage_state),

@@ -50,7 +50,7 @@
           color="accent"
           elevation="2"
           @click="
-          stage_two_complete = true;
+          state.stage_two_complete = true;
           "
         >
           next
@@ -59,3 +59,9 @@
     </v-row>
   </v-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>
