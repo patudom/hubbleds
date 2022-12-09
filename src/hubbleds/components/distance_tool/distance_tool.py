@@ -34,6 +34,8 @@ class DistanceTool(v.VueTemplate):
     state = GlueState().tag(sync=True)
     _ra = Angle(0 * u.deg)
     _dec = Angle(0 * u.deg)
+    brightness = Float(1).tag(sync=True)
+    contrast = Float(0).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
 

@@ -42,8 +42,9 @@
         <jupyter-widget
           :widget="widget"
           class="wwt-widget"
+          :style="[user_wwt_style]"
         />
-      </v-lazy>
+        </v-lazy>      
       <v-tooltip
         top
         class="fab-tooltip"
@@ -68,12 +69,43 @@
         {{ measuring ? 'Stop measuring' : 'Start measuring' }}
       </v-tooltip>
     </div>
+    <v-expansion-panels :flat=true :tile=true>
+    <v-expansion-panel >
+      <v-expansion-panel-header disable-icon-rotate >Adjust Brightness & Contrast</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <div class="background_contrast_sliders">
+          <v-slider
+            v-model="contrast"
+            step="0"
+            :min="Math.log10(0.50).toFixed(2)"
+            :max="Math.log10(1.50).toFixed(2)"
+            :label="Math.pow(10,contrast).toFixed(2)"
+            prepend-icon="mdi-contrast-circle"
+            @click:prepend="resetContrast"
+            hide-details=true
+            style="margin:auto;width:75%;"
+          ></v-slider>
+          <v-slider
+            v-model="brightness"
+            step="0"
+            :min=0
+            :max=4
+            :label="parseFloat(brightness).toFixed(2)"
+            prepend-icon="mdi-brightness-6"
+            @click:prepend="resetBrightness"
+            hide-details=true
+            style="margin:auto; width:75%"
+            ></v-slider>
+        </div>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+    </v-expansion-panels>
   </v-card>
 </template>
 
 <script>
 export default {
-    
+
   mounted() {
     this.setup();
     this.reset();
@@ -95,8 +127,28 @@ export default {
     resizeObserver.unobserve(this.canvas);
   },
 
-  methods: {
 
+  computed: {
+    user_wwt_style() {
+      console.log(this)
+      console.log('contrast', this.contrast,Math.pow(10,this.contrast)*100)
+      console.log('brightness', this.brightness)
+      console.log('**************')
+      brightness = parseFloat(this.brightness).toFixed(2) * 100 // brightness in percent
+      contrast = Math.pow(10,this.contrast).toFixed(2) * 100  // contrast in percent
+      return { filter: `brightness(${brightness}%) contrast(${contrast}%)` }; // default filter: brightness(100%) contrast(100%);
+    }
+  },
+    
+  methods: {
+  
+    resetContrast() {
+      this.contrast=0
+    },
+    resetBrightness() {
+      this.brightness=1
+    },
+    
     setup: function() {
       this.setupMeasuringCanvas();
       this.setupFOVCanvas();
@@ -500,4 +552,6 @@ export default {
 .fab-tooltip {
   z-index: 25 !important;
 }
+
+
 </style>
