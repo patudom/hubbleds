@@ -69,7 +69,10 @@
         {{ measuring ? 'Stop measuring' : 'Start measuring' }}
       </v-tooltip>
     </div>
-    <v-expansion-panels :flat=true :tile=true>
+    <v-expansion-panels 
+      v-if="disable_brightness_contrast_adjustment"
+      :flat=true 
+      :tile=true>
     <v-expansion-panel >
       <v-expansion-panel-header disable-icon-rotate >Adjust Brightness & Contrast</v-expansion-panel-header>
       <v-expansion-panel-content>
