@@ -3,7 +3,6 @@
       v-model="dialog"
       persistent
       max-width="1000px"
-      ref="dialog"
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
@@ -19,6 +18,7 @@
     </template>
     <v-card
       class="mx-auto"
+      ref="content"
     >
       <v-toolbar
         color="secondary"
@@ -32,7 +32,7 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <speech-synthesizer
-          :root="() => this.$refs.dialog.$children[1].$el"
+          :root="() => this.$refs.content.$el"
           :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
           />
         <span
@@ -705,7 +705,7 @@
 module.exports = {
   mounted() {
     console.log(this);
-    console.log(this.$refs.dialog);
+    console.log(this.$refs.content);
   }
 }
 </script>
