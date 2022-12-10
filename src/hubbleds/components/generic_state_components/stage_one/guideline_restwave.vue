@@ -8,9 +8,10 @@
     :state="state"
     @back="() => { state.marker = 'mee_spe1'; }"
     @next="() => { state.marker = 'obs_wav1'; }"
+    :can-advance="(state) => state.lambda_used"
   >
 
-    <template #next-content>
+    <template #before-next>
       Click the <v-icon>mdi-lambda</v-icon> button.
     </template>
 

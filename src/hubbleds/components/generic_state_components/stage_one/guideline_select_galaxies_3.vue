@@ -11,7 +11,7 @@
     :state="state"
   >
 
-  <template #next-content>
+  <template #before-next>
     Select {{ 5 - state.gals_total }} <span v-if="state.gals_total>0">more</span> <span v-if="state.gals_total < 4">galaxies</span><span v-if="state.gals_total == 4">galaxy</span>.
   </template>
 

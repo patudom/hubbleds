@@ -11,7 +11,7 @@
     @next="() => { state.marker = 'dop_cal0'; }"
   >
 
-    <template #next-content>
+    <template #before-next>
       Click the <strong>REFLECT</strong> button.
     </template>
 

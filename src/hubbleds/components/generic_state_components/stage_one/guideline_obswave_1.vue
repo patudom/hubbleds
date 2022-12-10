@@ -10,7 +10,7 @@
     @next="() => { state.marker = 'obs_wav2'; }"
     :state="state"
   >
-    <template #next-content>
+    <template #before-next>
       Measure the observed wavelength.
     </template>
 

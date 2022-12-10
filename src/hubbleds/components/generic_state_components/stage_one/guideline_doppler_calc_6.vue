@@ -11,7 +11,7 @@
       @back="() => { state.marker = 'dop_cal3'; }"
       @next="() => { state.completed = true; }"
   >
-    <template #next-content>
+    <template #before-next>
       Click the <v-icon>mdi-run-fast</v-icon> icon.
     </template>
 

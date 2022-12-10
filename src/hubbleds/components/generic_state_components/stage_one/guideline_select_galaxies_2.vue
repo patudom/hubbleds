@@ -10,7 +10,7 @@
     :state="state"
   >
 
-    <template #next-content>
+    <template #before-next>
       <div>
         <div
           v-if="state.gals_total < 5 && state.gals_total > 0"

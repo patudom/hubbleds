@@ -12,7 +12,7 @@
     "
     :state="state"
   >
-    <template #next-content>
+    <template #before-next>
       Measure wavelength<span v-if="state.obswaves_total < 4">s</span> for {{ 5 - state.obswaves_total }} more <span v-if="state.obswaves_total < 4">galaxies</span><span v-if="state.obswaves_total == 4">galaxy</span>.
     </template>
 

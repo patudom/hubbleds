@@ -10,7 +10,7 @@
     :can-advance="(state) => state.doppler_calc_reached"
     :state="state"
   >
-    <template #next-content>
+    <template #before-next>
       Select a galaxy from your table.
     </template>
     

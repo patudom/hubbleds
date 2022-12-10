@@ -14,7 +14,7 @@
     @next="() => { state.marker = 'res_wav1'; }"
   >
 
-    <template #next-content>
+    <template #before-next>
       Click the <strong>SPECTRUM TUTORIAL</strong> button.
     </template>
 

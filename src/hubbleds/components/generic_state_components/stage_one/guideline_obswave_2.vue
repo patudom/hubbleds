@@ -10,7 +10,7 @@
     :can-advance="(state) => state.zoom_tool_activated"
     :state="state"
   >
-    <template #next-content>
+    <template #before-next>
       Click <v-icon>mdi-select-search</v-icon> to activate tool. Click and drag across the red <strong>{{ state.galaxy.element }} </strong> marker to zoom in.
     </template>
 
