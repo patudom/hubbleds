@@ -37,6 +37,7 @@ class DistanceTool(v.VueTemplate):
     brightness = Float(1).tag(sync=True)
     contrast = Float(0).tag(sync=True)
     disable_brightness_contrast_adjustment = Bool(True).tag(sync=True)
+    borderRadius = Int(50).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
 
