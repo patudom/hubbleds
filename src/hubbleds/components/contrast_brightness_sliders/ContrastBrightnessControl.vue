@@ -1,8 +1,6 @@
 <template>
     <v-card>
-        <div :style="[mystyle]">
-            <slot> </slot>
-        </div>
+            <slot :style="[mystyle]"> </slot>
         <v-expansion-panels>
             <v-expansion-panel>
                 <v-expansion-panel-header disable-icon-rotate>Adjust Brightness & Contrast</v-expansion-panel-header>

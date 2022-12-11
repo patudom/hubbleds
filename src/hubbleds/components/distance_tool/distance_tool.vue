@@ -70,11 +70,11 @@
         {{ measuring ? 'Stop measuring' : 'Start measuring' }}
       </v-tooltip>
     </div>
-    <!-- <div class="testclass">
+    <div class="testclass">
       <contrast-brightness-control>
       <img src="https://picsum.photos/1000/200?random=2" width="70%">
     </contrast-brightness-control>
-    </div> -->
+    </div>
   </v-card>
 </template>
 
