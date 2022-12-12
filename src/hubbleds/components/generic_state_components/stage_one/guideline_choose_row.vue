@@ -7,11 +7,13 @@
     header-text="Choose a Row"
     @back="() => { state.marker = 'sel_gal3'; }"
     @next="() => { state.marker = 'mee_spe1'; }"
-    next-content="Select a galaxy from your table."
     :can-advance="(state) => state.spec_viewer_reached"
     :state="state"
   >
-    <div class="mb-4">
+  <template #before-next>
+      Select a galaxy from your table.
+    </template>  
+  <div class="mb-4">
       <p>
       Let's look at the light spectrum for one of your galaxies.
       </p>
