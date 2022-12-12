@@ -36,7 +36,7 @@
           ]"
           :correct-answers="[1]"
           :neutral-answers='[0,2,3]'
-          :selected-callback="(state) => { $emit('ready'); }"
+          :selected-callback="(state) => { if (state.correct) { $emit('ready'); } }"
           score-tag="galaxy-trend"
         >
         </mc-radiogroup>
