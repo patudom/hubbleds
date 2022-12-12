@@ -42,6 +42,7 @@
         <jupyter-widget
           :widget="widget"
           class="wwt-widget"
+          :style="wwtStyle"
         />
       </v-lazy>
       <v-tooltip
