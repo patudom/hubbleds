@@ -1,15 +1,16 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    header-text="Introducing the Guidelines"
+    @next="state.marker = 'sel_gal1'"
+    :allow-back="false"
   >
-    <h3
-      class="mb-4"
-    >
-      Introducing the Guidelines
-    </h3>
+    <template #back-content>
+      <span>Use left menu to return to Introduction.<br>(Press <v-icon>mdi-menu</v-icon> in upper left if menu is not open)</span>
+    </template>
     <div
       class="mb-4"
     >
@@ -20,47 +21,11 @@
         The information in the guideline boxes will suggest what you should focus on, or what you should do next.  
       </p>
       <p>
-        The images, tables, or graph where the guideline suggests action will also be highlighted with an <b> orange outline </b>
+        The images, tables, or graph where the guideline suggests action will also be highlighted with an <b> orange outline.</b>
       </p>
     </div>
     
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col
-        class="shrink"
-        cols="7"
-        >
-        <span style="font-size: 16px;">Use left menu to return to Introduction.<br>(Press <v-icon>mdi-menu</v-icon> in upper left if menu is not open)</span>
-        
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col
-        class="shrink"
-      ></v-col>
-      <v-spacer></v-spacer>
-      <v-col
-        class="shrink"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'sel_gal1'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 <script>

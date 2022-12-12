@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    header-text="Select Your Galaxies"
+    @back="() => { state.marker = 'mee_gui1'; }"
+    @next="() => {
+      if (state.gals_total == 0) {
+        state.marker = 'sel_gal2';
+      } else if (state.gals_total > 0) {
+        state.marker = 'sel_gal3';
+      } 
+    }"
   >
-    <h3
-      class="mb-4"
-    >
-      Select Your Galaxies
-    </h3>
     <div
       class="mb-4"
     >
@@ -20,61 +24,7 @@
         This Data Story will focus on a nearby subset of spiral galaxies.
       </p>
     </div>
-    
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'mee_gui1'
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col
-        v-if="state.gals_total == 0"
-        class="shrink"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'sel_gal2'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-      <v-col
-        v-if="state.gals_total > 0"
-        class="shrink"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'sel_gal3'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 <script>

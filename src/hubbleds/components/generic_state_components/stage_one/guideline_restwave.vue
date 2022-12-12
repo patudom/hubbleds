@@ -1,15 +1,20 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    header-text="Rest Wavelength"
+    :state="state"
+    @back="() => { state.marker = 'mee_spe1'; }"
+    @next="() => { state.marker = 'obs_wav1'; }"
+    :can-advance="(state) => state.lambda_used"
   >
-    <h3
-      class="mb-4"
-    >
-      Rest Wavelength
-    </h3>
+
+    <template #before-next>
+      Click the <v-icon>mdi-lambda</v-icon> button.
+    </template>
+
     <div
       class="mb-4"
     >
@@ -39,57 +44,7 @@
         You can click the <v-icon>mdi-lambda</v-icon> icon again to toggle the rest wavelength back off.
       </p>
     </div>
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'mee_spe1';
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="!state.lambda_used"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Click the <v-icon>mdi-lambda</v-icon> button.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.lambda_used"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'obs_wav1';
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 
