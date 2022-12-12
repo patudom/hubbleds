@@ -34,7 +34,6 @@ class DistanceTool(v.VueTemplate):
     state = GlueState().tag(sync=True)
     _ra = Angle(0 * u.deg)
     _dec = Angle(0 * u.deg)
-    newstyle = Dict().tag(sync=True)
     wwtStyle = Dict().tag(sync=True)
 
     UPDATE_TIME = 1  # seconds

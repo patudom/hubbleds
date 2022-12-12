@@ -1,7 +1,6 @@
 <template>
   <v-card
     id="distance-root"
-    style="position: relative;"
   >
     <v-toolbar
       color="primary"
@@ -39,7 +38,7 @@
         class="fov-canvas"
         ref="fovCanvas"
       ></canvas>
-      <v-lazy>
+    <v-lazy>
         <jupyter-widget
           :widget="widget"
           class="wwt-widget"
@@ -79,7 +78,6 @@
 
 <script>
 
-// import ContrastBrightnessControl from '../components/ContrastBrightnessControl.vue';
 
 export default {
     
@@ -104,15 +102,6 @@ export default {
 
     
   methods: {
-  
-    setnewstyle: function (newstyle) {
-            this.newstyle = newstyle;
-    },
-
-    setwwtstyle: function (wwtStyle) {
-      
-    },
-    
         
         setup: function () {
             this.setupMeasuringCanvas();
