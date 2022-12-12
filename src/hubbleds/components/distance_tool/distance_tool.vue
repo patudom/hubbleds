@@ -70,12 +70,10 @@
         {{ measuring ? 'Stop measuring' : 'Start measuring' }}
       </v-tooltip>
     </div>
-    <div class="testclass">
-      <img src="https://picsum.photos/1000/200?random=2" width="70%" :style="[newstyle]">
-      <contrast-brightness-control inlineStyle="border: 10px solid pink" @newstyle="setnewstyle" />
-    </div>
-      <contrast-brightness-control  @newstyle="setwwtstyle" /> 
-    
+      <contrast-brightness-control 
+        :enabled=true  
+        @newstyle="newstyle => {this.wwtStyle = newstyle}"/>
+        <!-- add inline style to control using inline css like inlineStyle="border: 1px solid white" -->
   </v-card>
 </template>
 
@@ -112,7 +110,7 @@ export default {
     },
 
     setwwtstyle: function (wwtStyle) {
-      this.wwtStyle = wwtStyle; 
+      
     },
     
         

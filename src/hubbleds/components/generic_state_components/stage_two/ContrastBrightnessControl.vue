@@ -1,11 +1,14 @@
 <template>
     <v-card>
         <div class="source"  :style="[mystyle]">
+        <!-- optional slot. this will also have it's style change -->
             <slot> </slot>
         </div>
-        <v-card-text>
-            <div class="sliders" >
-                <v-expansion-panels :style="inlineStyle">
+            <div class="sliders" v-if="enabled">
+                <v-expansion-panels 
+                        :flat="true"
+                        :tile="true"
+                        :style="inlineStyle">
                     <v-expansion-panel>
                         <v-expansion-panel-header disable-icon-rotate>Adjust Brightness & Contrast</v-expansion-panel-header>
                         <v-expansion-panel-content>
@@ -42,7 +45,6 @@
                     </v-expansion-panel>
                 </v-expansion-panels>
             </div>
-        </v-card-text>
     </v-card>
 
 </template>
@@ -51,7 +53,6 @@
 
 <style>
 
-/* make sure that whatever is in class div.source has a position  above div.sliders */
 div.source {
 }
 
@@ -67,10 +68,20 @@ module.exports = {
 
     // name of the component. used in the parent component
     // when importing as: import ContrastBrightnessControl from './path/to/ContrastBrightnessControl.vue'
-    name: 'ContrastBrightnessControl', 
-    
+    // ipyvuetify imports this as contrast-brightness-control
+    name: 'ContrastBrightnessControl',
+
     // props: ['value'], // props are passed in from the parent. they should not be changed in the child
-    props: ['inlineStyle'],
+    props: {
+        inlineStyle: {
+            type: String,
+            default: ""
+        },
+        enabled: {
+            type: Boolean,
+            default: true
+        },
+    },
 
     // data are local to the component. they can be changed
     //  data can be declared one of 3 ways:
@@ -80,7 +91,7 @@ module.exports = {
     data: () => {
         return {
             contrast: 0,
-            brightness: 1
+            brightness: 1,
         }
     },
     
@@ -93,14 +104,15 @@ module.exports = {
             brightness = parseFloat(this.brightness).toFixed(2) * 100 // brightness in percent
             contrast = Math.pow(10, this.contrast).toFixed(2) * 100  // contrast in percent
             let newstyle = { filter: `brightness(${brightness}%) contrast(${contrast}%)` }
+            // sent this style to the parent. access using @newstyle="newstyle => { this.style = newstyle }"
             this.$emit('newstyle',newstyle)
             return newstyle
-            
         },
 
-        sliders_style() {
-            return $createStyle(this.inlineStyle)
-        },
+        show() {
+            console.log(this.enabled)
+            return this.enabled
+        }
     },
     
 
