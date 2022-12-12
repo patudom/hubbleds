@@ -8,7 +8,7 @@
     @next="state.marker = 'sel_gal1'"
     :allow-back="false"
   >
-    <template #before-back>
+    <template #back-content>
       <span>Use left menu to return to Introduction.<br>(Press <v-icon>mdi-menu</v-icon> in upper left if menu is not open)</span>
     </template>
     <div
