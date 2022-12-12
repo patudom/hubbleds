@@ -32,7 +32,7 @@ HubbleFitView = cds_viewer(
     BqplotScatterView,
     name="HubbleFitView",
     viewer_tools=[
-        "cds:home",
+        "bqplot:home",
         "bqplot:rectzoom",
         "bqplot:rectangle",
         "cds:linedraw",
@@ -46,7 +46,7 @@ HubbleFitLayerView = cds_viewer(
     BqplotScatterView,
     name="HubbleFitLayerView",
     viewer_tools=[
-        # "cds:home",
+        # "bqplot:home",
         # 'bqplot:rectangle',
         "hubble:linefit",
         "hubble:linedraw",
@@ -60,7 +60,7 @@ HubbleScatterView = cds_viewer(
     BqplotScatterView,
     name="HubbleScatterView",
     viewer_tools=[
-        'cds:home',
+        'bqplot:home',
         'bqplot:rectzoom',
         'hubble:linefit'
     ],
@@ -72,7 +72,7 @@ HubbleHistogramView = cds_viewer(
     BqplotHistogramView,
     name="HubbleHistogramView",
     viewer_tools=[
-        "cds:home",
+        "bqplot:home",
         "bqplot:xzoom",
     ],
     label="Class Histogram"
@@ -82,7 +82,7 @@ HubbleClassHistogramView = cds_viewer(
     BqplotHistogramView,
     name="HubbleClassHistogramView",
     viewer_tools=[
-        "cds:home",
+        "bqplot:home",
         "bqplot:xzoom",
         "bqplot:xrange"
     ],

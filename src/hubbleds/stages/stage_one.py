@@ -295,7 +295,7 @@ class StageOne(HubbleStage):
         spec_toolbar.set_tool_enabled("hubble:wavezoom",
                                       self.stage_state.marker_reached(
                                           "obs_wav2"))
-        spec_toolbar.set_tool_enabled("cds:home",
+        spec_toolbar.set_tool_enabled("bqplot:home",
                                       self.stage_state.marker_reached(
                                           "obs_wav2"))
         if self.stage_state.galaxy:
@@ -330,7 +330,7 @@ class StageOne(HubbleStage):
 
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
-            spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
+            spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()        
@@ -393,7 +393,7 @@ class StageOne(HubbleStage):
         if advancing and new == "obs_wav2":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
-            spectrum_viewer.toolbar.set_tool_enabled("cds:home", True)
+            spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
 
     def _on_step_index_update(self, index):
         # If we aren't on this stage, ignore
