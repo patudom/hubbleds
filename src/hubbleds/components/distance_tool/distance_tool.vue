@@ -1,6 +1,7 @@
 <template>
   <v-card
     id="distance-root"
+    style="position: relative;"
   >
     <v-toolbar
       color="primary"
@@ -39,13 +40,12 @@
         ref="fovCanvas"
       ></canvas>
       <v-lazy>
-        <contrast-brightness-control>
         <jupyter-widget
           :widget="widget"
           class="wwt-widget"
+          :style="wwtStyle"
         />
-        </contrast-brightness-control> 
-        </v-lazy>    
+        </v-lazy>   
       <v-tooltip
         top
         class="fab-tooltip"
@@ -71,10 +71,11 @@
       </v-tooltip>
     </div>
     <div class="testclass">
-      <contrast-brightness-control>
-      <img src="https://picsum.photos/1000/200?random=2" width="70%">
-    </contrast-brightness-control>
+      <img src="https://picsum.photos/1000/200?random=2" width="70%" :style="[newstyle]">
+      <contrast-brightness-control inlineStyle="border: 10px solid pink" @newstyle="setnewstyle" />
     </div>
+      <contrast-brightness-control  @newstyle="setwwtstyle" /> 
+    
   </v-card>
 </template>
 
@@ -104,7 +105,16 @@ export default {
     },
 
     
-    methods: {
+  methods: {
+  
+    setnewstyle: function (newstyle) {
+            this.newstyle = newstyle;
+    },
+
+    setwwtstyle: function (wwtStyle) {
+      this.wwtStyle = wwtStyle; 
+    },
+    
         
         setup: function () {
             this.setupMeasuringCanvas();

@@ -8,7 +8,7 @@ from cosmicds.utils import RepeatedTimer, load_template, API_URL
 from glue_jupyter.state_traitlets_helpers import GlueState
 from ipywidgets import DOMWidget, widget_serialization
 from pywwt.jupyter import WWTJupyterWidget
-from traitlets import Instance, Bool, Float, Int, Unicode, observe
+from traitlets import Instance, Bool, Float, Int, Unicode, observe, Dict
 
 from ...utils import GALAXY_FOV, HUBBLE_ROUTE_PATH, angle_to_json, \
     angle_from_json
@@ -34,10 +34,8 @@ class DistanceTool(v.VueTemplate):
     state = GlueState().tag(sync=True)
     _ra = Angle(0 * u.deg)
     _dec = Angle(0 * u.deg)
-    brightness = Float(1).tag(sync=True)
-    contrast = Float(0).tag(sync=True)
-    disable_brightness_contrast_adjustment = Bool(True).tag(sync=True)
-    borderRadius = Int(50).tag(sync=True)
+    newstyle = Dict().tag(sync=True)
+    wwtStyle = Dict().tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
 
