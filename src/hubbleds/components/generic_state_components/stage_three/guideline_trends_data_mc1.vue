@@ -14,7 +14,10 @@
       class="mb-4"
     >
       <p>
-        Now with a larger data set, do you see a trend? Is there a relationship between the velocity and distance of the galaxies?
+        The graph here shows the velocities of your galaxies plotted vs. their distances.  
+      </p>
+      <p>
+        Do you see any sort of trend in your data? Is there a relationship between the velocities and distances of the galaxies?
       </p>
       <v-container
         class="px-0"
@@ -27,32 +30,32 @@
             'I can\'t tell if there\'s a trend.',
           ]"
           :feedbacks="[
-            'Isn\'t it interesting how adding more data can make a trend more clear?',
-            'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend',
-            'Try talking to a neighbor or your instructor. Even with a noisy dataset, you should be able to make out some sort of trend',
+            'Interesting, but it might help to look at more data before deciding for sure.',
+            'Yeah, it can be hard with so few data points. Let\'s see what happens if we add more data.',
+            'Yeah, it can be hard with so few data points. Let\'s see what happens if we add more data.',
           ]"
           :correct-answers="[]"
           :neutral-answers='[0,1,2]'
           :selected-callback="(state) => { $emit('ready'); }"
-          score-tag="tre-dat-mc3"
+          score-tag="tre-dat-mc1"
         >
         </mc-radiogroup>
         <v-btn
           plain
           color="info"
           @click="
-            define_trend = true
+            state.define_trend = true
           "
         >
           What is a trend?
         </v-btn>
         <v-divider
           class="my-4"
-          v-if="define_trend"
+          v-if="state.define_trend"
         >
         </v-divider>
         <v-alert
-          v-if="define_trend"
+          v-if="state.define_trend"
           dense
           color="info darken-1"
         >
@@ -76,8 +79,8 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'tre_dat2';
-                define_trend = false;
+                state.marker = 'exp_dat1';
+                state.define_trend = false;
               }
             "
         >
@@ -105,8 +108,9 @@
           elevation="2"
           @click="
               () => {
-                state.marker = 'rel_vel1';
-                define_trend = false;
+                state.marker = 'tre_dat2';
+                state.define_trend = false;
+                state.trend_response = false;
               }
             "
         >
@@ -116,3 +120,9 @@
     </v-row>
   </v-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

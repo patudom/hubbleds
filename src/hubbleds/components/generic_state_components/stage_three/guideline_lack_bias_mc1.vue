@@ -33,7 +33,7 @@
           ]"
           :correct-answers="[0]"
           :wrong-answers='[1,2]'
-          :selected-callback="(state) => { $emit('ready'); }"
+          :selected-callback="(state) => { if (state.correct) { $emit('ready'); }; }"
           score-tag="closer-results"
         >
         </mc-radiogroup>
@@ -41,3 +41,10 @@
     </div>
   </scaffold-alert>
 </template>
+
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

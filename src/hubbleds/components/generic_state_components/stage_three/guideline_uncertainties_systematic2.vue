@@ -27,3 +27,9 @@ We know that there is natural variation in the sizes of galaxies. If our Milky W
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

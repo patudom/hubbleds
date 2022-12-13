@@ -21,7 +21,7 @@
       <div
         class="JaxEquation my-8"
       >
-        $$ t = {{ Math.round(age_const) }}  \times \frac{\bbox[#FBE9E7]{\input[gal_distance][]{} } \text{ Mpc} } { \bbox[#FBE9E7]{\input[gal_velocity][]{} } \text{ km/s} } \text{     Gyr}$$
+        $$ t = {{ Math.round(state.age_calc_state.age_const) }}  \times \frac{\bbox[#FBE9E7]{\input[gal_distance][]{} } \text{ Mpc} } { \bbox[#FBE9E7]{\input[gal_velocity][]{} } \text{ km/s} } \text{     Gyr}$$
       </div>
       <v-divider role="presentation"></v-divider>
       <div
@@ -35,7 +35,7 @@
         class="legend mt-8"
         color="info"
       >
-         <v-container>
+      <v-container>
           <v-row
             no-gutters
           >
@@ -43,7 +43,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ t \text{ (in Gyr)}= {{ Math.round(age_const) }}  \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
+                $$ t \text{ (in Gyr)}= {{ Math.round(state.age_calc_state.age_const) }}  \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
               </div>
             </v-col>
           </v-row>
@@ -98,11 +98,11 @@
     </div>
     <v-divider
       class="my-4"
-      v-if="failedValidation3"
+      v-if="state.age_calc_state.failedValidation3"
     >
     </v-divider>
     <v-alert
-      v-if="failedValidation3"
+      v-if="state.age_calc_state.failedValidation3"
       dense
       color="info darken-1"
     >
@@ -183,8 +183,11 @@ mjx-mstyle {
 
 </style>
 
+
 <script>
-export default = {
+module.exports = {
+  
+  props: ['state'],
 
   methods: {
     getValue(inputID) {
@@ -200,7 +203,7 @@ export default = {
     validateAnswersJS(inputIDs, expectedAnswers) {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
-        this.failedValidation3 = (value && value === expectedAnswers[index]) ? false : true;
+        this.state.age_calc_state.failedValidation3 = (value && value === expectedAnswers[index]) ? false : true;
         console.log("expectedAnswer", expectedAnswers);
         console.log("entered value", value);
         return value && value === expectedAnswers[index];

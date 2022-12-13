@@ -23,7 +23,7 @@
         color="info lighten-1"
         elevation="0"
       >
-        $$ t = {{ Math.round(age_const) }}  \times \frac{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_distance).toFixed(0) }} } } \text{ Mpc} } { \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_velocity).toFixed(0) }} } }  \text{ km/s} }  \text{   Gyr}$$
+        $$ t = {{ Math.round(state.age_calc_state.age_const) }}  \times \frac{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_distance).toFixed(0) }} } } \text{ Mpc} } { \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_velocity).toFixed(0) }} } }  \text{ km/s} }  \text{   Gyr}$$
       </v-card>    
       <p class="mt-4">
         Dividing through gives an estimated age of the universe from your dataset:
@@ -31,7 +31,7 @@
       <div
         class="JaxEquation my-8"
       >
-        $$ D = {{ (Math.round(age_const * state.hypgal_distance/state.hypgal_velocity).toFixed(0) ) }} \text{ Gyr} $$
+        $$ D = {{ (Math.round(state.age_calc_state.age_const * state.hypgal_distance/state.hypgal_velocity).toFixed(0) ) }} \text{ Gyr} $$
       </div>
       <v-divider role="presentation" class="mt-3"></v-divider>
       <v-card
@@ -47,7 +47,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ t \text{ (in Gyr)}= {{ Math.round(age_const) }}  \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
+                $$ t \text{ (in Gyr)}= {{ Math.round(state.age_calc_state.age_const) }}  \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
               </div>
             </v-col>
           </v-row>
@@ -173,3 +173,8 @@ mjx-mstyle {
 
 </style>
 
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>
