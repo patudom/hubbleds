@@ -77,6 +77,7 @@
           <v-expansion-panel-content>
             <contrast-brightness-control 
                 :enabled=true  
+                :reset="reset_style"
                 @change_style="new_brightness_contrast => {this.wwtStyle = new_brightness_contrast}"/>
                 <!-- add inline style to control using inline css like inlineStyle="border: 1px solid white" -->
           </v-expansion-panel-content>
