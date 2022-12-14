@@ -36,7 +36,7 @@
       <p
         v-if="state.lambda_on"
       >
-        You can click the <v-btn icon tile dark small disabled class="mx-1" elevation="1" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon again to toggle the rest wavelength back off.
+        You can click the <v-btn icon tile dark small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon again to toggle the rest wavelength back off.
       </p>
     </div>
     <v-divider
@@ -70,7 +70,7 @@
         <div
           style="font-size: 16px; border-left: solid 3px #FFD740; padding-left: 10px; color: #FFF8E1;"
         >
-          <strong>Click</strong> the <v-btn icon tile dark x-small disabled class="mx-1" elevation="1" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon in the Spectrum Viewer toolbar
+          <strong>Click</strong> the <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon in the Spectrum Viewer toolbar
         </div>
       </v-col>
       <v-col

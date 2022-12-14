@@ -40,7 +40,7 @@
       class="mb-4"
     >
       <p>
-        Choose another galaxy to enter into your table. You can pan around the sky from where you are or click the <v-btn icon dark small disabled class="mx-1 black--text" elevation="1" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> button to reset the view.
+        Choose another galaxy to enter into your table. You can pan around the sky from where you are or click the <v-btn icon dark small disabled class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> button to reset the view.
       </p>
     </div>
     <div

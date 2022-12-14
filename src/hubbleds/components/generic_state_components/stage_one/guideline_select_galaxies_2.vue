@@ -88,8 +88,8 @@
           style="font-size: 16px; border-left: solid 3px #FFD740; padding-left: 10px; color: #FFF8E1;"
         >
           <strong style="color: white;">Click</strong> <v-btn icon dark x-small disabled
-            class="mx-1 black--text" elevation="1" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-plus</v-icon></v-btn> to add galaxy or <v-btn icon dark x-small disabled
-            class="mx-1 black--text" elevation="1" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> to choose another
+            class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-plus</v-icon></v-btn> to add galaxy or <v-btn icon dark x-small disabled
+            class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> to choose another
         </div>
       </v-col>
     </v-row>
