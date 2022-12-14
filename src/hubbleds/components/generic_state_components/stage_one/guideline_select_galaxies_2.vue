@@ -28,12 +28,10 @@
         What do you think of this galaxy?
       </p>
       <p>
-        If it looks good to you, click the <v-btn mx-3 icon dark small disabled
-            class="black--text" elevation="1" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-plus</v-icon></v-btn> button to add it to your galaxy collection.
+        If it looks good to you, add it to your galaxy collection.
       </p>
       <p>
-        If you’d rather look for another galaxy, click the <v-btn mx-3 icon dark small disabled
-            class="black--text" elevation="1" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> button to reset the view and choose a different green dot.
+        If you’d rather look for another galaxy, reset the view and choose a different green dot.
       </p>
     </div>
     
@@ -89,7 +87,9 @@
         <div
           style="font-size: 16px; border-left: solid 3px #FFD740; padding-left: 10px; color: #FFF8E1;"
         >
-          <strong style="color: white;">Click</strong> <v-icon>mdi-plus</v-icon> to add galaxy or <v-icon>mdi-cached</v-icon> to choose another
+          <strong style="color: white;">Click</strong> <v-btn icon dark x-small disabled
+            class="mx-1 black--text" elevation="1" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-plus</v-icon></v-btn> to add galaxy or <v-btn icon dark x-small disabled
+            class="mx-1 black--text" elevation="1" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> to choose another
         </div>
       </v-col>
     </v-row>
