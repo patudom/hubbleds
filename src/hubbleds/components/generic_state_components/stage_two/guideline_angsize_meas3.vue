@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    header-text="Angular Size Measurement"
+    @back="state.marker = 'ang_siz2b'"
+    @next="state.marker = 'ang_siz4'"
+    :can-advance="(state) => state.ruler_clicked_total > 0"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Angular Size Measurement
-    </h3>
+    <template #before-next>
+      Click the <v-icon>mdi-ruler</v-icon> icon.
+    </template>
+
     <div
       class="mb-4"
     >
@@ -20,55 +24,7 @@
         Click the <v-icon>mdi-ruler</v-icon> icon to activate the angular size measuring tool.
       </p>
     </div>
-    
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'ang_siz2b'
-          "
-        >
-          back
-        </v-btn>
-      <v-spacer></v-spacer>
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="state.ruler_clicked_total==0"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Click the <v-icon>mdi-ruler</v-icon> icon.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.ruler_clicked_total>0"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'ang_siz4'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 
