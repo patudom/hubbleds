@@ -1,16 +1,13 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto angsize_alert"
     max-width="800"
     elevation="6"
+    header-text="Estimate Age of Universe"
+    @back="state.marker = 'age_uni3'"
+    @next="state.marker = 'you_age1'"
   >
-    <h3
-      class="mb-4"
-    >
-      Estimate Age of Universe
-    </h3> 
-
     <div
       class="mb-4"
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
@@ -100,43 +97,7 @@
         </v-container>
       </v-card>
     </div>
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'age_uni3';
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col
-        class="shrink"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click=" () => {
-            state.marker = 'you_age1';
-          }"
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert> 
+  </scaffold-alert> 
 </template>
 
 <style>
