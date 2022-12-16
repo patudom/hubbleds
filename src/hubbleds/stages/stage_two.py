@@ -159,6 +159,7 @@ class StageTwo(HubbleStage):
 
         dosdonts_slideshow = DosDonts_SlideShow(self.stage_state)
         self.add_component(dosdonts_slideshow, label='dosdonts-slideshow')
+        dosdonts_slideshow.observe(self._dosdonts_opened, names=['opened'])
 
         # two_complete = StageTwoComplete(self.stage_state)
         # self.add_component(two_complete, label='guideline-stage-two-complete')
@@ -284,6 +285,9 @@ class StageTwo(HubbleStage):
         index = min(index, len(self.stage_state.step_markers) - 1)
         self.stage_state.marker = self.stage_state.step_markers[index]
         self.trigger_marker_update_cb = True
+
+    def _dosdonts_opened(self, msg):
+        self.stage_state.dos_donts_opened = msg["new"]
 
     def distance_table_selected_change(self, change):
         selected = change["new"]

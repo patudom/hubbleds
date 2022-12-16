@@ -13,9 +13,7 @@ class TwoIntroSlideShow(v.VuetifyTemplate):
         "two_intro_slideshow.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
     length = Int(13).tag(sync=True)
-    dialog = Bool(False).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
-    state = GlueState().tag(sync=True)
     max_step_completed = Int(0).tag(sync=True)
     interact_steps = List([7, 9]).tag(sync=True)
     two_intro_complete = Bool(False).tag(sync=True)
@@ -41,9 +39,8 @@ class TwoIntroSlideShow(v.VuetifyTemplate):
     ]
     _default_title = "1920's Astronomy"
 
-    def __init__(self, stage_state, app_state, *args, **kwargs):
-        self.state = stage_state
-        self.show_team_interface = app_state.show_team_interface
+    def __init__(self, show_team_interface, *args, **kwargs):
+        self.show_team_interface = show_team_interface
         self.distance_const = DISTANCE_CONSTANT
         self.currentTitle = self._default_title
 
