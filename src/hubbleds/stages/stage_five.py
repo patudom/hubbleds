@@ -128,19 +128,6 @@ class StageFive(HubbleStage):
             
         self.add_prodata_components_from_path(prodata_components, path, ProData)
         
-        # Set up age_calc component
-        ext = ".vue"
-        age_calc_components_dir = str(Path(
-            __file__).parent.parent / "components" / "age_calc_components")
-        path = join(age_calc_components_dir, "")
-        age_calc_components = [
-            "guideline_story_finish"
-        ]
-        for comp in age_calc_components:
-            label = f"c-{comp}".replace("_", "-")
-            component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
-            self.add_component(component, label=label) 
-        
         prodata_viewer = self.add_viewer(HubbleScatterView, "prodata_viewer",
                                          "Professional Data")
         prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", False)

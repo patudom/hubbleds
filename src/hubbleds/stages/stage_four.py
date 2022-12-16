@@ -8,7 +8,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty, add_callback, remove_callback
+from echo import CallbackProperty, DictCallbackProperty, add_callback, remove_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue_jupyter.link import link
 from hubbleds.components.id_slider import IDSlider
@@ -53,6 +53,21 @@ class StageState(CDSState):
 
     cla_low_age = CallbackProperty(0)
     cla_high_age = CallbackProperty(0)
+
+    age_calc_state = DictCallbackProperty({
+        'failedValidation3': False,
+        'failedValidationAgeRange': False,
+        'age_const': 0,
+        'hint1_dialog': False,
+        'hint2_dialog': False,
+        'hint3_dialog': False,
+        'best_guess': '',
+        'low_guess': '',
+        'high_guess': '',
+        'short_one': '',
+        'short_two': '',
+        'short_other': ''
+    })
 
     markers = CallbackProperty([
         'ran_var1',
@@ -234,69 +249,6 @@ class StageFour(HubbleStage):
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
         self.trigger_marker_update_cb = True
-
-        # Set up the generic state components
-        state_components_dir = str(
-            Path(
-                __file__).parent.parent / "components" / "generic_state_components" / "stage_three")
-        path = join(state_components_dir, "")
-        state_components = [
-            "guideline_random_variability",
-            "guideline_classmates_results",
-            "guideline_relationship_age_slope_mc",
-            "guideline_class_age_range2",
-            "guideline_class_age_range3",
-            "guideline_class_age_range4",
-            "guideline_confidence_interval",
-            "guideline_class_age_distribution",
-            "guideline_trend_lines_draw2_c",
-            "guideline_best_fit_line_c",
-            "guideline_classmates_results_c",
-            "guideline_class_age_distribution_c",
-            "guideline_two_histograms1",
-            "guideline_true_age1",
-            "guideline_true_age2",
-            "guideline_shortcomings_est_reflect4",
-            "guideline_true_age_issues1",
-            "guideline_imperfect_methods1",
-            "guideline_imperfect_assumptions1",
-            "guideline_imperfect_measurements1",
-            "guideline_uncertainties_random1",
-            "guideline_uncertainties_systematic1",
-            "guideline_uncertainties_systematic2",
-            "guideline_two_histograms_mc2",
-            "guideline_lack_bias_mc1",
-            "guideline_lack_bias_reflect2",
-            "guideline_lack_bias_reflect3",
-            "guideline_more_data_distribution",
-            "guideline_account_uncertainty"
-        ]
-        ext = ".vue"
-        for comp in state_components:
-            label = f"c-{comp}".replace("_", "-")
-
-            # comp + ext = filename; path = folder where they live.
-            component = GenericStateComponent(comp + ext, path,
-                                              self.stage_state)
-            self.add_component(component, label=label)
-
-        # Set up age_calc components
-        age_calc_components_dir = str(Path(
-            __file__).parent.parent / "components" / "age_calc_components")
-        path = join(age_calc_components_dir, "")
-        age_calc_components = [
-            "guideline_class_age_range",
-            "guideline_confidence_interval_reflect2",
-            "guideline_class_age_range_c",
-            "guideline_your_age_estimate_c",
-            "guideline_confidence_interval_reflect2_c",
-            "guideline_story_finish",
-            "guideline_shortcomings_est3",
-        ]
-        for comp in age_calc_components:
-            label = f"c-{comp}".replace("_", "-")
-            component = AgeCalc(comp + ext, path, self.stage_state, self.story_state)
-            self.add_component(component, label=label) 
             
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
