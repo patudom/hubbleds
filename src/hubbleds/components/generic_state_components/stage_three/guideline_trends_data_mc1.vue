@@ -1,15 +1,27 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    header-text="Trends in the Data"
+    @back="() => {
+      state.marker = 'exp_dat1';
+      state.define_trend = false;
+    }"
+    @next="() => {
+        state.marker = 'tre_dat2';
+        state.define_trend = false;
+        state.trend_response = false;
+      }
+    "
+    :can-advance="(state) => state.trend_response"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Trends in the Data
-    </h3>
+    <template #before-next>
+      Choose a response.
+    </template>
+
     <div
       class="mb-4"
     >
@@ -36,7 +48,7 @@
           ]"
           :correct-answers="[]"
           :neutral-answers='[0,1,2]'
-          :selected-callback="(state) => { $emit('ready'); }"
+          :selected-callback="(_state) => { $emit('ready'); }"
           score-tag="tre-dat-mc1"
         >
         </mc-radiogroup>
@@ -63,62 +75,7 @@
         </v-alert>
       </v-container>
     </div>
-    
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-              () => {
-                state.marker = 'exp_dat1';
-                state.define_trend = false;
-              }
-            "
-        >
-          back
-        </v-btn>
-      <v-spacer></v-spacer>
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="!state.trend_response"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Choose a response.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.trend_response"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-              () => {
-                state.marker = 'tre_dat2';
-                state.define_trend = false;
-                state.trend_response = false;
-              }
-            "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 <script>

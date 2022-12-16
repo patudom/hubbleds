@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    header-text="Trends in the Data"
+    @back="state.marker = 'tre_dat1'"
+    @next="state.marker = 'tre_dat3'"
+    :can-advance="(state) => state.class_layer_toggled > 0"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Trends in the Data
-    </h3>
+    <template #before-next>
+      Click <v-icon>mdi-google-classroom</v-icon> in Toolbar.
+    </template>
+
     <div
       class="mb-4"
     >
@@ -23,55 +27,7 @@
         Click <v-icon>mdi-google-classroom</v-icon> to display measurements from your entire class.
       </p>
     </div>
-    
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'tre_dat1'
-          "
-        >
-          back
-        </v-btn>
-      <v-spacer></v-spacer>
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="state.class_layer_toggled==0"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Click <v-icon>mdi-google-classroom</v-icon> in Toolbar.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.class_layer_toggled>0"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'tre_dat3'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 <script>

@@ -4,8 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    :header-text="state.angsizes_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'
-    "
+    :header-text="state.angsizes_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'"
     @back="state.marker = 'ang_siz6'"
     @next="state.marker = 'est_dis1'"
     :can-advance="(state) => state.angsizes_total >= 5"
