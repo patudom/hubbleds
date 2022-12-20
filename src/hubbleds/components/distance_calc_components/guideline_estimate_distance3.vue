@@ -1,16 +1,17 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto angsize_alert"
     max-width="800"
     elevation="6"
+    header-text="Estimate Distance"
+    next-text="calculate"
+    @back="state.marker = 'cho_row2'"
+    @next="() => {
+      const expectedAnswers = [state.meas_theta];
+      state.marker = validateAnswersJS(['gal_ang_size'], expectedAnswers) ? 'est_dis4' : 'est_dis3';
+    }"
   >
-    <h3
-      class="mb-4"
-    >
-      Estimate Distance
-    </h3> 
-
     <div
       class="mb-4"
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
@@ -91,44 +92,7 @@
     >
       Not quite. Make sure you are entering the value for the highlighted galaxy. The angular size column is labeled &theta;, in arcseconds.
     </v-alert>
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'cho_row2';
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col
-        class="shrink"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="() => {
-            const expectedAnswers = [state.meas_theta];
-            state.marker = validateAnswersJS(['gal_ang_size'], expectedAnswers) ? 'est_dis4' : 'est_dis3';
-          }"
-        >
-          calculate
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert> 
+  </scaffold-alert> 
 </template>
 
 <style>

@@ -1,16 +1,16 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto angsize_alert"
     max-width="800"
     elevation="6"
+    header-text="Estimate Distance"
+    @back="state.marker = 'est_dis3'"
+    @next="() => {
+      state.marker = 'fil_rem1';
+      state.distance_calc_count += 1;
+    }"
   >
-    <h3
-      class="mb-4"
-    >
-      Estimate Distance
-    </h3> 
-
     <div
       class="mb-4"
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
@@ -23,7 +23,7 @@
         color="info lighten-1"
         elevation="0"
       >
-        $$ D = \frac{ {{ Math.round(distance_const) }} }{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.meas_theta).toFixed(0) }} } }} $$
+        $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.meas_theta).toFixed(0) }} } }} $$
       </v-card>    
       <p class="mt-4">
         Dividing through gives you the estimated distance to your galaxy:
@@ -31,7 +31,7 @@
       <div
         class="JaxEquation my-8"
       >
-        $$ D = {{ (Math.round(distance_const)/state.meas_theta).toFixed(0) }} \text{ Mpc} $$
+        $$ D = {{ (Math.round(state.distance_const)/state.meas_theta).toFixed(0) }} \text{ Mpc} $$
       </div>
       <v-divider role="presentation" class="mt-3"></v-divider>
       <v-card
@@ -47,7 +47,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ D = \frac{ {{ Math.round(distance_const) }} }{\theta} $$
+                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta} $$
               </div>
             </v-col>
           </v-row>
@@ -83,44 +83,7 @@
         </v-container>
       </v-card>
     </div>
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'est_dis3';
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col
-        class="shrink"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click=" () => {
-            state.marker = 'fil_rem1';
-            state.distance_calc_count += 1;
-          }"
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert> 
+  </scaffold-alert> 
 </template>
 
 <style>
