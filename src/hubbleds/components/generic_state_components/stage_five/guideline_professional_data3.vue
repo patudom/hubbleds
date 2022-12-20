@@ -8,6 +8,7 @@
     prev-marker="pro_dat2"
     next-marker="pro_dat4"
     :state="state"
+    v-slot:default="{ canAdvance }"
   >
     <div
       class="mb-4"
@@ -33,7 +34,7 @@
           ]'
           :correct-answers="[0]"
           :neutral-answers='[1,2]'
-          :selected-callback="(status) => { if (status.correct) { can_advance = true; } }"
+          :selected-callback="(status) => { if (status.correct) { canAdvance = true; } }"
           score-tag="pro-dat3"
         >
         </mc-radiogroup>

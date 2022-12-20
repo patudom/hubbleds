@@ -106,25 +106,6 @@ class StageFive(HubbleStage):
         # self.stage_state.marker = self.stage_state.markers[0]
         
         add_callback(self.stage_state, 'marker', self._on_marker_update, echo_old=True)
-
-        # Set up prodata components
-        prodata_components_dir = str(Path(
-            __file__).parent.parent / "components" / "prodata_components")
-        path = join(prodata_components_dir, "")
-        prodata_components = [
-            "guideline_professional_data0",
-            "guideline_professional_data1",
-            "guideline_professional_data2",
-            "guideline_professional_data3",
-            "guideline_professional_data4",
-            "guideline_professional_data5",
-            "guideline_professional_data6",
-            "guideline_professional_data7",
-            "guideline_professional_data8",
-            "guideline_professional_data9",
-            ]
-            
-        self.add_prodata_components_from_path(prodata_components, path, ProData)
         
         prodata_viewer = self.add_viewer(HubbleScatterView, "prodata_viewer",
                                          "Professional Data")
@@ -142,15 +123,6 @@ class StageFive(HubbleStage):
         self.hub.subscribe(self, NumericalDataChangedMessage,
                            filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
                            handler=self._on_class_data_update)
-
-    def add_prodata_components_from_path(self, state_components, path, component_class = ProData):
-        ext = ".vue"
-        for index, comp in enumerate(state_components):
-            label = f"c-{comp}".replace("_", "-")
-
-            component = component_class(comp + ext, path,
-                                              self.stage_state, index)
-            self.add_component(component, label=label)
 
     def setup_prodata_viewer(self):
         # load the prodata_viewer

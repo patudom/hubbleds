@@ -5,28 +5,25 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    prev-marker="pro_dat2"
-    next-marker="pro_dat5"
+    prev-marker="pro_dat6"
+    next-marker="pro_dat8"
     v-slot:default="{ canAdvance }"
   >
     <div
       class="mb-4"
     >
-      <p>Whose age estimate are you more inclined to believe?</p>
+      Whose age estimate are you more inclined to believe?
       <v-container
         class="px-0"
         fluid
       >
         <mc-radiogroup
-          :radio-options="[
-            'Our age estimate',
-            'Hubble\'s age estimate'
-          ]"
+          :radio-options="['Our age estimate', 'Hubble team\'s age estimate']"
           :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
           :correct-answers="[0,1]"
           :neutral-answers='[]'
-          :selected-callback="(status) => { if (status.correct) { can_advance = true; } }"
-          score-tag="pro-dat4"
+          :selected-callback="(status) => { if (status.correct) { canAdvance = true; } }"
+          score-tag="pro-dat7"
         >
         </mc-radiogroup>
       </v-container>
@@ -35,8 +32,8 @@
         auto-grow
         rows="2"
         label="Why?"
-        tag="prodata-free-4"
-        v-if="canAdvance"
+        tag="prodata-free-7"
+        v-if='canAdvance'
       ></free-response>
     </div>
   </guideline-professional-data>

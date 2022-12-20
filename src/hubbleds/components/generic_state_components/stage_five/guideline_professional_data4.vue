@@ -1,0 +1,49 @@
+<!-- # multiple choice -->
+<template>
+  <guideline-professional-data
+    color="info"
+    class="mb-4 mx-auto"
+    max-width="800"
+    elevation="6"
+    prev-marker="pro_dat2"
+    next-marker="pro_dat5"
+    v-slot:default="{ canAdvance }"
+  >
+    <div
+      class="mb-4"
+    >
+      <p>Whose age estimate are you more inclined to believe?</p>
+      <v-container
+        class="px-0"
+        fluid
+      >
+        <mc-radiogroup
+          :radio-options="[
+            'Our age estimate',
+            'Hubble\'s age estimate'
+          ]"
+          :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
+          :correct-answers="[0,1]"
+          :neutral-answers='[]'
+          :selected-callback="(status) => { if (status.correct) { canAdvance = true; } }"
+          score-tag="pro-dat4"
+        >
+        </mc-radiogroup>
+      </v-container>
+      <free-response
+        outlined
+        auto-grow
+        rows="2"
+        label="Why?"
+        tag="prodata-free-4"
+        v-if="canAdvance"
+      ></free-response>
+    </div>
+  </guideline-professional-data>
+</template>
+
+<script>
+module.exports = {
+ props: ['state']
+}
+</script>
