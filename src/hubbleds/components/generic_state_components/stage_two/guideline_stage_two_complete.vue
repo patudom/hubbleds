@@ -8,11 +8,6 @@
     @back="state.marker = 'fil_rem1'"
     @next="state.stage_two_complete = true;"
   >
-    <h3
-      class="mb-4"
-    >
-      Distances Complete
-    </h3>
     <div
       class="mb-4"
     >
