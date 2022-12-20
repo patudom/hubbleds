@@ -1,4 +1,5 @@
 import logging
+import requests
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -23,7 +24,6 @@ class StageState(CDSState):
     galaxy = CallbackProperty({})
     galaxy_selected = CallbackProperty(False)
     galaxy_dist = CallbackProperty(None)
-    ruler_clicked_total = CallbackProperty(0)
     dos_donts_opened = CallbackProperty(False)
     make_measurement = CallbackProperty(False)
     angsizes_total = CallbackProperty(0)
@@ -204,11 +204,18 @@ class StageTwo(HubbleStage):
                                    names=["angular_size"])
         self.distance_tool.observe(self._angular_height_update,
                                    names=["angular_height"])
+        self.distance_tool.observe(self._ruler_click_count_update,
+                                   names=['ruler_click_count'])
+        self.distance_tool.observe(self._measurement_count_update,
+                                   names=['measurement_count'])
         self.distance_sidebar.angular_height = format_fov(
             self.distance_tool.angular_height)
 
         self.distance_tool.observe(self._distance_tool_flagged,
                                    names=["flagged"])
+
+        self.add_callback(self.stage_state, 'galaxy', self._on_galaxy_changed)
+        self.add_callback(self.stage_state, 'show_ruler', self._show_ruler_changed)
 
         # Callbacks
         add_callback(self.stage_state, 'marker',
@@ -297,6 +304,20 @@ class StageTwo(HubbleStage):
     def _angular_height_update(self, change):
         self.distance_sidebar.angular_height = format_fov(change["new"])
 
+    def _ruler_click_count_update(self, change):
+        if change["new"] == 1:
+            self.stage_state.marker = 'ang_siz4'  # auto-advance guideline if it's the first ruler click
+
+    def _measurement_count_update(self, change):
+        if change["new"] == 1:
+            self.state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
+
+    def _show_ruler_changed(self, show):
+        self.distance_tool.show_ruler = show
+
+    def _on_galaxy_changed(self, galaxy):
+        self.distance_tool.galaxy_selected = bool(galaxy)
+
     def _make_measurement(self):
         galaxy = self.stage_state.galaxy
         index = self.get_data_indices(STUDENT_MEASUREMENTS_LABEL, 'name',
@@ -328,6 +349,19 @@ class StageTwo(HubbleStage):
     def _distance_tool_flagged(self, change):
         if not change["new"]:
             return
+        
+
+        galaxy = self.state.galaxy
+        if galaxy["id"]:
+            data = {"galaxy_id": int(galaxy["id"])}
+        else:
+            name = galaxy["name"]
+            if not name.endswith(".fits"):
+                name += ".fits"
+            data = {"galaxy_name": name}
+        requests.post(f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-tileload-bad",
+                      json=data)
+
         index = self.distance_table.index
         if index is None:
             return

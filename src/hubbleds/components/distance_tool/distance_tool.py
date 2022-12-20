@@ -5,7 +5,6 @@ import ipyvue as v
 import requests
 from astropy.coordinates import Angle, SkyCoord
 from cosmicds.utils import RepeatedTimer, load_template, API_URL
-from glue_jupyter.state_traitlets_helpers import GlueState
 from ipywidgets import DOMWidget, widget_serialization
 from pywwt.jupyter import WWTJupyterWidget
 from traitlets import Instance, Bool, Float, Int, Unicode, observe
@@ -29,16 +28,18 @@ class DistanceTool(v.VueTemplate):
     width = Int().tag(sync=True)
     view_changing = Bool(False).tag(sync=True)
     measuring_allowed = Bool(False).tag(sync=True)
+    show_ruler = Bool(False).tag(sync=True)
     fov_text = Unicode().tag(sync=True)
     flagged = Bool(False).tag(sync=True)
-    state = GlueState().tag(sync=True)
+    ruler_click_count = Int().tag(sync=True)
+    measurement_count = Int().tag(sync=True)
+    galaxy_selected = Bool(False).tag(sync=True)
     _ra = Angle(0 * u.deg)
     _dec = Angle(0 * u.deg)
 
     UPDATE_TIME = 1  # seconds
 
-    def __init__(self, state, *args, **kwargs):
-        self.state = state
+    def __init__(self, *args, **kwargs):
         self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self._setup_widget()
         self.measuring = kwargs.get('measuring', False)
@@ -77,18 +78,14 @@ class DistanceTool(v.VueTemplate):
 
     def vue_toggle_measuring(self, _args=None):
         self.measuring = not self.measuring
-        self.state.ruler_clicked_total += 1
-        if self.state.ruler_clicked_total == 1:
-            self.state.marker = 'ang_siz4'  # auto-advance guideline if it's the first ruler click
+        self.ruler_click_count += 1
 
     @observe('measuredDistance')
     def _on_measured_distance_changed(self, change):
         fov = self.widget.get_fov()
         widget_height = self._height_from_pixel_str(self.widget.layout.height)
         self.angular_size = Angle(((change["new"] / widget_height) * fov))
-        self.state.n_meas += 1
-        if self.state.n_meas == 1:
-            self.state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
+        self.measurement_count += 1
 
     @observe('measuring')
     def _on_measuring_changed(self, measuring):
@@ -129,18 +126,3 @@ class DistanceTool(v.VueTemplate):
     def go_to_location(self, ra, dec, fov=GALAXY_FOV):
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
         self.widget.center_on_coordinates(coordinates, fov=fov, instant=True)
-
-    @observe('flagged')
-    def mark_galaxy_bad(self, change):
-        if not change["new"]:
-            return
-        galaxy = self.state.galaxy
-        if galaxy["id"]:
-            data = {"galaxy_id": int(galaxy["id"])}
-        else:
-            name = galaxy["name"]
-            if not name.endswith(".fits"):
-                name += ".fits"
-            data = {"galaxy_name": name}
-        requests.post(f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-tileload-bad",
-                      json=data)
