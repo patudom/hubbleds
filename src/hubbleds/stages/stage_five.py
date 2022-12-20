@@ -2,11 +2,9 @@ from os.path import join
 from pathlib import Path
 
 from echo import CallbackProperty, add_callback
-from glue_jupyter.link import dlink, link
 from glue.core.message import NumericalDataChangedMessage
 from traitlets import Bool, default
 
-from cosmicds.components.generic_state_component import GenericStateComponent
 from ..components import ProData
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
@@ -14,7 +12,7 @@ from cosmicds.utils import (RepeatedTimer, extend_tool, load_template,
                             update_figure_css)
 from hubbleds.utils import IMAGE_BASE_URL
 
-from ..components import AgeCalc, ProData
+from ..components import ProData
 from ..data.styles import load_style
 from ..data_management import (ALL_DATA_LABEL, CLASS_DATA_LABEL,
                                HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL,
@@ -30,7 +28,7 @@ class StageState(CDSState):
 
     hst_age = CallbackProperty(13)
     our_age = CallbackProperty(0)
-    
+
     max_prodata_index = CallbackProperty(0)
     
     markers = [

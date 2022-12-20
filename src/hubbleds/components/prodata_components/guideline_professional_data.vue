@@ -8,13 +8,13 @@
     header-text="Professional Data"
     @back="retreat()"
     @next="advance()"
-    :can-advance="(state) => state.max_prodata_index > index"
-    :state="state"
+    :allow-back="allowBack"
+    :can-advance="canAdvance"
   >
     <template #before-next>
       Choose a response.
     </template>
-    <slot></slot>
+    <slot :canAdvance="canAdvance"></slot>
   </scaffold-alert>
 </template>
 
@@ -31,11 +31,20 @@ module.exports = {
     },
     prevMarker: {
       type: String,
-      required: true
+      default: '',
     },
     nextMarker: {
       type: String,
-      required: true
+      default: ''
+    },
+    allowBack: {
+      type: Boolean,
+      default: true
+    }
+  },
+  computed: {
+    canAdvance() {
+      return this.state.max_prodata_index > this.index;
     }
   },
   methods: {
