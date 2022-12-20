@@ -4,12 +4,12 @@ from pathlib import Path
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import load_template
-from echo import CallbackProperty, add_callback, ignore_callback
+from echo import CallbackProperty, DictCallbackProperty, \
+    add_callback, ignore_callback
 from traitlets import default, Bool
 
 from ..components import DistanceSidebar, DistanceTool, DistanceCalc
@@ -212,24 +212,6 @@ class StageTwo(HubbleStage):
 
         self.distance_tool.observe(self._distance_tool_flagged,
                                    names=["flagged"])
-
-        
-        ext = ".vue"
-        
-
-        # Set up distance calc components
-        distance_calc_components_dir = str(Path(
-            __file__).parent.parent / "components" / "distance_calc_components")
-        path = join(distance_calc_components_dir, "")
-        distance_components = [
-            "guideline_estimate_distance2",
-            "guideline_estimate_distance3",
-            "guideline_estimate_distance4"
-        ]
-        for comp in distance_components:
-            label = f"{comp}".replace("_", "-")
-            component = DistanceCalc(comp + ext, path, self.stage_state)
-            self.add_component(component, label=label)
 
         # Callbacks
         add_callback(self.stage_state, 'marker',

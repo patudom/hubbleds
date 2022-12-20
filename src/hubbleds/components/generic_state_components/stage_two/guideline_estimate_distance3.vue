@@ -82,11 +82,11 @@
     </div>
     <v-divider
       class="my-4"
-      v-if="failedValidation3"
+      v-if="state.failedValidation3"
     >
     </v-divider>
     <v-alert
-      v-if="failedValidation3"
+      v-if="state.failedValidation3"
       dense
       color="info darken-1"
     >
