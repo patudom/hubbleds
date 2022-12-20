@@ -38,7 +38,7 @@ class StageIntro(Stage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        intro_slideshow = IntroSlideshow(self.stage_state, self.app_state)
+        intro_slideshow = IntroSlideshow(self.app_state.show_team_interface)
         self.add_component(intro_slideshow, label='c-intro-slideshow')
         intro_slideshow.observe(self._on_slideshow_complete,
                                 names=['intro_complete'])
