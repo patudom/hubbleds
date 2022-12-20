@@ -1,6 +1,4 @@
 import logging
-from os.path import join
-from pathlib import Path
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
@@ -8,11 +6,10 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import load_template
-from echo import CallbackProperty, DictCallbackProperty, \
-    add_callback, ignore_callback
+from echo import CallbackProperty, add_callback, ignore_callback
 from traitlets import default, Bool
 
-from ..components import DistanceSidebar, DistanceTool, DistanceCalc
+from ..components import DistanceSidebar, DistanceTool
 from ..components.angsize_dosdonts_slideshow import DosDonts_SlideShow
 from ..data_management import STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
