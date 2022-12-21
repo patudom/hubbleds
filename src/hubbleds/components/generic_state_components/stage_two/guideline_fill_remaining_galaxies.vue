@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Estimate Distance"
+    title-text="Estimate Distance"
     @back="state.marker = 'est_dis4'"
     @next="state.marker = 'two_com1'"
     :can-advance="(state) => state.distances_total == 5"

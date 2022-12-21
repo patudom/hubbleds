@@ -7,7 +7,7 @@
     @back="() => { state.marker = 'obs_wav2'; }"
     @next="() => { state.marker = 'ref_dat1'; }"
     :can-advance="(state) => state.obswaves_total >= 5"
-    :header-text="state.obswaves_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'
+    :title-text="state.obswaves_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'
     "
     :state="state"
   >

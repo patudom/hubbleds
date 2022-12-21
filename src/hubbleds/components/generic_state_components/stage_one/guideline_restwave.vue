@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Rest Wavelength"
+    title-text="Rest Wavelength"
     :state="state"
     @back="() => { state.marker = 'mee_spe1'; }"
     @next="() => { state.marker = 'obs_wav1'; }"

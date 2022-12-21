@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Trend Lines"
+    title-text="Trend Lines"
     @back="state.marker = 'tre_lin1'"
     @next="state.marker = 'bes_fit1'"
     :can-advance="(state) => state.trend_line_drawn"

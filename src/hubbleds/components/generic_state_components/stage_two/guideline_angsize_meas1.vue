@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Angular Size Measurements"
+    title-text="Angular Size Measurements"
     @next="state.marker = 'cho_row1'"
     :allow-back="false"
   >

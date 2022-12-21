@@ -1,7 +1,7 @@
 <!-- this state.marker = 'unc_sys1' -->
 <template>
   <scaffold-alert
-    header-text="Systematic Uncertainties"
+    title-text="Systematic Uncertainties"
     @back="
       state.marker = 'unc_ran1';
     "

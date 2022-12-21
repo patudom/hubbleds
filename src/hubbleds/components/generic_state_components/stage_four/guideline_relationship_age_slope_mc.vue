@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Relationship Between Age and Slope"
+    title-text="Relationship Between Age and Slope"
     @back="state.marker = 'cla_res1'"
     @next="state.marker = 'cla_age1'"
     :can-advance="(state) => state.relage_response"

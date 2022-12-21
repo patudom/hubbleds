@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Relationship Between Velocity and Distance"
+    title-text="Relationship Between Velocity and Distance"
     @back="state.marker = 'tre_dat3'"
     @next="state.marker = 'hub_exp1'"
     :can-advance="(state) => state.relvel_response"

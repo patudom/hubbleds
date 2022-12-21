@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Age of the Race"
+    title-text="Age of the Race"
     @back="
       state.marker = 'hyp_gal1';
     "

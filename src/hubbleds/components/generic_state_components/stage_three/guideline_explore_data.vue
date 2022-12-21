@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Explore Your Data"
+    title-text="Explore Your Data"
     next-text="graph"
     @next="state.marker = 'tre_dat1'"
     :allow-back="false"

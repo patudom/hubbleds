@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Angular Size Measurement"
+    title-text="Angular Size Measurement"
     @back="state.marker = 'ang_siz2b'"
     @next="state.marker = 'ang_siz4'"
     :can-advance="(state) => state.ruler_clicked_total > 0"

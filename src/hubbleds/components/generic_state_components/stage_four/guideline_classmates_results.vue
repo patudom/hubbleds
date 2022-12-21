@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Classmates' Data"
+    title-text="Classmates' Data"
     @back="
       state.marker = 'ran_var1';
     "

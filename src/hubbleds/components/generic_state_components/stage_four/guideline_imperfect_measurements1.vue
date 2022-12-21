@@ -1,7 +1,7 @@
 <!-- this state.marker = 'imp_mea1' -->
 <template>
   <scaffold-alert
-    header-text="Our Measurements are Imperfect"
+    title-text="Our Measurements are Imperfect"
     @back="
       state.marker = 'imp_ass1';
     "

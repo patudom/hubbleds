@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Angular Size Measurement"
+    title-text="Angular Size Measurement"
     @back="
       state.marker = 'cho_row1';
     "

@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Class Age Range"
+    title-text="Class Age Range"
     @back="
       state.marker = 'cla_age1';
     "

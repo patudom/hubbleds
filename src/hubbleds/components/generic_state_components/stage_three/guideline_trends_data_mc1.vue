@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Trends in the Data"
+    title-text="Trends in the Data"
     @back="() => {
       state.marker = 'exp_dat1';
       state.define_trend = false;

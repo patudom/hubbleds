@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Distances Complete"
+    title-text="Distances Complete"
     @back="state.marker = 'fil_rem1'"
     @next="state.stage_two_complete = true;"
   >

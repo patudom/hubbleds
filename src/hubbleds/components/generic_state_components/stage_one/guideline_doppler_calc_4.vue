@@ -4,7 +4,7 @@
       color="info"
       elevation="6"
       max-width="800"
-      header-text="Input Wavelengths"
+      title-text="Input Wavelengths"
       @back="() => { state.marker = 'dop_cal3'; }"
       :state="state"
       @next="() => 

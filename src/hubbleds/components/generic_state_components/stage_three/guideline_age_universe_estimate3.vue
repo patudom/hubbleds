@@ -4,7 +4,7 @@
     class="mb-4 mx-auto angsize_alert"
     max-width="800"
     elevation="6"
-    header-text="Estimate Age of Universe"
+    title-text="Estimate Age of Universe"
     next-text="calculate"
     @back="state.marker = 'age_uni2'"
     @next="() => {

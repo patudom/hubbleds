@@ -4,7 +4,7 @@
       color="info"
       elevation="6"
       max-width="800"
-      header-text="Velocity Calculation"
+      title-text="Velocity Calculation"
       :can-advance="(state) => state.velocities_total === 5"
       next-text="stage 2"
       :state="state"

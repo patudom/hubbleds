@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Select your Galaxies"
+    title-text="Select your Galaxies"
     @back="() => { state.marker = 'sel_gal1'; }"
     @next="() => { state.marker = 'cho_row1'; }"
     :can-advance="(state) => state.gals_total === 5"

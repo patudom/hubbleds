@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Choose a Galaxy"
+    title-text="Choose a Galaxy"
     @back="state.marker = 'est_dis2'"
     @next="state.marker = 'est_dis3'"
     :can-advance="(state) => state.galaxy_selected"

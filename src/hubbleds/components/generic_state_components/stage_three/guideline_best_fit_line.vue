@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Best Fit Line"
+    title-text="Best Fit Line"
     @back="state.marker = 'tre_lin2'"
     @next="state.marker = 'age_uni1'"
     :can-advance="(state) => state.best_fit_clicked"

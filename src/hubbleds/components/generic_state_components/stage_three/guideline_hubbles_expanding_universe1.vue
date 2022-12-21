@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Hubble's Expanding Universe"
+    title-text="Hubble's Expanding Universe"
     @back="state.marker = 'rel_vel1'"
     @next="state.marker = 'tre_lin1'"
     :can-advance="(state) => state.hubble_dialog_opened"
