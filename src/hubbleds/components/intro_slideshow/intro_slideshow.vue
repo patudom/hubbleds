@@ -13,6 +13,10 @@
       >
         {{ currentTitle }}
       </v-toolbar-title>
+      <speech-synthesizer
+        :root="$el"
+        :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
+      />
     </v-toolbar>
 
     <v-window
