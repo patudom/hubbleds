@@ -14,6 +14,7 @@
       >
         Hubble's Discovery
       </v-btn>
+    </template>
     <v-card
       class="mx-auto"
     >
