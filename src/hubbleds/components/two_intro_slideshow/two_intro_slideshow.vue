@@ -103,7 +103,7 @@
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/PeopleLargeSmallAngularSize.png`"
+                  :src="`${image_location}/PeopleLargeSmallAngularSize.png`"
                 ></v-img>
               </v-col>
             </v-row>
@@ -143,7 +143,7 @@
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/PeopleLargeSmallAngularSize.png`"
+                  :src="`${image_location}/PeopleLargeSmallAngularSize.png`"
                 ></v-img>
               </v-col>
               <v-col
@@ -157,7 +157,7 @@
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/esahubble_potw2031a_1600_cleaned.png`"
+                  :src="`${image_location}/esahubble_potw2031a_1600_cleaned.png`"
                 ></v-img>
               </v-col>
             </v-row>
@@ -200,7 +200,7 @@
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/PeopleLargeSmallAngularSize labeled.png`"
+                  :src="`${image_location}/PeopleLargeSmallAngularSize labeled.png`"
                 ></v-img>
               </v-col>
               <v-col cols="6">
@@ -210,7 +210,7 @@
                 <v-img
                   class="mb-4 mx-a"
                   contain
-                  :src="`${state.image_location}/esahubble_potw2031a_1600_cleaned.png`"
+                  :src="`${image_location}/esahubble_potw2031a_1600_cleaned.png`"
                 ></v-img>
               </v-col> 
             </v-row> 
@@ -279,7 +279,7 @@
                 class="mx-a"
                 contain
                 max-height="300"
-                :src="`${state.image_location}/erinmoon.png`"
+                :src="`${image_location}/erinmoon.png`"
               ></v-img>
             </v-row>
           </v-container>
@@ -333,7 +333,7 @@
                   class="mx-a"
                   contain
                   max-height="300"
-                  :src="`${state.image_location}/cosmicgraphic.png`"
+                  :src="`${image_location}/cosmicgraphic.png`"
                 ></v-img>
               </v-col>
             </v-row>
@@ -419,7 +419,7 @@
                   <v-img
                     class="mx-a"
                     contain
-                    :src="`${state.image_location}/galaxies_a_b_boxed.png`"
+                    :src="`${image_location}/galaxies_a_b_boxed.png`"
                   ></v-img>
                 </v-col>
             </v-row> 
@@ -547,7 +547,7 @@
                   <v-img
                     class="mx-a"
                     contain
-                    :src="`${state.image_location}/galaxies_a_b_boxed.png`"
+                    :src="`${image_location}/galaxies_a_b_boxed.png`"
                   ></v-img>
                 </div>
               </v-col>

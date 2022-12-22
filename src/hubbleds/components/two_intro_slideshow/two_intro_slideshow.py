@@ -21,6 +21,7 @@ class TwoIntroSlideShow(v.VuetifyTemplate):
     # exploration_complete = Bool(False).tag(sync=True)
     # intro_complete = Bool(False).tag(sync=True)
     distance_const = Float().tag(sync=True)
+    image_location = Unicode().tag(sync=True)
 
     _titles = [
         "1920's Astronomy",
@@ -39,8 +40,9 @@ class TwoIntroSlideShow(v.VuetifyTemplate):
     ]
     _default_title = "1920's Astronomy"
 
-    def __init__(self, show_team_interface, *args, **kwargs):
+    def __init__(self, show_team_interface, image_location, *args, **kwargs):
         self.show_team_interface = show_team_interface
+        self.image_location = image_location
         self.distance_const = DISTANCE_CONSTANT
         self.currentTitle = self._default_title
 
