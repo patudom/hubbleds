@@ -17,6 +17,7 @@
     </template>
     <v-card
       class="mx-auto"
+      ref="content"
     >
       <v-toolbar
         color="secondary"
@@ -29,6 +30,10 @@
           {{ currentTitle }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
+        <speech-synthesizer
+          :root="() => this.$refs.content.$el"
+          :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
+          />
         <span
           @click="closeDialog()"
         >
