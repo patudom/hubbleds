@@ -8,6 +8,8 @@
     prev-marker="pro_dat8"
     next-marker="sto_fin1"
     v-slot:default="{ canAdvance }"
+    :state="state"
+    :index="9"
   >
     <div
       class="mb-4"
@@ -40,3 +42,9 @@
     </div>
   </guideline-professional-data>
 </template>
+
+<script>
+module.exports = {
+ props: ['state']
+}
+</script>

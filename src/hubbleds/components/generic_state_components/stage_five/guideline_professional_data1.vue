@@ -9,6 +9,7 @@
     next-marker="pro_dat2"
     :state="state"
     v-slot:default="{ canAdvance }"
+    :index="1"
   >
     <div
       class="mb-4"

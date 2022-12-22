@@ -7,6 +7,8 @@
     header-text="Professional Data"
     next-marker="pro_dat1"
     :allow-back="false"
+    :state="state"
+    :index="0"
   >
     <div
       class="mb-4"

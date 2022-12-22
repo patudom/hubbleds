@@ -7,6 +7,8 @@
     elevation="6"
     prev-marker="pro_dat7"
     next-marker="pro_dat9"
+    :state="state"
+    :index="8"
   >
     <div
       class="mb-4"

@@ -10,6 +10,7 @@
     @next="advance()"
     :allow-back="allowBack"
     :can-advance="canAdvance"
+    :state="state"
   >
     <template #before-next>
       Choose a response.
@@ -44,6 +45,8 @@ module.exports = {
   },
   computed: {
     canAdvance() {
+      console.log(this.state.max_prodata_index);
+      console.log(this.index);
       return this.state.max_prodata_index > this.index;
     }
   },

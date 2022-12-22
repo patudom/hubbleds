@@ -8,6 +8,8 @@
     prev-marker="pro_dat5"
     next-marker="pro_dat7"
     v-slot:default="{ canAdvance }"
+    :state="state"
+    :index="6"
   >
     <div
       class="mb-4"
