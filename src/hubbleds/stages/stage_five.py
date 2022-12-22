@@ -5,14 +5,12 @@ from echo import CallbackProperty, add_callback
 from glue.core.message import NumericalDataChangedMessage
 from traitlets import Bool, default
 
-from ..components import ProData
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import (RepeatedTimer, extend_tool, load_template,
                             update_figure_css)
 from hubbleds.utils import IMAGE_BASE_URL
 
-from ..components import ProData
 from ..data.styles import load_style
 from ..data_management import (ALL_DATA_LABEL, CLASS_DATA_LABEL,
                                HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL,

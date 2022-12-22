@@ -2,7 +2,6 @@ import astropy.units as u
 import ipyvuetify as v
 from astropy.coordinates import SkyCoord
 from cosmicds.utils import load_template
-from glue_jupyter.state_traitlets_helpers import GlueState
 from traitlets import Int, Bool, Unicode
 
 from ...components.exploration_tool import ExplorationTool
