@@ -7,7 +7,7 @@
     elevation="6"
     prev-marker="pro_dat8"
     next-marker="sto_fin1"
-    v-slot:default="{ canAdvance }"
+    v-slot:default="{ allowAdvance }"
     :state="state"
     :index="9"
   >
@@ -34,7 +34,7 @@
           ]"
           :correct-answers="[2]"
           :neutral-answers='[0,1]'
-          :selected-callback="(status) => { if (status.correct) { canAdvance = true; } }"
+          :selected-callback="(status) => { if (status.correct) { allowAdvance(); } }"
           score-tag="pro-dat9"
         >
         </mc-radiogroup>

@@ -7,7 +7,7 @@
     elevation="6"
     prev-marker="pro_dat2"
     next-marker="pro_dat5"
-    v-slot:default="{ canAdvance }"
+    v-slot:default="{ allowAdvance, canAdvance }"
     :state="state"
     :index="4"
   >
@@ -27,7 +27,7 @@
           :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
           :correct-answers="[0,1]"
           :neutral-answers='[]'
-          :selected-callback="(status) => { if (status.correct) { canAdvance = true; } }"
+          :selected-callback="(status) => { if (status.correct) { allowAdvance(); } }"
           score-tag="pro-dat4"
         >
         </mc-radiogroup>
