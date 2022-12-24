@@ -35,7 +35,7 @@
         rows="2"
         label="Why?"
         tag="prodata-free-7"
-        v-if='advance'
+        v-if="advance"
       ></free-response>
     </div>
   </guideline-professional-data>

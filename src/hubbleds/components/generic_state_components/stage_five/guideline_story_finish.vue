@@ -29,6 +29,6 @@
 
 <script>
 module.exports = {
- props: ['state']
+ props: ['state', 'story_state']
 }
 </script>
