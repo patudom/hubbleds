@@ -6,7 +6,7 @@
     elevation="6"
     prev-marker="pro_dat4"
     next-marker="pro_dat6"
-    v-slot:default="{ allowAdvance }"
+    v-slot:default="{ allowAdvancing }"
     :state="state"
     :index="5"
   >
@@ -39,7 +39,7 @@
           ]"
           :correct-answers="[2]"
           :neutral-answers='[0,1]'
-          :selected-callback="(status) => { if (status.correct) { allowAdvance(); } }"
+          :selected-callback="(status) => { if (status.correct) { allowAdvancing(); } }"
           score-tag="pro-dat5"
         >
         </mc-radiogroup>

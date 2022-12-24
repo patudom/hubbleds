@@ -9,13 +9,16 @@
     @back="retreat()"
     @next="advance()"
     :allow-back="allowBack"
-    :can-advance="(_state) => { canAdvance(); }"
+    :can-advance="(state) => autoAdvance || state.max_prodata_index > index"
     :state="state"
   >
     <template #before-next>
       Choose a response.
     </template>
-    <slot :allow-advance="allowAdvance" :can-advance="canAdvance"></slot>
+    <slot
+      :advance="advance"
+      :allow-advancing="allowAdvancing"
+    ></slot>
   </scaffold-alert>
 </template>
 
@@ -41,28 +44,21 @@ module.exports = {
     allowBack: {
       type: Boolean,
       default: true
-    }
-  },
-  computed: {
-    canAdvance() {
-      console.log(this.index);
-      console.log(this.state.max_prodata_index);
-      return this.state.max_prodata_index > this.index;
+    },
+    autoAdvance: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
     retreat() {
       this.state.marker = this.prevMarker;
     },
-    allowAdvance() {
-      console.log("In allowAdvance");
-      console.log(this.state.max_prodata_index, this.index);
-      console.log(Math.max(this.state.max_prodata_index, this.index));
-      console.log("======");
+    allowAdvancing() {
       this.state.max_prodata_index = Math.max(this.state.max_prodata_index, this.index + 1);
     },
     advance() {
-      this.allowAdvance();
+      this.allowAdvancing();
       this.state.marker = this.nextMarker;
     }
   }

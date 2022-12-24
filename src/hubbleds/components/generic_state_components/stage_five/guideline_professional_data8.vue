@@ -7,6 +7,7 @@
     elevation="6"
     prev-marker="pro_dat7"
     next-marker="pro_dat9"
+    :auto-advance="true"
     :state="state"
     :index="8"
   >

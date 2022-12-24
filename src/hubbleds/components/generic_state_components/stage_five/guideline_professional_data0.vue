@@ -7,6 +7,7 @@
     header-text="Professional Data"
     next-marker="pro_dat1"
     :allow-back="false"
+    :auto-advance="true"
     :state="state"
     :index="0"
   >
