@@ -111,6 +111,13 @@
 
       <v-window-item :value="2" 
         class="no-transition"
+        v-intersect="(entries, observer, isIntersecting) => {
+          console.log('Inside first intersection observer');
+          console.log(isIntersecting);
+          if (isIntersecting) {
+            startTimerIfNeeded(0);
+          }
+        }"
       >
         <v-card-text>
           <v-container>
@@ -197,12 +204,20 @@
                 </div>
               </v-col>
             </v-row>
+            <v-snackbar
+              v-model="timer_done[0]"
+            >Prompting text goes here</v-snackbar>
           </v-container>                                      
         </v-card-text>
        </v-window-item>
 
       <v-window-item :value="3" 
         class="no-transition"
+        v-intersect="(entries, observer, isIntersecting) => {
+          if (isIntersecting) {
+            startTimerIfNeeded(1);
+          }
+        }"
       >
         <v-card-text>
           <v-container>
@@ -369,12 +384,20 @@
                 </div>
               </v-col>
             </v-row>
+            <v-snackbar
+              v-model="timer_done[1]"
+            >Prompting text goes here</v-snackbar>
           </v-container>
         </v-card-text>
       </v-window-item>
 
       <v-window-item :value="4" 
         class="no-transition"
+        v-intersect="(entries, observer, isIntersecting) => {
+          if (isIntersecting) {
+            startTimerIfNeeded(2);
+          }
+        }"
       >
         <v-card-text>
           <v-container>
@@ -516,6 +539,9 @@
                 </div>
               </v-col>
             </v-row>
+            <v-snackbar
+              v-model="timer_done[2]"
+            >Prompting text goes here</v-snackbar>
           </v-container>   
         </v-card-text>
       </v-window-item>
@@ -589,6 +615,7 @@
 
       <v-window-item :value="6" 
         class="no-transition"
+        
       >
         <v-card-text>
           <v-container>
@@ -750,14 +777,25 @@
 #exploration-tool, #exploration-tool2, #exploration-tool3 {
   height: 400px;
 }
-
-
 </style>
 
 
 <script>
 module.exports = {
   props: ["continueText","target"],
+  methods: {
+    startTimer(number) {
+      setTimeout(() => {
+        this.set_timer_finished(number);
+    }, this.timer_duration);
+      this.set_timer_started();
+    },
+    startTimerIfNeeded(number) {
+      if (!this.timer_started[number]) {
+        this.startTimer(number);
+      }
+    }
+  },
 
   watch: {
     step(val) {
