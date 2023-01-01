@@ -24,7 +24,7 @@
           :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
           :correct-answers="[0,1]"
           :neutral-answers='[]'
-          :selected-callback="(status) => { if (status.correct) { allowAdvancing(); } }"
+          @select="(status) => { if (status.correct) { allowAdvancing(); } }"
           score-tag="pro-dat7"
         >
         </mc-radiogroup>

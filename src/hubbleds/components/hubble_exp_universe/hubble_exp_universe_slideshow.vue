@@ -97,7 +97,7 @@
                       'Try again. The age of the race is the distance any runner has traveled divided by their speed.',
                     ]"
                     :correct-answers="[1]"
-                    :selected-callback="(state) => { if(state.correct) { this.maxStepCompleted = Math.max(this.maxStepCompleted, 1);} }"
+                    @select="(state) => { if(state.correct) { this.maxStepCompleted = Math.max(this.maxStepCompleted, 1);} }"
                     score-tag="race-age"  
                   >
                   </mc-radiogroup>

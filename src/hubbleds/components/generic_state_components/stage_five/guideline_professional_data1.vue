@@ -36,7 +36,7 @@
           :incorrect-answers="[0]"
           :correct-answers="[1]"
           :neutral-answers="[2]"
-          :selected-callback="(status) => { if (status.correct) { allowAdvancing(); } }"
+          @select="(status) => { if (status.correct) { allowAdvancing(); } }"
           score-tag="pro-dat1"
         >
         </mc-radiogroup>
