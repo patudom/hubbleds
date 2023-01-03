@@ -283,6 +283,8 @@ class StageTwo(HubbleStage):
         self.distance_tool.go_to_location(galaxy["ra"], galaxy["decl"],
                                           fov=GALAXY_FOV)
 
+        self.distance_tool.reset_brightness_contrast() # reset the style of viewer
+        
         self.stage_state.galaxy = galaxy
         self.stage_state.galaxy_dist = None
         self.distance_tool.measuring_allowed = bool(galaxy)
