@@ -1,7 +1,7 @@
 <!-- this state.marker = 'lac_bia3' -->
 <template>
   <scaffold-alert
-    header-text="Which Might Produce a Closer Result?"
+    title-text="Which Might Produce a Closer Result?"
     @back="
       state.marker = 'lac_bia2';
     "
@@ -25,3 +25,9 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

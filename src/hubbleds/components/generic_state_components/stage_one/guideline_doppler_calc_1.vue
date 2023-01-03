@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Velocity Calculation"
+    title-text="Velocity Calculation"
     @back="
       state.marker = 'dop_cal0';
     "

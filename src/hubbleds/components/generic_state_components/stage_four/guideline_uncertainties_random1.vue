@@ -1,7 +1,7 @@
 <!-- this state.marker = 'unc_ran1' -->
 <template>
   <scaffold-alert
-    header-text="Random Uncertainties"
+    title-text="Random Uncertainties"
     @back="
       state.marker = 'imp_mea1';
     "

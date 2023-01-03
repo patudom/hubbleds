@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Introducing the Guidelines"
+    title-text="Introducing the Guidelines"
     @next="state.marker = 'sel_gal1'"
     :allow-back="false"
   >

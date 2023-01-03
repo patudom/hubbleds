@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Select Your Galaxies"
+    title-text="Select Your Galaxies"
     @back="() => { state.marker = 'mee_gui1'; }"
     @next="() => {
       if (state.gals_total == 0) {

@@ -1,11 +1,11 @@
 <template>
   <scaffold-alert
-    header-text="Class Age Range"
+    title-text="Class Age Range"
     @back="
-      state.marker = 'cla_age1';
+      state.marker = 'cla_age2';
     "
     @next="
-      state.marker = 'cla_age3';
+      state.marker = 'cla_age4';
     "
   >
     <div
@@ -21,7 +21,7 @@
         $$ \text{High age: } \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.stu_high_age).toFixed(0) }} } } \text{ Gyr} $$
       </v-card>
       <p class="mt-4">
-        At first glance, this may seem like a large spread in possible age values for the universe. But if you think back to what astronomers knew in the 1920’s, the common scientific view was that the universe has always existed. So being able to measure any finite age for the universe was a BIG DEAL. 
+        Also, the universe’s age could have been anywhere from thousands of years to trillions or more years. The fact that everyone in your class got an age within 10’s of billions of years of each other is actually pretty well constrained.
       </p>
     </div>
   </scaffold-alert>

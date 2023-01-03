@@ -1,7 +1,7 @@
 <!-- this state.marker = 'mor_dat1' -->
 <template>
   <scaffold-alert
-    header-text="More Data and Narrow Distributions"
+    title-text="More Data and Narrow Distributions"
     @back="
       state.marker = 'lac_bia3';
     "

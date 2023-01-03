@@ -1,7 +1,7 @@
 <!-- this state.marker = 'sho_est4' -->
 <template>
   <scaffold-alert
-    header-text="Shortcomings in Your Estimate"
+    title-text="Shortcomings in Your Estimate"
     @back="
       state.marker = 'sho_est3';
     "

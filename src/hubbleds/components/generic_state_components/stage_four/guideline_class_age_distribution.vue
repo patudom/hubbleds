@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Class Age Distribution"
+    title-text="Class Age Distribution"
     @back="
       state.marker = 'con_int1';
     "

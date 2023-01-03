@@ -238,7 +238,7 @@ class StageFour(HubbleStage):
         # Set up the generic state components
         state_components_dir = str(
             Path(
-                __file__).parent.parent / "components" / "generic_state_components" / "stage_three")
+                __file__).parent.parent / "components" / "generic_state_components" / "stage_four")
         path = join(state_components_dir, "")
         state_components = [
             "guideline_random_variability",

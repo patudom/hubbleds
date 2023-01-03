@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Observed Wavelength"
+    title-text="Observed Wavelength"
     @back="() => { state.marker = 'obs_wav1'; }"
     @next="() => { state.marker = 'rep_rem1'; }"
     :can-advance="(state) => state.zoom_tool_activated"

@@ -1,11 +1,11 @@
 <template>
   <scaffold-alert
-    header-text="Class Age Range"
+    title-text="Class Age Range"
     @back="
-      state.marker = 'cla_age2';
+      state.marker = 'cla_age3';
     "
     @next="
-      state.marker = 'cla_age4';
+      state.marker = 'con_int1';
     "
   >
     <div
@@ -21,7 +21,7 @@
         $$ \text{High age: } \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.stu_high_age).toFixed(0) }} } } \text{ Gyr} $$
       </v-card>
       <p class="mt-4">
-        Also, the universe’s age could have been anywhere from thousands of years to trillions or more years. The fact that everyone in your class got an age within 10’s of billions of years of each other is actually pretty well constrained.
+        Even with the spread in your class’s age estimates, it is reasonable to set constraints on the most likely age range of the universe given your and your classmates’ individual measurements. 
       </p>
     </div>
   </scaffold-alert>

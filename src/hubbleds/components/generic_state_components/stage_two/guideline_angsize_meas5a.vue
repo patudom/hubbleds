@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    title-text="Angular Size Measurement"
+    @back="state.marker = 'ang_siz5'"
+    @next="state.marker = 'ang_siz6'"
+    :can-advance="(state) => state.dos_donts_opened"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Angular Size Measurement
-    </h3>
+    <template #before-next>
+      Click the <strong>MEASUREMENT DOS AND DONTS</strong> button.
+    </template>
+
     <div
       class="mb-4"
     >
@@ -20,55 +24,7 @@
         Click <strong>MEASUREMENT DOS AND DONTS</strong> for tips on how to ensure the most accurate results.
       </p>
     </div>
-
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'ang_siz5'
-          "
-        >
-          back
-        </v-btn>
-      <v-spacer></v-spacer>
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="!state.dos_donts_opened"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Click the <strong>MEASUREMENT DOS AND DONTS</strong> button.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.dos_donts_opened"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'ang_siz6'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 

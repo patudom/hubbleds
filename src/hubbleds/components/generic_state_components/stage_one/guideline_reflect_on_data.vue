@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Reflect on Your Data"
+    title-text="Reflect on Your Data"
     :can-advance="(state) => state.reflection_complete"
     :state="state"
     @back="() => { state.marker = 'rep_rem1'; }"

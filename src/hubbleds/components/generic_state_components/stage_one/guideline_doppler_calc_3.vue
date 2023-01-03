@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Select a Galaxy"
+    title-text="Select a Galaxy"
     @back="() => { state.marker = 'dop_cal2'; }"
     @next="() => { state.marker = 'dop_cal4'; }"
     :can-advance="(state) => state.doppler_calc_reached"

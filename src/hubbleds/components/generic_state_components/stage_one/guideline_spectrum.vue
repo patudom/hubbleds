@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Meet the Spectrum Viewer"
+    title-text="Meet the Spectrum Viewer"
     :can-advance="(state) => state.spec_tutorial_opened"
     :state="state"
     @back="() => {
