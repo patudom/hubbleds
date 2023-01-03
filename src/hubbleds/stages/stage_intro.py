@@ -39,13 +39,13 @@ class StageIntro(Stage):
         super().__init__(*args, **kwargs)
 
         intro_slideshow = IntroSlideshow(self.app_state.show_team_interface)
-        self.add_component(intro_slideshow, label='c-intro-slideshow')
+        self.add_component(intro_slideshow, label='py-intro-slideshow')
         intro_slideshow.observe(self._on_slideshow_complete,
                                 names=['intro_complete'])
 
     @property
     def slideshow(self):
-        return self.get_component('c-intro-slideshow')
+        return self.get_component('py-intro-slideshow')
 
     def _on_slideshow_complete(self, change):
         if change["new"]:

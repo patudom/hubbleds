@@ -152,7 +152,7 @@ class StageTwo(HubbleStage):
         super().__init__(*args, **kwargs)
         
         dosdonts_slideshow = DosDonts_SlideShow()
-        self.add_component(dosdonts_slideshow, label='dosdonts-slideshow')
+        self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
         dosdonts_slideshow.observe(self._dosdonts_opened, names=['opened'])
 
         # two_complete = StageTwoComplete(self.stage_state)
@@ -164,7 +164,7 @@ class StageTwo(HubbleStage):
         
         self.show_team_interface = self.app_state.show_team_interface
 
-        self.add_component(DistanceTool(), label="distance-tool")
+        self.add_component(DistanceTool(), label="py-distance-tool")
 
         
 
@@ -195,7 +195,7 @@ class StageTwo(HubbleStage):
             self.distance_table_selected_change, names=["selected"])
 
         self.add_component(DistanceSidebar(self.stage_state),
-                           label="distance-sidebar")
+                           label="py-distance-sidebar")
         self.distance_tool.observe(self._angular_size_update,
                                    names=["angular_size"])
         self.distance_tool.observe(self._angular_height_update,

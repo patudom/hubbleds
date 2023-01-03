@@ -70,7 +70,7 @@
             cols="10"
             offset="1"
           >
-            <c-hubble-slideshow/>  
+            <py-hubble-slideshow/>  
           </v-col>
         </v-row>
       </v-col>
@@ -131,11 +131,11 @@
               class="comparison_viewer"
               />
           </v-lazy>
-          <c-student-slider 
+          <py-student-slider 
             class="slider_card"
             />
         </v-card>
-        <c-hubble-slideshow         />  
+        <py-hubble-slideshow/>  
       </v-col>
     </v-row>
 
@@ -167,7 +167,7 @@
           <v-lazy>
             <jupyter-widget :widget="viewers.all_viewer"/>
           </v-lazy>
-          <c-class-slider 
+          <py-class-slider 
             class="slider_card"
             />
         </v-card>

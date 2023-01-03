@@ -272,7 +272,7 @@ class StageFour(HubbleStage):
         student_slider_subset_label = "student_slider_subset"
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
         student_slider = IDSlider(class_summ_data, "student_id", "age", highlight_ids=[self.story_state.student_user["id"]])
-        self.add_component(student_slider, "c-student-slider")
+        self.add_component(student_slider, "py-student-slider")
         def student_slider_change(id, highlighted):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
             color = student_slider.highlight_color if highlighted else student_slider.default_color
@@ -291,7 +291,7 @@ class StageFour(HubbleStage):
         class_slider_subset_label = "class_slider_subset"
         self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
         class_slider = IDSlider(classes_summary_data, "class_id", "age")
-        self.add_component(class_slider, "c-class-slider")
+        self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
             self.class_slider_subset.subset_state = all_data['class_id'] == id
             color = class_slider.highlight_color if highlighted else class_slider.default_color
@@ -643,7 +643,7 @@ class StageFour(HubbleStage):
             if label == STUDENT_DATA_LABEL:
                 self._update_hypgal_info()
             elif label == CLASS_SUMMARY_LABEL:
-                self.get_component("c-student-slider").refresh()
+                self.get_component("py-student-slider").refresh()
             self._reset_limits_for_data(label)
 
     def _on_class_data_update(self, *args):
