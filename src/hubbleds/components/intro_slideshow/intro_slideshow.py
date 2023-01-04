@@ -24,8 +24,8 @@ class IntroSlideshow(v.VuetifyTemplate):
     show_team_interface = Bool(False).tag(sync=True)
     target = Unicode("").tag(sync=True)
     timer_duration = Int(5000).tag(sync=True)  # in ms
-    timer_done = Dict(key_trait=Int, value_trait=Bool, default_value={}).tag(sync=True)
-    timer_started = Dict(key_trait=Int, value_trait=Bool, default_value={}).tag(sync=True)
+    timer_done = Dict({}).tag(sync=True)
+    timer_started = Dict({}).tag(sync=True)
 
     _titles = [
         "Welcome to Your Data Story",
@@ -57,6 +57,10 @@ class IntroSlideshow(v.VuetifyTemplate):
             "fov": 6000,
             "instant": True
         })
+
+        exploration_tool.observe(lambda _change: self.start_timer_if_needed(0), names=['pan_count', 'zoom_count'])
+        exploration_tool1.observe(lambda _change: self.start_timer_if_needed(1), names=['pan_count', 'zoom_count'])
+        exploration_tool2.observe(lambda _change: self.start_timer_if_needed(2), names=['pan_count', 'zoom_count'])
 
         self.currentTitle = self._default_title
 
@@ -92,6 +96,9 @@ class IntroSlideshow(v.VuetifyTemplate):
 
     def vue_go_to_location_tool2(self, args):
         self.go_to_location('c-exploration-tool2', args)
+
+    def start_timer_if_needed(self, number):
+        self.send({"method": "startTimerIfNeeded", "args": [number]})
 
     def vue_set_timer_started(self, number):
         self.timer_started = {
