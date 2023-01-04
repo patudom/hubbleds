@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Trend Lines"
+    title-text="Trend Lines"
     @back="
       state.marker = 'hub_exp1';
     "
@@ -17,3 +17,9 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

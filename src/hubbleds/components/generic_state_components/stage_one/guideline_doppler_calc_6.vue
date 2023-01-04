@@ -1,15 +1,20 @@
 <template>
-  <v-alert
+  <scaffold-alert
       class="mb-4 mx-auto"
       color="info"
       elevation="6"
       max-width="800"
+      title-text="Velocity Calculation"
+      :can-advance="(state) => state.velocities_total === 5"
+      next-text="stage 2"
+      :state="state"
+      @back="() => { state.marker = 'dop_cal3'; }"
+      @next="() => { state.completed = true; }"
   >
-    <h3
-        class="mb-4"
-    >
-      Velocity Calculation
-    </h3>
+    <template #before-next>
+      Click the <v-icon>mdi-run-fast</v-icon> icon.
+    </template>
+
     <div
         v-if="state.velocities_total < 5"
         v-intersect="(entries, _observer, intersecting) => {
@@ -37,59 +42,9 @@
         v-if="state.velocities_total === 5"
         class="mb-4"
     >
-      Great work! You have completed Stage 1. Proceed to Stage 2.
+      <p>Great work! You have completed Stage 1. Proceed to Stage 2.</p>
     </div>
-    <v-divider
-        class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-        align="center"
-        no-gutters
-    >
-      <v-col>
-        <v-btn
-            class="black--text"
-            color="accent"
-            elevation="2"
-            @click="
-            state.marker = 'dop_cal3';
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-
-      <v-col
-          v-if="state.velocities_total < 5"
-          class="shrink"
-          cols="4"
-      >
-        <div
-            style="font-size: 16px;"
-        >
-          Click the
-          <v-icon>mdi-run-fast</v-icon>
-          icon.
-        </div>
-      </v-col>
-      <v-col
-          v-if="state.velocities_total === 5"
-          class="shrink"
-      >
-        <v-btn
-            class="black--text"
-            color="accent"
-            elevation="2"
-            @click="state.completed = true"
-        >
-          stage 2
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 

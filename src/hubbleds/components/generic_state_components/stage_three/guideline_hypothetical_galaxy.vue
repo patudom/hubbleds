@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="A Hypothetical Galaxy"
+    title-text="A Hypothetical Galaxy"
     @back="
       state.marker = 'age_uni1';
     "
@@ -20,3 +20,9 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

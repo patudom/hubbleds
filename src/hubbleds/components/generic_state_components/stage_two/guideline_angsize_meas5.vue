@@ -1,15 +1,13 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    title-text="Angular Size Measurement"
+    @back="state.marker = 'ang_siz4'"
+    @next="state.marker = 'ang_siz5a'"
   >
-    <h3
-      class="mb-4"
-    >
-      Angular Size Measurement
-    </h3>
     <div
       class="mb-4"
     >
@@ -17,41 +15,11 @@
         Notice your galaxy’s angular size is now displayed in the table.
       </p>
     </div>
-
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'ang_siz4'
-          "
-        >
-          back
-        </v-btn>
-      <v-spacer></v-spacer>
-      <v-col
-        class="shrink"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'ang_siz5a'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+ props: ['state']
+}
+</script>

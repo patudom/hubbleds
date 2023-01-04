@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    title-text="Hubble's Expanding Universe"
+    @back="state.marker = 'rel_vel1'"
+    @next="state.marker = 'tre_lin1'"
+    :can-advance="(state) => state.hubble_dialog_opened"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Hubble's Expanding Universe
-    </h3>
+    <template #before-next>
+      Click the <strong>HUBBLE'S DISCOVERY</strong> button.
+    </template>
+    
     <div
       class="mb-4"
     >
@@ -20,53 +24,12 @@
        Click the <strong>HUBBLE's DISCOVERY</strong> button to learn what was significant about this result.
       </p>
     </div>
-    
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'rel_vel1'
-          "
-        >
-          back
-        </v-btn>
-      <v-spacer></v-spacer>
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="!state.hubble_dialog_opened"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Click the <strong>HUBBLE'S DISCOVERY</strong> button.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.hubble_dialog_opened"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'tre_lin1'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
+
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

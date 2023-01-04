@@ -1,15 +1,20 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    title-text="Rest Wavelength"
+    :state="state"
+    @back="() => { state.marker = 'mee_spe1'; }"
+    @next="() => { state.marker = 'obs_wav1'; }"
+    :can-advance="(state) => state.lambda_used"
   >
-    <h3
-      class="mb-4"
-    >
-      Rest Wavelength
-    </h3>
+
+    <template #before-next>
+      Click the <v-icon>mdi-lambda</v-icon> button.
+    </template>
+
     <div
       class="mb-4"
     >
@@ -89,7 +94,7 @@
         </v-btn>
       </v-col>
     </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 

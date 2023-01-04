@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Angular Size Measurement"
+    title-text="Angular Size Measurement"
     @back="
       state.marker = 'cho_row1';
     "
@@ -18,3 +18,9 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+ props: ['state']
+}
+</script>

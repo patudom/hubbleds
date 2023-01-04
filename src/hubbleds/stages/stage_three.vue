@@ -33,14 +33,17 @@
         cols="12"
         lg="4"
       >
-        <c-guideline-explore-data
+        <guideline-explore-data
           v-if="stage_state.marker == 'exp_dat1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate3
+        <guideline-age-universe-estimate3
           v-if="stage_state.marker == 'age_uni3'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-estimate4
+        <guideline-age-universe-estimate4
           v-if="stage_state.marker == 'age_uni4'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
@@ -69,64 +72,82 @@
         cols="12"
         lg="4"
       >
-        <c-guideline-trends-data-mc1
+        <guideline-trends-data-mc1
           v-if="stage_state.marker == 'tre_dat1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.trend_response = true" />
-        <c-guideline-trends-data2
+        <guideline-trends-data2
           v-if="stage_state.marker == 'tre_dat2'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.trend_response = true" />
-        <c-guideline-trends-data-mc3
+        <guideline-trends-data-mc3
           v-if="stage_state.marker == 'tre_dat3'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.trend_response = true" />
-        <c-guideline-relationship-vel-dist-mc
+        <guideline-relationship-vel-dist-mc
           v-if="stage_state.marker == 'rel_vel1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.relvel_response = true" />
-        <c-guideline-trend-lines1
+        <guideline-trend-lines1
           v-if="stage_state.marker == 'tre_lin1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-trend-lines-draw2
+        <guideline-trend-lines-draw2
           v-if="stage_state.marker == 'tre_lin2'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-best-fit-line
+        <guideline-best-fit-line
           v-if="stage_state.marker == 'bes_fit1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-hubbles-expanding-universe1
+        <guideline-hubbles-expanding-universe1
           v-if="stage_state.marker == 'hub_exp1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-hubbles-expanding-universe2
+        <guideline-hubbles-expanding-universe2
           v-if="stage_state.marker == 'hub_exp2'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />          
-        <c-guideline-running-race-mc
+        <guideline-running-race-mc
           v-if="stage_state.marker == 'run_rac1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.race_response = true" />
-        <c-guideline-runners-vel-dist
+        <guideline-runners-vel-dist
           v-if="stage_state.marker == 'run_vel1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe
+        <guideline-age-universe
           v-if="stage_state.marker == 'age_uni1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-hypothetical-galaxy
+        <guideline-hypothetical-galaxy
           v-if="stage_state.marker == 'hyp_gal1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-race-equation
+        <guideline-age-race-equation
           v-if="stage_state.marker == 'age_rac1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-age-universe-equation2
+        <guideline-age-universe-equation2
           v-if="stage_state.marker == 'age_uni2'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-your-age-estimate
+        <guideline-your-age-estimate
           v-if="stage_state.marker == 'you_age1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-shortcomings-est-reflect1
+        <guideline-shortcomings-est-reflect1
           v-if="stage_state.marker == 'sho_est1'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <c-guideline-shortcomings-est2
+        <guideline-shortcomings-est2
           v-if="stage_state.marker == 'sho_est2'"
+          :state="stage_state"
           v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
@@ -159,6 +180,7 @@
             offset="1"
           >
             <c-hubble-slideshow 
+              :state="stage_state"
               v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']" />  
           </v-col>
         </v-row>

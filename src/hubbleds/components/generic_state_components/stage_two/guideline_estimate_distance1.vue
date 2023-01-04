@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Estimate Distance"
+    title-text="Estimate Distance"
     @back="
       state.marker = 'rep_rem1';
     "
@@ -17,3 +17,10 @@
     </div>
   </scaffold-alert>
 </template>
+
+
+<script>
+module.exports = {
+ props: ['state']
+}
+</script>

@@ -1,16 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
       class="mb-4 mx-auto doppler_alert"
       color="info"
       elevation="6"
       max-width="800"
+      title-text="Input Wavelengths"
+      @back="() => { state.marker = 'dop_cal3'; }"
+      :state="state"
+      @next="() => 
+        {
+          const expectedAnswers = [state.lambda_obs, state.lambda_rest];
+          state.marker = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? 'dop_cal5' : 'dop_cal4';
+          state.doppler_calc_dialog = !!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers);
+        }"
   >
-    <h3
-        class="mb-4"
-    >
-      Input Wavelengths
-    </h3>
-
     <div
         v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
         class="mb-4"
@@ -117,47 +120,7 @@
     >
       Not quite. Make sure you haven't reversed the rest and observed wavelength values.
     </v-alert>
-    <v-divider
-        class="my-4"
-    >
-    </v-divider>
-    <v-row
-        align="center"
-        no-gutters
-    >
-      <v-col>
-        <v-btn
-            class="black--text"
-            color="accent"
-            elevation="2"
-            @click="
-            state.marker = 'dop_cal3';
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col
-          class="shrink"
-      >
-        <v-btn
-            class="black--text"
-            color="accent"
-            elevation="2"
-            @click="() => {
-            const expectedAnswers = [state.lambda_obs, state.lambda_rest];
-            state.marker = validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? 'dop_cal5' : 'dop_cal4';
-            state.doppler_calc_dialog = !!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers);
-          }"
-        >
-          next
-        </v-btn>
-      </v-col>
-
-    </v-row>
-
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 

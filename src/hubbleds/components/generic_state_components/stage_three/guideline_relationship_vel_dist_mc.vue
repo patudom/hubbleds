@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    title-text="Relationship Between Velocity and Distance"
+    @back="state.marker = 'tre_dat3'"
+    @next="state.marker = 'hub_exp1'"
+    :can-advance="(state) => state.relvel_response"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Relationship Between Velocity and Distance
-    </h3>
+    <template #next-content>
+      Choose a response.
+    </template>
+
     <div
       class="mb-4"
     >
@@ -36,61 +40,17 @@
           ]"
           :correct-answers="[1]"
           :neutral-answers='[0,2,3]'
-          :selected-callback="(state) => { $emit('ready'); }"
+          :selected-callback="(state) => { if (state.correct) { $emit('ready'); } }"
           score-tag="galaxy-trend"
         >
         </mc-radiogroup>
       </v-container>
     </div>
-    
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'tre_dat3'
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="!state.relvel_response"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Choose a response.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.relvel_response"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'hub_exp1'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

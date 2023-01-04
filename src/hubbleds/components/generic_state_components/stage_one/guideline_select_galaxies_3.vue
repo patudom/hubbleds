@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    title-text="Select your Galaxies"
+    @back="() => { state.marker = 'sel_gal1'; }"
+    @next="() => { state.marker = 'cho_row1'; }"
+    :can-advance="(state) => state.gals_total === 5"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Select Your Galaxies
-    </h3>
+
+  <template #before-next>
+    Select {{ 5 - state.gals_total }} <span v-if="state.gals_total>0">more</span> <span v-if="state.gals_total < 4">galaxies</span><span v-if="state.gals_total == 4">galaxy</span>.
+  </template>
 
     <div
       v-if="state.gals_total == 0 & !state.gal_selected"
@@ -114,7 +118,7 @@
         </v-btn>
       </v-col>
     </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 <script>

@@ -8,7 +8,7 @@ from cosmicds.utils import RepeatedTimer, load_template, API_URL
 from glue_jupyter.state_traitlets_helpers import GlueState
 from ipywidgets import DOMWidget, widget_serialization
 from pywwt.jupyter import WWTJupyterWidget
-from traitlets import Instance, Bool, Float, Int, Unicode, observe
+from traitlets import Instance, Bool, Float, Int, Unicode, observe, Dict
 
 from ...utils import GALAXY_FOV, HUBBLE_ROUTE_PATH, angle_to_json, \
     angle_from_json
@@ -34,6 +34,8 @@ class DistanceTool(v.VueTemplate):
     state = GlueState().tag(sync=True)
     _ra = Angle(0 * u.deg)
     _dec = Angle(0 * u.deg)
+    wwtStyle = Dict().tag(sync=True)
+    reset_style = Bool(False).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
 
@@ -129,6 +131,14 @@ class DistanceTool(v.VueTemplate):
     def go_to_location(self, ra, dec, fov=GALAXY_FOV):
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
         self.widget.center_on_coordinates(coordinates, fov=fov, instant=True)
+    
+    def reset_brightness_contrast(self):
+        print('resetting wwt style')
+        self.wwtStyle = {}
+        # toggle reset style to trigger watch in vue
+        self.reset_style = True
+        self.reset_style = False
+    
 
     @observe('flagged')
     def mark_galaxy_bad(self, change):

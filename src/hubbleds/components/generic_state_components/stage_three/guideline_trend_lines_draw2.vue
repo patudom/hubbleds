@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    title-text="Trend Lines"
+    @back="state.marker = 'tre_lin1'"
+    @next="state.marker = 'bes_fit1'"
+    :can-advance="(state) => state.trend_line_drawn"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Trend Lines
-    </h3>
+    <template #before-next>
+      Draw a trend line.
+    </template>
+
     <div
       class="mb-4"
     >
@@ -23,60 +27,14 @@
         Click <v-icon>mdi-message-draw</v-icon> in the Toolbar to activate the drawing tool and try drawing a trend line through your data points.
       </p>
     </div>
-    
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'tre_lin1'
-          "
-        >
-          back
-        </v-btn>
-      <v-spacer></v-spacer>
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="!state.trend_line_drawn"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Draw a trend line.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.trend_line_drawn"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'bes_fit1'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 
-
-
-
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>
 
 

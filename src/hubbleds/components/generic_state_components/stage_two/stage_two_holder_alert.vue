@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Stage Two Holder"
+    title-text="Stage Two Holder"
     @back="
       state.marker = 'two_sta1';
     "
@@ -20,3 +20,10 @@
     </div>
   </scaffold-alert>
 </template>
+
+
+<script>
+module.exports = {
+ props: ['state']
+}
+</script>

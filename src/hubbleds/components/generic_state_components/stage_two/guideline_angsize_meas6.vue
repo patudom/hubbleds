@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Angular Size Measurement"
+    title-text="Angular Size Measurement"
     @back="
       state.marker = 'ang_siz5';
     "
@@ -20,3 +20,9 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+ props: ['state']
+}
+</script>

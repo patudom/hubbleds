@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Age of the Universe"
+    title-text="Age of the Universe"
     @back="
       state.marker = 'bes_fit1';
     "
@@ -20,3 +20,9 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>

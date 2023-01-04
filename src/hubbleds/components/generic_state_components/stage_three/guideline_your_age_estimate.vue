@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Your Age Estimate"
+    title-text="Your Age Estimate"
     @back="
       state.marker = 'age_uni4';
     "
@@ -23,3 +23,9 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  props: ['state']
+}
+</script>
