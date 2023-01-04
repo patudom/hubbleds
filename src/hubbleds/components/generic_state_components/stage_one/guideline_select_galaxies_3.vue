@@ -68,56 +68,7 @@
       <p>
         Let's turn to your table of galaxies.
       </p>
-    </div>    
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'sel_gal1'
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col
-        v-if="state.gals_total < 5"
-        cols="6"
-        class="shrink"
-      >
-        <div
-          style="font-size: 16px; border-left: solid 3px #FFD740; padding-left: 10px; color: #FFF8E1;"
-        >
-          <strong style="color: white;">Select</strong> {{ 5 - state.gals_total }} <span v-if="state.gals_total>0">more</span> <span v-if="state.gals_total < 4">galaxies</span><span v-if="state.gals_total == 4">galaxy</span>.
-        </div>
-      </v-col>
-      <v-col
-        v-if="state.gals_total >= 5"
-        class="shrink"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'cho_row1'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
+    </div>
   </scaffold-alert>
 </template>
 
