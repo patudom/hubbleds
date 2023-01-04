@@ -63,16 +63,12 @@ class ExplorationTool(v.VueTemplate):
             self._rt.stop()
 
     def _handle_view_message(self, wwt, _updated):
-        print("Got view message")
-        print(id(self))
         fov = Angle(wwt.get_fov())
         center = wwt.get_center()
         ra = Angle(center.ra)
         dec = Angle(center.dec)
         zooming = not u.isclose(fov, self._fov)
         panning = not u.allclose([ra, dec], [self._ra, self._dec])
-        print(fov, self._fov, zooming)
-        print(ra, self._ra, dec, self._dec, panning)
         self._update_panning(panning)
         self._update_zooming(zooming)
         self._ra = ra
