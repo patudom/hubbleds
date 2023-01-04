@@ -209,6 +209,7 @@
               button-text="reflect"
               close-text="submit"
               :state="stage_state"
+              :require-responses="!show_team_interface"
               @submit="
                 stage_state.reflection_complete = true;
                 console.log('Submit button was clicked.');
