@@ -1,7 +1,7 @@
 <!-- this state.marker = 'two_his2' -->
 <template>
   <scaffold-alert
-    header-text="Student Histogram vs. Class Histogram"
+    title-text="Student Histogram vs. Class Histogram"
     @back="
       state.marker = 'unc_sys1';
     "

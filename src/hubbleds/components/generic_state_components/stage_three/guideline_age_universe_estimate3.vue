@@ -1,15 +1,17 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto angsize_alert"
     max-width="800"
     elevation="6"
+    title-text="Estimate Age of Universe"
+    next-text="calculate"
+    @back="state.marker = 'age_uni2'"
+    @next="() => {
+      const expectedAnswers = [state.hypgal_distance, state.hypgal_velocity];
+      state.marker = validateAnswersJS(['gal_distance', 'gal_velocity'], expectedAnswers) ? 'age_uni4' : 'age_uni3';
+    }"
   >
-    <h3
-      class="mb-4"
-    >
-      Estimate Age of Universe
-    </h3> 
 
     <div
       class="mb-4"
@@ -108,44 +110,7 @@
     >
       Not quite. Make sure you are entering the values for the "Best Fit Galaxy" (in the bottom row of your table), with distance in the top box and velocity in the bottom box.
     </v-alert>
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'age_uni2';
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col
-        class="shrink"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="() => {
-            const expectedAnswers = [state.hypgal_distance, state.hypgal_velocity];
-            state.marker = validateAnswersJS(['gal_distance', 'gal_velocity'], expectedAnswers) ? 'age_uni4' : 'age_uni3';
-          }"
-        >
-          calculate
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert> 
+  </scaffold-alert> 
 </template>
 
 <style>

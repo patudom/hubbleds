@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    title-text="Angular Size Measurement"
+    @back="state.marker = 'ang_siz3'"
+    @next="state.marker = 'ang_siz5'"
+    :can-advance="(state) => state.n_meas > 0"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Angular Size Measurement
-    </h3>
+    <template #before-next>
+      Measure angular size of galaxy
+    </template>
+
     <div
       class="mb-4"
     >
@@ -20,55 +24,7 @@
         With the button held down, drag to the other edge of your galaxy and release the button.
       </p>
     </div>
-
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'ang_siz3'
-          "
-        >
-          back
-        </v-btn>
-      <v-spacer></v-spacer>
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="state.n_meas==0"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Measure angular size of galaxy
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.n_meas>0"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'ang_siz5'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 <script>

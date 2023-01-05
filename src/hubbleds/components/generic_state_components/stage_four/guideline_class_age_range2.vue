@@ -1,11 +1,11 @@
 <template>
   <scaffold-alert
-    header-text="Class Age Range"
+    title-text="Class Age Range"
     @back="
-      state.marker = 'cla_age3';
+      state.marker = 'cla_age1';
     "
     @next="
-      state.marker = 'con_int1';
+      state.marker = 'cla_age3';
     "
   >
     <div
@@ -21,7 +21,7 @@
         $$ \text{High age: } \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.stu_high_age).toFixed(0) }} } } \text{ Gyr} $$
       </v-card>
       <p class="mt-4">
-        Even with the spread in your class’s age estimates, it is reasonable to set constraints on the most likely age range of the universe given your and your classmates’ individual measurements. 
+        At first glance, this may seem like a large spread in possible age values for the universe. But if you think back to what astronomers knew in the 1920’s, the common scientific view was that the universe has always existed. So being able to measure any finite age for the universe was a BIG DEAL. 
       </p>
     </div>
   </scaffold-alert>

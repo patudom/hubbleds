@@ -1,7 +1,7 @@
 <!-- this state.marker = 'acc_unc1' -->
 <template>
   <scaffold-alert
-    header-text="Accounting for Uncertainty"
+    title-text="Accounting for Uncertainty"
     @back="
       state.marker = 'mor_dat1';
     "

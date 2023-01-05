@@ -1,7 +1,7 @@
 <!-- this state.marker = 'tru_age2' -->
 <template>
   <scaffold-alert
-    header-text="Which Value Is the True Age?"
+    title-text="Which Value Is the True Age?"
     @back="
       state.marker = 'tru_age1';
     "

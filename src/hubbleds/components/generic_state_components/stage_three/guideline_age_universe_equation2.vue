@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Age of the Universe"
+    title-text="Age of the Universe"
     @back="
       state.marker = 'age_rac1';
     "

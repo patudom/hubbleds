@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Confidence Interval"
+    title-text="Confidence Interval"
     @back="
       state.marker = 'cla_age4';
     "

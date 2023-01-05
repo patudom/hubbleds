@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Observed Wavelength"
+    title-text="Observed Wavelength"
     :can-advance="(state) => state.obswaves_total >= 1"
     @back="() => { state.marker = 'res_wav1'; }"
     @next="() => { state.marker = 'obs_wav2'; }"

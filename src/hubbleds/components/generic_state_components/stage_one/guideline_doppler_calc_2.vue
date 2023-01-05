@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="The Doppler Equation"
+    title-text="The Doppler Equation"
     @back="
       state.marker = 'dop_cal1';
     "

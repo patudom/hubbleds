@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Choose a Row"
+    title-text="Choose a Row"
     @back="() => { state.marker = 'sel_gal3'; }"
     @next="() => { state.marker = 'mee_spe1'; }"
     :can-advance="(state) => state.spec_viewer_reached"

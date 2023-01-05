@@ -1,15 +1,19 @@
 <template>
-  <v-alert
+  <scaffold-alert
     color="info"
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
+    title-text="Relationship Between Age and Slope"
+    @back="state.marker = 'cla_res1'"
+    @next="state.marker = 'cla_age1'"
+    :can-advance="(state) => state.relage_response"
+    :state="state"
   >
-    <h3
-      class="mb-4"
-    >
-      Relationship Between Age and Slope
-    </h3>
+    <template #next-content>
+      Choose a response.
+    </template>
+    
     <div
       class="mb-4"
     >
@@ -39,55 +43,8 @@
         </mc-radiogroup>
       </v-container>
     </div>
-    
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
 
-    <v-row
-      align="center"
-      no-gutters
-    >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'cla_res1'
-          "
-        >
-          back
-        </v-btn>
-      <v-spacer></v-spacer>
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="!state.relage_response"
-      >
-        <div
-          style="font-size: 16px;"
-        >
-          Choose a response.
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.relage_response"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'cla_age1'
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-alert>
+  </scaffold-alert>
 </template>
 
 <script>
