@@ -308,7 +308,7 @@ class StageTwo(HubbleStage):
 
     def _measurement_count_update(self, change):
         if change["new"] == 1:
-            self.state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
+            self.stage_state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
 
     def _show_ruler_changed(self, show):
         self.distance_tool.show_ruler = show
