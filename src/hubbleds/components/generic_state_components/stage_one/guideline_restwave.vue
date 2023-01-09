@@ -12,7 +12,7 @@
   >
 
     <template #before-next>
-      Click the <v-icon>mdi-lambda</v-icon> button.
+      <strong>Click</strong> the <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon in the Spectrum Viewer toolbar
     </template>
 
     <div
@@ -44,56 +44,6 @@
         You can click the <v-btn icon tile dark small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon again to toggle the rest wavelength back off.
       </p>
     </div>
-    <v-divider
-      class="my-4"
-    >
-    </v-divider>
-
-    <v-row
-      align="center"
-      no-gutters
-    >
-      <v-col>
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'mee_spe1';
-          "
-        >
-          back
-        </v-btn>
-      </v-col>
-      <v-spacer></v-spacer>
-      
-      <v-col
-        cols="6"
-        class="shrink"
-        v-if="!state.lambda_used"
-      >
-        <div
-          style="font-size: 16px; border-left: solid 3px #FFD740; padding-left: 10px; color: #FFF8E1;"
-        >
-          <strong>Click</strong> the <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon in the Spectrum Viewer toolbar
-        </div>
-      </v-col>
-      <v-col
-        class="shrink"
-        v-if="state.lambda_used"
-      >
-        <v-btn
-          class="black--text"
-          color="accent"
-          elevation="2"
-          @click="
-            state.marker = 'obs_wav1';
-          "
-        >
-          next
-        </v-btn>
-      </v-col>
-    </v-row>
   </scaffold-alert>
 </template>
 
