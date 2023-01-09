@@ -9,7 +9,10 @@
     :allow-back="false"
   >
     <template #back-content>
-      <span>Use left menu to return to Introduction.<br>(Press <v-icon>mdi-menu</v-icon> in upper left if menu is not open)</span>
+      <div>
+        Use left menu to return to Introduction.<br>
+        (Open/close menu with <v-icon class="white--text">mdi-menu</v-icon> button in upper left)
+      </div>
     </template>
     <div
       class="mb-4"
