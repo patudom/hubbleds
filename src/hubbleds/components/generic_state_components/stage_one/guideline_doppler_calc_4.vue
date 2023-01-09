@@ -5,7 +5,7 @@
       elevation="6"
       max-width="800"
       title-text="Input Wavelengths"
-      @back="() => { state.marker = 'dop_cal3'; }"
+      @back="() => { state.marker_backward = 1; }"
       :state="state"
       @next="() => 
         {

@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     title-text="Select a Galaxy"
-    @back="() => { state.marker = 'dop_cal2'; }"
-    @next="() => { state.marker = 'dop_cal4'; }"
+    @back="() => { state.marker_backward = 1; }"
+    @next="() => { state.marker_forward = 1; }"
     :can-advance="(state) => state.doppler_calc_reached"
     :state="state"
   >

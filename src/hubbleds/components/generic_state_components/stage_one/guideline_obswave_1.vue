@@ -6,8 +6,8 @@
     elevation="6"
     title-text="Observed Wavelength"
     :can-advance="(state) => state.obswaves_total >= 1"
-    @back="() => { state.marker = 'res_wav1'; }"
-    @next="() => { state.marker = 'obs_wav2'; }"
+    @back="() => { state.marker_backward = 1; }"
+    @next="() => { state.marker_forward = 1; }"
     :state="state"
   >
     <template #before-next>

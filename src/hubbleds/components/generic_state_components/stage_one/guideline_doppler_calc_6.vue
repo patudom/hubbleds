@@ -8,7 +8,7 @@
       :can-advance="(state) => state.velocities_total === 5"
       next-text="stage 2"
       :state="state"
-      @back="() => { state.marker = 'dop_cal3'; }"
+      @back="() => { state.marker_backward = 1; }"
       @next="() => { state.completed = true; }"
   >
     <template #before-next>

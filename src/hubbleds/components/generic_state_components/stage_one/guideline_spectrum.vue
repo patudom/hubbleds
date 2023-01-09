@@ -8,10 +8,10 @@
     :can-advance="(state) => state.spec_tutorial_opened"
     :state="state"
     @back="() => {
-      state.marker = 'cho_row1';
+      state.marker_backward = 1;
       state.spectrum_tool_visible = 0;
     }"
-    @next="() => { state.marker = 'res_wav1'; }"
+    @next="() => { state.marker_forward = 1; }"
   >
 
     <template #before-next>

@@ -5,7 +5,7 @@
     max-width="800"
     elevation="6"
     title-text="Select Your Galaxies"
-    @back="() => { state.marker_forward = 1; }"
+    @back="() => { state.marker_backward = 1; }"
     @next="() => {
       if (state.gals_total == 0) {
         state.marker = 'sel_gal2';
