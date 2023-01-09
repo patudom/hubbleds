@@ -12,9 +12,8 @@ from echo import add_callback, ignore_callback, CallbackProperty, \
     callback_property
 from glue.core import Data
 from glue.core.message import NumericalDataChangedMessage
-from glue_jupyter.link import link
 from numpy import isin
-from traitlets import default, Bool
+from traitlets import Bool, default, validate
 
 from ..components import SpectrumSlideshow, SelectionTool
 from ..data.styles import load_style
@@ -157,13 +156,13 @@ class StageState(CDSState):
     @marker_backward.setter
     def marker_backward(self, value):
         index = self.indices[self.marker]
-        new_index = max(index - value, 0)
+        new_index = min(max(index - value, 0), len(self.markers) - 1)
         self.marker = self.markers[new_index]
 
     @marker_forward.setter
     def marker_forward(self, value):
         index = self.indices[self.marker]
-        new_index = max(index + value, 0)
+        new_index = min(max(index - value, 0), len(self.markers) - 1)
         self.marker = self.markers[new_index]
 
     def marker_before(self, marker):
