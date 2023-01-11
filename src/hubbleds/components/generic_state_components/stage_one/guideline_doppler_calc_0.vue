@@ -1,12 +1,8 @@
 <template>
   <scaffold-alert
     title-text="Velocity Calculation"
-    @back="
-      state.marker = 'ref_dat1';
-    "
-    @next="
-      state.marker = 'dop_cal1';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"
