@@ -174,7 +174,7 @@ class StageState(CDSState):
     def marker_reached(self, marker):
         return self.indices[self.marker] >= self.indices[marker]
 
-    def _marker_index(self, marker):
+    def marker_index(self, marker):
         return self.indices[marker]
 
 

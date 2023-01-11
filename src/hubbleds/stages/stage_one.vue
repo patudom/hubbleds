@@ -13,8 +13,7 @@
           @click="() => {
             console.log('stage state:', stage_state);
             console.log('story state:', story_state);
-            console.log('markers:', stage_state.marker, stage_state.marker_index);
-            }"
+          }"
         >
           State
         </v-btn>
