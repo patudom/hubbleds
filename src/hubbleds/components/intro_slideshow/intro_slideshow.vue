@@ -4,7 +4,7 @@
     elevation="6"
   >
     <v-toolbar
-      color="info"
+      color="warning"
       dense
       dark
     >
@@ -35,7 +35,7 @@
                 </p>
                 <v-card
                   class="justify-center pa-2 mx-12 my-8"
-                  color="primary lighten-1"
+                  color="primary"
                   style="font-weight:600;"
                   dark
                 >

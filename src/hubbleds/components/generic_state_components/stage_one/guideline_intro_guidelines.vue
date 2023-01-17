@@ -18,7 +18,7 @@
       class="mb-4"
     >
       <p>
-        <strong>These orange boxes will GUIDE you as you move through the story.</strong>
+        <strong>These are guideline boxes. They will help you as you move through the story.</strong>
       </p>
       <p>
         The information in the guideline boxes will suggest what you should focus on, or what you should do next.
