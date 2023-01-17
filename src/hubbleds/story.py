@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-from fsspec import Callback
+# from fsspec import Callback
 import requests
 
 import ipyvuetify as v
@@ -158,22 +158,20 @@ class HubblesLaw(Story):
 
     def _set_theme(self):
         v.theme.dark = True
-        v.theme.themes.dark.primary = 'colors.lightBlue.darken4'   # Overall theme & header bars
-        v.theme.themes.light.primary = 'colors.lightBlue.darken3'
+        v.theme.themes.dark.primary = 'colors.blue.darken4'   # Overall theme & header bars
+        v.theme.themes.light.primary = 'colors.blue.darken3'
         v.theme.themes.dark.secondary = 'colors.cyan.darken3'    # Headers on dialogs & buttons that pop up dialogs
-        v.theme.themes.light.secondary = 'colors.cyan.darken2'
-        v.theme.themes.dark.accent = 'colors.amber.accent2'   # Next/Back buttons
-        v.theme.themes.light.accent = 'colors.amber.accent3'
+        v.theme.themes.light.secondary = 'colors.cyan.darken4'
+        v.theme.themes.dark.accent = 'colors.amber.accent3'   # Next/Back buttons
+        v.theme.themes.light.accent = 'colors.amber.accent2'
         v.theme.themes.dark.error = 'colors.pink.lighten1'  # Team insider buttons that will not appear for user
         v.theme.themes.light.error = 'colors.indigo.lighten2'
-        v.theme.themes.dark.info = 'colors.deepOrange.darken3'  # Instruction scaffolds & viewer highlights
-        v.theme.themes.light.info = 'colors.deepOrange.darken1'
-        v.theme.themes.dark.success = 'colors.green.accent3'   # Unallocated
+        v.theme.themes.dark.info = 'colors.deepOrange.darken4'  # Instruction scaffolds & viewer highlights
+        v.theme.themes.light.info = 'colors.deepOrange.lighten1'
+        v.theme.themes.dark.success = 'colors.green.accent3'   # Actions and interactions
         v.theme.themes.light.success = 'colors.green.accent3'
-        v.theme.themes.dark.warning = '' # Unallocated
-        v.theme.themes.light.warning = ''
-        v.theme.themes.dark.anchor = '' # Unallocated
-        v.theme.themes.light.anchor = ''
+        v.theme.themes.dark.warning = 'colors.deepOrange.accent4' # Unallocated (maybe viewer highlights?)
+        v.theme.themes.light.warning = 'colors.deepOrange.accent4'
 
     def load_spectrum_data(self, name, gal_type):
         if not name.endswith(self.name_ext):
