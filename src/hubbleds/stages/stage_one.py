@@ -664,7 +664,7 @@ class StageOne(HubbleStage):
             with ignore_callback(sf_tool, "flagged"):
                 sf_tool.flagged = False
 
-    def update_velocities(self, table, tool):
+    def update_velocities(self, table, tool=None):
         data = table.glue_data
         for item in table.items:
             index = table.indices_from_items([item])[0]
@@ -677,7 +677,12 @@ class StageOne(HubbleStage):
                 self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
                                        velocity, index)
         self.story_state.update_student_data()
-        table.update_tool(tool)
+
+        if tool is not None:
+            table.update_tool(tool)
+
+    def vue_update_velocities(self, _args):
+        self.update_velocities(self.galaxy_table)
 
     def enable_velocity_tool(self, enable):
         if enable:

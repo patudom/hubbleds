@@ -234,6 +234,22 @@
               </v-icon>
             </v-btn>
           </v-col>
+          <v-col
+            v-if="show_team_interface"
+            cols="4"
+          >
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn
+              color="error"
+              class="black--text"
+              @click="update_velocities()"
+            >
+              calculate velocities
+            </v-btn>
+          </v-col>
         </v-row>
       </v-col>
     </v-row>
