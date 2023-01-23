@@ -162,7 +162,7 @@ class StageState(CDSState):
     @marker_forward.setter
     def marker_forward(self, value):
         index = self.indices[self.marker]
-        new_index = min(max(index - value, 0), len(self.markers) - 1)
+        new_index = min(max(index + value, 0), len(self.markers) - 1)
         self.marker = self.markers[new_index]
 
     def marker_before(self, marker):
