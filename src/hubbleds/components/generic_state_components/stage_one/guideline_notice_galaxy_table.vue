@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    header-text="Table Data"
+    title-text="Table Data"
     @back="() => { state.marker = 'sel_gal1'; }"
     @next="() => { state.marker = 'sel_gal3'; }"
   >
