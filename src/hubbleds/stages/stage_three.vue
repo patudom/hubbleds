@@ -159,7 +159,7 @@
             <v-card
               color="#385F73"
             >
-              <c-layer-toggle/>
+              <py-layer-toggle/>
             </v-card>
           </v-col>
           <v-col>
@@ -179,7 +179,7 @@
             cols="10"
             offset="1"
           >
-            <c-hubble-slideshow 
+            <py-hubble-slideshow 
               :state="stage_state"
               v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']" />  
           </v-col>

@@ -13,6 +13,11 @@
       >
         {{ currentTitle }}
       </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <speech-synthesizer
+        :root="$el"
+        :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
+      />
     </v-toolbar>
 
     <v-window
@@ -101,8 +106,6 @@
                 >
                   <i>Plato (red robe) and his pupil Aristotle (blue robe) at the center of “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Aristotle lived from 384-322 BC, and his theory of an unchanging universe persisted until the time of Edwin Hubble, 23 centuries later.</i>
                 </div>
-              </v-col>
-                </p>
               </v-col>
             </v-row>
           </v-container>
@@ -197,6 +200,9 @@
                 </div>
               </v-col>
             </v-row>
+            <v-snackbar
+              v-model="timer_done[0]"
+            >Prompting text goes here</v-snackbar>
           </v-container>                                      
         </v-card-text>
       </v-window-item>
@@ -240,13 +246,16 @@
                           lg="6"
                         >
                           <v-btn 
-                            @click="go_to_location_tool1({
+                            @click="() => {
+                              go_to_location_tool1({
                                 ra: 83.63,
                                 dec: 22.014,
                                 fov: 350, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
                                 target: 'M1' // name of object
-                              })"
+                              });
+                              startTimerIfNeeded(1);
+                            }"
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -260,13 +269,16 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool1({
+                            @click="() => {
+                              go_to_location_tool1({
                                 ra: 250.4,
                                 dec: 36.46,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
                                 target: 'M13' // name of object
-                              })"
+                              });
+                              startTimerIfNeeded(1);
+                            }"
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -280,13 +292,16 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool1({
+                            @click="() => {
+                              go_to_location_tool1({
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
                                 target: 'M31' // name of object
-                              })"
+                              });
+                              startTimerIfNeeded(1);
+                            }"
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -300,13 +315,16 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool1({
+                            @click="() => {
+                              go_to_location_tool1({
                                 ra: 83.82,
                                 dec: -5.39,
                                 fov:7500, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
                                 target: 'M42' // name of object
-                              })"
+                              });
+                              startTimerIfNeeded(1);  
+                            }"
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -320,13 +338,16 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool1({
+                            @click="() => {
+                              go_to_location_tool1({
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
                                 target: 'M51' // name of object
-                              })"
+                              });
+                              startTimerIfNeeded(1);
+                            }"
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -340,13 +361,16 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool1({
+                            @click="() => {
+                              go_to_location_tool1({
                                 ra: 148.97,
                                 dec: 69.68,
                                 fov: 400, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
                                 target: 'M82' // name of object
-                              })"
+                              });
+                              startTimerIfNeeded(1);
+                            }"
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -369,6 +393,9 @@
                 </div>
               </v-col>
             </v-row>
+            <v-snackbar
+              v-model="timer_done[1]"
+            >Prompting text goes here</v-snackbar>
           </v-container>
         </v-card-text>
       </v-window-item>
@@ -440,14 +467,16 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
+                            @click="() => {
+                              go_to_location_tool2({
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
                                 target: 'M31' // name of object
-                              })"
-
+                              });
+                              startTimerIfNeeded(2);
+                            }"
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -474,13 +503,16 @@
                           lg="6"
                         >
                           <v-btn
-                            @click="go_to_location_tool2({
+                            @click="() => {
+                              go_to_location_tool2({
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
                                 target: 'M51' // name of object
-                              })"
+                              });
+                              startTimerIfNeeded(2);
+                            }"
                             color="info"
                             width="100%"
                             class="mx-2"
@@ -516,6 +548,9 @@
                 </div>
               </v-col>
             </v-row>
+            <v-snackbar
+              v-model="timer_done[2]"
+            >Prompting text goes here</v-snackbar>
           </v-container>   
         </v-card-text>
       </v-window-item>
@@ -589,6 +624,7 @@
 
       <v-window-item :value="6" 
         class="no-transition"
+        
       >
         <v-card-text>
           <v-container>
@@ -750,14 +786,28 @@
 #exploration-tool, #exploration-tool2, #exploration-tool3 {
   height: 400px;
 }
-
-
 </style>
 
 
 <script>
 module.exports = {
   props: ["continueText","target"],
+  methods: {
+    startTimer(number) {
+      setTimeout(() => {
+        this.set_timer_finished(number);
+    }, this.timer_duration);
+      this.set_timer_started(number);
+    },
+    startTimerIfNeeded(number) {
+      if (!this.timer_started[number]) {
+        this.startTimer(number);
+      }
+    },
+    jupyter_startTimerIfNeeded(number) {
+      this.startTimerIfNeeded(number);
+    }
+  },
 
   watch: {
     step(val) {
