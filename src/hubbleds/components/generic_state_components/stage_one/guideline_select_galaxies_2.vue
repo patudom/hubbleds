@@ -5,7 +5,7 @@
     max-width="800"
     elevation="6"
     title-text="Select Your Galaxies"
-    @back="() => { state.marker = 'sel_gal1'; }"
+    @back="() => { state.marker_backward = 1; }"
     :can-advance="(_state) => false"
     :state="state"
   >

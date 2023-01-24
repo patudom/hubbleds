@@ -5,7 +5,7 @@
     max-width="800"
     elevation="6"
     title-text="Introducing the Guidelines"
-    @next="state.marker = 'sel_gal1'"
+    @next="state.marker_forward = 1"
     :allow-back="false"
   >
     <template #back-content>

@@ -8,11 +8,12 @@ from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import load_template, update_figure_css, debounce
 from echo import add_callback, ignore_callback, CallbackProperty, \
-    DictCallbackProperty, ListCallbackProperty, delay_callback
+    DictCallbackProperty, ListCallbackProperty, delay_callback, \
+    callback_property
 from glue.core import Data
 from glue.core.message import NumericalDataChangedMessage
 from numpy import isin
-from traitlets import default, Bool
+from traitlets import Bool, default, validate
 
 from ..components import SpectrumSlideshow, SelectionTool
 from ..data.styles import load_style
@@ -62,6 +63,8 @@ class StageState(CDSState):
     })
 
     marker = CallbackProperty("")
+    marker_backward = CallbackProperty()
+    marker_forward = CallbackProperty()
     indices = DictCallbackProperty()
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_one_spectrum")
     lambda_rest = CallbackProperty(0)
@@ -74,7 +77,7 @@ class StageState(CDSState):
     student_vel = CallbackProperty(0)  # Value of student's calculated velocity
     doppler_calc_complete = CallbackProperty(False)  # Did student finish the doppler calculation?
 
-    markers = ListCallbackProperty([
+    markers = CallbackProperty([
         'mee_gui1',
         'sel_gal1',
         'sel_gal2',
@@ -141,6 +144,26 @@ class StageState(CDSState):
         super().__init__(*args, **kwargs)
         self.marker = self.markers[0]
         self.indices = {marker: idx for idx, marker in enumerate(self.markers)}
+
+    @callback_property
+    def marker_forward(self):
+        return None
+
+    @callback_property
+    def marker_backward(self):
+        return None
+    
+    @marker_backward.setter
+    def marker_backward(self, value):
+        index = self.indices[self.marker]
+        new_index = min(max(index - value, 0), len(self.markers) - 1)
+        self.marker = self.markers[new_index]
+
+    @marker_forward.setter
+    def marker_forward(self, value):
+        index = self.indices[self.marker]
+        new_index = min(max(index + value, 0), len(self.markers) - 1)
+        self.marker = self.markers[new_index]
 
     def marker_before(self, marker):
         return self.indices[self.marker] < self.indices[marker]

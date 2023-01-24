@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     title-text="Table Data"
-    @back="() => { state.marker = 'sel_gal1'; }"
-    @next="() => { state.marker = 'sel_gal3'; }"
+    @back="() => { state.marker_backward = 1; }"
+    @next="() => { state.marker_forward = 1; }"
   >
     <div
       class="mb-4"
