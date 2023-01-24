@@ -784,7 +784,7 @@
       <v-spacer></v-spacer>
 
       <v-btn
-        :disabled="step > max_step_completed"
+        :disabled="!show_team_interface && step > max_step_completed"
         v-if="step < length-1"
         class="black--text"
         color="accent"

@@ -379,7 +379,7 @@ class StageTwo(HubbleStage):
             self.enable_distance_tool(True)
         self.get_distance_count()
 
-    def update_distances(self, table, tool):
+    def update_distances(self, table, tool=None):
         data = table.glue_data
         for item in table.items:
             index = table.indices_from_items([item])[0]
@@ -391,8 +391,12 @@ class StageTwo(HubbleStage):
                 self.update_data_value("student_measurements", "distance",
                                        distance, index)
         self.story_state.update_student_data()
-        table.update_tool(tool)
+        if tool is not None:
+            table.update_tool(tool)
         self.get_distance_count()
+
+    def vue_update_distances(self, _args):
+        self.update_distances(self.distance_table)
 
     def vue_add_distance_data_point(self, _args=None):
         self.stage_state.make_measurement = True
