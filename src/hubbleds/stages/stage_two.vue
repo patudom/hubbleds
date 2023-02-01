@@ -143,8 +143,16 @@
           :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="widgets.distance_table" />
+          <jupyter-widget :widget="widgets.distance_table" />        
         </v-card>
+        <v-btn
+          v-if="show_team_interface"
+          color="error"
+          class="black--text"
+          @click="update_distances()"
+        >
+          calculate distances
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>

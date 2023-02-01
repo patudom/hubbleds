@@ -336,7 +336,7 @@
             >
             <!-- vue's v-for with a range starts the count at 1, so we have to add 2 in the disabled step instead of 1 to account for the fact that we are otherwise counting the windows from 0 https://v2.vuejs.org/v2/guide/list.html?redirect=true#v-for-with-a-Range-->
               <v-btn
-                :disabled="n > max_step_completed + 2"
+                :disabled="requireResponses && n > max_step_completed + 2"
                 :input-value="active"
                 icon
                 @click="toggle"
@@ -352,7 +352,7 @@
           <v-spacer></v-spacer>
           <v-btn
             v-if="step < 7"
-            :disabled="step > max_step_completed"
+            :disabled="requireResponses && step > max_step_completed"
             class="black--text"
             color="accent"
             depressed
@@ -385,7 +385,28 @@
 
 <script>
 module.exports = {
-  props: ["state", "buttonText", "titleText", "closeText"],
+  props: {
+    state: {
+      type: Object,
+      required: true
+    },
+    buttonText: {
+      type: String,
+      required: true
+    },
+    titleText: {
+      type: String,
+      required: true
+    },
+    closeText: {
+      type: String,
+      required: true
+    },
+    requireResponses: {
+      type: Boolean,
+      default: true
+    }
+  },
   data: function () {
     return {
       step: 0,
@@ -415,7 +436,7 @@ module.exports = {
     closeDialog(force = false) {
     // component does not have show_team_interface or allow_advancing variable available, so it can't be bypassed
       reachedEnd = this.max_step_completed >= this.interact_steps[this.interact_steps.length - 1];
-      if (reachedEnd || force) {
+      if (reachedEnd || force || !this.requireResponses) {
         console.log('closing doppler reflection sequence');
         this.$emit('submit');
         this.dialog = false;
@@ -424,7 +445,7 @@ module.exports = {
         console.log('user has not reached end of sequence')
         this.dialog = false;
       }
-      }
+    }
   },
 
   watch: {

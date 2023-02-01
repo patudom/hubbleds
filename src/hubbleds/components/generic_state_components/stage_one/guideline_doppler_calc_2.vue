@@ -1,12 +1,8 @@
 <template>
   <scaffold-alert
     title-text="The Doppler Equation"
-    @back="
-      state.marker = 'dop_cal1';
-    "
-    @next="
-      state.marker = 'dop_cal3';
-    "
+    @back="() => { state.marker_backward = 1; }"
+    @next="() => { state.marker_forward = 1; }"
   >
     <div
       class="mb-4"

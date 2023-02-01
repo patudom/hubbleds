@@ -5,8 +5,14 @@
     max-width="800"
     elevation="6"
     title-text="Select your Galaxies"
-    @back="() => { state.marker = 'sel_gal1'; }"
-    @next="() => { state.marker = 'cho_row1'; }"
+    @back="() => {
+      if (state.gals_total == 0) {
+        state.marker = 'sel_gal2';
+      } else {
+        state.marker = 'sel_gal1';
+      }
+    }"
+    @next="() => { state.marker_forward = 1; }"
     :can-advance="(state) => state.gals_total === 5"
     :state="state"
   >

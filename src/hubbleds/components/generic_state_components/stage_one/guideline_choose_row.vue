@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     title-text="Choose a Row"
-    @back="() => { state.marker = 'sel_gal3'; }"
-    @next="() => { state.marker = 'mee_spe1'; }"
+    @back="() => { state.marker_backward = 1; }"
+    @next="() => { state.marker_forward = 1; }"
     :can-advance="(state) => state.spec_viewer_reached"
     :state="state"
   >

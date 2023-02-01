@@ -6,8 +6,8 @@
     elevation="6"
     title-text="Rest Wavelength"
     :state="state"
-    @back="() => { state.marker = 'mee_spe1'; }"
-    @next="() => { state.marker = 'obs_wav1'; }"
+    @back="() => { state.marker_backward = 1; }"
+    @next="() => { state.marker_forward = 1; }"
     :can-advance="(state) => state.lambda_used"
   >
 

@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     title-text="Observed Wavelength"
-    @back="() => { state.marker = 'obs_wav1'; }"
-    @next="() => { state.marker = 'rep_rem1'; }"
+    @back="() => { state.marker_backward = 1; }"
+    @next="() => { state.marker_forward = 1; }"
     :can-advance="(state) => state.zoom_tool_activated"
     :state="state"
   >
