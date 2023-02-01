@@ -11,7 +11,7 @@
     <template #back-content>
       <div>
         Use left menu to return to Introduction.<br>
-        (Open/close menu with <v-icon class="white--text">mdi-menu</v-icon> button in upper left)
+        (Open/close menu with <v-btn icon small disabled><v-icon>mdi-menu</v-icon></v-btn> in upper left)
       </div>
     </template>
     <div
@@ -30,6 +30,7 @@
     
   </scaffold-alert>
 </template>
+
 
 <script>
 module.exports = {
