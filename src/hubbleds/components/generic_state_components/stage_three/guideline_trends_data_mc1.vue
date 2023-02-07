@@ -54,7 +54,8 @@
         </mc-radiogroup>
         <v-btn
           plain
-          color="info"
+          block
+          color="warning"
           @click="
             state.define_trend = true
           "

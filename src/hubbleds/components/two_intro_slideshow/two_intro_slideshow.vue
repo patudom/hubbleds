@@ -3,7 +3,7 @@
     elevation="6"
   >
     <v-toolbar
-      color="info"
+      color="warning"
       dense
       dark
     >
@@ -249,11 +249,14 @@
                 cols="4"
               >
                 <v-card
-                  class="mt-auto white--text"
+                  class="mt-auto"
                   flat
-                  color="secondary"
+                  color="secondary lighten-3"
+                  light
                 > 
-                  <v-card-text>
+                  <v-card-text
+                    class="black-text"
+                  >
                     <p>
                       <strong>Bonus experiment</strong>: Do you think your pinky held at arm’s length would cover the moon? 
                       Try it the next time you see the moon in the sky!
@@ -721,7 +724,7 @@
                     <div
                       class="JaxEquation"
                     >
-                      $$ \mathbf{\text{ Distance in Mpc} = \frac{ {{ Math.round(distance_const) }} }{ \text{galaxy's angular size (}\theta \text{ in arcseconds)}}} $$
+                      $$ \text{ Distance in Mpc} = \frac{ {{ Math.round(distance_const) }} }{ \text{galaxy's angular size (}\theta \text{ in arcseconds)}} $$
                     </div>
                   </v-card-text>
                 </v-card>

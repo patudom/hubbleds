@@ -24,7 +24,7 @@ class IDSlider(VuetifyTemplate):
         self.id_component = id_component
         self.value_component = value_component
 
-        self.default_color = kwargs.get("default_color", "#006C7A")
+        self.default_color = kwargs.get("default_color", "#FF595E")
         self.highlight_ids = kwargs.get("highlight_ids", [])
         self.highlight_label = kwargs.get("highlight_label", None)
         self.highlight_color = kwargs.get("highlight_color", "#FF7043")
