@@ -172,6 +172,8 @@ class HubblesLaw(Story):
         v.theme.themes.light.success = 'colors.green.accent3'
         v.theme.themes.dark.warning = 'colors.deepOrange.accent4' # Unallocated (maybe viewer highlights?)
         v.theme.themes.light.warning = 'colors.deepOrange.accent4'
+        #Alt Palette 1:  Y:FFBE0B, O:FB5607, Pi:FF006E, Pu:8338EC, Bl:3A86FF, LiBl:619EFF
+
 
     def load_spectrum_data(self, name, gal_type):
         if not name.endswith(self.name_ext):

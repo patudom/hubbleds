@@ -19,3 +19,7 @@
     </v-slider>
   </v-card>
 </template>
+
+<style scoped>
+
+</style>

@@ -24,10 +24,10 @@ class IDSlider(VuetifyTemplate):
         self.id_component = id_component
         self.value_component = value_component
 
-        self.default_color = kwargs.get("default_color", "#FF595E")
+        self.default_color = kwargs.get("default_color", "#FF006E") # From Alt Palette 1
         self.highlight_ids = kwargs.get("highlight_ids", [])
         self.highlight_label = kwargs.get("highlight_label", None)
-        self.highlight_color = kwargs.get("highlight_color", "#FF7043")
+        self.highlight_color = kwargs.get("highlight_color", "#FF006E") # From Alt Palette 1
         self.color = self.default_color
 
         self._id_change_cbs = CallbackContainer()

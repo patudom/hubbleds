@@ -371,7 +371,15 @@
 }
 
 .g_legend{
-  fill: #F002 !important;
+  fill: #FF006E30 !important;
+}
+
+.theme--dark .legendtext {
+  fill: #fff!important;
+}
+
+.theme--light .legendtext {
+  fill: #000!important;
 }
 
 </style>
