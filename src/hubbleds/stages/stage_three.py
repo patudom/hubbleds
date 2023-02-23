@@ -3,7 +3,6 @@ from os.path import join
 from pathlib import Path
 
 from numpy import asarray, where
-from cosmicds.components.generic_state_component import GenericStateComponent
 from cosmicds.components.layer_toggle import LayerToggle
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
@@ -16,7 +15,7 @@ from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..components import HubbleExp 
+from ..components import HubbleExpUniverseSlideshow
 
 from ..data_management import \
     BEST_FIT_SUBSET_LABEL, \
@@ -201,9 +200,13 @@ class StageThree(HubbleStage):
 
         layer_toggle = LayerToggle(layer_viewer, names={
             STUDENT_DATA_LABEL: "My Data",
-            CLASS_DATA_LABEL: "Class Data"
-            })
-        # layer_toggle.add_ignore_condition(lambda layer: layer.layer.label == CLASS_DATA_LABEL)        
+            CLASS_DATA_LABEL: "Class Data",
+            fit_table.subset_label: "Table selection",
+            BEST_FIT_SUBSET_LABEL: "Best Fit Galaxy"
+        })
+        self.ignore_class_layer = lambda layer_state: layer_state.layer.label == CLASS_DATA_LABEL
+        layer_toggle.add_ignore_condition(self.ignore_class_layer)
+        layer_toggle.add_ignore_condition(lambda layer_state: layer_state.layer.label in [fit_table.subset_label, BEST_FIT_SUBSET_LABEL])
         self.add_component(layer_toggle, label="py-layer-toggle")     
                                                  
         for key in hubble_race_viewer.toolbar.tools:
@@ -221,7 +224,7 @@ class StageThree(HubbleStage):
         hubble_race_viewer.axis_y.tick_values  = asarray([4,6,8,10])
         hubble_race_viewer._update_appearance_from_settings()
 
-        hubble_slideshow = HubbleExp([self.viewers["hubble_race_viewer"], self.viewers["layer_viewer"]])
+        hubble_slideshow = HubbleExpUniverseSlideshow([self.viewers["hubble_race_viewer"], self.viewers["layer_viewer"]], self.stage_state.image_location)
         self.add_component(hubble_slideshow, label='py-hubble-slideshow')
         hubble_slideshow.observe(self._on_slideshow_opened, names=['opened'])
 
@@ -248,7 +251,7 @@ class StageThree(HubbleStage):
                     viewer.ignore(ignorer)
         
         # layers from the table selection have the same label, but we only want student_data selected
-        layer_viewer.ignore(lambda layer: layer.label == "fit_table_selected" and layer.data != student_data)
+        layer_viewer.ignore(lambda layer: layer.label == fit_table.subset_label and layer.data != student_data)
 
         # load all the initial styles
         self._update_viewer_style(dark=self.app_state.dark_mode)
@@ -326,6 +329,8 @@ class StageThree(HubbleStage):
         self.stage_state.class_layer_toggled = used
         if self.stage_state.marker == 'tre_dat2':
             self.stage_state.marker = 'tre_dat3'
+            layer_toggle = self.get_component("py-layer-toggle")
+            layer_toggle.remove_ignore_condition(self.ignore_class_layer)
 
     def _setup_scatter_layers(self):
         dist_attr = "distance"
@@ -380,7 +385,16 @@ class StageThree(HubbleStage):
         layer_toggle = self.get_component("py-layer-toggle")
         student_layer = layer_viewer.layer_artist_for_data(student_data)
         class_layer = layer_viewer.layer_artist_for_data(class_meas_data)
-        layer_toggle.set_layer_order([student_layer, class_layer])        
+        
+        table = self.get_widget('fit_table')
+        table_subset_label = table.subset_label
+        def layer_toggle_sort(state):
+            labels = [STUDENT_DATA_LABEL, CLASS_DATA_LABEL, table_subset_label]
+            try:
+                return labels.index(state.layer.label)
+            except ValueError:
+                return len(labels)
+        layer_toggle.sort_by(layer_toggle_sort)     
 
     def _on_stage_index_changed(self, index):
         print("Stage Index: ",self.story_state.stage_index)

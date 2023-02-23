@@ -10,6 +10,7 @@
         block
         color="secondary"
         elevation="2"
+        id="hubble-exp-button"
         @click.stop="() => { dialog = true; opened = true }"
       >
         Hubble's Discovery
@@ -97,7 +98,7 @@
                       'Try again. The age of the race is the distance any runner has traveled divided by their speed.',
                     ]"
                     :correct-answers="[1]"
-                    @select="(state) => { if(state.correct) { this.maxStepCompleted = Math.max(this.maxStepCompleted, 1);} }"
+                    @select="(option) => { if(option.correct) { this.maxStepCompleted = Math.max(this.maxStepCompleted, 1);} }"
                     score-tag="race-age"  
                   >
                   </mc-radiogroup>
@@ -110,7 +111,7 @@
                     id="runners"
                     class="mb-4 mx-a mt-n3"
                     contain
-                    :src="`${state.image_location}/runners_km.png`"
+                    :src="`${image_location}/runners_km.png`"
                   ></v-img>
                 </v-col>
               </v-row>
@@ -246,9 +247,7 @@
 </template>
 
 <script>
-export default = {
-
-  props: ['state'],
+export default {
   
   watch: {
     step(newStep) {
@@ -260,7 +259,6 @@ export default = {
 
   methods: {
     closeDialog() {
-      console.log(this)
       if (this.maxStepCompleted == this.length - 1) {
         this.$emit('close');
         this.dialog = false;
