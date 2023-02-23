@@ -416,9 +416,7 @@ class StageThree(HubbleStage):
             self.get_viewer(vid).state.reset_limits()
 
     def _on_data_change(self, msg):
-        print(msg)
         label = msg.data.label
-        print(f"In stage three: {label}")
         if label in [STUDENT_DATA_LABEL, CLASS_DATA_LABEL]:
             self._reset_limits_for_data(label)
         if label == STUDENT_DATA_LABEL:
