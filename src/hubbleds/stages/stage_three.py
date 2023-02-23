@@ -278,15 +278,6 @@ class StageThree(HubbleStage):
         extend_tool(layer_viewer, 'bqplot:rectangle', fit_selection_activate,
                     fit_selection_deactivate)
 
-
-        # Functions to call on data updates
-        self.hub.subscribe(self, NumericalDataChangedMessage,
-                           filter=lambda msg: msg.data.label == STUDENT_DATA_LABEL,
-                           handler=self._on_student_data_update)
-        self.hub.subscribe(self, NumericalDataChangedMessage,
-                           filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
-                           handler=self._on_class_data_update)
-
         # If possible, we defer some of the setup for later, to make loading faster
         if self.story_state.stage_index < self.index:
             add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
@@ -425,18 +416,13 @@ class StageThree(HubbleStage):
             self.get_viewer(vid).state.reset_limits()
 
     def _on_data_change(self, msg):
+        print(msg)
         label = msg.data.label
-        # self._reset_viewer_limits(label)
+        print(f"In stage three: {label}")
+        if label in [STUDENT_DATA_LABEL, CLASS_DATA_LABEL]:
+            self._reset_limits_for_data(label)
         if label == STUDENT_DATA_LABEL:
-            self._update_hypgal_info()
-
-    def _on_class_data_update(self, *args):
-        if self.story_state.stage_index == self.index:
-            self._reset_limits_for_data(CLASS_DATA_LABEL)
-
-    def _on_student_data_update(self, *args):
-        if self.story_state.stage_index == self.index:
-            self._reset_limits_for_data(STUDENT_DATA_LABEL)
+            self._update_hypgal_info() 
 
     def _update_viewer_style(self, dark):
         viewers = ['layer_viewer',
