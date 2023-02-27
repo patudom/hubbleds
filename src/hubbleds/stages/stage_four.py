@@ -192,6 +192,8 @@ class StageFour(HubbleStage):
         add_callback(self.stage_state, 'stage_four_complete',
                      self._on_stage_four_complete)
 
+        add_callback(self.story_state, 'responses', self.age_calc_update_guesses)
+
         
         self.show_team_interface = self.app_state.show_team_interface
         
@@ -646,7 +648,7 @@ class StageFour(HubbleStage):
         key = str(self.index)
         if key in responses:
             r = responses[key]
-            state = self.state_state.age_calc_state
+            state = self.stage_state.age_calc_state
             state['low_guess'] = r.get('likely-low-age', "")
             state['high_guess'] = r.get('likely-high-age', "")
             state['best_guess'] = r.get('best-guess-age', "")
