@@ -1,6 +1,4 @@
 from functools import partial
-from os.path import join
-from pathlib import Path
 
 from numpy import where
 from cosmicds.components.table import Table
@@ -22,12 +20,9 @@ from ..data_management import \
     BEST_FIT_GALAXY_NAME
 from ..histogram_listener import HistogramListener
 from ..stage import HubbleStage
-from ..viewers import HubbleFitView, \
-    HubbleScatterView
+from ..viewers import HubbleScatterView
 from ..viewers.viewers import \
-    HubbleClassHistogramView, HubbleHistogramView, HubbleFitLayerView
-    
-from bqplot import OrdinalScale, LinearScale
+    HubbleClassHistogramView, HubbleHistogramView
 
 
 class StageState(CDSState):
@@ -41,7 +36,7 @@ class StageState(CDSState):
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
-    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three")
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_four")
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
