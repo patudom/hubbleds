@@ -13,7 +13,7 @@
       class="mb-4"
     >
       <p>
-        Earlier, your best guess for the age of the universe was: {{ state.age_calc_state.best_guess }} Gyr, with a likely range from {{ low_guess }} to {{ high_guess }} Gyr.
+        Earlier, your best guess for the age of the universe was: {{ state.age_calc_state.best_guess }} Gyr, with a likely range from {{ stage.age_calc_state.low_guess }} to {{ stage.age_calc_state.high_guess }} Gyr.
       </p>
       <p>
         After exploring data from all the other classes, you might consider updating your values.
