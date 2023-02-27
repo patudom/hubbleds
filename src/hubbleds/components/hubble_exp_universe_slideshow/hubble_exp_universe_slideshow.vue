@@ -35,13 +35,13 @@
           :root="() => this.$refs.content.$el"
           :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
           />
-        <span
+        <v-btn
+          icon
           @click="closeDialog()"
+          :disabled="maxStepCompleted < length - 1"
         >
-          <v-btn icon>
-            <v-icon> mdi-close </v-icon>
-          </v-btn>
-        </span>
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </v-toolbar>
 
         <v-window
