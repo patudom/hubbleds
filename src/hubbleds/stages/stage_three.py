@@ -50,9 +50,6 @@ class StageState(CDSState):
     define_trend = CallbackProperty(False)
     
     age_calc_state = DictCallbackProperty({
-        'failedValidation3': False,
-        'failedValidationAgeRange': False,
-        'age_const': float(AGE_CONSTANT),
         'hint1_dialog': False,
         'hint2_dialog': False,
         'hint3_dialog': False,
