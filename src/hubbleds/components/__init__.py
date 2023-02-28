@@ -1,3 +1,4 @@
+from .angsize_dosdonts_slideshow import DosDontsSlideShow
 from .distance_sidebar import DistanceSidebar
 from .distance_tool import DistanceTool
 from .exploration_tool import ExplorationTool

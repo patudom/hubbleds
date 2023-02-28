@@ -10,8 +10,7 @@ from cosmicds.utils import load_template
 from echo import CallbackProperty, add_callback, ignore_callback
 from traitlets import default, Bool
 
-from ..components import DistanceSidebar, DistanceTool
-from ..components.angsize_dosdonts_slideshow import DosDonts_SlideShow
+from ..components import DistanceSidebar, DistanceTool, DosDontsSlideShow
 from ..data_management import STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
 from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, IMAGE_BASE_URL, distance_from_angular_size, format_fov
@@ -151,7 +150,7 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        dosdonts_slideshow = DosDonts_SlideShow()
+        dosdonts_slideshow = DosDontsSlideShow(self.stage_state.image_location_dosdonts)
         self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
         dosdonts_slideshow.observe(self._dosdonts_opened, names=['opened'])
 
