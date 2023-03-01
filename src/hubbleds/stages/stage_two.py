@@ -373,6 +373,7 @@ class StageTwo(HubbleStage):
         distance = distance_from_angular_size(self.stage_state.meas_theta)
         self.update_data_value("student_measurements", "distance", distance,
                                index)
+        self.story_state.update_student_data()
         if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.
             self.enable_distance_tool(True)
         self.get_distance_count()
