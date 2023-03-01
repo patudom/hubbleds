@@ -29,7 +29,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ D = \frac{ {{ Math.round(distance_const) }} }{\theta} $$
+                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta} $$
               </div>
             </v-col>
           </v-row>
