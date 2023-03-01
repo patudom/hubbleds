@@ -73,6 +73,12 @@
   </scaffold-alert>
 </template>
 
+<script>
+module.exports = {
+ props: ['state']
+}
+</script>
+
 <style>
 
 .JaxEquation {
