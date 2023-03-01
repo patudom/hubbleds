@@ -53,10 +53,10 @@
         >
         </mc-radiogroup>
         <v-btn
-          plain
-          color="info"
+          block
+          color="deep-orange darken-2"
           @click="
-            state.define_trend = true
+            state.define_trend = !state.define_trend
           "
         >
           What is a trend?
@@ -71,7 +71,7 @@
           dense
           color="info darken-1"
         >
-          A trend is a pattern in data (for example, an upward <v-icon>mdi-arrow-top-right-bottom-left-bold</v-icon> or downward <v-icon>mdi-arrow-top-left-bottom-right-bold</v-icon> line). 
+          A trend is a pattern in data (for example, an upward line <v-icon>mdi-arrow-top-right-bottom-left-bold</v-icon> or downward line <v-icon>mdi-arrow-top-left-bottom-right-bold</v-icon>). 
         </v-alert>
       </v-container>
     </div>
