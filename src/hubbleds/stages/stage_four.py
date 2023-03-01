@@ -450,9 +450,6 @@ class StageFour(HubbleStage):
         comparison_viewer.add_data(class_meas_data)
         class_layer = comparison_viewer.layer_artist_for_data(class_meas_data)
         comparison_viewer.layer_artist_for_data(student_data).state.visible = False # Turn off student's own data on comparison viewer
-        if len(student_data.subsets) > 0:
-            best_fit_subset = student_data.subsets[0]
-            comparison_viewer.layer_artist_for_data(best_fit_subset).state.visible = False # Turn off best fit subset view on comparison viewer
         class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
         # comparison_viewer.add_subset(self.student_slider_subset)
