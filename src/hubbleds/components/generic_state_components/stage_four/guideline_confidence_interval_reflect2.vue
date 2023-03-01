@@ -8,6 +8,7 @@
       state.marker = 'tre_lin2c';
       state.trend_line_drawn = false;
       state.best_fit_clicked = false;
+      age_calc_update_guesses()
     }"
   >
     <div
