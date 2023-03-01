@@ -22,7 +22,7 @@
       <div
         class="JaxEquation my-8"
       >
-        $$ D = \frac{ {{ Math.round(distance_const) }} }{\bbox[#FBE9E7]{\input[gal_ang_size][]{}}} $$
+        $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\bbox[#FBE9E7]{\input[gal_ang_size][]{}}} $$
       </div>
       <v-divider role="presentation"></v-divider>
       <div
@@ -44,7 +44,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ D = \frac{ {{ Math.round(distance_const) }} }{\theta} $$
+                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta} $$
               </div>
             </v-col>
           </v-row>
@@ -82,11 +82,11 @@
     </div>
     <v-divider
       class="my-4"
-      v-if="state.failedValidation3"
+      v-if="failedValidation"
     >
     </v-divider>
     <v-alert
-      v-if="state.failedValidation3"
+      v-if="failedValidation"
       dense
       color="info darken-1"
     >
@@ -94,6 +94,41 @@
     </v-alert>
   </scaffold-alert> 
 </template>
+
+<script>
+module.exports = {
+
+  props: ['state'],
+
+  data: function() {
+    return {
+      failedValidation: false
+    }
+  },
+
+  methods: {
+    getValue(inputID) {
+      const input = document.getElementById(inputID);
+      if (!input) { return null; }
+      return input.value;
+    },
+
+    parseAnswer(inputID) {
+      return parseFloat(this.getValue(inputID).replace(/,/g,''));
+    },
+
+    validateAnswersJS(inputIDs, expectedAnswers) {
+      return inputIDs.every((id, index) => {
+        const value = this.parseAnswer(id);
+        this.failedValidation = (value && value === expectedAnswers[index]) ? false : true;
+        console.log("expectedAnswer", expectedAnswers);
+        console.log("entered value", value);
+        return value && value === expectedAnswers[index];
+      });
+    }
+  }
+};
+</script>
 
 <style>
 
@@ -129,31 +164,3 @@ mjx-mstyle {
 
 
 </style>
-
-<script>
-export default = {
-
-  methods: {
-    getValue(inputID) {
-      const input = document.getElementById(inputID);
-      if (!input) { return null; }
-      return input.value;
-    },
-
-    parseAnswer(inputID) {
-      return parseFloat(this.getValue(inputID).replace(/,/g,''));
-    },
-
-    validateAnswersJS(inputIDs, expectedAnswers) {
-      return inputIDs.every((id, index) => {
-        const value = this.parseAnswer(id);
-        this.failedValidation3 = (value && value === expectedAnswers[index]) ? false : true;
-        console.log("expectedAnswer", expectedAnswers);
-        console.log("entered value", value);
-        return value && value === expectedAnswers[index];
-      });
-    }
-  }
-};
-</script>
-
