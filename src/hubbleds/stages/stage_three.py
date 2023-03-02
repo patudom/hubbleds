@@ -347,8 +347,9 @@ class StageThree(HubbleStage):
             viewer.state.x_att = student_data.id[dist_attr]
             viewer.state.y_att = student_data.id[vel_attr]
         
+        # PALETTE: Y:FFBE0B, O:FB5607, Pi:FF006E, Pu:8338EC, Bl:3A86FF, LiBl:619EFF
         student_layer = layer_viewer.layer_artist_for_data(student_data)
-        student_layer.state.color = '#FF7043'
+        student_layer.state.color = '#FB5607'
         student_layer.state.zorder = 5
         student_layer.state.size = 8                    
         student_layer.state.alpha = 1
@@ -357,7 +358,7 @@ class StageThree(HubbleStage):
         layer_viewer.state.reset_limits()
         class_layer = layer_viewer.layer_artist_for_data(class_meas_data)
         class_layer.state.zorder = 1
-        class_layer.state.color = "#26C6DA"
+        class_layer.state.color = "#3A86FF"
         class_layer.state.alpha = 1
         class_layer.state.size = 4
         class_layer.state.visible = False

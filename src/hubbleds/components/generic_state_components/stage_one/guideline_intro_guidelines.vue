@@ -11,14 +11,14 @@
     <template #back-content>
       <div>
         Use left menu to return to Introduction.<br>
-        (Open/close menu with <v-icon class="white--text">mdi-menu</v-icon> button in upper left)
+        (Open/close menu with <v-btn icon small disabled><v-icon>mdi-menu</v-icon></v-btn> in upper left)
       </div>
     </template>
     <div
       class="mb-4"
     >
       <p>
-        <strong>These orange boxes will GUIDE you as you move through the story.</strong>
+        <strong>These are guideline boxes. They will help you as you move through the story.</strong>
       </p>
       <p>
         The information in the guideline boxes will suggest what you should focus on, or what you should do next.
@@ -30,6 +30,7 @@
     
   </scaffold-alert>
 </template>
+
 
 <script>
 module.exports = {

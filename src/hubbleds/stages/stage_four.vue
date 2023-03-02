@@ -12,6 +12,13 @@
         >
           State
         </v-btn>
+        <v-btn
+          color="error"
+          class="black--text"
+          @click="() => {
+            stage_state.marker = 'con_int2'
+          }"
+        >jump</v-btn>
         Marker: {{ stage_state.marker }}
       </v-col>
     </v-row>
@@ -364,7 +371,15 @@
 }
 
 .g_legend{
-  fill: #F002 !important;
+  fill: #FF006E30 !important;
+}
+
+.theme--dark .legendtext {
+  fill: #fff!important;
+}
+
+.theme--light .legendtext {
+  fill: #000!important;
 }
 
 </style>

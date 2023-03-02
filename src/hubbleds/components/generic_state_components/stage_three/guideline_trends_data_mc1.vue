@@ -22,9 +22,7 @@
       Choose a response.
     </template>
 
-    <div
-      class="mb-4"
-    >
+    <div>
       <p>
         The graph here shows the velocities of your galaxies plotted vs. their distances.  
       </p>
@@ -54,19 +52,16 @@
         </mc-radiogroup>
         <v-btn
           plain
-          color="info"
+          block
+          color="warning"
           @click="
             state.define_trend = true
           "
         >
           What is a trend?
         </v-btn>
-        <v-divider
-          class="my-4"
-          v-if="state.define_trend"
-        >
-        </v-divider>
         <v-alert
+          class="mt-4"
           v-if="state.define_trend"
           dense
           color="info darken-1"

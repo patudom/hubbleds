@@ -4,7 +4,7 @@
     elevation="6"
   >
     <v-toolbar
-      color="info"
+      color="warning"
       dense
       dark
     >
@@ -40,7 +40,7 @@
                 </p>
                 <v-card
                   class="justify-center pa-2 mx-12 my-8"
-                  color="primary lighten-1"
+                  color="primary"
                   style="font-weight:600;"
                   dark
                 >
@@ -256,7 +256,7 @@
                               });
                               startTimerIfNeeded(1);
                             }"
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M1'"
@@ -279,7 +279,7 @@
                               });
                               startTimerIfNeeded(1);
                             }"
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M13'"
@@ -302,7 +302,7 @@
                               });
                               startTimerIfNeeded(1);
                             }"
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M31'"
@@ -325,7 +325,7 @@
                               });
                               startTimerIfNeeded(1);  
                             }"
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M42'"
@@ -348,7 +348,7 @@
                               });
                               startTimerIfNeeded(1);
                             }"
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M51'"
@@ -371,7 +371,7 @@
                               });
                               startTimerIfNeeded(1);
                             }"
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M82'"
@@ -440,7 +440,7 @@
                         >
                           <v-btn
                             :disabled=true
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M1'"
@@ -454,7 +454,7 @@
                         >
                           <v-btn
                             :disabled=true
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M13'"
@@ -477,7 +477,7 @@
                               });
                               startTimerIfNeeded(2);
                             }"
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M31'"
@@ -491,7 +491,7 @@
                         >
                           <v-btn
                             :disabled=true
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                           >
@@ -513,7 +513,7 @@
                               });
                               startTimerIfNeeded(2);
                             }"
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :outlined="target === 'M51'"
@@ -526,7 +526,7 @@
                           lg="6"
                         >
                           <v-btn
-                            color="info"
+                            color="warning"
                             width="100%"
                             class="mx-2"
                             :disabled=true

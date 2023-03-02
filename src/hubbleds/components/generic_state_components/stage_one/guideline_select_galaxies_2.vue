@@ -16,19 +16,19 @@
           v-if="state.gals_total < 5 && state.gals_total > 0"
           style="font-size: 16px;"
         >
-        <strong style="color: white;">Select</strong> {{ 5 - state.gals_total }} <span v-if="state.gals_total > 0">more</span> <span v-if="state.gals_total < 4">galaxies</span><span v-if="state.gals_total == 4">galaxy</span>.
+        <strong>Select</strong> {{ 5 - state.gals_total }} <span v-if="state.gals_total > 0">more</span> <span v-if="state.gals_total < 4">galaxies</span><span v-if="state.gals_total == 4">galaxy</span>.
         </div>
         <div
           v-if="state.gals_total == 0 && !state.gal_selected"
           style="font-size: 16px;"
         >
-        <strong style="color: white;">Click</strong> on any green dot.
+        <strong>Click</strong> on any green dot.
         </div>
         <div
           v-if="state.gals_total == 0 && state.gal_selected"
           style="font-size: 16px;"
         >
-          <strong style="color: white;">Click</strong> <v-btn icon dark x-small disabled class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-plus</v-icon></v-btn> to add galaxy or <v-btn icon dark x-small disabled class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> to choose another
+          <strong>Click</strong> <v-btn icon dark x-small disabled class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-plus</v-icon></v-btn> to add galaxy or <v-btn icon dark x-small disabled class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> to choose another
         </div>
       </div>
     </template>

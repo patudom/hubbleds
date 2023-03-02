@@ -1,7 +1,7 @@
 <template>
   <v-btn
     block
-    color="info"
+    color="warning"
     elevation="2"
     @click.stop="dialog = true"
   >
@@ -23,7 +23,7 @@
         class="mx-auto"
       >
         <v-toolbar
-          color="info"
+          color="warning"
           dense
           dark
         >

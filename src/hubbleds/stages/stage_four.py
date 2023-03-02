@@ -536,7 +536,7 @@ class StageFour(HubbleStage):
             if viewer != class_distr_viewer and viewer != all_distr_viewer_student:
                 viewer.add_data(classes_summary_data)
                 layer = viewer.layer_artist_for_data(classes_summary_data)
-                layer.state.color = '#006C7A'
+                layer.state.color = '#6A4C93'
                 layer.state.alpha = 0.5
                 if viewer == all_distr_viewer_student:
                     layer.state.visible = False
