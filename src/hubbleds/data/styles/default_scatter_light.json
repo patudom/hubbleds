@@ -38,9 +38,6 @@
     "viewer": {
       "scatter": {
         "enable_hover": true
-      },
-      "state": {
-        "size": "3"
       }
     }
   }
