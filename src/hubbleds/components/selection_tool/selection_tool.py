@@ -7,7 +7,7 @@ from cosmicds.utils import API_URL
 from cosmicds.utils import load_template
 from glue_jupyter.state_traitlets_helpers import GlueState
 from ipywidgets import DOMWidget, widget_serialization
-from pandas import DataFrame
+from pandas import DataFrame, concat
 from pywwt.jupyter import WWTJupyterWidget
 from traitlets import Dict, Instance, Int, Bool, observe
 
@@ -107,8 +107,8 @@ class SelectionTool(v.VueTemplate):
         self._on_galaxy_selected = cb
 
     def select_galaxy(self, galaxy):
-        self.selected_data = self.selected_data.append(galaxy,
-                                                       ignore_index=True)
+        galaxy_df = DataFrame({k: [v] for k, v in galaxy.items()})
+        self.selected_data = concat([self.selected_data, galaxy_df], ignore_index=True)
         self.selected_count = self.selected_data.shape[0]
         self._create_selected_layer()
         if self._on_galaxy_selected is not None:

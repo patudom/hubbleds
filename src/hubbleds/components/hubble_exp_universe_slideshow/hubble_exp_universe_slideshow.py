@@ -8,7 +8,7 @@ from ipywidgets import widget_serialization, DOMWidget
 
 # theme_colors()
 
-class HubbleExp(v.VuetifyTemplate):
+class HubbleExpUniverseSlideshow(v.VuetifyTemplate):
     template = load_template(
         "hubble_exp_universe_slideshow.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
@@ -18,6 +18,7 @@ class HubbleExp(v.VuetifyTemplate):
     currentTitle = Unicode("").tag(sync=True)
     maxStepCompleted = Int(0).tag(sync=True)
     interactSteps = List([1]).tag(sync=True)
+    image_location = Unicode().tag(sync=True)
     layer_viewer = Instance(DOMWidget).tag(sync=True, **widget_serialization)
     hubble_race_viewer = Instance(DOMWidget).tag(sync=True, **widget_serialization)
 
@@ -29,7 +30,8 @@ class HubbleExp(v.VuetifyTemplate):
     ]
     _default_title = "Hubble's Discovery"
 
-    def __init__(self, viewers, *args, **kwargs):
+    def __init__(self, viewers, image_location, *args, **kwargs):
+        self.image_location = image_location
         self.currentTitle = self._default_title
         self.hubble_race_viewer = viewers[0]
         self.layer_viewer = viewers[1]

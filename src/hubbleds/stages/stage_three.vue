@@ -179,9 +179,9 @@
             cols="10"
             offset="1"
           >
-            <py-hubble-slideshow 
-              :state="stage_state"
-              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']" />  
+            <py-hubble-slideshow
+              v-if="stage_state.indices[stage_state.marker] > stage_state.indices['rel_vel1']"
+            />  
           </v-col>
         </v-row>
       </v-col>

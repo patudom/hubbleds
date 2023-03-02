@@ -6,15 +6,14 @@ from astropy.coordinates import SkyCoord
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import load_template
+from cosmicds.utils import load_template, API_URL
 from echo import CallbackProperty, add_callback, ignore_callback
 from traitlets import default, Bool
 
-from ..components import DistanceSidebar, DistanceTool
-from ..components.angsize_dosdonts_slideshow import DosDonts_SlideShow
+from ..components import DistanceSidebar, DistanceTool, DosDontsSlideShow
 from ..data_management import STUDENT_MEASUREMENTS_LABEL
 from ..stage import HubbleStage
-from ..utils import GALAXY_FOV, DISTANCE_CONSTANT, IMAGE_BASE_URL, distance_from_angular_size, format_fov
+from ..utils import DISTANCE_CONSTANT, GALAXY_FOV, HUBBLE_ROUTE_PATH, IMAGE_BASE_URL, distance_from_angular_size, format_fov
 
 log = logging.getLogger()
 
@@ -42,7 +41,6 @@ class StageState(CDSState):
     
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
-    failedValidation3 = CallbackProperty(False)
     
     # stage two complete component variables
     stage_two_complete = CallbackProperty(False)
@@ -151,7 +149,7 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        dosdonts_slideshow = DosDonts_SlideShow()
+        dosdonts_slideshow = DosDontsSlideShow(self.stage_state.image_location_dosdonts)
         self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
         dosdonts_slideshow.observe(self._dosdonts_opened, names=['opened'])
 
@@ -165,8 +163,6 @@ class StageTwo(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         self.add_component(DistanceTool(), label="py-distance-tool")
-
-        
 
         add_distances_tool = \
             dict(id="update-distances",
@@ -327,6 +323,8 @@ class StageTwo(HubbleStage):
         # angular_size_as = round(angular_size.to(u.arcsec).value)
 
         index = self.distance_table.index
+        if index is None:
+            return
         data = self.distance_table.glue_data
         curr_value = data["angular_size"][index]
 
@@ -375,6 +373,7 @@ class StageTwo(HubbleStage):
         distance = distance_from_angular_size(self.stage_state.meas_theta)
         self.update_data_value("student_measurements", "distance", distance,
                                index)
+        self.story_state.update_student_data()
         if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.
             self.enable_distance_tool(True)
         self.get_distance_count()
@@ -428,8 +427,8 @@ class StageTwo(HubbleStage):
     def last_guideline(self):
         return self.get_component('guideline-stage-two-complete')
 
-    def _on_stage_complete(self, change):
-        if change["new"]:
+    def _on_stage_complete(self, complete):
+        if complete:
             self.story_state.stage_index = 4
 
             # We need to do this so that the stage will be moved forward every

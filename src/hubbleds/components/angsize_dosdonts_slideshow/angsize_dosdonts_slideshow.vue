@@ -10,7 +10,7 @@
       block
       color="secondary"
       elevation="2"
-      @click.stop="() => { opened = true; }"
+      @click.stop="() => { dialog = true; opened = true; }"
     >
       measurement dos and donts
       </v-btn>
@@ -96,7 +96,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/IL-Do.png`"
+                    :src="`${image_location}/IL-Do.png`"
                   ></v-img>
                   <h4> DO: </h4> 
                   <p>
@@ -107,7 +107,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/IL-Dont.png`"
+                    :src="`${image_location}/IL-Dont.png`"
                   ></v-img>
                   <h4>DON'T : </h4> 
                   <p>
@@ -137,7 +137,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/LS-Do.png`"
+                    :src="`${image_location}/LS-Do.png`"
                   ></v-img>
                   <h4>DO:</h4> 
                   <p>
@@ -148,7 +148,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/LS-Dont.png`"
+                    :src="`${image_location}/LS-Dont.png`"
                   ></v-img>
                   <h4>DON’T: </h4> 
                   <p>
@@ -183,7 +183,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/EH-Do.png`"
+                    :src="`${image_location}/EH-Do.png`"
                   ></v-img>
                   <h4>DO: </h4> 
                   <p>
@@ -194,7 +194,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/EH-Dont.png`"
+                    :src="`${image_location}/EH-Dont.png`"
                   ></v-img>
                   <h4>DON’T: </h4> 
                   <p>
@@ -230,7 +230,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/IF-Maybe2.png`"
+                    :src="`${image_location}/IF-Maybe2.png`"
                   ></v-img>
                   <h4>OK: </h4> 
                   <p>
@@ -241,7 +241,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/IF-Maybe1.png`"
+                    :src="`${image_location}/IF-Maybe1.png`"
                   ></v-img>
                   <h4>OK: </h4>  
                   <p>
@@ -272,7 +272,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/BS-Do.png`"
+                    :src="`${image_location}/BS-Do.png`"
                   ></v-img>
                   <h4>DO: </h4>  
                   <p>
@@ -283,7 +283,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/BS-Dont.png`"
+                    :src="`${image_location}/BS-Dont.png`"
                   ></v-img>
                   <h4>DON'T: </h4> 
                   <p>
@@ -320,7 +320,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/Multi-Do.png`"
+                    :src="`${image_location}/Multi-Do.png`"
                   ></v-img>
                   <h4>DO: </h4> 
                   <p>
@@ -331,7 +331,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/Multi-DONT1.png`"
+                    :src="`${image_location}/Multi-DONT1.png`"
                   ></v-img>
                   <h4>DON'T: </h4> 
                   <p>
@@ -342,7 +342,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/Multi-DONT2.png`"
+                    :src="`${image_location}/Multi-DONT2.png`"
                   ></v-img>
                   <h4>DON'T: </h4> 
                   <p>
@@ -373,7 +373,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/TC-Do.png`"
+                    :src="`${image_location}/TC-Do.png`"
                   ></v-img>
                   <h4>DO: </h4>  
                   <p>
@@ -384,7 +384,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/TC-Dont.png`"
+                    :src="`${image_location}/TC-Dont.png`"
                   ></v-img>
                   <h4>DON’T: </h4> 
                   <p>
@@ -414,7 +414,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/Col-Do.png`"
+                    :src="`${image_location}/Col-Do.png`"
                   ></v-img>
                   <h4>DO: </h4>  
                   <p>
@@ -425,7 +425,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/Col-Dont.png`"
+                    :src="`${image_location}/Col-Dont.png`"
                   ></v-img>
                   <h4>DON’T: </h4> 
                   <p>
@@ -462,7 +462,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/Cluster-Do.png`"
+                    :src="`${image_location}/Cluster-Do.png`"
                   ></v-img>
                   <h4>DO: </h4> 
                   <p>
@@ -473,7 +473,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/Cluster-DONT1.png`"
+                    :src="`${image_location}/Cluster-DONT1.png`"
                   ></v-img>
                   <h4>DON'T: </h4> 
                   <p>
@@ -484,7 +484,7 @@
                   <v-img
                     class="mb-4 mx-a"
                     contain
-                    :src="`${state.image_location_dosdonts}/Cluster-DONT2.png`"
+                    :src="`${image_location}/Cluster-DONT2.png`"
                   ></v-img>
                   <h4>DON'T: </h4> 
                   <p>

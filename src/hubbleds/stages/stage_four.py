@@ -1,6 +1,4 @@
 from functools import partial
-from os.path import join
-from pathlib import Path
 
 from numpy import where
 from cosmicds.components.table import Table
@@ -22,12 +20,9 @@ from ..data_management import \
     BEST_FIT_GALAXY_NAME
 from ..histogram_listener import HistogramListener
 from ..stage import HubbleStage
-from ..viewers import HubbleFitView, \
-    HubbleScatterView
+from ..viewers import HubbleScatterView
 from ..viewers.viewers import \
-    HubbleClassHistogramView, HubbleHistogramView, HubbleFitLayerView
-    
-from bqplot import OrdinalScale, LinearScale
+    HubbleClassHistogramView, HubbleHistogramView
 
 
 class StageState(CDSState):
@@ -41,7 +36,7 @@ class StageState(CDSState):
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
-    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three")
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_four")
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
@@ -53,9 +48,6 @@ class StageState(CDSState):
     cla_high_age = CallbackProperty(0)
 
     age_calc_state = DictCallbackProperty({
-        'failedValidation3': False,
-        'failedValidationAgeRange': False,
-        'age_const': 0,
         'hint1_dialog': False,
         'hint2_dialog': False,
         'hint3_dialog': False,
@@ -200,6 +192,8 @@ class StageFour(HubbleStage):
         add_callback(self.stage_state, 'stage_four_complete',
                      self._on_stage_four_complete)
 
+        add_callback(self.story_state, 'responses', self.age_calc_update_guesses)
+
         
         self.show_team_interface = self.app_state.show_team_interface
         
@@ -303,25 +297,12 @@ class StageFour(HubbleStage):
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
 
-        self.hub.subscribe(self, NumericalDataChangedMessage,
-                           filter=lambda msg: msg.data.label == STUDENT_DATA_LABEL,
-                           handler=student_slider_refresh)
-        self.hub.subscribe(self, NumericalDataChangedMessage,
-                           filter=lambda msg: msg.data.label == CLASS_SUMMARY_LABEL,
-                           handler=class_slider_refresh)
-
-        def update_class_slider(msg):
-            class_slider.update_data(self, msg.data)
-        self.hub.subscribe(self, NumericalDataChangedMessage, filter=lambda d: d.label == ALL_CLASS_SUMMARIES_LABEL, handler=update_class_slider)    
-
-        classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
-
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
             histogram_source_label: [class_distr_viewer],
             histogram_modify_label: [comparison_viewer],
             student_slider_subset_label: [comparison_viewer],
-            BEST_FIT_SUBSET_LABEL: [comparison_viewer, layer_viewer]
+            BEST_FIT_SUBSET_LABEL: [layer_viewer]
         }
 
         def label_ignore(x, label):
@@ -469,9 +450,6 @@ class StageFour(HubbleStage):
         comparison_viewer.add_data(class_meas_data)
         class_layer = comparison_viewer.layer_artist_for_data(class_meas_data)
         comparison_viewer.layer_artist_for_data(student_data).state.visible = False # Turn off student's own data on comparison viewer
-        if len(student_data.subsets) > 0:
-            best_fit_subset = student_data.subsets[0]
-            comparison_viewer.layer_artist_for_data(best_fit_subset).state.visible = False # Turn off best fit subset view on comparison viewer
         class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
         # comparison_viewer.add_subset(self.student_slider_subset)
@@ -556,7 +534,7 @@ class StageFour(HubbleStage):
         style_name = f"default_histogram_{theme}"
         style = load_style(style_name)
         update_figure_css(all_distr_viewer_student, style_dict=style)
-        update_figure_css(all_distr_viewer_class, style_dict=style)    
+        update_figure_css(all_distr_viewer_class, style_dict=style)
 
     def _deferred_setup(self):
         self._setup_scatter_layers()
@@ -641,9 +619,13 @@ class StageFour(HubbleStage):
         label = msg.data.label
         if self.story_state.stage_index == self.index:
             if label == STUDENT_DATA_LABEL:
+                self.get_component("py-student-slider").refresh()
                 self._update_hypgal_info()
             elif label == CLASS_SUMMARY_LABEL:
                 self.get_component("py-student-slider").refresh()
+            elif label == ALL_CLASS_SUMMARIES_LABEL:
+                class_slider = self.get_component("py-class-slider")
+                class_slider.update_data(self, msg.data)
             self._reset_limits_for_data(label)
 
     def _on_class_data_update(self, *args):
@@ -658,6 +640,18 @@ class StageFour(HubbleStage):
         
     def _on_class_layer_toggled(self, used):
         self.stage_state.class_layer_toggled = used 
+
+    def age_calc_update_guesses(self, responses):
+        key = str(self.index)
+        if key in responses:
+            r = responses[key]
+            state = self.stage_state.age_calc_state
+            state['low_guess'] = r.get('likely-low-age', "")
+            state['high_guess'] = r.get('likely-high-age', "")
+            state['best_guess'] = r.get('best-guess-age', "")
+            state['short_one'] = r.get('shortcoming-1', "")
+            state['short_two'] = r.get('shortcoming-2', "")
+            state['short_other'] = r.get('other-shortcomings', "")
     
     def _on_stage_index_changed(self, index):
         print("Stage Index: ",self.story_state.stage_index)
@@ -666,3 +660,6 @@ class StageFour(HubbleStage):
 
             # Remove this callback once we're done
             remove_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
+
+        if index == self.index:
+            self.reset_viewer_limits()
