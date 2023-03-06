@@ -1,7 +1,7 @@
 {
     "figure": {
       "background_style": {
-        "fill": "none"
+        "fill": "white"
       },
       "fig_margin": {
         "left": 100,
