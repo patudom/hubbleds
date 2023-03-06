@@ -41,7 +41,7 @@
       <p
         v-if="state.lambda_on"
       >
-        You can click the <v-btn icon tile dark small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon again to toggle the rest wavelength back off.
+        You can click the <v-btn icon tile dark small disabled class="mx-1" elevation="2" style="background-color: #1565C0; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon again to toggle the rest wavelength back off.
       </p>
     </div>
   </scaffold-alert>

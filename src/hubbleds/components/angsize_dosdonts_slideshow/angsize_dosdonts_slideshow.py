@@ -7,7 +7,7 @@ from glue_jupyter.state_traitlets_helpers import GlueState
 
 # theme_colors()
 
-class DosDonts_SlideShow(v.VuetifyTemplate):
+class DosDontsSlideShow(v.VuetifyTemplate):
     template = load_template(
         "angsize_dosdonts_slideshow.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
@@ -16,6 +16,7 @@ class DosDonts_SlideShow(v.VuetifyTemplate):
     currentTitle = Unicode("").tag(sync=True)
     opened = Bool(False).tag(sync=True)
     max_step_completed = Int(0).tag(sync=True)
+    image_location = Unicode().tag(sync=True)
 
     _titles = [
         "Intro",
@@ -28,8 +29,9 @@ class DosDonts_SlideShow(v.VuetifyTemplate):
     ]
     _default_title = "Measurement Dos and Don'ts"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, image_location, *args, **kwargs):
         self.currentTitle = self._default_title
+        self.image_location = image_location
 
         def update_title(change):
             index = change["new"]

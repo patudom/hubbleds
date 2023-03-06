@@ -1,1 +1,1 @@
-from .angsize_dosdonts_slideshow import DosDonts_SlideShow
+from .angsize_dosdonts_slideshow import DosDontsSlideShow

@@ -8,7 +8,7 @@
         class="mx-auto"
     >
       <v-toolbar
-          color="info darken-1"
+          color="warning"
           dark
           dense
       >

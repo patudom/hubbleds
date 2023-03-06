@@ -20,9 +20,7 @@
       Choose a response.
     </template>
 
-    <div
-      class="mb-4"
-    >
+    <div>
       <p>
         Now with a larger data set, do you see a trend? Is there a relationship between the velocity and distance of the galaxies?
       </p>
@@ -49,18 +47,14 @@
         </mc-radiogroup>
         <v-btn
           plain
-          color="info"
+          block
+          color="warning"
           @click="
             state.define_trend = true
           "
         >
           What is a trend?
         </v-btn>
-        <v-divider
-          class="my-4"
-          v-if="state.define_trend"
-        >
-        </v-divider>
         <v-alert
           v-if="state.define_trend"
           dense
