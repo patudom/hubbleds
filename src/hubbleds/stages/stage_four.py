@@ -658,6 +658,11 @@ class StageFour(HubbleStage):
             state['low_guess'] = r.get('likely-low-age', "")
             state['high_guess'] = r.get('likely-high-age', "")
             state['best_guess'] = r.get('best-guess-age', "")
+
+        # The shortcomings text is in stage three
+        stage_three_key = str(4)
+        if stage_three_key in responses:
+            r = responses[key]
             state['short_one'] = r.get('shortcoming-1', "")
             state['short_two'] = r.get('shortcoming-2', "")
             state['short_other'] = r.get('other-shortcomings', "")
