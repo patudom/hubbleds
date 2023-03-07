@@ -79,7 +79,7 @@
                     <v-card
                       class="mt-auto mb-4"
                       flat
-                      color="secondary lighten-3"
+                      color="cyan lighten-1"
                       light
                     >                  
                       <v-card-text
