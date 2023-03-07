@@ -407,12 +407,6 @@ class StageFour(HubbleStage):
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)     
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
 
-        if advancing and new == "cla_res1c":
-            all_viewer = self.get_viewer("all_viewer")
-            all_fit_tool = all_viewer.toolbar.tools["hubble:linefit"]
-            all_fit_tool.show_labels = True
-            all_fit_tool.activate()
-       
     def _setup_scatter_layers(self):
         dist_attr = "distance"
         vel_attr = "velocity"
@@ -485,6 +479,11 @@ class StageFour(HubbleStage):
         all_layer.state.visible = False
         all_viewer.state.x_att = all_data.id[dist_attr]
         all_viewer.state.y_att = all_data.id[vel_attr]
+
+        # Set up all viewer tools
+        all_fit_tool = all_viewer.toolbar.tools["hubble:linefit"]
+        all_fit_tool.show_labels = True
+        all_fit_tool.activate()
 
         # We want to turn this off here so that a it doesn't show up in previous stages
 
