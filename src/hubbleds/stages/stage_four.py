@@ -27,6 +27,8 @@ from ..viewers.viewers import \
 
 class StageState(CDSState):
     relage_response = CallbackProperty(False)
+    two_hist_response = CallbackProperty(False)
+    lack_bias_response = CallbackProperty(False)
     class_trend_line_drawn = CallbackProperty(False)
     class_best_fit_clicked = CallbackProperty(False)
     
@@ -388,13 +390,15 @@ class StageFour(HubbleStage):
 
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
-            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True )
-            best_fit_subset = self.get_data(STUDENT_DATA_LABEL).subsets[0]
-            best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
-            best_fit_layer.state.visible = False
+            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
+            student_data = self.get_data(STUDENT_DATA_LABEL)
+            if len(student_data.subsets) > 0:
+                best_fit_subset = student_data.subsets[0]
+                best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
+                best_fit_layer.state.visible = False
             class_layer = layer_viewer.layer_artist_for_data(self.get_data(CLASS_DATA_LABEL))
             class_layer.state.visible = True
-            student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
+            student_layer = layer_viewer.layer_artist_for_data(student_data)
             student_layer.state.visible = False    
             layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
 
@@ -402,6 +406,12 @@ class StageFour(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)     
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+
+        if advancing and new == "cla_res1c":
+            all_viewer = self.get_viewer("all_viewer")
+            all_fit_tool = all_viewer.toolbar.tools["hubble:linefit"]
+            all_fit_tool.show_labels = True
+            all_fit_tool.activate()
        
     def _setup_scatter_layers(self):
         dist_attr = "distance"

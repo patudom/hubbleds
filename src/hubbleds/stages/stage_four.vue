@@ -276,11 +276,13 @@
         <guideline-two-histograms-mc2
           v-if="stage_state.marker == 'two_his2'"
           :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.two_hist_response = true"/>
         <guideline-lack-bias-mc1
           v-if="stage_state.marker == 'lac_bia1'"
           :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.lack_bias_response = true"/>
         <guideline-lack-bias-reflect2
           v-if="stage_state.marker == 'lac_bia2'"
           :state="stage_state"

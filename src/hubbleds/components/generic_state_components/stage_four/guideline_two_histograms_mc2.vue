@@ -2,12 +2,10 @@
 <template>
   <scaffold-alert
     title-text="Student Histogram vs. Class Histogram"
-    @back="
-      state.marker = 'unc_sys1';
-    "
-    @next="
-      state.marker = 'lac_bia1';
-    "
+    @back="state.marker = 'unc_sys1'"
+    @next="state.marker = 'lac_bia1'"
+    :can-advance="(state) => state.two_hist_response"
+    :state="state"
   >
     <div
       class="mb-4"
@@ -44,6 +42,11 @@
 
 <script>
 module.exports = {
-  props: ['state']
+  props: ['state'],
+
+  mounted() {
+    console.log("State:");
+    console.log(this.state);
+  }
 }
 </script>
