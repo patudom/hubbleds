@@ -42,11 +42,6 @@
 
 <script>
 module.exports = {
-  props: ['state'],
-
-  mounted() {
-    console.log("State:");
-    console.log(this.state);
-  }
+  props: ['state']
 }
 </script>
