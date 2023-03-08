@@ -405,11 +405,15 @@ class StageFour(HubbleStage):
             class_layer = layer_viewer.layer_artist_for_data(self.get_data(CLASS_DATA_LABEL))
             class_layer.state.visible = True
             student_layer = layer_viewer.layer_artist_for_data(student_data)
-            student_layer.state.visible = False    
-            layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
+            student_layer.state.visible = False
+            linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
+            if linefit_tool.active:
+                linefit_tool.activate()
 
         if advancing and new == "bes_fit1c":
-            layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
+            linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
+            if linefit_tool.active:
+                linefit_tool.activate()
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)     
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
 
