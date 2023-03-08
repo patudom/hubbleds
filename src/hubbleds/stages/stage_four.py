@@ -189,8 +189,9 @@ class StageFour(HubbleStage):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self._setup_complete = False
     
-        
         add_callback(self.stage_state, 'stage_four_complete',
                      self._on_stage_four_complete)
 
@@ -375,9 +376,8 @@ class StageFour(HubbleStage):
             link((all_distr_viewer_student.state, prop), (all_distr_viewer_class.state, prop))
 
         # If possible, we defer some of the setup for later, to make loading faster
-        if self.story_state.stage_index != self.index:
-            add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
-        else:
+        add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
+        if self.story_state.stage_index == self.index:
             self._deferred_setup()
             
     def _on_marker_update(self, old, new):
@@ -387,6 +387,12 @@ class StageFour(HubbleStage):
         advancing = markers.index(new) > markers.index(old)
 
         layer_viewer = self.get_viewer("layer_viewer")
+
+        if new == 'ran_var1':
+            student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
+            class_layer = layer_viewer.layer_artist_for_data(self.get_data(CLASS_DATA_LABEL))
+            student_layer.state.visible = True
+            class_layer.state.visible = False
 
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
@@ -546,8 +552,11 @@ class StageFour(HubbleStage):
         update_figure_css(all_distr_viewer_class, style_dict=style)
 
     def _deferred_setup(self):
+        if self._setup_complete:
+            return
         self._setup_scatter_layers()
         self._setup_histogram_layers()
+        self._setup_complete = True
 
     @property
     def all_viewers(self):
@@ -652,9 +661,9 @@ class StageFour(HubbleStage):
 
     def age_calc_update_guesses(self, responses):
         key = str(self.index)
+        state = self.stage_state.age_calc_state
         if key in responses:
             r = responses[key]
-            state = self.stage_state.age_calc_state
             state['low_guess'] = r.get('likely-low-age', "")
             state['high_guess'] = r.get('likely-high-age', "")
             state['best_guess'] = r.get('best-guess-age', "")
@@ -662,18 +671,22 @@ class StageFour(HubbleStage):
         # The shortcomings text is in stage three
         stage_three_key = str(4)
         if stage_three_key in responses:
-            r = responses[key]
+            r = responses[stage_three_key]
             state['short_one'] = r.get('shortcoming-1', "")
             state['short_two'] = r.get('shortcoming-2', "")
             state['short_other'] = r.get('other-shortcomings', "")
     
     def _on_stage_index_changed(self, index):
         print("Stage Index: ",self.story_state.stage_index)
-        if index > 4:
+        if index >= self.index - 1:
             self._deferred_setup()
-
-            # Remove this callback once we're done
-            remove_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
 
         if index == self.index:
             self.reset_viewer_limits()
+
+            if self.stage_state.marker == 'ran_var1':
+                layer_viewer = self.get_viewer("layer_viewer")
+                student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
+                class_layer = layer_viewer.layer_artist_for_data(self.get_data(CLASS_DATA_LABEL))
+                student_layer.state.visible = True
+                class_layer.state.visible = False
