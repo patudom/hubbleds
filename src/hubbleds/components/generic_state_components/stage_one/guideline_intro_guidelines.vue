@@ -10,8 +10,8 @@
   >
     <template #back-content>
       <div>
-        Use left menu to return to Introduction.<br>
-        (Open/close menu with <v-btn icon small disabled><v-icon>mdi-menu</v-icon></v-btn> in upper left)
+        Open menu to return to earlier stages.<br>
+        (Open/close menu with <v-icon>mdi-menu</v-icon> above)
       </div>
     </template>
     <div
