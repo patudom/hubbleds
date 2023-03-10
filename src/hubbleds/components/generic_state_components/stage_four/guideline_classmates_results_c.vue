@@ -19,7 +19,7 @@
         class="mb-4"
       >
         <v-card-text>
-          Full disclosure for our beta testers: Since there were no students before you, the CosmicDS team acted as "seed students," created galaxies measurements as you have, and grouped our data into "classes."
+          Full disclosure for our pilot testers: Since there were not many students before you, the CosmicDS team acted as "seed students," created galaxies measurements as you have, and grouped our data into "classes."
         </v-card-text>
       </v-card>
       <p>
