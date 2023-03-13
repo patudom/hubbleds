@@ -1,7 +1,7 @@
 from os.path import join
 from pathlib import Path
 
-from echo import CallbackProperty, add_callback
+from echo import CallbackProperty, add_callback, callback_property
 from glue.core.message import NumericalDataChangedMessage
 from traitlets import Bool, default
 
@@ -57,6 +57,26 @@ class StageState(CDSState):
         self.marker_index = 0
         self.marker = self.markers[0]
         self.indices = {marker: idx for idx, marker in enumerate(self.markers)}
+
+    @callback_property
+    def marker_forward(self):
+        return None
+
+    @callback_property
+    def marker_backward(self):
+        return None
+    
+    @marker_backward.setter
+    def marker_backward(self, value):
+        index = self.indices[self.marker]
+        new_index = min(max(index - value, 0), len(self.markers) - 1)
+        self.marker = self.markers[new_index]
+
+    @marker_forward.setter
+    def marker_forward(self, value):
+        index = self.indices[self.marker]
+        new_index = min(max(index + value, 0), len(self.markers) - 1)
+        self.marker = self.markers[new_index]
 
     def marker_before(self, marker):
         return self.indices[self.marker] < self.indices[marker]
