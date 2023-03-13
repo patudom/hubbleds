@@ -6,7 +6,7 @@
     elevation="6"
     header-text="All Classes Age Range"
     next-text="check"
-    @back="state.marker = 'cla_res1c'"
+    @back="state.marker_backward = 1"
     @next="() => {
       const expectedAnswers = [state.cla_low_age, state.cla_high_age];
       state.marker = validateAnswersJS(['low_age', 'high_age'], expectedAnswers) ? 'age_dis1c' : 'cla_age1c';

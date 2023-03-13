@@ -2,12 +2,8 @@
 <template>
   <scaffold-alert
     title-text="Our Assumptions are Imperfect"
-    @back="
-      state.marker = 'imp_met1';
-    "
-    @next="
-      state.marker = 'imp_mea1';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

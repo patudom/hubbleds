@@ -1,12 +1,8 @@
 <template>
   <scaffold-alert
     title-text="Confidence Interval"
-    @back="
-      state.marker = 'cla_age4';
-    "
-    @next="
-      state.marker = 'age_dis1';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

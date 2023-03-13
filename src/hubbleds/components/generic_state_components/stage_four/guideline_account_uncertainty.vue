@@ -2,12 +2,8 @@
 <template>
   <scaffold-alert
     title-text="Accounting for Uncertainty"
-    @back="
-      state.marker = 'mor_dat1';
-    "
-    @next="
-      state.stage_four_complete = true;
-    "
+    @back="state.marker_backward = 1"
+    @next="state.stage_four_complete = true"
   >
     <div
       class="mb-4"

@@ -1,12 +1,8 @@
 <template>
   <scaffold-alert
     title-text="Class Age Range"
-    @back="
-      state.marker = 'cla_age3';
-    "
-    @next="
-      state.marker = 'con_int1';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

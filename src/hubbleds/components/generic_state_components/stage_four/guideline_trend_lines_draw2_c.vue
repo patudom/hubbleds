@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     title-text="Trend Lines"
-    @back="state.marker = 'con_int2'"
-    @next="state.marker = 'bes_fit1c'"
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
     :can-advance="(state) => state.class_trend_line_drawn"
     :state="state"
   >

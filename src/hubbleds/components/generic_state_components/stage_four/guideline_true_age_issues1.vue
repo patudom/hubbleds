@@ -2,12 +2,8 @@
 <template>
   <scaffold-alert
     title-text="Issues with Our Estimates"
-    @back="
-      state.marker = 'sho_est4';
-    "
-    @next="
-      state.marker = 'imp_met1';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"
