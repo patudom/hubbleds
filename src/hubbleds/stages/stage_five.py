@@ -50,6 +50,7 @@ class StageState(CDSState):
     
     _NONSERIALIZED_PROPERTIES = [
         'markers', 'indices', 'step_markers', 'image_location',
+        'marker_forward', 'marker_backward',
     ]
     
     def __init__(self, *args, **kwargs):

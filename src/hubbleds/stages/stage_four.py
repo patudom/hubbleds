@@ -125,6 +125,7 @@ class StageState(CDSState):
 
     _NONSERIALIZED_PROPERTIES = [
         'markers', 'indices', 'step_markers',
+        'marker_forward', 'marker_backward',
         'table_highlights', 'image_location',
         'my_galaxies_plot_highlights', 'all_galaxies_plot_highlights',
         'my_class_hist_highlights', 'all_classes_hist_highlights',
