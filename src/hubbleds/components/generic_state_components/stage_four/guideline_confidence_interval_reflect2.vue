@@ -5,10 +5,15 @@
       state.marker = 'age_dis1';
     "
     @next="() => {
-      state.marker = 'tre_lin2c';
-      state.trend_line_drawn = false;
-      state.best_fit_clicked = false;
-      age_calc_update_guesses()
+      if (state.reveal_iter < 3) {
+        state.reveal_iter = state.reveal_iter + 1;
+      }
+      else {
+        state.marker = 'tre_lin2c';
+        state.trend_line_drawn = false;
+        state.best_fit_clicked = false;
+        age_calc_update_guesses();
+      }
     }"
   >
     <div
@@ -85,7 +90,9 @@
         </v-col>
       </v-row>
 
-      <v-row>
+      <v-row
+        v-if="state.reveal_iter >= 1"
+      >
         <v-col
           cols="12"
           lg="9"
@@ -146,7 +153,9 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row
+        v-if="state.reveal_iter >= 1"
+      >
         <v-col
           cols="12"
           lg="3">
@@ -177,23 +186,35 @@
         </v-col>
       </v-row>
 
-      <p class="mt-4">
-        3. Explain why you chose your values using information from the scatterplot and/or the histogram:
-      </p>
-      <free-response
-        outlined
-        auto-grow
-        rows="2"
-        label="My Reasoning"
-        tag="my-reasoning"
-      ></free-response>
+      <v-row
+        v-if="state.reveal_iter >= 2"
+      >
+        <v-col>
+          3. Explain why you chose your values using information from the scatterplot and/or the histogram:
+        </v-col>
+      </v-row>
+      <v-row
+        v-if="state.reveal_iter >= 2"
+      >
+        <v-col>
+          <free-response
+            outlined
+            auto-grow
+            rows="2"
+            label="My Reasoning"
+            tag="my-reasoning"
+          ></free-response>
+        </v-col>
+      </v-row>
 
-      <v-row>
+      <v-row
+        v-if="state.reveal_iter >= 3"
+      >
         <v-col
           cols="12"
           lg="9"
         >
-        4. Describe how confident you feel in your reported age and high/low values:
+          4. Describe how confident you feel in your reported age and high/low values:
         </v-col>
         <v-col>
           <v-btn
@@ -245,14 +266,19 @@
           </v-btn>
         </v-col>
       </v-row>
-
-      <free-response
-        outlined
-        auto-grow
-        rows="2"
-        label="My Level of Confidence"
-        tag="my-confidence"
-      ></free-response>
+      <v-row
+        v-if="state.reveal_iter >= 3"
+      >
+        <v-col>
+          <free-response
+            outlined
+            auto-grow
+            rows="2"
+            label="My Level of Confidence"
+            tag="my-confidence"
+          ></free-response>
+        </v-col>
+      </v-row>
     </div>
   </scaffold-alert>
 </template>

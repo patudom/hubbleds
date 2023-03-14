@@ -377,11 +377,7 @@
   fill: #FF006E30 !important;
 }
 
-.theme--dark .legendtext {
-  fill: #fff!important;
-}
-
-.theme--light .legendtext {
+.legendtext {
   fill: #000!important;
 }
 

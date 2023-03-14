@@ -47,6 +47,8 @@ class StageState(CDSState):
     cla_low_age = CallbackProperty(0)
     cla_high_age = CallbackProperty(0)
 
+    reveal_iter = CallbackProperty(0)
+
     age_calc_state = DictCallbackProperty({
         'hint1_dialog': False,
         'hint2_dialog': False,
@@ -502,21 +504,21 @@ class StageFour(HubbleStage):
             if viewer not in all_distr:
                 viewer.add_data(class_summ_data)
                 layer = viewer.layer_artist_for_data(class_summ_data)
-                layer.state.color = '#26C6DA'
-                layer.state.alpha = 0.5
+                layer.state.color = '#8338EC'
+                layer.state.alpha = 0.7 # purple from alt palette #1
             if viewer != class_distr_viewer and viewer != all_distr_viewer_class:
                 viewer.add_data(students_summary_data)
                 layer = viewer.layer_artist_for_data(students_summary_data)
-                layer.state.color = '#78909C'
-                layer.state.alpha = 0.5
+                layer.state.color = '#FFBE0B' # yellow from alt palette #1
+                layer.state.alpha = 0.7
                 if viewer == all_distr_viewer_class:
                     layer.state.visible = False
                 viewer.state.hist_n_bin = 20
             if viewer != class_distr_viewer and viewer != all_distr_viewer_student:
                 viewer.add_data(classes_summary_data)
                 layer = viewer.layer_artist_for_data(classes_summary_data)
-                layer.state.color = '#6A4C93'
-                layer.state.alpha = 0.5
+                layer.state.color = '#619EFF' # light blue from alt palette #1
+                layer.state.alpha = 0.7
                 if viewer == all_distr_viewer_student:
                     layer.state.visible = False
                 # viewer.state.normalize = True
