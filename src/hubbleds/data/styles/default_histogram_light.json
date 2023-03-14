@@ -1,7 +1,7 @@
 {
     "figure": {
       "background_style": {
-        "fill": "white"
+        "fill": "#ffffff"
       },
       "fig_margin": {
         "left": 100,
@@ -38,9 +38,6 @@
     "viewer": {
       "bars": {
         "enable_hover": true
-      },
-      "state": {
-        "size": "3"
       }
     }
   }
