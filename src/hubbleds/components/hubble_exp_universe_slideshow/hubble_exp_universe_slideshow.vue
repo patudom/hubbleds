@@ -33,6 +33,7 @@
         <v-spacer></v-spacer>
         <speech-synthesizer
           :root="() => this.$refs.content.$el"
+          :trigger-on-change="step"
           :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
           />
         <v-btn

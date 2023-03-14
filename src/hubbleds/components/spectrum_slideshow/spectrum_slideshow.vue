@@ -33,6 +33,8 @@
         <v-spacer></v-spacer>
         <speech-synthesizer
           :root="() => this.$refs.content.$el"
+          :autospeak-on-change="step"
+          :speak-flag="dialog"
           :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
           />
         <span
