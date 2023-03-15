@@ -67,8 +67,8 @@
               </v-col>
               <v-col cols="6">
                 <v-img
-                  lazy-src="https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg"
-                  src="https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg"
+                  lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HST-SM4.jpeg"
+                  src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HST-SM4.jpeg"
                   alt="Hubble Telescope"
                 ></v-img>
                 <div
