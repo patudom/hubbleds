@@ -15,6 +15,7 @@
       <v-spacer></v-spacer>
       <speech-synthesizer
         :root="$el"
+        :autospeak-on-change="step"
         :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
       />
     </v-toolbar>
