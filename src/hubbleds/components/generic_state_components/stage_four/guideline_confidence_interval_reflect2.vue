@@ -6,7 +6,6 @@
       state.marker_forward = 1;
       state.trend_line_drawn = false;
       state.best_fit_clicked = false;
-      age_calc_update_guesses()
     }"
   >
     <div

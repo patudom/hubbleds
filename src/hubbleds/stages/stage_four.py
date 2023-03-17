@@ -27,6 +27,8 @@ from ..viewers.viewers import \
 
 class StageState(CDSState):
     relage_response = CallbackProperty(False)
+    two_hist_response = CallbackProperty(False)
+    lack_bias_response = CallbackProperty(False)
     class_trend_line_drawn = CallbackProperty(False)
     class_best_fit_clicked = CallbackProperty(False)
     
@@ -208,8 +210,9 @@ class StageFour(HubbleStage):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self._setup_complete = False
     
-        
         add_callback(self.stage_state, 'stage_four_complete',
                      self._on_stage_four_complete)
 
@@ -286,6 +289,7 @@ class StageFour(HubbleStage):
         # Create the student slider
         student_slider_subset_label = "student_slider_subset"
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
+        self.student_slider_subset.style.alpha = 1
         student_slider = IDSlider(class_summ_data, "student_id", "age", highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "py-student-slider")
         def student_slider_change(id, highlighted):
@@ -394,9 +398,8 @@ class StageFour(HubbleStage):
             link((all_distr_viewer_student.state, prop), (all_distr_viewer_class.state, prop))
 
         # If possible, we defer some of the setup for later, to make loading faster
-        if self.story_state.stage_index != self.index:
-            add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
-        else:
+        add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
+        if self.story_state.stage_index == self.index:
             self._deferred_setup()
             
     def _on_marker_update(self, old, new):
@@ -407,23 +410,35 @@ class StageFour(HubbleStage):
 
         layer_viewer = self.get_viewer("layer_viewer")
 
+        if new == 'ran_var1':
+            student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
+            class_layer = layer_viewer.layer_artist_for_data(self.get_data(CLASS_DATA_LABEL))
+            student_layer.state.visible = True
+            class_layer.state.visible = False
+
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
-            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True )
-            best_fit_subset = self.get_data(STUDENT_DATA_LABEL).subsets[0]
-            best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
-            best_fit_layer.state.visible = False
+            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
+            student_data = self.get_data(STUDENT_DATA_LABEL)
+            if len(student_data.subsets) > 0:
+                best_fit_subset = student_data.subsets[0]
+                best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
+                best_fit_layer.state.visible = False
             class_layer = layer_viewer.layer_artist_for_data(self.get_data(CLASS_DATA_LABEL))
             class_layer.state.visible = True
-            student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
-            student_layer.state.visible = False    
-            layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
+            student_layer = layer_viewer.layer_artist_for_data(student_data)
+            student_layer.state.visible = False
+            linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
+            if linefit_tool.active:
+                linefit_tool.activate()
 
         if advancing and new == "bes_fit1c":
-            layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
+            linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
+            if linefit_tool.active:
+                linefit_tool.activate()
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)     
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
-       
+
     def _setup_scatter_layers(self):
         dist_attr = "distance"
         vel_attr = "velocity"
@@ -497,6 +512,11 @@ class StageFour(HubbleStage):
         all_viewer.state.x_att = all_data.id[dist_attr]
         all_viewer.state.y_att = all_data.id[vel_attr]
 
+        # Set up all viewer tools
+        all_fit_tool = all_viewer.toolbar.tools["hubble:linefit"]
+        all_fit_tool.show_labels = True
+        all_fit_tool.activate()
+
         # We want to turn this off here so that a it doesn't show up in previous stages
 
         student_slider_subset_label = "student_slider_subset"
@@ -558,8 +578,11 @@ class StageFour(HubbleStage):
         update_figure_css(all_distr_viewer_class, style_dict=style)
 
     def _deferred_setup(self):
+        if self._setup_complete:
+            return
         self._setup_scatter_layers()
         self._setup_histogram_layers()
+        self._setup_complete = True
 
     @property
     def all_viewers(self):
@@ -664,23 +687,32 @@ class StageFour(HubbleStage):
 
     def age_calc_update_guesses(self, responses):
         key = str(self.index)
+        state = self.stage_state.age_calc_state
         if key in responses:
             r = responses[key]
-            state = self.stage_state.age_calc_state
             state['low_guess'] = r.get('likely-low-age', "")
             state['high_guess'] = r.get('likely-high-age', "")
             state['best_guess'] = r.get('best-guess-age', "")
+
+        # The shortcomings text is in stage three
+        stage_three_key = str(4)
+        if stage_three_key in responses:
+            r = responses[stage_three_key]
             state['short_one'] = r.get('shortcoming-1', "")
             state['short_two'] = r.get('shortcoming-2', "")
             state['short_other'] = r.get('other-shortcomings', "")
     
     def _on_stage_index_changed(self, index):
         print("Stage Index: ",self.story_state.stage_index)
-        if index > 4:
+        if index >= self.index - 1:
             self._deferred_setup()
-
-            # Remove this callback once we're done
-            remove_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
 
         if index == self.index:
             self.reset_viewer_limits()
+
+            if self.stage_state.marker == 'ran_var1':
+                layer_viewer = self.get_viewer("layer_viewer")
+                student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
+                class_layer = layer_viewer.layer_artist_for_data(self.get_data(CLASS_DATA_LABEL))
+                student_layer.state.visible = True
+                class_layer.state.visible = False

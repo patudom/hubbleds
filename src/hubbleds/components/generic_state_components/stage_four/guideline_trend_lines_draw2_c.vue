@@ -11,7 +11,7 @@
     :state="state"
   >
     <template #before-next>
-      Draw a trend line.
+      Click <v-icon>mdi-message-draw</v-icon> and draw a trend line.
     </template>
 
     <div
