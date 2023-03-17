@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     title-text="Best Fit Line"
-    @back="state.marker = 'tre_lin2c'"
-    @next="state.marker = 'you_age1c'"
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
     :can-advance="(state) => state.class_best_fit_clicked"
     :state="state"
   >

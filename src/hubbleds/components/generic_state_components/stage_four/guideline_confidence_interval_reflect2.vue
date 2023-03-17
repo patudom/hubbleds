@@ -1,11 +1,9 @@
 <template>
   <scaffold-alert
     header-text="Identify Your Confidence Interval"
-    @back="
-      state.marker = 'age_dis1';
-    "
+    @back="state.marker_backward = 1"
     @next="() => {
-      state.marker = 'tre_lin2c';
+      state.marker_forward = 1;
       state.trend_line_drawn = false;
       state.best_fit_clicked = false;
     }"

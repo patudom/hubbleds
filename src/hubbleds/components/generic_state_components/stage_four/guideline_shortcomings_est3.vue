@@ -2,12 +2,8 @@
 <template>
   <scaffold-alert
     header-text="Shortcomings in Your Estimate"
-    @back="
-      state.marker = 'tru_age2';
-    "
-    @next="
-      state.marker = 'sho_est4';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

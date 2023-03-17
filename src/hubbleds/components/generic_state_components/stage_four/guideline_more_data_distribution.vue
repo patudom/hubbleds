@@ -2,12 +2,8 @@
 <template>
   <scaffold-alert
     title-text="More Data and Narrow Distributions"
-    @back="
-      state.marker = 'lac_bia3';
-    "
-    @next="
-      state.marker = 'acc_unc1';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

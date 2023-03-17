@@ -2,12 +2,8 @@
 <template>
   <scaffold-alert
     title-text="Which Might Produce a Closer Result?"
-    @back="
-      state.marker = 'lac_bia1';
-    "
-    @next="
-      state.marker = 'lac_bia3';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

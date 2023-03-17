@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     title-text="Relationship Between Age and Slope"
-    @back="state.marker = 'cla_res1'"
-    @next="state.marker = 'cla_age1'"
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
     :can-advance="(state) => state.relage_response"
     :state="state"
   >
