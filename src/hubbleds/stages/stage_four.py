@@ -704,7 +704,7 @@ class StageFour(HubbleStage):
     
     def _on_stage_index_changed(self, index):
         print("Stage Index: ",self.story_state.stage_index)
-        if index >= self.index - 1:
+        if index >= self.index:
             self._deferred_setup()
 
         if index == self.index:
