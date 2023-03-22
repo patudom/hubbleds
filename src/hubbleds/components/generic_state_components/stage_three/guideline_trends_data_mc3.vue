@@ -46,16 +46,16 @@
         >
         </mc-radiogroup>
         <v-btn
-          plain
           block
-          color="warning"
+          color="deep-orange darken-2"
           @click="
-            state.define_trend = true
+            state.define_trend = !state.define_trend
           "
         >
           What is a trend?
         </v-btn>
         <v-alert
+          class="mt-4"
           v-if="state.define_trend"
           dense
           color="info darken-1"

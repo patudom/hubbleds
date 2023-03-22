@@ -16,9 +16,11 @@
           color="error"
           class="black--text"
           @click="() => {
-            stage_state.marker = 'con_int2'
+            stage_state.marker = 'con_int1';
           }"
-        >jump</v-btn>
+        >
+          jump
+        </v-btn>
         Marker: {{ stage_state.marker }}
       </v-col>
     </v-row>
@@ -377,11 +379,7 @@
   fill: #FF006E30 !important;
 }
 
-.theme--dark .legendtext {
-  fill: #fff!important;
-}
-
-.theme--light .legendtext {
+.legendtext {
   fill: #000!important;
 }
 

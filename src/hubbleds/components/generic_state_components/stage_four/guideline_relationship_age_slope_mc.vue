@@ -10,7 +10,7 @@
     :can-advance="(state) => state.relage_response"
     :state="state"
   >
-    <template #next-content>
+    <template #before-next>
       Choose a response.
     </template>
     
