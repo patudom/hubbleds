@@ -21,7 +21,8 @@
     </v-toolbar>
 
     <v-window
-      style="min-height: 300px;"
+      style="height: calc(100vh - 300px);"
+      class="overflow-auto"
       v-model="step"
     >
       <v-window-item :value="0" 
@@ -31,9 +32,7 @@
           style="min-height: 550px;"
         >
           <v-container>
-            <v-row
-              no-gutter
-            >
+            <v-row>
               <v-col cols="6">
                 <p>
                   Welcome to the <strong><i>Hubble's Law</i> Cosmic Data Story</strong> where you will use real astronomical data&#8212;old and new&#8212;to investigate the mysteries of our Universe. In particular, let's ask:
@@ -75,7 +74,7 @@
                   class="text-center mt-2 grey--text"
                   style="width: 100%;"
                 >
-                  <i>Ever wonder who the Hubble Space Telescope is named for, and why?</i>
+                  Ever wonder who the Hubble Space Telescope is named for, and why?
                 </div>
               </v-col>
             </v-row>
@@ -104,7 +103,7 @@
                   class="text-center mt-2 grey--text"
                   style="width: 100%;"
                 >
-                  <i>Plato (red robe) and his pupil Aristotle (blue robe) at the center of “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Aristotle lived from 384-322 BC, and his theory of an unchanging universe persisted until the time of Edwin Hubble, 23 centuries later.</i>
+                  Plato (red robe) and his pupil Aristotle (blue robe) at the center of “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Aristotle lived from 384-322 BC, and his theory of an unchanging universe persisted until the time of Edwin Hubble, 23 centuries later.
                 </div>
               </v-col>
             </v-row>
@@ -194,7 +193,7 @@
                       class="text-center grey--text"
                       style="width: 100%;"
                     >
-                      <i>Interactive view provided by WorldWide Telescope</i>
+                      Interactive view provided by WorldWide Telescope
                     </div>
                   </v-row>
                 </div>
@@ -581,7 +580,7 @@
                     class="text-center mt-3 grey--text"
                     style="width: 100%;"
                   >
-                    <i> Astronomer Henrietta Swan Leavitt </i>
+                    Astronomer Henrietta Swan Leavitt
                   </div>
                 </v-row>
               </v-col>
@@ -598,7 +597,7 @@
                     class="text-center mb-6 mt-2 grey--text"
                     style="width: 100%;"
                   >
-                    <i> Glass plate showing Cepheid variable stars in SMC studied by Leavitt</i>
+                    Glass plate showing Cepheid variable stars in SMC studied by Leavitt
                   </div>
                 </v-row>
                 <v-row>
@@ -613,7 +612,7 @@
                     class="text-center mt-3 grey--text"
                     style="width: 100%;"
                   >
-                    <i>Graph from Leavitt's 1912 paper showing the relationship between period and brightness of Cepheid variables.</i>
+                    Graph from Leavitt's 1912 paper showing the relationship between period and brightness of Cepheid variables.
                   </div>
                 </v-row>
               </v-col>
@@ -652,7 +651,7 @@
                     class="text-center mt-3 grey--text"
                     style="width: 100%;"
                   >
-                    <i>Astronomer Vesto Slipher</i>
+                    Astronomer Vesto Slipher
                   </div>
               </v-col>
             </v-row>

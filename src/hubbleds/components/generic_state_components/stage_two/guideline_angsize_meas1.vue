@@ -9,7 +9,10 @@
     :allow-back="false"
   >
     <template #back-content>
-      <span style="font-size: 16px;">Use left menu to navigate to earlier stages.<br>(Press <v-icon>mdi-menu</v-icon> in upper left if menu is not open)</span>
+      <div>
+        Open menu to return to earlier stages.<br>
+        (Open/close menu with <v-icon>mdi-menu</v-icon> above)
+      </div>
     </template>
     <div
       class="mb-4"

@@ -13,7 +13,7 @@
         elevation="2"
         @click.stop="() => { opened = true; marker = 'spe_tut1' }"
       >
-      Spectrum tutorial
+        Spectrum tutorial
       </v-btn>
     </template>
     <v-card
@@ -79,7 +79,7 @@
                     <v-card
                       class="mt-auto mb-4"
                       flat
-                      color="secondary lighten-3"
+                      color="cyan lighten-1"
                       light
                     >                  
                       <v-card-text

@@ -21,7 +21,7 @@
         The relationship between your galaxies’ velocity and distance is the same as what Hubble found: galaxies at a greater distance away are moving away from us at a higher velocity.
       </p>
       <p>
-       Click the <strong>HUBBLE's DISCOVERY</strong> button to learn what was significant about this result.
+       Click the <strong>HUBBLE'S DISCOVERY</strong> button to learn what was significant about this result.
       </p>
     </div>
   </scaffold-alert>
