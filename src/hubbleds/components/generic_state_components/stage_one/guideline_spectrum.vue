@@ -22,10 +22,10 @@
       class="mb-4"
     >
       <p>
-        Here is a <b>spectrum</b> of light measured from your chosen galaxy.
+        The <b>spectrum</b> of light measured from the example galaxy is shown in the Spectrum Viewer.
       </p>
       <p>
-        (If you scroll up to the Cosmic Sky Viewer, you will see your chosen galaxy displayed there too.)
+        (If you scroll up to the Cosmic Sky Viewer, you will see the example galaxy displayed there too.)
       </p>
     </div>
     <div

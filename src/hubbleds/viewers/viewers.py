@@ -3,10 +3,13 @@ from glue.viewers.scatter.state import ScatterViewerState
 from glue_jupyter.bqplot.histogram import BqplotHistogramView
 from glue_jupyter.bqplot.scatter import BqplotScatterView
 from cosmicds.viewers import cds_viewer
+from cosmicds.viewers.dotplot.viewer import BqplotDotPlotView
+
 
 __all__ = [
     "HubbleScatterViewerState", "HubbleFitViewerState",
-    "HubbleFitView", "HubbleScatterView", "HubbleClassHistogramView"
+    "HubbleFitView", "HubbleScatterView", "HubbleClassHistogramView",
+    "HubbleDotPlotView"
 ]
 
 
@@ -87,4 +90,15 @@ HubbleClassHistogramView = cds_viewer(
         "bqplot:xrange"
     ],
     label="Class Histogram"
+)
+
+
+HubbleDotPlotView = cds_viewer(
+    BqplotDotPlotView,
+    name="HubbleDotPlotView",
+    viewer_tools=[
+        "bqplot:home",
+        "bqplot:xzoom",
+    ],
+    label="Dot Plot"
 )

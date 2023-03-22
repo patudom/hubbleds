@@ -11,9 +11,9 @@
       @back="() => { state.marker_backward = 1; }"
       @next="() => { state.completed = true; }"
   >
-    <template #before-next>
+    <!-- <template #before-next>
       Click the <v-icon>mdi-run-fast</v-icon> icon.
-    </template>
+    </template> -->
 
     <div
         v-if="state.velocities_total < 5"
@@ -24,16 +24,16 @@
       }"
         class="mb-4"
     >
-      <p>
+      <!-- <p>
         Notice your calculated velocity is now entered in the table.
       </p>
       <div
           class="JaxEquation"
       >
         $$ v = {{ state.student_vel.toFixed(0).toLocaleString() }} \text{ km/s}$$
-      </div>
+      </div> -->
       <p>
-        Now that you know how to use the Doppler equation, click the
+        Since know how to use the Doppler equation, click the
         <v-icon>mdi-run-fast</v-icon>
         icon in the table header to have the velocities of the remaining galaxies calculated as well.
       </p>

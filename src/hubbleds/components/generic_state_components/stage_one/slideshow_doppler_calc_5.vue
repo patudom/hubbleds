@@ -858,7 +858,7 @@
             $emit('submit'); 
             state.doppler_calc_dialog = false; 
             state.doppler_calc_state.step = 0;
-            state.marker='dop_cal6'; 
+            state.marker='osm_tut'; 
             state.doppler_calc_state.student_vel_calc = true}"
         >
           Done

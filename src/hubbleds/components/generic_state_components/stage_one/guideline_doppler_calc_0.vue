@@ -8,10 +8,8 @@
       class="mb-4"
     >
       <p>
-        Now that you know your observed galaxies are moving away from us, let's figure out <strong>how fast</strong> they are moving.
-      </p>
-      <p>
-        Light from <strong>faster</strong> galaxies experiences a <strong>larger change</strong> in observed wavelength.
+        Now, you will use the observed wavelength of the H-alpha spectral line to determine the galaxy's velocity, using the <strong>Doppler Equation</strong>.
+
       </p>
     </div>
   </scaffold-alert>
@@ -19,6 +17,6 @@
 
 <script>
 module.exports = {
- props: ['state']
+  props: ['state']
 }
 </script>

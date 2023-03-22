@@ -11,14 +11,14 @@
     :state="state"
   >
   <template #before-next>
-      Select a galaxy from your table.
+      Select the example galaxy from your table.
     </template>  
   <div class="mb-4">
       <p>
-      Let's look at the light spectrum for one of your galaxies.
+      For the moment, we have replaced your chosen galaxies with the example galaxy in the table.
       </p>
       <p>
-      Click on a row in your table to choose that galaxy.
+      Click the row containing the example galaxy to select it.
       </p>
     </div>
   </scaffold-alert>
@@ -26,6 +26,6 @@
 
 <script>
 module.exports = {
- props: ['state']
+  props: ['state']
 }
 </script>

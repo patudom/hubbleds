@@ -22,6 +22,8 @@ from .data_management import BEST_FIT_SUBSET_LABEL, CLASS_DATA_LABEL, CLASS_SUMM
     STUDENT_DATA_LABEL, STUDENT_MEASUREMENTS_LABEL, BEST_FIT_GALAXY_NAME
 from .utils import H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line
 
+from .data_management import EXAMPLE_GALAXY_DATA, EXAMPLE_GALAXY_MEASUREMENTS, EXAMPLE_GALAXY_STUDENT_DATA, EXAMPLE_GALAXY_SEED_DATA
+from .utils import MG_REST_LAMBDA
 
 @story_registry(name="hubbles_law")
 class HubblesLaw(Story):
@@ -142,7 +144,15 @@ class HubblesLaw(Story):
             component = Component(np.array([0]))
             class_summary_data.add_component(component, col)
         self.data_collection.append(class_summary_data)
-
+        
+        # create example galaxy data sets
+        # example_galaxy_measurements
+        # example_galaxy_student_data
+        # SINGLE_GALAXY_SEED_DATA
+        example_galaxy_meas = self.setup_example_galaxy()
+        for comp in ['distance', 'velocity', 'student_id']:
+            self.app.add_link(student_measurements, comp, example_galaxy_meas, comp)
+            self.app.add_link(student_measurements, comp, example_galaxy_meas, comp)
         # Make all data writeable
         for data in self.data_collection:
             HubblesLaw.make_data_writeable(data)
@@ -226,6 +236,78 @@ class HubblesLaw(Story):
             "student_id": self.student_user["id"],
             "last_modified": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+    
+    def setup_example_galaxy(self):
+        """
+        Load in the example galaxy data and seed data for the example galaxy
+        Create empty Data for student measurements of example galaxy
+        """
+        # Load in the galaxy data
+        example_galaxy_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-galaxy").json()
+        example_galaxy_data = { k : [example_galaxy_data[k]] for k in example_galaxy_data }
+        example_galaxy_data['galaxy_id'] = [name.replace('.fits','') for name in example_galaxy_data['name']]
+        self.data_collection.append(Data(label=EXAMPLE_GALAXY_DATA, **example_galaxy_data))
+        
+        # load the seed data for the example galaxy to populate
+        # parse the json into a dictionary of arrays
+        # create glue Data object [each dictionary item becomes a component]
+        example_galaxy_seed_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements").json()
+        example_galaxy_seed_data = {k: np.array([record[k] for record in example_galaxy_seed_data]) for k in example_galaxy_seed_data[0]}
+        good = example_galaxy_seed_data['velocity_value'] != None
+        example_galaxy_seed_data = {k: np.array(v)[good] for k,v in example_galaxy_seed_data.items()}
+        for k in ['velocity_value']: #, 'ang_size_value','obs_wave_value','rest_wave_value','est_dist_value']:
+            example_galaxy_seed_data[k] = np.array(example_galaxy_seed_data[k], dtype = type(example_galaxy_seed_data[k][0]))
+        example_galaxy_seed_data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **example_galaxy_seed_data)
+        
+        self.data_collection.append(example_galaxy_seed_data)
+        
+        
+        # Create empty Data for student measurements of example galaxy
+        single_gal_student_cols = ["id", "name", "ra", "decl", "z", "type", "measwave",
+                        "restwave", "student_id", "velocity", "distance",
+                        "element", "angular_size", "measurement_number"]
+        # empty_record = {x: np.array([], dtype='float64') for x in single_gal_student_cols}
+        empty_record = {x : ['X'] if x in ['id', 'element', 'type', 'name', 'measurement_number'] else [0] 
+                for x in single_gal_student_cols}
+        for col in ['name', 'element', 'type','ra','decl','z']:
+            empty_record[col] = example_galaxy_data[col]
+        empty_record['restwave'] = [H_ALPHA_REST_LAMBDA] if ('H' in example_galaxy_data['element'][0]) else [MG_REST_LAMBDA]
+        empty_record['measurement_number'] = ['first']
+        empty_record['measurement_number'] = np.asarray(empty_record['measurement_number'], dtype = ('<U6'))
+        example_galaxy_measurements = Data(
+            label=EXAMPLE_GALAXY_MEASUREMENTS,
+            **empty_record)
+        
+        example_galaxy_student_data = Data(
+            label=EXAMPLE_GALAXY_STUDENT_DATA,
+            **empty_record)
+        
+        
+        # categorical_cols = ['id', 'element', 'type', 'name', 'measurement_number']
+        # example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
+        # example_galaxy_student_data = Data(label=EXAMPLE_GALAXY_STUDENT_DATA)
+        # for col in single_gal_student_cols:
+        #     categorical = col in categorical_cols
+        #     ctype = CategoricalComponent if categorical else Component
+        #     meas_comp = ctype(np.array([]))
+        #     data = ['X'] if categorical else [0]
+        #     student_data_comp = ctype(np.array(data))
+        #     # class_data_comp = ctype(np.array(data))
+        #     example_galaxy_measurements.add_component(meas_comp, col)
+        #     example_galaxy_student_data.add_component(student_data_comp, col)
+        #     # example_galaxy_class_data.add_component(class_data_comp, col)
+        
+        # example_galaxy_measurements.append(empty_record)
+        self.data_collection.append(example_galaxy_student_data)
+        self.data_collection.append(example_galaxy_measurements)
+
+        self.app.add_link(example_galaxy_seed_data, 'student_id', example_galaxy_measurements, 'student_id')
+        self.app.add_link(example_galaxy_seed_data, 'est_dist_value', example_galaxy_measurements, 'distance')
+        self.app.add_link(example_galaxy_seed_data, 'velocity_value', example_galaxy_measurements, 'velocity')
+        self.app.add_link(example_galaxy_seed_data, 'measurement_number', example_galaxy_measurements, 'measurement_number')
+        self.app.add_link(example_galaxy_seed_data, 'ang_size_value', example_galaxy_measurements, 'angular_size')
+        
+        return example_galaxy_measurements
 
 
     def update_data(self, label, new_data):
