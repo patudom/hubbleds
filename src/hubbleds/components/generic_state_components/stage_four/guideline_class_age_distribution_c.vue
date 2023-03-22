@@ -1,12 +1,8 @@
 <template>
   <scaffold-alert
     title-text="Class Age Distribution"
-    @back="
-      state.marker = 'cla_age1c';
-    "
-    @next="
-      state.marker = 'con_int2c';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

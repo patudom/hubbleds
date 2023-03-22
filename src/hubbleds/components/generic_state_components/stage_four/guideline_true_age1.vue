@@ -2,12 +2,8 @@
 <template>
   <scaffold-alert
     title-text="Which Value Is the True Age?"
-    @back="
-      state.marker = 'two_his1';
-    "
-    @next="
-      state.marker = 'tru_age2';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

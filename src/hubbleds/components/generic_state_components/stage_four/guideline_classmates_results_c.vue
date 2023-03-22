@@ -1,12 +1,8 @@
 <template>
   <scaffold-alert
     title-text="Classmates' Data"
-    @back="
-      state.marker = 'you_age1c';
-    "
-    @next="
-      state.marker = 'cla_age1c';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

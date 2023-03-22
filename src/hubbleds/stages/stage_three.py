@@ -50,12 +50,6 @@ class StageState(CDSState):
     define_trend = CallbackProperty(False)
     
     age_calc_state = DictCallbackProperty({
-        'hint1_dialog': False,
-        'hint2_dialog': False,
-        'hint3_dialog': False,
-        'best_guess': '',
-        'low_guess': '',
-        'high_guess': '',
         'short_one': '',
         'short_two': '',
         'short_other': ''
@@ -313,10 +307,10 @@ class StageThree(HubbleStage):
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)   
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False         
         if advancing and new == "hyp_gal1":
-            self.story_state.has_best_fit_galaxy = True
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False  
-            layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
+            self.story_state.has_best_fit_galaxy = True
+            layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
         if advancing and new =="age_rac1":
             self._update_hypgal_info()
 

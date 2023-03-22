@@ -2,12 +2,10 @@
 <template>
   <scaffold-alert
     title-text="Which Might Produce a Closer Result?"
-    @back="
-      state.marker = 'two_his2';
-    "
-    @next="
-      state.marker = 'lac_bia2';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
+    :can-advance="(state) => state.lack_bias_response"
+    :state="state"
   >
     <div
       class="mb-4"
