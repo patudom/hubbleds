@@ -16,8 +16,9 @@
       <v-spacer></v-spacer>
       <speech-synthesizer
         :root="$el"
+        :speak-flag="state.stage_index == 0"
         :autospeak-on-change="step"
-        :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
+        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text.black--text', 'h3', 'p']"
       />
     </v-toolbar>
 
@@ -792,7 +793,7 @@
 
 <script>
 module.exports = {
-  props: ["continueText","target"],
+  props: ["continueText","target", "state"],
   methods: {
     startTimer(number) {
       setTimeout(() => {
