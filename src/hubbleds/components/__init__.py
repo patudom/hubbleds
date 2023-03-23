@@ -10,4 +10,4 @@ from .hubble_exp_universe_slideshow import HubbleExpUniverseSlideshow
 # from .stage_two_complete import StageTwoComplete
 
 from .spectrum_measurement_tutorial_sequence import SpectrumMeasurementTutorialSequence
-from .dot_plot_explainer import DotPlotExplainer
+

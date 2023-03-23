@@ -12,7 +12,8 @@
           others who have completed this Data Story).
         </p>
         <p>
-          Click ? to learn more about how to interpret this kind of graph.
+          Click here to learn more about how to interpret this kind of graph.
+          <dot-plot-explainer-tut/> 
         </p>
       </v-window-item>
     

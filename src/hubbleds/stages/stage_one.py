@@ -18,7 +18,7 @@ from glue.core.message import NumericalDataChangedMessage
 from numpy import isin
 from traitlets import Bool, default, validate
 
-from ..components import SpectrumSlideshow, SelectionTool, SpectrumMeasurementTutorialSequence, DotPlotExplainer
+from ..components import SpectrumSlideshow, SelectionTool, SpectrumMeasurementTutorialSequence
 from ..data.styles import load_style
 from ..data_management import SDSS_DATA_LABEL, EXAMPLE_GALAXY_SEED_DATA, SPECTRUM_DATA_LABEL, \
     STUDENT_MEASUREMENTS_LABEL, EXAMPLE_GALAXY_DATA, EXAMPLE_GALAXY_MEASUREMENTS, EXAMPLE_GALAXY_STUDENT_DATA

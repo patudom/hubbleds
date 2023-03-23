@@ -45,9 +45,6 @@
       <!-- Put the viewers in here -->
       <v-col  class="viewers-frame" cols="8">
         <v-row>
-          <dot-plot-explainer-tut/>
-        </v-row>
-        <v-row>
           <v-card v-if="this.show_dotplot" width="90%">
           <jupyter-widget :widget="dotplot_viewer_widget"/>
           </v-card>

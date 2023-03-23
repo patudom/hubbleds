@@ -1,5 +1,15 @@
 <template>
-  <v-card>
+  <v-row>
+  <v-btn
+    block
+    color="deep-orange darken-2"
+    @click="show = !show"
+
+  >
+    What is a Histogram? {{ show }}
+  </v-btn>
+
+  <v-card v-show="show">
     <v-card-text>
       <v-window v-model="step">
         <v-window-item class="window-item-style">
@@ -38,6 +48,7 @@
       </v-btn>
     </v-card-actions>
   </v-card>
+  </v-row>
 </template>
 
 
@@ -55,6 +66,7 @@ module.exports = {
     return {
       step: 0,
       length: 5,
+      show: false,
     }
   },
 
@@ -63,7 +75,7 @@ module.exports = {
   methods: {
     next() {
       this.step = this.step === this.length - 1
-        ? pass
+        ? this.step + 0
         : this.step + 1
     },
     prev() {
@@ -76,6 +88,9 @@ module.exports = {
   watch: {
     step(val) {
       this.$emit('step', val)
+    },
+    show(val) {
+      console.log('show', val)
     },
   },
 }
