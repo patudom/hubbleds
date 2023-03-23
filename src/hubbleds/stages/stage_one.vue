@@ -118,7 +118,7 @@
           :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
           :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
-          v-if="((stage_state.indices[stage_state.marker] < stage_state.indices['cho_row1'])  || (stage_state.indices[stage_state.marker] >= stage_state.indices['rep_rem1']) )"
+          v-if="stage_state.show_galaxy_table || ((stage_state.indices[stage_state.marker] < stage_state.indices['cho_row1'])  || (stage_state.indices[stage_state.marker] >= stage_state.indices['rep_rem1']) )"
         > 
           <jupyter-widget  :widget="widgets.galaxy_table"/>
         </v-card>
@@ -126,7 +126,7 @@
           :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
           :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
-          v-if="((stage_state.indices[stage_state.marker] >= stage_state.indices['cho_row1'])  && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']) )" 
+          v-if="stage_state.show_example_galaxy_table || ((stage_state.indices[stage_state.marker] >= stage_state.indices['cho_row1'])  && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']) )" 
         > 
           <jupyter-widget :widget="widgets.example_galaxy_table"/>
         </v-card>

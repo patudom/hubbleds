@@ -437,8 +437,9 @@ class StageOne(HubbleStage):
                 self.START_COORDINATES, fov=60 * u.deg, instant=True)
         
         if self.stage_state.marker_reached('sel_gal4'):
-            self.stage_state.show_galaxy_table = False
-            self.stage_state.show_example_galaxy_table = True
+            pass
+            # self.stage_state.show_galaxy_table = False
+            # self.stage_state.show_example_galaxy_table = True
         
         if self.stage_state.marker_reached("res_wav1"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:restwave", True)
@@ -504,9 +505,9 @@ class StageOne(HubbleStage):
             self.selection_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, instant=True)
         if advancing and new == 'sel_gal4':
-            print_log('showing example galaxy table')
-            self.stage_state.show_galaxy_table = False
-            self.stage_state.show_example_galaxy_table = True
+            print_log('commented out: showing example galaxy table')
+            # self.stage_state.show_galaxy_table = False
+            # self.stage_state.show_example_galaxy_table = True
         if advancing and new == "osm_tut":
             print_log("showing osm tutorial")
             self.stage_state.show_meas_tutorial = True
@@ -616,7 +617,6 @@ class StageOne(HubbleStage):
             self.START_COORDINATES, instant=True)
         self.stage_state.marker = "sel_gal3"
 
-    
     @print_function_name
     def update_spectrum_viewer(self, name, z, table):
         specview = self.get_viewer("spectrum_viewer")
@@ -636,7 +636,7 @@ class StageOne(HubbleStage):
         index = table.index
         measurements = table.glue_data
         measwave = measurements["measwave"][index]
-        
+
         sdss = self.get_data(SDSS_DATA_LABEL)
         sdss_index = next(
             (i for i in range(sdss.size) if sdss["name"][i] == name), None)
@@ -651,7 +651,6 @@ class StageOne(HubbleStage):
             self.stage_state.element = element
         else:
             element = measurements["element"][index]
-
             specview.update(name, element, z, previous=measwave)
             restwave = MG_REST_LAMBDA if element == 'Mg-I' else H_ALPHA_REST_LAMBDA
             self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, "element",
@@ -671,8 +670,8 @@ class StageOne(HubbleStage):
 
     @print_function_name
     def table_selected_change(self, change):
-        # if change["new"] == change["old"]:
-        #     return
+        if change["new"] == change["old"]:
+            return
         table = change['owner']
         index = table.index
         if index is None:
