@@ -166,8 +166,8 @@
             <v-card
                 class="JaxEquation past_block pa-3"
             >
-              $$ v = c \times \left( \frac{\textcolor{black}{\colorbox{#9E9E9E}{ {{ state.lambda_obs }} }} \text{
-              &#8491;}}{\textcolor{black}{\colorbox{#9E9E9E}{ {{ state.lambda_rest }} }} \text{ &#8491;}} - 1 \right) $$
+              $$ v = c \times \left( \frac{\textcolor{black}{\colorbox{#DDD}{ {{ state.lambda_obs }} }} \text{
+              &#8491;}}{\textcolor{black}{\colorbox{#DDD}{ {{ state.lambda_rest }} }} \text{ &#8491;}} - 1 \right) $$
             </v-card>
             <p>
               Dividing the fraction gives you <strong>{{ (state.lambda_obs / state.lambda_rest).toFixed(4) }}</strong>.
@@ -283,10 +283,10 @@
             <v-card
                 class="JaxEquation past_block pa-3"
             >
-              $$ v = c \times \left( \frac{\textcolor{black}{\colorbox{#9E9E9E}{ {{ state.lambda_obs }} }} \text{
-              &#8491;}}{\textcolor{black}{\colorbox{#9E9E9E}{ {{ state.lambda_rest }} }} \text{ &#8491;}} - 1 \right) $$
+              $$ v = c \times \left( \frac{\textcolor{black}{\colorbox{#DDD}{ {{ state.lambda_obs }} }} \text{
+              &#8491;}}{\textcolor{black}{\colorbox{#DDD}{ {{ state.lambda_rest }} }} \text{ &#8491;}} - 1 \right) $$
 
-              $$ v = c \times \left( \textcolor{black}{\colorbox{#9E9E9E}{
+              $$ v = c \times \left( \textcolor{black}{\colorbox{#DDD}{
               {{ (state.lambda_obs / state.lambda_rest).toFixed(4) }} } } - 1 \right) $$
             </v-card>
             <p>
@@ -309,7 +309,6 @@
             <v-divider role="presentation"></v-divider>
             <v-card
                 class="legend mt-8"
-                outlined
             >
               <v-container>
                 <v-row
@@ -674,18 +673,18 @@
             <v-card
                 class="JaxEquation past_block pa-3"
             >
-              $$ v = c \times \left( \frac{\textcolor{black}{\colorbox{#9E9E9E}{ {{ state.lambda_obs }} }} \text{
-              &#8491;}}{\textcolor{black}{\colorbox{#9E9E9E}{ {{ state.lambda_rest }} }} \text{ &#8491;}} - 1 \right) $$
+              $$ v = c \times \left( \frac{\textcolor{black}{\colorbox{#DDD}{ {{ state.lambda_obs }} }} \text{
+              &#8491;}}{\textcolor{black}{\colorbox{#DDD}{ {{ state.lambda_rest }} }} \text{ &#8491;}} - 1 \right) $$
 
-              $$ v = c \times \left( \textcolor{black}{\colorbox{#9E9E9E}{
+              $$ v = c \times \left( \textcolor{black}{\colorbox{#DDD}{
               {{ (state.lambda_obs / state.lambda_rest).toFixed(4) }} } } - 1 \right) $$
 
-              $$ v = c \times \textcolor{black}{\colorbox{#9E9E9E}{
+              $$ v = c \times \textcolor{black}{\colorbox{#DDD}{
               {{ (state.lambda_obs / state.lambda_rest - 1).toFixed(4) }} } } $$
 
-              $$ v = \textcolor{black}{\colorbox{#9E9E9E}{ {{ state.doppler_calc_state.studentc.toLocaleString() }} } }
+              $$ v = \textcolor{black}{\colorbox{#DDD}{ {{ state.doppler_calc_state.studentc.toLocaleString() }} } }
               \text{ km/s} \times
-              \textcolor{black}{\colorbox{#9E9E9E}{ {{ (state.lambda_obs / state.lambda_rest - 1).toFixed(4) }} } } $$
+              \textcolor{black}{\colorbox{#DDD}{ {{ (state.lambda_obs / state.lambda_rest - 1).toFixed(4) }} } } $$
             </v-card>
             <p>
               Great work. Your galaxy's velocity is <strong>{{ state.student_vel.toFixed(0).toLocaleString() }}</strong>
