@@ -616,41 +616,9 @@ class StageOne(HubbleStage):
             self.START_COORDINATES, instant=True)
         self.stage_state.marker = "sel_gal3"
 
-    @print_function_name
-    def update_spectrum_viewer(self, name, z):
-        specview = self.get_viewer("spectrum_viewer")
-        specview.toolbar.active_tool = None
-        filename = name
-        spec_name = filename.split(".")[0]
-        data = self.get_data(spec_name)
-        self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
-        if len(specview.layers) == 0:
-            spec_data = self.get_data(SPECTRUM_DATA_LABEL)
-            specview.add_data(spec_data)
-            specview.figure.axes[0].label = "Wavelength (Angstroms)"
-            specview.figure.axes[1].label = "Brightness"
-        specview.state.reset_limits()
-        self.stage_state.waveline_set = False
-
-        index = self.get_widget("galaxy_table").index
-        student_measurements = self.get_data("student_measurements")
-        measwave = student_measurements["measwave"][index]
-
-        sdss = self.get_data(SDSS_DATA_LABEL)
-        sdss_index = next(
-            (i for i in range(sdss.size) if sdss["name"][i] == name), None)
-        if sdss_index is not None:
-            element = sdss['element'][sdss_index]
-            specview.update(name, element, z, previous=measwave)
-            restwave = MG_REST_LAMBDA if element == 'Mg-I' else H_ALPHA_REST_LAMBDA
-            self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "element",
-                                   element, index)
-            self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "restwave",
-                                   restwave, index)
-            self.stage_state.element = element
     
     @print_function_name
-    def update_spectrum_viewer_example_galaxy(self, name, z, table):
+    def update_spectrum_viewer(self, name, z, table):
         specview = self.get_viewer("spectrum_viewer")
         specview.toolbar.active_tool = None
         filename = name
@@ -702,43 +670,6 @@ class StageOne(HubbleStage):
         self.stage_state.doppler_calc_dialog = msg['new']
 
     @print_function_name
-    def galaxy_table_selected_change(self, change):
-        if change["new"] == change["old"]:
-            return
-
-        galaxy_table = change['owner']
-        index = galaxy_table.index
-        if index is None:
-            self._empty_spectrum_viewer()
-            return
-        data = galaxy_table.glue_data
-        galaxy = {x.label: data[x][index] for x in data.main_components}
-        name = galaxy["name"]
-        gal_type = galaxy["type"]
-        if name is None or gal_type is None:
-            return
-
-        self.selection_tool.current_galaxy = galaxy
-        self.stage_state.galaxy = galaxy
-
-        # Load the spectrum data, if necessary
-        filename = name
-        spec_data = self.story_state.load_spectrum_data(filename, gal_type)
-
-        z = galaxy["z"]
-        self.story_state.update_data(SPECTRUM_DATA_LABEL, spec_data)
-        self.update_spectrum_viewer(name, z)
-
-        if self.stage_state.marker == 'cho_row1':
-            self.stage_state.spec_viewer_reached = True
-            self.stage_state.marker = 'mee_spe1'
-
-        if self.stage_state.marker == 'dop_cal2':
-            self.stage_state.doppler_calc_reached = True
-            self.stage_state.marker = 'dop_cal4'
-
-
-    @print_function_name
     def table_selected_change(self, change):
         # if change["new"] == change["old"]:
         #     return
@@ -763,7 +694,7 @@ class StageOne(HubbleStage):
 
         z = galaxy["z"]
         self.story_state.update_data(SPECTRUM_DATA_LABEL, spec_data)
-        self.update_spectrum_viewer_example_galaxy(name, z,  table )
+        self.update_spectrum_viewer(name, z,  table )
 
         if self.stage_state.marker == 'cho_row1':
             self.stage_state.spec_viewer_reached = True
