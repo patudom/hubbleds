@@ -98,7 +98,7 @@
                   <v-col
                       cols="10"
                   >
-                    velocity of your galaxy, in km/s
+                    velocity of the galaxy, in km/s
                   </v-col>
                 </v-row>
                 <v-row
@@ -128,7 +128,7 @@
                   <v-col
                       cols="10"
                   >
-                    observed wavelength of spectral line in your galaxy
+                    observed wavelength of spectral line in the galaxy
                   </v-col>
                 </v-row>
                 <v-row
@@ -215,7 +215,7 @@
                   <v-col
                       cols="10"
                   >
-                    velocity of your galaxy, in km/s
+                    velocity of the galaxy, in km/s
                   </v-col>
                 </v-row>
                 <v-row
@@ -245,7 +245,7 @@
                   <v-col
                       cols="10"
                   >
-                    observed wavelength of spectral line in your galaxy
+                    observed wavelength of spectral line in the galaxy
                   </v-col>
                 </v-row>
                 <v-row
@@ -336,7 +336,7 @@
                   <v-col
                       cols="10"
                   >
-                    velocity of your galaxy, in km/s
+                    velocity of the galaxy, in km/s
                   </v-col>
                 </v-row>
                 <v-row
@@ -366,7 +366,7 @@
                   <v-col
                       cols="10"
                   >
-                    observed wavelength of spectral line in your galaxy
+                    observed wavelength of spectral line in the galaxy
                   </v-col>
                 </v-row>
                 <v-row
@@ -412,20 +412,20 @@
               <v-row>
                 <v-col>
                   <p class="mb-0">
-                    Reflect for a bit on what this means. How does the velocity of your galaxy relate to the speed of
+                    Reflect for a bit on what this means. How does the velocity of the galaxy relate to the speed of
                     light?
                   </p>
                   <mc-radiogroup
                       :correct-answers="[1]"
                       :feedbacks="[
-                      'Try again. The equation describes a relationship between your galaxy\’s velocity and the speed of light.',
-                      'Correct. The fraction is the ratio of the observed wavelength of my spectral line over the line’s rest wavelength minus 1. This will be the case for all of your galaxies.',
+                      'Try again. The equation describes a relationship between the galaxy\'s velocity and the speed of light.',
+                      'Correct. The fraction is the ratio of the observed wavelength of my spectral line over the line\'s rest wavelength minus 1. This will be the case for all of your galaxies.',
                       'Try again. You are multiplying the speed of light by a value that is smaller than 1.'
                     ]"
                       :radio-options="[
-                      'There is no relationship between my galaxy\’s velocity and the speed of light.',
-                      'My galaxy\’s velocity is a fraction of the speed of light. ',
-                      'My galaxy\’s velocity is greater than the speed of light.'
+                      'There is no relationship between the galaxy\’s velocity and the speed of light.',
+                      'The galaxy\’s velocity is a fraction of the speed of light. ',
+                      'The galaxy\’s velocity is greater than the speed of light.'
                     ]"
                       @select="(_state) => { if (_state.correct) { state.doppler_calc_state.maxStepCompleted5 = Math.max(state.doppler_calc_state.maxStepCompleted5, 3); } }"
                       score-tag="interpret-velocity"
@@ -463,7 +463,7 @@
                   <v-col
                       cols="10"
                   >
-                    velocity of your galaxy, in km/s
+                    velocity of the galaxy, in km/s
                   </v-col>
                 </v-row>
                 <v-row
@@ -493,7 +493,7 @@
                   <v-col
                       cols="10"
                   >
-                    observed wavelength of spectral line in your galaxy
+                    observed wavelength of spectral line in the galaxy
                   </v-col>
                 </v-row>
                 <v-row
@@ -543,7 +543,7 @@
               <div
                   class="font-weight-medium mt-3"
               >
-                Click <strong>CALCULATE</strong> to multiply through and obtain the speed of your galaxy.
+                Click <strong>CALCULATE</strong> to multiply through and obtain the speed of this galaxy.
               </div>
               <v-alert
                   v-if="state.doppler_calc_state.failedValidation5"
@@ -585,7 +585,7 @@
                   <v-col
                       cols="10"
                   >
-                    velocity of your galaxy, in km/s
+                    velocity of the galaxy, in km/s
                   </v-col>
                 </v-row>
                 <v-row
@@ -637,7 +637,7 @@
                   <v-col
                       cols="10"
                   >
-                    observed wavelength of spectral line in your galaxy
+                    observed wavelength of spectral line in the galaxy
                   </v-col>
                 </v-row>
                 <v-row
@@ -701,8 +701,7 @@
               <div
                   class="font-weight-medium mt-3"
               >
-                Click <strong>DONE</strong> to close this pop-up window. Your velocity will fill into your table for
-                this galaxy.
+                Click <strong>DONE</strong> to close this pop-up window. The velocity will be filled in in the table for this galaxy.
               </div>
             </v-card>
             <v-divider role="presentation"></v-divider>
@@ -734,7 +733,7 @@
                   <v-col
                       cols="10"
                   >
-                    velocity of your galaxy, in km/s
+                    velocity of the galaxy, in km/s
                   </v-col>
                 </v-row>
                 <v-row
@@ -764,7 +763,7 @@
                   <v-col
                       cols="10"
                   >
-                    observed wavelength of spectral line in your galaxy
+                    observed wavelength of spectral line in the galaxy
                   </v-col>
                 </v-row>
                 <v-row

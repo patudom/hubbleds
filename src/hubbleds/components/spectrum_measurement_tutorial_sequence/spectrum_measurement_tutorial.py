@@ -11,13 +11,15 @@ from bqplot import Label
 from bqplot.marks import Lines
 from cosmicds.utils import vertical_line_mark
 
+from glue_jupyter.bqplot.histogram.layer_artist import BqplotHistogramLayerArtist
+from glue_jupyter.bqplot.scatter.layer_artist import BqplotScatterLayerArtist
 # theme_colors()
 
 class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate):
     template = load_template("./spectrum_measurement_tutorial.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
     length = Int(19).tag(sync=True)
-    dialog = Bool(False).tag(sync=True)
+    dialog = Bool(True).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
     maxStepCompleted = Int(0).tag(sync=True)
     spectrum_viewer_widget = Instance(DOMWidget).tag(sync=True, **widget_serialization)
@@ -40,6 +42,10 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate):
         self.example_galaxy_table = viewer_layouts[2]
         self.dotplot_viewer = self.dotplot_viewer_widget.viewer
         self.spectrum_viewer = self.spectrum_viewer_widget.viewer
+        self.first_meas_plotted = False
+        self.second_meas_plotted = False
+        self.first_meas_line = None
+        self.second_meas_line = None
         
         self.element = self.spectrum_viewer.element 
         # Both in angstroms
@@ -67,13 +73,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate):
         for val in ['x_min','x_max']:
             add_callback(self.dotplot_viewer.state, val ,self.redraw_dotplot_limits)
         
-        data = self.example_galaxy_table._glue_data.to_dataframe()
-        data = data[data['measurement_number'] == 'first']
-        vel = data['velocity'].values[0]
-        if (vel == 0) or (vel is None):
-            vel = 10000
-        first_meas = vertical_line_mark(self.dotplot_viewer.layers[0], vel, '#ff0000','first measurment')
-        self.dotplot_viewer.figure.marks = self.dotplot_viewer.figure.marks + [first_meas]
+        
 
         
     def vue_reset_spectrum_viewer_limits(self, data = None):
@@ -89,15 +89,45 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate):
         # self.spectrum_viewer.state.x_min = self.spectrum_viewer_axis_limits[0]
         # self.spectrum_viewer.state.x_max = self.spectrum_viewer_axis_limits[1]
         # self.spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
-        print('resetting limits')
         self.spectrum_viewer.state.reset_limits()
+        
+    def vue_add_first_measurement(self, change = None):
+        if not self.first_meas_plotted:
+            data = self.example_galaxy_table._glue_data.to_dataframe()
+            data = data[data['measurement_number'] == 'first']
+            vel = data['velocity'].values[0]
+            if (vel == 0) or (vel is None):
+                vel = 20_000
+            self.first_meas_line = self.vertical_line_mark(self.dotplot_viewer, vel, '#ff0000','first measurment')
+            
+            self.dotplot_viewer.figure.marks = self.dotplot_viewer.figure.marks + [self.first_meas_line]
+            
+            self.first_meas_plotted = True
+        
+    def vue_add_second_measurement(self, change = None):
+        if not self.second_meas_plotted:
+            data = self.example_galaxy_table._glue_data.to_dataframe()
+            data = data[data['measurement_number'] == 'second']
+            try:
+                vel = data['velocity'].values[0]
+            except KeyError:
+                vel = 30_000
+            if (vel == 0) or (vel is None):
+                vel = 10_000
+            self.second_meas_line = self.vertical_line_mark(self.dotplot_viewer, vel, '#00ff00','second measurment')
+            
+            self.dotplot_viewer.figure.marks = self.dotplot_viewer.figure.marks + [self.second_meas_line]
+            self.second_meas_plotted = True
     
-    def redraw_dotplot_limits(self, change): 
-        
-        
+    def redraw_dotplot_limits(self, change = None): 
         with delay_callback(self.dotplot_viewer.state, 'hist_x_min', 'hist_x_max'):
             self.dotplot_viewer.state.hist_x_min = self.dotplot_viewer.state.x_min
             self.dotplot_viewer.state.hist_x_max = self.dotplot_viewer.state.x_max
+            
+            if self.first_meas_plotted:
+                self.dotplot_viewer.figure.marks = self.dotplot_viewer.figure.marks + [self.first_meas_line]
+            if self.second_meas_plotted:
+                self.dotplot_viewer.figure.marks = self.dotplot_viewer.figure.marks + [self.second_meas_line]
     
     def frange(start, stop, step):
         i = start
@@ -118,3 +148,22 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate):
             self.spectrum_viewer.toolbar.set_tool_enabled("bqplot:home",True)
             self.spectrum_viewer.toolba.set_tool_enabled("hubble:restwave",True)
             self.spectrum_viewer.toolba.set_tool_enabled("hubble:wavezoom",True)
+            
+    def vertical_line_mark(self,viewer, x, color, label=None):
+        scales = {'x': viewer.figure.scale_x, 'y': viewer.figure.scale_y}
+        ymin, ymax = scales['y'].min, scales['y'].max
+        
+        print(f'Add new veritcal line with x = {x} and color = {color} and (ymin,ymax) = ({ymin},{ymax})')
+        return Lines(x=[x,x], y=[ymin, ymax], scales=scales, colors=[color], labels=[label])
+    
+    def vue_show_all_layers(self, data = None):
+        for layer in self.dotplot_viewer.layers:
+            layer.visible = True
+    
+    def vue_toggle_first_measurement(self, data = None):
+        self.dotplot_viewer.layers[1].visible = not  self.dotplot_viewer.layers[1].visible
+        self.redraw_dotplot_limits()
+    
+    def vue_toggle_second_measurement(self, data = None):
+        self.dotplot_viewer.layers[2].visible = not self.dotplot_viewer.layers[2].visible
+        self.redraw_dotplot_limits()

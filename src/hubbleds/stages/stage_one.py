@@ -36,10 +36,14 @@ log = logging.getLogger()
 
 import inspect
 
+def print_log(*args, **kwargs):
+    if False:
+        print(*args, **kwargs)
+    return
 def print_function_name(func):
     def wrapper(*args, **kwargs):
-        # calling_function_name = inspect.stack()[1][3]
-        # print(f"Calling  {func.__name__} from {calling_function_name}")
+        calling_function_name = inspect.stack()[1][3]
+        print_log(f"Calling  {func.__name__} from {calling_function_name}")
         return func(*args, **kwargs)
     return wrapper
 
@@ -91,12 +95,11 @@ class StageState(CDSState):
     galaxy = DictCallbackProperty()
     reflection_complete = CallbackProperty(False)
     doppler_calc_reached = CallbackProperty(False)
-    doppler_calc_dialog = CallbackProperty(
-        True)  # Should the doppler calculation be displayed when marker == dop_cal5?
+    doppler_calc_dialog = CallbackProperty(True)  # Should the doppler calculation be displayed when marker == dop_cal5?
     student_vel = CallbackProperty(0)  # Value of student's calculated velocity
     doppler_calc_complete = CallbackProperty(False)  # Did student finish the doppler calculation?
-    show_galaxy_table = CallbackProperty(True)
-    show_example_galaxy_table = CallbackProperty(True)
+    show_galaxy_table = CallbackProperty(False)
+    show_example_galaxy_table = CallbackProperty(False)
     spectrum_clicked = CallbackProperty(False)
 
     markers = CallbackProperty([
@@ -112,9 +115,9 @@ class StageState(CDSState):
         'obs_wav1',
         'obs_wav2',
         'dop_cal0',
-        'dop_cal1',
+        # 'dop_cal1',
         'dop_cal2',
-        'dop_cal3',
+        # 'dop_cal3',
         'dop_cal4',
         'dop_cal5',
         'osm_tut',
@@ -139,7 +142,7 @@ class StageState(CDSState):
 
     table_highlights = ListCallbackProperty([
         'cho_row1',
-        'dop_cal3',
+        # 'dop_cal3',
         'dop_cal4',
         'dop_cal5',
         'dop_cal6',
@@ -241,8 +244,9 @@ class StageOne(HubbleStage):
         self._update_state_from_measurements()
         self.hub.subscribe(
             self, NumericalDataChangedMessage,
-            filter=lambda msg: msg.data.label == STUDENT_MEASUREMENTS_LABEL,
+            filter=lambda msg: ((msg.data.label == STUDENT_MEASUREMENTS_LABEL) | (msg.data.label == EXAMPLE_GALAXY_MEASUREMENTS)),
             handler=self._on_measurements_changed)
+        
 
         # Set up viewers
         spectrum_viewer = self.add_viewer(
@@ -254,19 +258,14 @@ class StageOne(HubbleStage):
         # Add new dotplot viewer with single galaxy seed data
         dotplot_viewer = self.add_viewer(
             HubbleHistogramView, label="dotplot_viewer")
-        # data_dir = str(Path(__file__).parent.parent / "data" )
-        # data_dir = join(data_dir, "")
-        # example_galaxy_data = load_data(data_dir + 'single_galaxy_seed_measurements.csv')
-        # self.data_collection.append(example_galaxy_data)
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
-        # first = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='first')
-        # second = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='second')
+        first = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='first')
+        second = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='second')
         dotplot_viewer.add_data(example_galaxy_data)
-        # dotplot_viewer.add_subset(first)
-        # dotplot_viewer.add_subset(second)
         dotplot_viewer.state.x_att = example_galaxy_data.id['velocity_value']
         dotplot_viewer.state.hist_n_bin = 75
-        # dotplot_viewer.state.viewer_height = 1000
+        dotplot_viewer.layers[0].visible = False # don't show all data
+        dotplot_viewer.layers[2].visible = False # don't show second measurement data
         dotplot_viewer.state.reset_limits()
         
         add_velocities_tool = dict(
@@ -306,8 +305,7 @@ class StageOne(HubbleStage):
             id="update-velocities",
             icon="mdi-run-fast",
             tooltip="Fill in velocities",
-            disabled=self.stage_state.marker_before(
-                'dop_cal6'),
+            disabled=False,
             activate=self.update_velocities)
         example_galaxy_table = Table(
             self.session,
@@ -333,8 +331,8 @@ class StageOne(HubbleStage):
             selected_color=self.table_selected_color(
                 self.app_state.dark_mode),
             use_subset_group=False,
-            single_select=True,)
-           # tools=[add_velocities_tool2])
+            single_select=True,
+           tools=[add_velocities_tool2])
         
         self.add_widget(example_galaxy_table, label="example_galaxy_table")
         example_galaxy_table.row_click_callback = lambda item, _data=None: self.on_table_row_click(item, _data, table=example_galaxy_table)
@@ -375,8 +373,8 @@ class StageOne(HubbleStage):
             # if x:
             #    raise Exception('break this')
         add_callback(self.stage_state, 'show_galaxy_table',break_this)
-        add_callback(self.stage_state, 'show_example_galaxy_table',lambda x: print('changed show_example_galaxy_table to', x))
-        add_callback(self.stage_state, 'show_meas_tutorial', lambda x: print('changed show_meas_tutorial to', x))
+        add_callback(self.stage_state, 'show_example_galaxy_table',lambda x: print_log('changed show_example_galaxy_table to', x))
+        add_callback(self.stage_state, 'show_meas_tutorial', lambda x: print_log('changed show_meas_tutorial to', x))
 
         # Callbacks
         def update_count(change):
@@ -430,7 +428,7 @@ class StageOne(HubbleStage):
         self.stage_state.spec_viewer_reached = self.stage_state.marker_reached(
             'cho_row1')
         self.stage_state.doppler_calc_reached = self.stage_state.marker_reached(
-            'dop_cal3')
+            'dop_cal2')
 
         # Initialize viewers to provide story state
         if self.stage_state.marker_reached('sel_gal1'):
@@ -461,10 +459,12 @@ class StageOne(HubbleStage):
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()        
-
+    
+    @print_function_name
     def _on_measurements_changed(self, msg):
         self._update_state_from_measurements_debounced()
-
+    
+    @print_function_name
     def _update_state_from_measurements(self):
         student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         self.stage_state.gals_total = int(student_measurements.size)
@@ -472,6 +472,10 @@ class StageOne(HubbleStage):
         self.stage_state.obswaves_total = measwaves[measwaves != None].size
         velocities = student_measurements["velocity"]
         self.stage_state.velocities_total = velocities[velocities != None].size
+        
+        example_measurements = self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)
+        measwaves = example_measurements["measwave"]
+        velocities = example_measurements["velocity"]
 
     @debounce(wait=2)
     def _update_state_from_measurements_debounced(self):
@@ -483,7 +487,7 @@ class StageOne(HubbleStage):
             return
         markers = self.stage_state.markers
         advancing = markers.index(new) > markers.index(old)
-        print(f"Marker changed from {old} to {new} and is {'not ' if not advancing else ''}advancing")
+        print_log(f"Marker changed from {old} to {new} and is {'not ' if not advancing else ''}advancing")
         if new in self.stage_state.step_markers and advancing:
             self.story_state.step_complete = True
             self.story_state.step_index = self.stage_state.step_markers.index(
@@ -500,20 +504,19 @@ class StageOne(HubbleStage):
             self.selection_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, instant=True)
         if advancing and new == 'sel_gal4':
-            print('showing example galaxy table')
+            print_log('showing example galaxy table')
             self.stage_state.show_galaxy_table = False
             self.stage_state.show_example_galaxy_table = True
         if advancing and new == "osm_tut":
-            print("showing osm tutorial")
+            print_log("showing osm tutorial")
             self.stage_state.show_meas_tutorial = True
-        if advancing and new == "cho_row1" and self.galaxy_table.index is not None:
+        if advancing and new == "cho_row1" and self.example_galaxy_table.index is not None:
             self.stage_state.spec_viewer_reached = True
             self.stage_state.marker = "mee_spe1"
-        if advancing and old == "dop_cal3" and self.galaxy_table.index is not None:
+        if advancing and old == "dop_cal2" and (self.example_galaxy_table.index is not None) :
             self.stage_state.doppler_calc_reached = True
             self.stage_state.marker = "dop_cal4"
         if advancing and old == "dop_cal2":
-            self.galaxy_table.selected = []
             self.selection_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, instant=True)
         if advancing and new == "res_wav1":
@@ -592,7 +595,8 @@ class StageOne(HubbleStage):
         for index in indices:
             galaxy = {c: data[c][index] for c in components}
             self.selection_tool.select_galaxy(galaxy)
-
+    
+    @print_function_name
     def complete_stage_one(self, msg):
         with delay_callback(self.story_state, 'stage_index'):
             self.story_state.step_complete = True
@@ -729,7 +733,7 @@ class StageOne(HubbleStage):
             self.stage_state.spec_viewer_reached = True
             self.stage_state.marker = 'mee_spe1'
 
-        if self.stage_state.marker == 'dop_cal3':
+        if self.stage_state.marker == 'dop_cal2':
             self.stage_state.doppler_calc_reached = True
             self.stage_state.marker = 'dop_cal4'
 
@@ -765,7 +769,7 @@ class StageOne(HubbleStage):
             self.stage_state.spec_viewer_reached = True
             self.stage_state.marker = 'mee_spe1'
 
-        if self.stage_state.marker == 'dop_cal3':
+        if self.stage_state.marker == 'dop_cal2':
             self.stage_state.doppler_calc_reached = True
             self.stage_state.marker = 'dop_cal4'
 
@@ -828,8 +832,8 @@ class StageOne(HubbleStage):
 
         new_value = round(event["domain"]["x"], 0)
         table = self.get_widget("example_galaxy_table")
-        index = table.index
-        data = table.glue_data
+        index = self.example_galaxy_table.index
+        data = self.example_galaxy_table.glue_data
         if data['name'][index] in self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)['name']:
             
             self.stage_state.waveline_set = True
@@ -838,6 +842,10 @@ class StageOne(HubbleStage):
             if index is not None:
                 self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, "measwave",
                                     new_value, index)
+                if self.stage_state.marker_reached('smt_tut'):
+                    velocity = velocity_from_wavelengths(new_value,data['restwave'][index])
+                    self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, "velocity",
+                                        velocity, index)
                 # self.story_state.update_student_data()
                 self.stage_state.spectrum_clicked = True
         else:
@@ -904,7 +912,8 @@ class StageOne(HubbleStage):
         super()._on_dark_mode_change(dark)
         self.update_spectrum_style(dark)
         self._update_viewer_style(dark)
-
+    
+    @print_function_name
     def _empty_spectrum_viewer(self):
         dc_name = SPECTRUM_DATA_LABEL
         spec_data = self.get_data(dc_name)
@@ -954,7 +963,7 @@ class StageOne(HubbleStage):
                 if lamb_rest is None or lamb_meas is None:
                     continue
                 velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
-                self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
+                self.update_data_value(data.label, "velocity",
                                        velocity, index)
         self.story_state.update_student_data()
 
@@ -971,3 +980,5 @@ class StageOne(HubbleStage):
             tool = self.galaxy_table.get_tool("update-velocities")
             tool["disabled"] = False
             self.galaxy_table.update_tool(tool)
+
+    

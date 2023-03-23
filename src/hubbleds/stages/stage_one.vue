@@ -114,12 +114,11 @@
         lg="8"
         class="galtable_column"
       >
-      <p style="font-weight: bold; background-color: red;"> {{ stage_state.marker }} {{ stage_state.show_galaxy_table }} {{ stage_state.show_example_galaxy_table }} </p>
         <v-card
           :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
           :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
-          v-if="stage_state.show_galaxy_table"
+          v-if="((stage_state.indices[stage_state.marker] < stage_state.indices['cho_row1'])  || (stage_state.indices[stage_state.marker] >= stage_state.indices['rep_rem1']) )"
         > 
           <jupyter-widget  :widget="widgets.galaxy_table"/>
         </v-card>
@@ -127,13 +126,14 @@
           :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
           :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
-          v-if="stage_state.show_example_galaxy_table" 
+          v-if="((stage_state.indices[stage_state.marker] >= stage_state.indices['cho_row1'])  && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']) )" 
         > 
           <jupyter-widget :widget="widgets.example_galaxy_table"/>
         </v-card>
         <c-spectrum-measurement-tutorial
-          v-if="stage_state.show_meas_tutorial || stage_state.marker === 'smt_tut'"
+          v-if="stage_state.show_meas_tutorial || (stage_state.marker === 'smt_tut')"
           :state="stage_state"
+          @close="() => { return; }"
           />
       </v-col>
     </v-row>

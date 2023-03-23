@@ -13,10 +13,10 @@
       color="primary"
       v-bind="attrs"
       v-on="on"
-      @click.stop="() => { dialog = state.marker === 'smt_tut'; opened = true; this.toggle_tools() }"
+      @click.stop="() => { dialog = true; opened = true;}"
     >
     <v-spacer></v-spacer>
-      Open Tutorial
+      Compare Velocities
     <v-spacer></v-spacer>
     </v-btn>
   </template>
@@ -39,8 +39,7 @@
         <guidelines-spectrum-measurement-tutorial
         @step="(val) => {this.step = val}"
         :toStep="this.step"
-        :showControls="false"
-        :state="state"
+        :showControls="true"
         />
       </v-col>
       <!-- Put the viewers in here -->
@@ -66,7 +65,7 @@
       </v-col>
     </v-row>
     <v-card-actions>
-      <v-btn text @click="() => { state.marker = 'rep_rem1'; dialog = false;  reset_spectrum_viewer_limits()}">
+      <v-btn text @click="() =>  { $emit('close'); dialog = false; step = 0; opened = true;  reset_spectrum_viewer_limits() }">
           <span> Finish tutorial </span>
         </v-btn>
     </v-card-actions>
@@ -118,7 +117,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); dialog = false; step = 0; opened = true; state.marker = 'rep_rem1' ;  reset_spectrum_viewer_limits() }"
+          @click="() => { $emit('close'); dialog = false; step = 0; opened = true;  reset_spectrum_viewer_limits() }"
         >
           Done
         </v-btn>
@@ -168,16 +167,24 @@ module.exports = {
   watch: {
     step (val) {
       this.$emit('step', val)
+      console.log('spectrum measurement tutorial step: ' + val)
 
       if (val > 0) {
         this.show_dotplot = true;
         this.show_specviewer = true;
         this.show_table = true;
       }
-    },
-    dialog(val) {
-      if (val) {
-       this.toggle_tools();
+      
+      if (val === 1) {
+        console.log("Adding first measurement")
+        this.add_first_measurement()
+        
+      }
+
+      if (val == 2) {
+        console.log("Adding second measurement")
+        this.add_second_measurement()
+        this.toggle_second_measurement()
       }
     },
   },

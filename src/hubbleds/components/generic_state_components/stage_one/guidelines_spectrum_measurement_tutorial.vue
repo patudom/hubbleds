@@ -37,8 +37,8 @@
             'Typically, the <i>wisdom of crowds</i> would tell you that the true value is in the tower.'
             ]" 
           :correct-answers="[0]"
-          :selected-callback="(state) => { if (state.correct) { this.maxStepCompleted = Math.max(this.maxStepCompleted, 1); } }"
-          score-tag="race-age">
+          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          score-tag="spec_meas_tut1">
         </mc-radiogroup>
       </v-window-item>
     
@@ -107,7 +107,16 @@
             'Very confident',
             'Somewhat confident',
             'Not confident at all'
-            ]">
+            ]"
+            :feedbacks="[
+            'Intersting! As we proceed through this section, we will see if this confidence is justified.',
+            'Intersting! As we proceed through this section, we will see how we build confidence',
+            'Intersting! Perhaps by the end of this section we will arrive at a more confident answer.'
+            ]" 
+          :neutral-answers="[0,1,2]"
+          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          score-tag="spec_meas_tut2">
+            >
           </mc-radiogroup>
         </p>
       </v-window-item>
@@ -117,7 +126,7 @@
           Now that we know our measured value should be in the tower, we can look more closely at the values around the
           tower and exclude the outliers outside the tower.
         </p>
-        <p> use the zoom tool </p>
+        <p> Use the zoom <v-icon>mdi-select-search</v-icon> tool </p>
       </v-window-item>
     
       <v-window-item :value="11" class="window-item-style">
@@ -192,7 +201,13 @@
             'Very confident',
             'Somewhat confident',
             'Not confident at all'
-            ]">
+            ]"
+            :feedbacks="['Great!','Intersting!','Interesting']" 
+          :neutral-answers="[0,1,2]"
+          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          score-tag="spec_meas_tut3">
+            >
+            >
           </mc-radiogroup>
         </p>
       </v-window-item>
@@ -241,7 +256,7 @@
 <script>
 module.exports = {
 
-  props: ['state', 'toStep', 'showControls'],
+  props: ['toStep', 'showControls'],
 
   data: () => {
     return {

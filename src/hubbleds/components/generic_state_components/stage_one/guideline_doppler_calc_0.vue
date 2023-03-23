@@ -8,7 +8,7 @@
       class="mb-4"
     >
       <p>
-        Now, you will use the observed wavelength of the H-alpha spectral line to determine the galaxy's velocity, using the <strong>Doppler Equation</strong>.
+        Now, you will use the observed wavelength of the H-&alpha; spectral line to determine the galaxy's velocity, using the <strong>Doppler Equation</strong>.
 
       </p>
     </div>
