@@ -26,5 +26,6 @@ class DotPlotExplainer(v.VuetifyTemplate):
         print('DotPlotExplainer init')
         
         super().__init__(*args, **kwargs)
-        
-        
+    
+
+ 
