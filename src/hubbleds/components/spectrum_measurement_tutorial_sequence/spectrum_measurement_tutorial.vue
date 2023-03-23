@@ -147,14 +147,14 @@
 module.exports = {
 
   props: ['state'],
-  
+
   methods: {
-    next () {
+    next() {
       this.step = this.step === this.length - 1
         ? pass
         : this.step + 1
     },
-    prev () {
+    prev() {
       this.step = this.step - 1 < 0
         ? this.length - 1
         : this.step - 1
@@ -162,29 +162,35 @@ module.exports = {
   },
 
   watch: {
-    step (val) {
+    step(val) {
       this.$emit('step', val)
       console.log('spectrum measurement tutorial step: ' + val)
 
-      if (val > 0) {
+      if (val == 0) {
+        // doesn't get run
         this.show_dotplot = true;
-        this.show_specviewer = true;
-        this.show_table = true;
+
       }
-      
+
       if (val === 1) {
         console.log("Adding first measurement")
         this.add_first_measurement()
-        
+        this.set_x_axis_limits({ xmin: 0, xmax: 30000 })
       }
 
-      if (val == 2) {
+      if (val == 3) {
+        this.show_specviewer = true;
+      }
+
+      if (val == 18) {
         console.log("Adding second measurement")
         this.add_second_measurement()
         this.toggle_second_measurement()
+        this.show_table = true
       }
+
     },
-  },
+  }
 }
 </script>
 

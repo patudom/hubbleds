@@ -25,9 +25,9 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate):
     spectrum_viewer_widget = Instance(DOMWidget).tag(sync=True, **widget_serialization)
     dotplot_viewer_widget = Instance(DOMWidget).tag(sync=True, **widget_serialization)
     example_galaxy_table = Instance(DOMWidget).tag(sync=True, **widget_serialization)
-    show_specviewer = Bool(True).tag(sync=True)
+    show_specviewer = Bool(False).tag(sync=True)
     show_dotplot = Bool(True).tag(sync=True)
-    show_table = Bool(True).tag(sync=True)
+    show_table = Bool(False).tag(sync=True)
 
     _titles = [
         "Measurement Tutorial",
@@ -72,6 +72,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate):
         
         for val in ['x_min','x_max']:
             add_callback(self.dotplot_viewer.state, val ,self.redraw_dotplot_limits)
+            add_callback(self.spectrum_viewer.state, val ,self.redraw_dotplot_limits)
         
         
 
@@ -166,4 +167,9 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate):
     
     def vue_toggle_second_measurement(self, data = None):
         self.dotplot_viewer.layers[2].visible = not self.dotplot_viewer.layers[2].visible
+        self.redraw_dotplot_limits()
+
+    def vue_set_x_axis_limits(self, data = None):
+        self.dotplot_viewer.state.x_min = data['xmin']
+        self.dotplot_viewer.state.x_max = data['xmax']
         self.redraw_dotplot_limits()

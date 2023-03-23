@@ -340,6 +340,7 @@ class StageOne(HubbleStage):
             self.table_selected_change, names=["selected"])
         # add the row for the second measurement
         self.add_new_measurement(EXAMPLE_GALAXY_MEASUREMENTS)
+        self.initialize_spectrum_data(EXAMPLE_GALAXY_MEASUREMENTS)
         
         # Set up components
         sdss_data = self.get_data(SDSS_DATA_LABEL)
@@ -673,6 +674,9 @@ class StageOne(HubbleStage):
         if change["new"] == change["old"]:
             return
         table = change['owner']
+        if table.glue_data.size == 0:
+            self._empty_spectrum_viewer()
+            return
         index = table.index
         if index is None:
             self._empty_spectrum_viewer()
@@ -739,8 +743,10 @@ class StageOne(HubbleStage):
             return
 
         new_value = round(event["domain"]["x"], 0)
-        index = self.galaxy_table.index
         data = self.galaxy_table.glue_data
+        if data.size == 0:
+            return 
+        index = self.galaxy_table.index
         if not (data['name'][index] in self.get_data(STUDENT_MEASUREMENTS_LABEL)['name']):
             return None
 
@@ -911,4 +917,11 @@ class StageOne(HubbleStage):
             tool["disabled"] = False
             self.galaxy_table.update_tool(tool)
 
-    
+    @print_function_name
+    def initialize_spectrum_data(self, label):
+        data = self.get_data(label)
+        name = data[data.id['name']][0]
+        type = data[data.id['type']][0]
+        self.story_state.load_spectrum_data(name, type)
+        data = self.get_data(name.split(".")[0])
+        self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
