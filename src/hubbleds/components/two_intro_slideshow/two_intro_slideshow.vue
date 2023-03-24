@@ -14,8 +14,8 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <speech-synthesizer
+        ref="synth"
         :root="$el"
-        :speak-flag="state.stage_index == 2"
         :autospeak-on-change="step"
         :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text.black--text', 'h3', 'p']"
       />
@@ -808,6 +808,7 @@
         @click="() => {
           two_intro_complete = true;
           step = 0;
+          this.$refs.synth.stopSpeaking();
         }"
       >
         get started
@@ -822,6 +823,7 @@
         @click="() => {
           two_intro_complete = true;
           step = 0;
+          this.$refs.synth.stopSpeaking();
         }"
       >
         get started
@@ -832,7 +834,7 @@
 
 <script>
 module.exports = {
-  props: ["buttonText", "titleText", "closeText", "state"],
+  props: ["buttonText", "titleText", "closeText"],
 
   mounted() {
     console.log(this);
