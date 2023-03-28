@@ -207,15 +207,7 @@ module.exports = {
         this.zoom_tool_enabled = true;
         
       }
-      if (val == 5) { 
-        console.log("Adding second measurement")
-        this.selector_lines_off()
-        this.prep_second_measurement() // filter table to only show second measurement
-        
-        this.show_second_measurment = true // show dotplot 2
-        this.toggle_second_measurement() // make second measurement visible on dotplot 2
-
-      }
+      if (val == 5) {  }
       if (val == 6) { }
       if (val == 7) { }
       if (val == 8) { }
@@ -228,7 +220,15 @@ module.exports = {
       if (val == 15) { }
       if (val == 16) { }
       if (val == 17) { }
-      if (val == 18) {      }
+      if (val == 18) {   
+        console.log("Adding second measurement")
+        this.selector_lines_off()
+        this.prep_second_measurement() // filter table to only show second measurement
+        
+        this.show_second_measurment = true // show dotplot 2
+        this.toggle_second_measurement() // make second measurement visible on dotplot 2
+
+         }
       if (val == 19) { }
 
     },
