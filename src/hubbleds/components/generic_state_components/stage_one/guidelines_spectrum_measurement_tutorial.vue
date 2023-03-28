@@ -224,23 +224,53 @@
           Notice that the velocity in your table adjusts as you update your wavelength measurement.
         </p>
       </v-window-item>
-      
-      
-
-      <v-window-item :value="19" class="window-item-style">
-        <p>
-        </p>
-      </v-window-item>
 
       
       </v-window>
     </v-card-text>
       <v-card-actions v-if="showControls" class="justify-space-between">
-        <v-btn text @click="prev">
+        <!-- <v-btn text @click="prev">
           <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
-        <v-btn text @click="next">
+        </v-btn >
+        <v-btn v-if="step < length-1" text @click="next">
           <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+        <v-btn
+          v-if = "step == length-1"
+          color="accent"
+          class="black--text"
+          depressed
+          @click="() => { $emit('close'); dialog = false; step = 0; opened = true;  reset_spectrum_viewer_limits() }"
+        >
+          Done
+        </v-btn> -->
+        <v-btn
+          :disabled="step === 0"
+          class="black--text"
+          color="accent"
+          depressed
+          @click="prev"
+        >
+          Back
+        </v-btn>
+        <v-spacer></v-spacer>
+          <v-btn
+          v-if="step < length-1"
+          color="accent"
+          class="black--text"
+          depressed
+          @click="() => { step++; }"
+        >
+          {{ step < length-1 ? 'next' : '' }}
+        </v-btn>
+        <v-btn
+          v-if = "step == length-1"
+          color="accent"
+          class="black--text"
+          depressed
+          @click="() => { $emit('close'); dialog = false; step = 0; opened = true;  reset_spectrum_viewer_limits() }"
+        >
+          Done
         </v-btn>
     </v-card-actions>
 </v-card>
@@ -262,7 +292,7 @@ module.exports = {
   data: () => {
     return {
       step: 0,
-      length: 20,
+      length: 19,
       toStep: 0,
       showControls: false
     }
@@ -271,7 +301,7 @@ module.exports = {
   methods: {
     next () {
       this.step = this.step === this.length - 1
-        ? pass
+        ? this.length - 1
         : this.step + 1
     },
     prev () {
