@@ -294,7 +294,7 @@ class HubblesLaw(Story):
         #     # example_galaxy_class_data.add_component(class_data_comp, col)
         
         # example_galaxy_measurements.append(empty_record)
-        self.data_collection.append(example_galaxy_student_data)
+        # self.data_collection.append(example_galaxy_student_data)
         self.data_collection.append(example_galaxy_measurements)
 
         self.app.add_link(example_galaxy_seed_data, 'student_id', example_galaxy_measurements, 'student_id')

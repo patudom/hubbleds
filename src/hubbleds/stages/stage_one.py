@@ -947,10 +947,12 @@ class StageOne(HubbleStage):
                     lamb_rest = data["restwave"][index]
                     lamb_meas = data["measwave"][index]
                     if lamb_rest is None or lamb_meas is None:
+                        print('passing')
                         continue
                     velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
                     self.update_data_value(data.label, "velocity",
                                         velocity, index)
+                    print('update vel')
             self.story_state.update_student_data()
 
             if tool is not None:
