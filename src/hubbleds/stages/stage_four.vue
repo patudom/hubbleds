@@ -16,7 +16,7 @@
           color="error"
           class="black--text"
           @click="() => {
-            stage_state.marker = 'con_int1';
+            stage_state.marker = 'con_int2c';
           }"
         >
           jump
@@ -25,7 +25,14 @@
       </v-col>
     </v-row>
 
-    
+    <v-row>
+      <v-col>
+        <slideshow-uncertainty1
+          :state="stage_state"
+        />  
+      </v-col>
+    </v-row>
+
     <!--------------------- OUR DATA HUBBLE VIEWER ----------------------->
 
     <v-row

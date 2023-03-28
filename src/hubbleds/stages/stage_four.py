@@ -5,14 +5,13 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty, DictCallbackProperty, add_callback, callback_property, remove_callback
+from echo import CallbackProperty, DictCallbackProperty, add_callback, callback_property
 from glue.core.message import NumericalDataChangedMessage
 from glue_jupyter.link import link
 from hubbleds.components.id_slider import IDSlider
 from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
-
 
 from ..data_management import \
     ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
@@ -31,14 +30,35 @@ class StageState(CDSState):
     lack_bias_response = CallbackProperty(False)
     class_trend_line_drawn = CallbackProperty(False)
     class_best_fit_clicked = CallbackProperty(False)
-    
     stage_four_complete = CallbackProperty(False)
     
+    uncertainty_dialog = CallbackProperty(False)
+    uncertainty_dialog_opened = CallbackProperty(False)
+    uncertaint_dialog_complete = CallbackProperty(False)
+    uncertainty_state = DictCallbackProperty({
+        'step': 0,
+        'length': 10,
+        'maxStepCompleted': 0,
+        'currentTitle': 'What is the "true age" of the universe?',
+        'titles': [
+            'What is the "true age" of the universe?',
+            "Shortcomings in our measurements",
+            "Shortcomings in our measurements",
+            "Messiness in our distance measurements",
+            "Imperfect humans and imperfect measuring tools",
+            "Uncertainty",            
+            "Random Uncertainty (Noise)",
+            "Systematic Uncertainty (Bias)",
+            "Causes of Systematic Uncertainty",
+            "Finished Uncertainty",
+        ]
+    })
+
     marker = CallbackProperty("")
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
-    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_four")
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three") #this needs to be updated if we have real Stage 4 images
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
@@ -84,6 +104,7 @@ class StageState(CDSState):
         'con_int2c',
         
         'two_his1',
+        'int_dat1',
         'tru_age1',
         'tru_age2',
         'sho_est3',
@@ -222,7 +243,7 @@ class StageFour(HubbleStage):
 
         
         self.show_team_interface = self.app_state.show_team_interface
-        
+
         # for testing so that we don't break when looking for best fit galaxy
         if self.app_state.allow_advancing & (self.story_state.stage_index >= self.index):
             if not self.story_state.has_best_fit_galaxy:
