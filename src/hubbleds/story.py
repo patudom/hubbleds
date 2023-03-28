@@ -281,17 +281,11 @@ class HubblesLaw(Story):
         
         # categorical_cols = ['id', 'element', 'type', 'name', 'measurement_number']
         # example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
-        # example_galaxy_student_data = Data(label=EXAMPLE_GALAXY_STUDENT_DATA)
         # for col in single_gal_student_cols:
         #     categorical = col in categorical_cols
-        #     ctype = CategoricalComponent if categorical else Component
-        #     meas_comp = ctype(np.array([]))
-        #     data = ['X'] if categorical else [0]
-        #     student_data_comp = ctype(np.array(data))
-        #     # class_data_comp = ctype(np.array(data))
+        #     ctype = Component
+        #     meas_comp = ctype(example_galaxy_data[col]) if col in ['name', 'element', 'type','ra','decl','z'] else ctype(np.array([]))
         #     example_galaxy_measurements.add_component(meas_comp, col)
-        #     example_galaxy_student_data.add_component(student_data_comp, col)
-        #     # example_galaxy_class_data.add_component(class_data_comp, col)
         
         # example_galaxy_measurements.append(empty_record)
         # self.data_collection.append(example_galaxy_student_data)

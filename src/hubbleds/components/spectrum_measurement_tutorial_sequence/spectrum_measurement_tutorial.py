@@ -114,7 +114,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     def _on_dialog_open(self, change):
         if change['new']:
             self.spectrum_viewer.toolbar.set_tool_enabled("bqplot:home",True)
-            self._on_x_axis_limits_changed()
+            self.on_x_axis_limits_changed()
         else:
             self.vue_on_close()
     
