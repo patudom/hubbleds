@@ -277,11 +277,7 @@ class HubblesLaw(Story):
         example_galaxy_measurements = Data(
             label=EXAMPLE_GALAXY_MEASUREMENTS,
             **empty_record)
-        
-        example_galaxy_student_data = Data(
-            label=EXAMPLE_GALAXY_STUDENT_DATA,
-            **empty_record)
-        
+
         
         # categorical_cols = ['id', 'element', 'type', 'name', 'measurement_number']
         # example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
