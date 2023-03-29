@@ -430,7 +430,7 @@ class StageTwo(HubbleStage):
         return self.get_component("py-distance-sidebar")
 
     @property
-    def distance_tool(self):_on_stage_complete
+    def distance_tool(self):
         return self.get_component("py-distance-tool")
 
     @property
