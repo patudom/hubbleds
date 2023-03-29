@@ -13,6 +13,10 @@ HUBBLE_KEY_DATA_LABEL = "HSTkey2001"
 BEST_FIT_SUBSET_LABEL = "best_fit_subset"
 BEST_FIT_GALAXY_NAME = "Best Fit Galaxy"
 
+EXAMPLE_GALAXY_SEED_DATA = "example_galaxy_seed_data"
+EXAMPLE_GALAXY_DATA = "example_galaxy"
+EXAMPLE_GALAXY_MEASUREMENTS = "example_galaxy_data"
+EXAMPLE_GALAXY_STUDENT_DATA = "example_galaxy_student_data"
 def reverse(d):
     return { v : k for k, v in d.items() }
 

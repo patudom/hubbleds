@@ -33,12 +33,34 @@ class HubbleStage(Stage):
             prepared["galaxy_name"] += ext
         prepared = json.loads(json.dumps(prepared, cls=CDSJSONEncoder))
         return prepared
+    
+    def _prepare_sample_measurement(self, measurement):
+        """ for the example galaxy data """
+        prepared = {HubbleStage._map_key(k): measurement.get(k, None) for k in
+                    MEAS_TO_STATE.keys()}
+        prepared.update(UNITS_TO_STATE)
+        prepared["student_id"] = self.app_state.student["id"]
+        ext = ".fits"
+        if not prepared["galaxy_name"].endswith(ext):
+            prepared["galaxy_name"] += ext
+        prepared = json.loads(json.dumps(prepared, cls=CDSJSONEncoder))
+        return prepared
+
 
     def submit_measurement(self, measurement):
         if self.app_state.update_db:
             prepared = self._prepare_measurement(measurement)
-            requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/submit-measurement",
+            print('submit now')
+            # requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/submit-measurement",
+                        # json=prepared)
+            
+    
+    def submit_example_galaxy_measurement(self, measurement):
+        if self.app_state.update_db:
+            prepared = self._prepare_sample_measurement(measurement)
+            requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements",
                         json=prepared)
+
 
     def remove_measurement(self, galaxy_name):
         name = str(galaxy_name)
