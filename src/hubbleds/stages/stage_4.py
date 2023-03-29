@@ -33,7 +33,7 @@ class StageState(CDSState):
     class_layer_toggled = CallbackProperty(0)
     trend_line_drawn = CallbackProperty(False)
     best_fit_clicked = CallbackProperty(False)
-    stage_three_complete = CallbackProperty(False)
+    stage_4_complete = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -161,8 +161,8 @@ class StageThree(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        add_callback(self.stage_state, 'stage_three_complete',
-                     self._on_stage_three_complete)
+        add_callback(self.stage_state, 'stage_4_complete',
+                     self._on_stage_4_complete)
 
         self.show_team_interface = self.app_state.show_team_interface
 
@@ -469,10 +469,10 @@ class StageThree(HubbleStage):
         if value and not linefit_tool.active:
             linefit_tool.activate()
     
-    def _on_stage_three_complete(self, change):
+    def _on_stage_4_complete(self, change):
         if change:
             self.story_state.stage_index =  self.story_state.stage_index + 1
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
-            self.stage_state.stage_three_complete = False
+            self.stage_state.stage_4_complete = False
