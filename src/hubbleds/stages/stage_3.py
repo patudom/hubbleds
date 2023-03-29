@@ -42,8 +42,8 @@ class StageState(CDSState):
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
     
-    # stage two complete component variables
-    stage_two_complete = CallbackProperty(False)
+    # stage 3 complete component variables
+    stage_3_complete = CallbackProperty(False)
 
     markers = CallbackProperty([
         'ang_siz1',
@@ -153,12 +153,7 @@ class StageTwo(HubbleStage):
         self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
         dosdonts_slideshow.observe(self._dosdonts_opened, names=['opened'])
 
-        # two_complete = StageTwoComplete(self.stage_state)
-        # self.add_component(two_complete, label='guideline-stage-two-complete')
-        
-        # two_complete.observe(self._on_stage_complete,
-        #                             names=['stage_two_complete'])
-        add_callback(self.stage_state, 'stage_two_complete', self._on_stage_complete)
+        add_callback(self.stage_state, 'stage_3_complete', self._on_stage_complete)
         
         self.show_team_interface = self.app_state.show_team_interface
 
@@ -435,7 +430,7 @@ class StageTwo(HubbleStage):
         return self.get_component("py-distance-sidebar")
 
     @property
-    def distance_tool(self):
+    def distance_tool(self):_on_stage_complete
         return self.get_component("py-distance-tool")
 
     @property
@@ -444,7 +439,7 @@ class StageTwo(HubbleStage):
 
     @property
     def last_guideline(self):
-        return self.get_component('guideline-stage-two-complete')
+        return self.get_component('guideline-stage-3-complete')
 
     def _on_stage_complete(self, complete):
         if complete:
@@ -452,4 +447,4 @@ class StageTwo(HubbleStage):
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
-            self.last_guideline.stage_two_complete = False
+            self.last_guideline.stage_3_complete = False
