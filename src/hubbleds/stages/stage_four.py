@@ -38,8 +38,6 @@ class StageState(CDSState):
     uncertainty_state = DictCallbackProperty({
         'step': 0,
         'length': 10,
-        'maxStepCompleted': 0,
-        'currentTitle': 'What is the "true age" of the universe?',
         'titles': [
             'What is the "true age" of the universe?',
             "Shortcomings in our measurements",

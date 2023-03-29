@@ -10,7 +10,7 @@
         block
         color="secondary"
         elevation="2"
-        id="hubble-exp-button"
+        id="uncertainty-button"
         @click.stop="() => { state.uncertainty_dialog = true; state.uncertainty_dialog_opened = true }"
       >
         Uncertainty Tutorial
@@ -296,32 +296,30 @@
             </v-container>
           </v-card-text>
         </v-window-item>
-      </v-window>
 
         <v-window-item :value="9" class="no-transition">
           <v-card-text>
             <v-container>
               <v-row>
                 <v-col
-                  >
-                  <p>
-                    <v-img
-                      class="mb-4"
-                      contain
-                      height="128"
-                      src="https://www.pngrepo.com/png/211744/512/rocket-ship-launch-missile.png"
-                    ></v-img>
-                    <h3 class="text-h6 font-weight-light mb-2">
-                      You're ready to continue exploring everyone's data now.
-                    </h3>
-                    <span class="text-caption grey--text">Click the <strong>UNCERTAINTY TUTORIAL</strong> button again if you'd like to come back for a refresher.</span>
-                  </p>
+                  class="pa-4 text-center my-auto"
+                > 
+                  <v-img
+                    class="mb-4"
+                    contain
+                    height="128"
+                    src="https://www.pngrepo.com/png/211744/512/rocket-ship-launch-missile.png"
+                  ></v-img>
+                  <h3 class="text-h6 font-weight-light mb-2">
+                    You're ready to continue exploring the data now.
+                  </h3>
+                  <span class="text-caption grey--text">Click the <strong>UNCERTAINTY TUTORIAL</strong> button again if you'd like to come back for a refresher.</span>
                 </v-col>
               </v-row>
             </v-container>
           </v-card-text>
-        </v-window-item>
-      </v-window>
+        </v-window-item> 
+      </v-window> 
       <v-divider></v-divider>
 
       <v-card-actions
