@@ -3,6 +3,7 @@
     elevation="6"
   >
     <v-toolbar
+      ref="toolbar"
       color="warning"
       dense
       dark
@@ -14,8 +15,19 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <speech-synthesizer
+        ref="synth"
         :root="$el"
-        :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
+        :element-filter="(element) => {
+          // There's some annoying behavior with when elements lose visibility when changing
+          // window items. Rather than doing some crazy shenanigans to wait the right amount of time,
+          // we just explicitly filter out elements that aren't descendants of the toolbar
+          // or the current window item
+          if (this.$refs.toolbar.$el.contains(element)) { return true; }
+          const currentWindowItem = this.$el.querySelector('.v-window-item--active');
+          return currentWindowItem?.contains(element) ?? false;
+        }"
+        :autospeak-on-change="step"
+        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text.black--text', 'h3', 'p']"
       />
     </v-toolbar>
 
@@ -806,6 +818,7 @@
         @click="() => {
           two_intro_complete = true;
           step = 0;
+          //this.$refs.synth.stopSpeaking();
         }"
       >
         get started
@@ -820,6 +833,7 @@
         @click="() => {
           two_intro_complete = true;
           step = 0;
+          //this.$refs.synth.stopSpeaking();
         }"
       >
         get started
@@ -831,6 +845,12 @@
 <script>
 module.exports = {
   props: ["buttonText", "titleText", "closeText"],
+
+  mounted() {
+    console.log("Two Intro");
+    console.log(this);
+    console.log(this.$el);
+  },
 
   watch: {
     step(newStep, oldStep) {

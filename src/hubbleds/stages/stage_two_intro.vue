@@ -6,7 +6,9 @@
       justify="center"
     >
       <v-col cols="12">
-        <py-two-intro-slideshow />
+        <py-two-intro-slideshow
+          :state="stage_state"
+        />
       </v-col>
     </v-row>
   </v-container>
