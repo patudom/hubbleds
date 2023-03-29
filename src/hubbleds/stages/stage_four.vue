@@ -16,20 +16,12 @@
           color="error"
           class="black--text"
           @click="() => {
-            stage_state.marker = 'con_int2c';
+            stage_state.marker = 'lea_unc1';
           }"
         >
           jump
         </v-btn>
         Marker: {{ stage_state.marker }}
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col>
-        <slideshow-uncertainty1
-          :state="stage_state"
-        />  
       </v-col>
     </v-row>
 
@@ -222,6 +214,31 @@
 
     <!--------------------- ALL DATA HISTOGRAM VIEWER ----------------------->
     <!-- cla_age1c -->
+  
+    <v-row
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['two_his1']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-row>
+          <v-col
+            cols="10"
+            offset="1"
+          >
+            <slideshow-uncertainty1
+              :state="stage_state"
+            />  
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
     <v-row
       class="d-flex align-stretch"
       v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c'])"
@@ -238,48 +255,8 @@
           v-if="stage_state.marker == 'two_his1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
-        <guideline-true-age1
-          v-if="stage_state.marker == 'tru_age1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-true-age2
-          v-if="stage_state.marker == 'tru_age2'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-shortcomings-est3
-          v-if="stage_state.marker == 'sho_est3'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-shortcomings-est-reflect4
-          v-if="stage_state.marker == 'sho_est4'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-true-age-issues1
-          v-if="stage_state.marker == 'tru_iss1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-imperfect-methods1
-          v-if="stage_state.marker == 'imp_met1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-imperfect-assumptions1
-          v-if="stage_state.marker == 'imp_ass1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-imperfect-measurements1
-          v-if="stage_state.marker == 'imp_mea1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-uncertainties-random1
-          v-if="stage_state.marker == 'unc_ran1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-uncertainties-systematic1
-          v-if="stage_state.marker == 'unc_sys1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-uncertainties-systematic2
-          v-if="stage_state.marker == 'unc_sys2'"
+        <guideline-learn-uncertainty1
+          v-if="stage_state.marker == 'lea_unc1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
         <guideline-two-histograms-mc2
@@ -321,7 +298,7 @@
           <v-lazy>
             <!-- Change v-if marker to include when we want to start showing student value -->
 
-           <jupyter-widget :widget="viewers.all_distr_viewer_student"
+          <jupyter-widget :widget="viewers.all_distr_viewer_student"
               v-if="stage_state.indices[stage_state.marker] > stage_state.indices['con_int2c']"
             />
           </v-lazy>
