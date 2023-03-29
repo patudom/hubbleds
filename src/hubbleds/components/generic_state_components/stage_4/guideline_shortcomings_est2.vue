@@ -4,7 +4,7 @@
     @back="
       state.marker = 'sho_est1';
     "
-    @next="state.stage_three_complete = true;"
+    @next="state.stage_4_complete = true;"
           
   >
   <!-- state.marker = 'ran_var1'; -->

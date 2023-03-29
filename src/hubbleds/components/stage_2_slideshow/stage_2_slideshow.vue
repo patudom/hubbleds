@@ -816,7 +816,7 @@
         class="black--text"
         depressed
         @click="() => {
-          two_intro_complete = true;
+          stage_2_complete = true;
           step = 0;
           //this.$refs.synth.stopSpeaking();
         }"
@@ -831,7 +831,7 @@
         class="black--text"
         depressed
         @click="() => {
-          two_intro_complete = true;
+          stage_2_complete = true;
           step = 0;
           //this.$refs.synth.stopSpeaking();
         }"

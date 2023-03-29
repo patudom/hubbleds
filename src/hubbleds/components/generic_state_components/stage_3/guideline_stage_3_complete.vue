@@ -6,7 +6,7 @@
     elevation="6"
     title-text="Distances Complete"
     @back="state.marker = 'fil_rem1'"
-    @next="state.stage_two_complete = true;"
+    @next="state.stage_3_complete = true;"
   >
     <div
       class="mb-4"

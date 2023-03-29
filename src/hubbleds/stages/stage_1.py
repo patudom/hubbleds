@@ -224,7 +224,7 @@ class StageOne(HubbleStage):
 
     @default('template')
     def _default_template(self):
-        return load_template("stage_one.vue", __file__)
+        return load_template("stage_1.vue", __file__)
 
     @default('stage_icon')
     def _default_stage_icon(self):
@@ -411,7 +411,7 @@ class StageOne(HubbleStage):
         add_callback(self.stage_state, 'student_vel',
                      lambda *args, **kwargs: self.add_student_velocity(example_galaxy_table, *args, **kwargs))
         add_callback(self.stage_state, 'completed',
-                     self.complete_stage_one)
+                     self.complete_stage_1)
         
         def break_this(x):
             print('changed show_galaxy_table to', x)
@@ -643,7 +643,7 @@ class StageOne(HubbleStage):
             self.selection_tool.select_galaxy(galaxy)
     
     #@print_function_name
-    def complete_stage_one(self, msg):
+    def complete_stage_1(self, msg):
         with delay_callback(self.story_state, 'stage_index'):
             self.story_state.step_complete = True
             self.story_state.stage_index = 2

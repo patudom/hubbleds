@@ -129,7 +129,7 @@
           v-if="stage_state.marker == 'fil_rem1'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <guideline-stage-two-complete
+        <guideline-stage-3-complete
           v-if="stage_state.marker == 'two_com1'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />

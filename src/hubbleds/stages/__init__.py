@@ -1,8 +1,8 @@
-from .stage_intro import *
-from .stage_one import *
-from .stage_two_intro import *
-from .stage_two import *
-from .stage_three import *
-from .stage_four import *
-from .stage_five import *
+from .stage_0 import *
+from .stage_1 import *
+from .stage_2 import *
+from .stage_3 import *
+from .stage_4 import *
+from .stage_5 import *
+from .stage_6 import *
 

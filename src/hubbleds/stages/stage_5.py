@@ -32,7 +32,7 @@ class StageState(CDSState):
     class_trend_line_drawn = CallbackProperty(False)
     class_best_fit_clicked = CallbackProperty(False)
     
-    stage_four_complete = CallbackProperty(False)
+    stage_5_complete = CallbackProperty(False)
     
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -190,7 +190,7 @@ class StageFour(HubbleStage):
 
     @default('template')
     def _default_template(self):
-        return load_template("stage_four.vue", __file__)
+        return load_template("stage_5.vue", __file__)
 
     @default('stage_icon')
     def _default_stage_icon(self):
@@ -215,8 +215,8 @@ class StageFour(HubbleStage):
 
         self._setup_complete = False
     
-        add_callback(self.stage_state, 'stage_four_complete',
-                     self._on_stage_four_complete)
+        add_callback(self.stage_state, 'stage_5_complete',
+                     self._on_stage_5_complete)
 
         add_callback(self.story_state, 'responses', self.age_calc_update_guesses)
 
@@ -643,13 +643,13 @@ class StageFour(HubbleStage):
         if value and not linefit_tool.active:
             linefit_tool.activate()
     
-    def _on_stage_four_complete(self, change):
+    def _on_stage_5_complete(self, change):
         if change:
             self.story_state.stage_index = 6
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
-            self.stage_state.stage_four_complete = False
+            self.stage_state.stage_5_complete = False
     
     def _reset_limits_for_data(self, label):
         viewer_id = self.viewer_ids_for_data.get(label, [])
@@ -696,10 +696,10 @@ class StageFour(HubbleStage):
             state['high_guess'] = r.get('likely-high-age', "")
             state['best_guess'] = r.get('best-guess-age', "")
 
-        # The shortcomings text is in stage three
-        stage_three_key = str(4)
-        if stage_three_key in responses:
-            r = responses[stage_three_key]
+        # The shortcomings text is in stage 4
+        stage_4_key = str(4)
+        if stage_4_key in responses:
+            r = responses[stage_4_key]
             state['short_one'] = r.get('shortcoming-1', "")
             state['short_two'] = r.get('shortcoming-2', "")
             state['short_other'] = r.get('other-shortcomings', "")

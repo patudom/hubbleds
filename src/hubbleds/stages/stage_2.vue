@@ -6,7 +6,7 @@
       justify="center"
     >
       <v-col cols="12">
-        <py-two-intro-slideshow
+        <py-stage-2-slideshow
           :state="stage_state"
         />
       </v-col>
