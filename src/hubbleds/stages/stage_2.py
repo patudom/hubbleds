@@ -22,7 +22,7 @@ class StageTwoIntro(Stage):
 
     @default('template')
     def _default_template(self):
-        return load_template("stage_two_intro.vue", __file__)
+        return load_template("stage_2.vue", __file__)
 
     @default('stage_icon')
     def _default_stage_icon(self):

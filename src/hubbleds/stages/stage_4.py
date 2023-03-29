@@ -139,7 +139,7 @@ class StageThree(HubbleStage):
 
     @default('template')
     def _default_template(self):
-        return load_template("stage_three.vue", __file__)
+        return load_template("stage_4.vue", __file__)
 
     @default('stage_icon')
     def _default_stage_icon(self):
