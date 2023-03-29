@@ -8,15 +8,15 @@ from ...utils import DISTANCE_CONSTANT
 
 # theme_colors()
 
-class TwoIntroSlideShow(v.VuetifyTemplate):
+class Stage2SlideShow(v.VuetifyTemplate):
     template = load_template(
-        "two_intro_slideshow.vue", __file__, traitlet=True).tag(sync=True)
+        "stage_2_slideshow.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
     length = Int(13).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
     max_step_completed = Int(0).tag(sync=True)
     interact_steps = List([7, 9]).tag(sync=True)
-    two_intro_complete = Bool(False).tag(sync=True)
+    stage_2_complete = Bool(False).tag(sync=True)
     show_team_interface = Bool(False).tag(sync=True)
     # exploration_complete = Bool(False).tag(sync=True)
     # intro_complete = Bool(False).tag(sync=True)

@@ -6,7 +6,7 @@ from glue.core.state_objects import State
 from traitlets import default
 from ..utils import IMAGE_BASE_URL
 
-from ..components.two_intro_slideshow import TwoIntroSlideShow
+from ..components import Stage2SlideShow
 
 
 class StageState(State):
@@ -39,18 +39,18 @@ class StageTwoIntro(Stage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        two_intro_slideshow = TwoIntroSlideShow(self.app_state.show_team_interface,
+        two_intro_slideshow = Stage2SlideShow(self.app_state.show_team_interface,
                                                 self.stage_state.image_location)
-        self.add_component(two_intro_slideshow, label='py-two-intro-slideshow')
+        self.add_component(two_intro_slideshow, label='py-stage-2-slideshow')
         two_intro_slideshow.observe(self._on_slideshow_complete,
-                                    names=['two_intro_complete'])
+                                    names=['stage_2_complete'])
 
         # add_callback(self.story_state, 'step_index',
         #         self._on_step_index_update)
 
     @property
     def slideshow(self):
-        return self.get_component('py-two-intro-slideshow')
+        return self.get_component('py-stage-2-slideshow')
 
     def _on_slideshow_complete(self, change):
         if change["new"]:
@@ -58,7 +58,7 @@ class StageTwoIntro(Stage):
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
-            self.slideshow.two_intro_complete = False
+            self.slideshow.stage_2_complete = False
 
     # this function is no longer called anywhere
     def _on_step_index_update(self, index):
