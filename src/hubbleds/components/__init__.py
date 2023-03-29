@@ -8,3 +8,6 @@ from .spectrum_slideshow import SpectrumSlideshow
 # from .trends_data_components import TrendsData
 from .hubble_exp_universe_slideshow import HubbleExpUniverseSlideshow
 # from .stage_two_complete import StageTwoComplete
+
+from .spectrum_measurement_tutorial_sequence import SpectrumMeasurementTutorialSequence
+

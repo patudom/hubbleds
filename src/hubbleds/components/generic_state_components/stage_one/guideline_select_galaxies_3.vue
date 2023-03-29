@@ -72,7 +72,7 @@
         Great, you have all the galaxies that you need and you're now ready to begin making measurements from your data.
       </p>
       <p>
-        Let's turn to your table of galaxies.
+        Let's learn how to measure a galaxy's velocity using it's light spectrum. 
       </p>
     </div>
   </scaffold-alert>

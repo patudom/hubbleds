@@ -19,7 +19,7 @@
         class="mb-4"
     >
       <p>
-        Enter the observed wavelength and rest wavelength for your chosen galaxy into the cells in the equation below.
+        Enter the observed wavelength and rest wavelength for the galaxy into the cells in the equation below.
       </p>
       <div
           class="JaxEquation my-8"

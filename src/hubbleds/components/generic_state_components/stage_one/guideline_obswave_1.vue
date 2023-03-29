@@ -5,7 +5,7 @@
     max-width="800"
     elevation="6"
     title-text="Observed Wavelength"
-    :can-advance="(state) => state.obswaves_total >= 1"
+    :can-advance="(state) => state.spectrum_clicked"
     @back="() => { state.marker_backward = 1; }"
     @next="() => { state.marker_forward = 1; }"
     :state="state"

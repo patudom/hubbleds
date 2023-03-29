@@ -21,7 +21,7 @@
       <p
         v-if="!state.lambda_on"      
       >
-        Your galaxy spectrum has {{ state.galaxy.element == 'Mg-I' ? 'a' : 'an' }} {{ state.galaxy.element }} {{ state.galaxy.element == 'Mg-I' ? 'absorption' : 'emission' }} line marked by a red vertical rectangle on the graph.
+        The galaxy spectrum has {{ state.galaxy.element == 'Mg-I' ? 'a' : 'an' }} {{ state.galaxy.element }} {{ state.galaxy.element == 'Mg-I' ? 'absorption' : 'emission' }} line marked by a red vertical rectangle on the graph.
       </p>
       <p
         v-if="!state.lambda_used"

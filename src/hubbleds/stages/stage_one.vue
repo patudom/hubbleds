@@ -47,8 +47,13 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
+        <guideline-select-galaxies-4
+          v-if="stage_state.marker === 'sel_gal4'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
         <v-btn
-          v-if="show_team_interface && (stage_state.marker === 'sel_gal2' || 'sel_gal3' && stage_state.gals_total < stage_state.gals_max)"
+          v-if="show_team_interface && (stage_state.marker === 'sel_gal2' || 'sel_gal3 || sel_gal4' && stage_state.gals_total < stage_state.gals_max)"
           color="error"
           class="black--text"
           block
@@ -103,11 +108,6 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
-        <guideline-doppler-calc-6
-          v-if="stage_state.marker === 'dop_cal6'"
-          v-intersect.once="scrollIntoView"
-          :state="stage_state"
-        />
       </v-col>
       <v-col
         cols="12"
@@ -118,9 +118,23 @@
           :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
           :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
-        >
-          <jupyter-widget :widget="widgets.galaxy_table"/>
+          v-if="stage_state.show_galaxy_table || ((stage_state.indices[stage_state.marker] < stage_state.indices['cho_row1'])  || (stage_state.indices[stage_state.marker] >= stage_state.indices['rep_rem1']) )"
+        > 
+          <jupyter-widget  :widget="widgets.galaxy_table"/>
         </v-card>
+        <v-card
+          :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+          v-if="stage_state.show_example_galaxy_table || ((stage_state.indices[stage_state.marker] >= stage_state.indices['cho_row1'])  && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']) )" 
+        > 
+          <jupyter-widget :widget="widgets.example_galaxy_table"/>
+        </v-card>
+        <c-spectrum-measurement-tutorial
+          v-if="stage_state.show_meas_tutorial || (stage_state.indices[stage_state.marker] >= stage_state.indices['smt_tut'])"
+          :state="stage_state"
+          @close="() => { return; }"
+          />
       </v-col>
     </v-row>
     <v-row>
@@ -145,6 +159,16 @@
         />
         <guideline-obswave-2
           v-if="stage_state.marker === 'obs_wav2'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-doppler-calc-6
+          v-if="stage_state.marker === 'dop_cal6'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-open-spectrum-measurement-tutorial
+          v-if="stage_state.marker === 'osm_tut' || stage_state.marker === 'smt_tut'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
@@ -278,6 +302,8 @@
 
 
 <script>
+
+
 module.exports = {
   mounted() {
     const config = { childList: true, subtree: true };

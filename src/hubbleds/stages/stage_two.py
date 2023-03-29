@@ -11,7 +11,7 @@ from echo import CallbackProperty, add_callback, ignore_callback
 from traitlets import default, Bool
 
 from ..components import DistanceSidebar, DistanceTool, DosDontsSlideShow
-from ..data_management import STUDENT_MEASUREMENTS_LABEL
+from ..data_management import STUDENT_MEASUREMENTS_LABEL, EXAMPLE_GALAXY_MEASUREMENTS
 from ..stage import HubbleStage
 from ..utils import DISTANCE_CONSTANT, GALAXY_FOV, HUBBLE_ROUTE_PATH, IMAGE_BASE_URL, distance_from_angular_size, format_fov
 
@@ -188,6 +188,25 @@ class StageTwo(HubbleStage):
 
         self.add_widget(distance_table, label="distance_table")
         distance_table.observe(
+            self.distance_table_selected_change, names=["selected"])
+        
+        example_galaxy_distance_table = Table(self.session,
+                               data=self.get_data(EXAMPLE_GALAXY_MEASUREMENTS),
+                               glue_components=['name',
+                                                'angular_size',
+                                                'distance'],
+                               key_component='name',
+                               names=['Galaxy Name',
+                                      'θ (arcsec)',
+                                      'Distance (Mpc)'],
+                               title='Example Galaxy',
+                               selected_color=self.table_selected_color(
+                                   self.app_state.dark_mode),
+                               use_subset_group=False,
+                               single_select=True)
+
+        self.add_widget(example_galaxy_distance_table, label="example_galaxy_distance_table")
+        example_galaxy_distance_table.observe(
             self.distance_table_selected_change, names=["selected"])
 
         self.add_component(DistanceSidebar(self.stage_state),
