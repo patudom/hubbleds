@@ -4,7 +4,7 @@
     class="mb-4 mx-auto angsize_alert"
     max-width="800"
     elevation="6"
-    header-text="All Classes Age Range"
+    title-text="All Classes Age Range"
     next-text="check"
     @back="state.marker_backward = 1"
     @next="() => {

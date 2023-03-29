@@ -1,6 +1,6 @@
 <template>
   <scaffold-alert
-    header-text="Identify Your Confidence Interval"
+    title-text="Identify Your Confidence Interval"
     @back="state.marker_backward = 1"
     @next="() => {
       if (state.reveal_iter < 3) {

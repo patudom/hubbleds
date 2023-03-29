@@ -1,9 +1,13 @@
 <!-- this state.marker = 'two_his2' -->
 <template>
   <scaffold-alert
+    color="info"
+    class="mb-4 mx-auto"
+    max-width="800"
+    elevation="6"
     title-text="Student Histogram vs. Class Histogram"
-    @back="state.marker = 'unc_sys1'"
-    @next="state.marker = 'lac_bia1'"
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
     :can-advance="(state) => state.two_hist_response"
     :state="state"
   >
