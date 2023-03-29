@@ -55,7 +55,7 @@
           What is a trend?
         </v-btn>
         <v-alert
-          class="mt-4"
+          class="mt-4 trend-alert" 
           v-if="state.define_trend"
           dense
           color="info darken-1"

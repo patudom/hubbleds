@@ -204,8 +204,6 @@ class StageThree(HubbleStage):
         for key in hubble_race_viewer.toolbar.tools:
             hubble_race_viewer.toolbar.set_tool_enabled(key, False)
         
-        hubble_race_viewer.figure.axes[0].tick_format = ',.0f'
-        hubble_race_viewer.figure.axes[1].tick_format = ',.0f'
         hubble_race_data = Data(label='hubble_race_data')
         hubble_race_data.add_component([12,24,30],'distance (km)')
         hubble_race_data.add_component([4,8,10],'velocity (km/hr)')
@@ -213,8 +211,6 @@ class StageThree(HubbleStage):
         hubble_race_viewer.add_data(hubble_race_data)
         hubble_race_viewer.state.x_att = hubble_race_data.id['distance (km)']
         hubble_race_viewer.state.y_att = hubble_race_data.id['velocity (km/hr)']
-        hubble_race_viewer.axis_y.tick_values  = asarray([4,6,8,10])
-        hubble_race_viewer._update_appearance_from_settings()
 
         hubble_slideshow = HubbleExpUniverseSlideshow([self.viewers["hubble_race_viewer"], self.viewers["layer_viewer"]], self.stage_state.image_location)
         self.add_component(hubble_slideshow, label='py-hubble-slideshow')
@@ -387,7 +383,17 @@ class StageThree(HubbleStage):
                 return labels.index(state.layer.label)
             except ValueError:
                 return len(labels)
-        layer_toggle.sort_by(layer_toggle_sort)     
+        layer_toggle.sort_by(layer_toggle_sort)
+
+        race_viewer = self.get_viewer("hubble_race_viewer")
+        race_data = self.get_data("hubble_race_data")
+        race_layer = race_viewer.layer_artist_for_data(race_data)
+        race_layer.state.color = '#111111'
+        race_layer.state.alpha = 1
+        race_layer.state.size = 8
+        race_viewer.state.reset_limits()
+        race_viewer.state.x_max = 1.1 * race_viewer.state.x_max 
+        race_viewer.state.y_max = 1.1 * race_viewer.state.y_max 
 
     def _on_stage_index_changed(self, index):
         print("Stage Index: ",self.story_state.stage_index)
