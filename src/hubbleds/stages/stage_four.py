@@ -34,7 +34,7 @@ class StageState(CDSState):
     
     uncertainty_dialog = CallbackProperty(False)
     uncertainty_dialog_opened = CallbackProperty(False)
-    uncertaint_dialog_complete = CallbackProperty(False)
+    uncertainty_dialog_complete = CallbackProperty(False)
     uncertainty_state = DictCallbackProperty({
         'step': 0,
         'length': 10,
@@ -48,7 +48,7 @@ class StageState(CDSState):
             "Random Uncertainty (Noise)",
             "Systematic Uncertainty (Bias)",
             "Causes of Systematic Uncertainty",
-            "Finished Uncertainty",
+            "Finished Uncertainty Tutorial",
         ]
     })
 
@@ -102,18 +102,7 @@ class StageState(CDSState):
         'con_int2c',
         
         'two_his1',
-        'int_dat1',
-        'tru_age1',
-        'tru_age2',
-        'sho_est3',
-        'sho_est4',
-        'tru_iss1',
-        'imp_met1',
-        'imp_ass1',
-        'imp_mea1',
-        'unc_ran1',
-        'unc_sys1',
-        'unc_sys2',
+        'lea_unc1',
         'two_his2',
         'lac_bia1',
         'lac_bia2',

@@ -1,13 +1,14 @@
 <!-- this state.marker = 'two_his1' -->
 <template>
   <scaffold-alert
+    color="info"
+    class="mb-4 mx-auto"
+    max-width="800"
+    elevation="6"
     title-text="Student Histogram vs. Class Histogram"
-    @back="
-      state.marker = 'con_int2c';
-    "
-    @next="
-      state.marker = 'tru_age1';
-    "
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
+    :state="state"
   >
     <div
       class="mb-4"

@@ -369,7 +369,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); state.uncertainty_dialog = false; state.uncertainty_state.step = 0; state.uncertainty_dialog_opened = true }"
+          @click="() => { $emit('close'); state.uncertainty_dialog = false; state.uncertainty_state.step = 0; state.uncertainty_dialog_complete = true }"
         >
           Done
         </v-btn>
