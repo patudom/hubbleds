@@ -268,7 +268,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); dialog = false; step = 0; opened = true;  reset_spectrum_viewer_limits() }"
+          @click="() => { $emit('close'); }"
         >
           Done
         </v-btn>
