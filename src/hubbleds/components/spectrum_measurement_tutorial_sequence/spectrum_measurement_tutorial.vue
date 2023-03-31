@@ -41,6 +41,7 @@
         @step="(val) => {this.step = val}"
         :toStep="this.step"
         :showControls="true"
+        @close="() => { $emit('close'); dialog = false; opened = true;  on_close() }"
         />
       </v-col>
       <!-- Put the viewers in here -->
@@ -131,7 +132,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); dialog = false; step = 0; opened = true;  on_close() }"
+          @click="() => { $emit('close'); dialog = false; opened = true;  on_close() }"
         >
           Done
         </v-btn>
@@ -224,9 +225,7 @@ module.exports = {
         console.log("Adding second measurement")
         this.selector_lines_off()
         this.prep_second_measurement() // filter table to only show second measurement
-        
         this.show_second_measurment = true // show dotplot 2
-        this.toggle_second_measurement() // make second measurement visible on dotplot 2
 
          }
       if (val == 19) { }
