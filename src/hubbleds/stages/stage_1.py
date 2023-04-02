@@ -287,8 +287,8 @@ class StageOne(HubbleStage):
         
         #     HubbleHistogramView, label="dotplot_viewer")
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
-        first = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='first')
-        second = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='second')
+        first = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='first', label='first measurement')
+        second = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='second', label='second measurement')
         for i,viewer in enumerate([dotplot_viewer, dotplot_viewer_2]):
             viewer.add_data(example_galaxy_data)
             viewer.state.x_att = example_galaxy_data.id['velocity_value']

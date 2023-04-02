@@ -58,6 +58,9 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         self.dotplot_viewer_2 = self.dotplot_viewer_2_widget.viewer
         self.spectrum_viewer = self.spectrum_viewer_widget.viewer
         
+        extend_tool(self.dotplot_viewer, 'bqplot:home', self.clear_subsets)
+        extend_tool(self.dotplot_viewer_2, 'bqplot:home', self.clear_subsets)
+        
         self.first_meas_plotted = False
         self.second_meas_plotted = False
         self.first_meas_line = None
@@ -147,6 +150,12 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         self.add_selector_lines() # adds the selector lines back to the viewers
         self.plot_measurements(self.example_galaxy_table._glue_data) # plots the measurements again
     
+    def clear_subsets(self,*args, **kwargs):
+        data = self.dotplot_viewer.state.layers[0].layer
+        for subset in data.subsets:
+            if subset.label.split()[-1] != 'measurement':
+                subset.delete()
+
     def add_selector_lines(self):
         self.dotplot_viewer.figure.marks = [m for m in self.dotplot_viewer.figure.marks if 'selector_line_dp1' not in m.labels] + [self.selector_line_dp1]
         self.dotplot_viewer_2.figure.marks = [m for m in self.dotplot_viewer_2.figure.marks if 'selector_line_dp2' not in m.labels] + [self.selector_line_dp2]
