@@ -216,7 +216,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         
         if self.show_first_measurment:
             viewer = self.dotplot_viewer
-            self.first_meas_line = self.add_point(viewer, vel[0], '#00ff00','first measurment')
+            self.first_meas_line = self.add_point(viewer, vel[0], '#FB5607','first measurment')
             marks = [m for m in viewer.figure.marks if ('first measurment' not in m.labels)]
             viewer.figure.marks = marks + [self.first_meas_line]
             self.first_meas_plotted = True
