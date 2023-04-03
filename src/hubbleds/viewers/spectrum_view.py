@@ -7,7 +7,6 @@ from glue.viewers.common.utils import get_viewer_tools
 from glue.viewers.scatter.state import ScatterViewerState
 from glue_jupyter.bqplot.scatter import BqplotScatterView, \
     BqplotScatterLayerArtist
-from traitlets import Bool
 
 from cosmicds.mixins import LineHoverStateMixin, LineHoverViewerMixin
 from cosmicds.viewers.cds_viewers import cds_viewer
@@ -58,13 +57,10 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
     inherit_tools = False
     tools = ['bqplot:home', 'hubble:wavezoom', 'hubble:restwave','cds:info']
     _state_cls = SpectrumViewerState
-    show_line = Bool(True)
     LABEL = "Spectrum Viewer"
 
     observed_text = ' (observed)'
     rest_text = ' (rest)'
-
-    _zoom_tool_ids = "hubble:wavezoom"
 
     def __init__(self, *args, **kwargs):
         super(SpecView, self).__init__(*args, **kwargs)
@@ -94,6 +90,8 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
                 'x': self.scales['x'],
                 'y': self.scales['y'],
             })
+        
+        self.figure.marks += [self.element_tick, self.element_label]
 
         self.toolbar.observe(self._active_tool_change, names=['active_tool'])
 
@@ -181,13 +179,15 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
             mode = mode_cls(self)
             self.toolbar.add_tool(mode)
 
-        #zoom_tool = self.toolbar.tools["hubble:wavezoom"]
+        zoom_tool = self.toolbar.tools["hubble:wavezoom"]
 
-        #zoom_tool.on_zoom = self.on_xzoom
+        zoom_tool.on_zoom = self.on_xzoom
 
-    def on_xzoom(self, old_state, new_state):
-        self.state.resolution_x *= (new_state.x_max - new_state.x_min) / (
-                    old_state.x_max - old_state.x_min)
+    def on_xzoom(self, old_bounds, new_bounds):
+        xmin_old, xmax_old = old_bounds
+        xmin_new, xmax_new = new_bounds
+        self.state.resolution_x *= (xmax_new - xmin_new) / (
+                    xmax_old - xmin_old)
 
     @property
     def line_visible(self):

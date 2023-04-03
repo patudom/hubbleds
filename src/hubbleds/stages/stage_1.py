@@ -239,7 +239,6 @@ class StageOne(HubbleStage):
         return "Perhaps a small blurb about this stage"
 
     def __init__(self, *args, **kwargs):
-        print("Stage 1 __init__")
         super().__init__(*args, **kwargs)
 
         self.show_team_interface = self.app_state.show_team_interface
@@ -262,8 +261,6 @@ class StageOne(HubbleStage):
         # Add new dotplot viewer with single galaxy seed data
         dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer')
         dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2')
-
-        print("Created spectrum and dotplot viewers")
         
         # extend_tool(dotplot_viewer,'bqplot:xzoom', lambda : print('activated (1)'), lambda : print('deactivated (1)'), activate_before_tool=False,deactivate_before_tool=False)
         # # extend_tool(dotplot_viewer,'bqplot:xzoom', lambda : print('activated before'), lambda : print('deactivated before'), activate_before_tool=True, deactivate_before_tool=True)
