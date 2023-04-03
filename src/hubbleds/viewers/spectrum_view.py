@@ -23,7 +23,6 @@ class SpectrumViewerState(LineHoverStateMixin, ScatterViewerState):
     resolution_y = CallbackProperty(0)
 
     def __init__(self, *args, **kwargs):
-        print("SpectrumViewerState __init__")
         super().__init__(*args, **kwargs)
 
     @property
@@ -132,7 +131,6 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
             z > 0)  # The bqplot Mark complained without the explicit bool() call
         self.element_label.visible = items_visible
         self.element_tick.visible = items_visible
-        print(self.line)
         self.line.visible = items_visible
         self.line_label.visible = items_visible
         self.label_background.visible = items_visible

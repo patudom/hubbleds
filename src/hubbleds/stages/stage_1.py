@@ -602,10 +602,8 @@ class StageOne(HubbleStage):
         self.trigger_marker_update_cb = True
 
     def _on_galaxy_update(self, galaxy):
-        print(galaxy)
         if galaxy:
             self.story_state.load_spectrum_data(galaxy["name"], galaxy["type"])
-            print(self._filling_data)
             if not self._filling_data:
                 self.galaxy_table.selected = [galaxy]
             # self.example_galaxy_table.selected = [galaxy]
@@ -674,7 +672,7 @@ class StageOne(HubbleStage):
         self.stage_state.marker = "sel_gal3"
         self._filling_data = False
 
-    @print_function_name
+    #@print_function_name
     def update_spectrum_viewer(self, name, z, table):
         specview = self.get_viewer("spectrum_viewer")
         specview.toolbar.active_tool = None
