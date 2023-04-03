@@ -146,7 +146,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     def add_selector_lines(self):
         self.dotplot_viewer.figure.marks = [m for m in self.dotplot_viewer.figure.marks if 'selector_line_dp1' not in m.labels] + [self.selector_line_dp1]
         self.dotplot_viewer_2.figure.marks = [m for m in self.dotplot_viewer_2.figure.marks if 'selector_line_dp2' not in m.labels] + [self.selector_line_dp2]
-        # self.spectrum_viewer.figure.marks = self.spectrum_viewer.figure.marks + [self.spectrum_viewer.user_line]
+        # self.spectrum_viewer.figure.marks = self.spectrum_viewer.figure.marks + [self.spectrum_viewer.line]
     
     def vue_selector_lines_on(self, _data = None):
         self.selector_line_dp1.visible = True
@@ -167,15 +167,15 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             new_x = [event['domain']['x'], event['domain']['x']]
             self.selector_line_dp1.x = new_x
             self.selector_line_dp2.x = new_x
-            self.spectrum_viewer.user_line.x = self.v2w(new_x)
-            self.spectrum_viewer.user_line_label.x = self.spectrum_viewer.user_line.x
+            self.spectrum_viewer.line.x = self.v2w(new_x)
+            self.spectrum_viewer.line_label.x = self.spectrum_viewer.line.x
             
         self.selector_line_dp1.y = self.get_y_bounds(self.dotplot_viewer)
         self.selector_line_dp2.y = self.get_y_bounds(self.dotplot_viewer_2)
 
 
     def _update_selector_tool_sv(self, event = None):
-        self.selector_line_dp1.x = self.w2v(self.spectrum_viewer.user_line.x)
+        self.selector_line_dp1.x = self.w2v(self.spectrum_viewer.line.x)
         self.selector_line_dp1.y = self.get_y_bounds(self.dotplot_viewer)
         
         self.selector_line_dp2.x = self.selector_line_dp1.x
