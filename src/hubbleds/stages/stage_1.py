@@ -239,6 +239,7 @@ class StageOne(HubbleStage):
         return "Perhaps a small blurb about this stage"
 
     def __init__(self, *args, **kwargs):
+        print("Stage 1 __init__")
         super().__init__(*args, **kwargs)
 
         self.show_team_interface = self.app_state.show_team_interface
@@ -259,8 +260,10 @@ class StageOne(HubbleStage):
             add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
         
         # Add new dotplot viewer with single galaxy seed data
-        dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer',)
+        dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer')
         dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2')
+
+        print("Created spectrum and dotplot viewers")
         
         # extend_tool(dotplot_viewer,'bqplot:xzoom', lambda : print('activated (1)'), lambda : print('deactivated (1)'), activate_before_tool=False,deactivate_before_tool=False)
         # # extend_tool(dotplot_viewer,'bqplot:xzoom', lambda : print('activated before'), lambda : print('deactivated before'), activate_before_tool=True, deactivate_before_tool=True)
@@ -503,8 +506,10 @@ class StageOne(HubbleStage):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
 
+        self._filling_data = False
+
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
-        # self.vue_fill_data()        
+        self.vue_fill_data()        
     
     #@print_function_name
     def _on_measurements_changed(self, msg):
@@ -597,9 +602,12 @@ class StageOne(HubbleStage):
         self.trigger_marker_update_cb = True
 
     def _on_galaxy_update(self, galaxy):
+        print(galaxy)
         if galaxy:
             self.story_state.load_spectrum_data(galaxy["name"], galaxy["type"])
-            self.galaxy_table.selected = [galaxy]
+            print(self._filling_data)
+            if not self._filling_data:
+                self.galaxy_table.selected = [galaxy]
             # self.example_galaxy_table.selected = [galaxy]
 
     def _on_galaxy_selected(self, galaxy):
@@ -649,20 +657,24 @@ class StageOne(HubbleStage):
             self.story_state.stage_index = 2
 
     def vue_fill_data(self, _args=None):
+        self._filling_data = True
         self._select_from_data("dummy_student_data")
         self.galaxy_table.selected = []
         self.selection_tool.widget.center_on_coordinates(
             self.START_COORDINATES, instant=True)
         self.stage_state.marker = "sel_gal3"
+        self._filling_data = False
 
     def vue_select_galaxies(self, _args=None):
+        self._filling_data = True
         self._select_from_data(SDSS_DATA_LABEL)
         self.galaxy_table.selected = []
         self.selection_tool.widget.center_on_coordinates(
             self.START_COORDINATES, instant=True)
         self.stage_state.marker = "sel_gal3"
+        self._filling_data = False
 
-    #@print_function_name
+    @print_function_name
     def update_spectrum_viewer(self, name, z, table):
         specview = self.get_viewer("spectrum_viewer")
         specview.toolbar.active_tool = None
@@ -687,22 +699,16 @@ class StageOne(HubbleStage):
             (i for i in range(sdss.size) if sdss["name"][i] == name), None)
         if sdss_index is not None:
             element = sdss['element'][sdss_index]
-            specview.update(name, element, z, previous=measwave)
-            restwave = MG_REST_LAMBDA if element == 'Mg-I' else H_ALPHA_REST_LAMBDA
-            self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "element",
-                                   element, index)
-            self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "restwave",
-                                   restwave, index)
-            self.stage_state.element = element
+            label = STUDENT_MEASUREMENTS_LABEL
         else:
             element = measurements["element"][index]
-            specview.update(name, element, z, previous=measwave)
-            restwave = MG_REST_LAMBDA if element == 'Mg-I' else H_ALPHA_REST_LAMBDA
-            self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, "element",
-                                    element, index)
-            self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, "restwave",
-                                    restwave, index)
-            self.stage_state.element = element
+            label = EXAMPLE_GALAXY_MEASUREMENTS
+
+        specview.update(name, element, z, previous=measwave)
+        self.stage_state.element = element
+        restwave = MG_REST_LAMBDA if element == 'Mg-I' else H_ALPHA_REST_LAMBDA
+        self.update_data_value(label, "element",element, index)
+        self.update_data_value(label, "restwave",restwave, index)
         
     def _spectrum_slideshow_marker_changed(self, msg):
         self.stage_state.marker = msg['new']

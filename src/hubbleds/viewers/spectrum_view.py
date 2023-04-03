@@ -98,8 +98,6 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
 
         self.toolbar.observe(self._active_tool_change, names=['active_tool'])
 
-        print("Finished SpecView __init__")
-
     @staticmethod
     def _label_text(value):
         return f"{value:.0f} Å"
@@ -134,23 +132,24 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
             z > 0)  # The bqplot Mark complained without the explicit bool() call
         self.element_label.visible = items_visible
         self.element_tick.visible = items_visible
-        # self.line.visible = items_visible
-        # self.line_label.visible = items_visible
-        # self.label_background.visible = items_visible
-        # has_previous = previous is not None
-        # self.previous_line.visible = has_previous
-        # self.previous_line_label.visible = has_previous
-        # self.previous_label_background.visible = has_previous
-        # if has_previous:
-        #     self.previous_line.x = [previous, previous]
-        #     self.previous_line_label.x = [previous, previous]
-        #     self.previous_line_label.text = [self._label_text(previous)]
-        #     self.previous_label_background.x = self._x_background_coordinates(
-        #         previous)
+        print(self.line)
+        self.line.visible = items_visible
+        self.line_label.visible = items_visible
+        self.label_background.visible = items_visible
+        has_previous = previous is not None
+        self.previous_line.visible = has_previous
+        self.previous_line_label.visible = has_previous
+        self.previous_label_background.visible = has_previous
+        if has_previous:
+            self.previous_line.x = [previous, previous]
+            self.previous_line_label.x = [previous, previous]
+            self.previous_line_label.text = [self._label_text(previous)]
+            self.previous_label_background.x = self._x_background_coordinates(
+                previous)
         self.element_label.x = [self.shifted, self.shifted]
         self.element_label.text = [element]
         self.element_tick.x = [self.shifted, self.shifted]
-        # self._update_locations()
+        self._update_locations()
         self._resolution_dirty = True
 
     def add_data(self, data):
@@ -162,13 +161,13 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
             if layer.state.layer.label != data.label:
                 layer.state.visible = False
 
-        # bring_to_front = [
-        #     self.previous_label_background, self.previous_line,
-        #     self.previous_line_label,
-        #     self.label_background, self.line, self.line_label
-        # ]
-        # marks = [x for x in self.figure.marks if x not in bring_to_front]
-        # self.figure.marks = marks + bring_to_front
+        bring_to_front = [
+            self.previous_label_background, self.previous_line,
+            self.previous_line_label,
+            self.label_background, self.line, self.line_label
+        ]
+        marks = [x for x in self.figure.marks if x not in bring_to_front]
+        self.figure.marks = marks + bring_to_front
 
     def initialize_toolbar(self):
         self.toolbar = Toolbar(self)
