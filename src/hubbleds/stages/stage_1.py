@@ -490,14 +490,13 @@ class StageOne(HubbleStage):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:restwave", True)
 
         if self.stage_state.marker_reached("obs_wav1"):
-            spectrum_viewer.add_event_callback(spectrum_viewer._on_mouse_moved,
-                                               events=['mousemove'])
-            spectrum_viewer.add_event_callback(spectrum_viewer._on_click,
-                                               events=['click'])
             spectrum_viewer.add_event_callback(self.on_spectrum_click,
                                                events=['click'])
             spectrum_viewer.add_event_callback(self.on_spectrum_click_example_galaxy,
                                                events=['click'])
+        else:
+            spectrum_viewer.remove_event_callback(spectrum_viewer._on_mouse_moved)
+            spectrum_viewer.remove_event_callback(spectrum_viewer._on_click)
 
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
@@ -705,8 +704,8 @@ class StageOne(HubbleStage):
         specview.update(name, element, z, previous=measwave)
         self.stage_state.element = element
         restwave = MG_REST_LAMBDA if element == 'Mg-I' else H_ALPHA_REST_LAMBDA
-        self.update_data_value(label, "element",element, index)
-        self.update_data_value(label, "restwave",restwave, index)
+        self.update_data_value(label, "element", element, index)
+        self.update_data_value(label, "restwave", restwave, index)
         
     def _spectrum_slideshow_marker_changed(self, msg):
         self.stage_state.marker = msg['new']
