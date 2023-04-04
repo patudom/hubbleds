@@ -99,6 +99,7 @@ HubbleDotPlotView = cds_viewer(
     viewer_tools=[
         "bqplot:home",
         "bqplot:xzoom",
+        "hubble:binselect"
     ],
     label="Dot Plot"
 )
