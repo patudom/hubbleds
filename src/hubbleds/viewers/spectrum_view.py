@@ -179,16 +179,6 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
             mode = mode_cls(self)
             self.toolbar.add_tool(mode)
 
-        zoom_tool = self.toolbar.tools["hubble:wavezoom"]
-
-        zoom_tool.on_zoom = self.on_xzoom
-
-    def on_xzoom(self, old_bounds, new_bounds):
-        xmin_old, xmax_old = old_bounds
-        xmin_new, xmax_new = new_bounds
-        self.state.resolution_x *= (xmax_new - xmin_new) / (
-                    xmax_old - xmin_old)
-
     @property
     def line_visible(self):
         return self.line.visible

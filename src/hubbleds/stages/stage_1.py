@@ -503,10 +503,12 @@ class StageOne(HubbleStage):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
 
+        # This flag indicates whether we're using one of the convenience "fill" methods
+        # In which case we don't need to do all of the UI manipulation in quite the same way
         self._filling_data = False
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
-        self.vue_fill_data()        
+        # self.vue_fill_data()
     
     #@print_function_name
     def _on_measurements_changed(self, msg):
@@ -621,7 +623,8 @@ class StageOne(HubbleStage):
         else:
             filename = galaxy['name']
             gal_type = galaxy['type']
-            galaxy.pop("element")
+            if not self._filling_data:
+                galaxy.pop("element")
             self.story_state.load_spectrum_data(filename, gal_type)
             self.add_data_values(STUDENT_MEASUREMENTS_LABEL, galaxy)
             self.stage_state.galaxy = galaxy
