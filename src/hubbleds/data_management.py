@@ -90,7 +90,7 @@ DB_MEASUREMENT_KEYS = [
 
 # Summaries
 DB_H0_KEY = "hubble_fit_value"
-DB_AGE_KEY = "age"
+DB_AGE_KEY = "age_value"
 
 DB_SUMMARY_KEYS = [
     DB_H0_KEY,
