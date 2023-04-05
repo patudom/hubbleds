@@ -160,9 +160,9 @@ class StageFive(HubbleStage):
         self.add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL,
                       'Velocity (km/s)')
         self.add_link(HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)', STUDENT_DATA_LABEL,
-                      'distance')
+                      DISTANCE_COMPONENT)
         self.add_link(HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)', STUDENT_DATA_LABEL,
-                      'velocity')
+                      DISTANCE_COMPONENT)
         
         # load data into the viewer and style
         prodata_viewer.add_data(student_data)

@@ -254,9 +254,7 @@ class StageFour(HubbleStage):
         self.add_widget(fit_table, label="fit_table")
 
         # Set up links between various data sets
-        dist_attr = "distance"
-        vel_attr = "velocity"
-        for field in [dist_attr, vel_attr]:
+        for field in [DISTANCE_COMPONENT, VELOCITY_COMPONENT]:
             self.add_link(CLASS_DATA_LABEL, field, ALL_DATA_LABEL, field)
 
         # Create viewers
