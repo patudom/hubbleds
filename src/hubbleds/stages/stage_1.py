@@ -816,7 +816,7 @@ class StageOne(HubbleStage):
         index = self.example_galaxy_table.index
         
         data = self.example_galaxy_table.glue_data
-        if data['name'][index] in self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)['name']:
+        if data[NAME_COMPONENT][index] in self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[NAME_COMPONENT]:
             
             self.stage_state.waveline_set = True
             self.stage_state.lambda_obs = new_value
