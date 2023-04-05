@@ -244,9 +244,7 @@ class StageThree(HubbleStage):
 
         # set reasonable offset for y-axis labels
         # it would be better if axis labels were automatically well placed
-        velocity_viewers = [layer_viewer]
-        for viewer in velocity_viewers:
-            viewer.figure.axes[1].label_offset = "5em"
+        layer_viewer.figure.axes[1].label_offset = "5em"
         
         # Set hypothetical galaxy info, if we have it
         self._update_hypgal_info()
@@ -322,10 +320,9 @@ class StageThree(HubbleStage):
         layer_viewer = self.get_viewer("layer_viewer")
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
-        for viewer in [layer_viewer]:
-            viewer.add_data(student_data)
-            viewer.state.x_att = student_data.id[DISTANCE_COMPONENT]
-            viewer.state.y_att = student_data.id[VELOCITY_COMPONENT]
+        layer_viewer.add_data(student_data)
+        layer_viewer.state.x_att = student_data.id[DISTANCE_COMPONENT]
+        layer_viewer.state.y_att = student_data.id[VELOCITY_COMPONENT]
         
         # PALETTE: Y:FFBE0B, O:FB5607, Pi:FF006E, Pu:8338EC, Bl:3A86FF, LiBl:619EFF
         student_layer = layer_viewer.layer_artist_for_data(student_data)
