@@ -28,6 +28,8 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     step = Int(0).tag(sync=True)
     length = Int(19).tag(sync=True)
     dialog = Bool(False).tag(sync=True)
+    opened = Bool(False).tag(sync=True)
+    been_opened = Bool(False).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
     maxStepCompleted = Int(0).tag(sync=True)
     spectrum_viewer_widget = Instance(DOMWidget).tag(sync=True, **widget_serialization)
@@ -62,9 +64,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         self.dotplot_viewer_2 = self.dotplot_viewer_2_widget.viewer
         self.spectrum_viewer = self.spectrum_viewer_widget.viewer
         
-        # create a generator to cycle through colors. the colors should
-        # switch between complimentary colors to make it easier to see
-        # try to use some amount of colorblindness friendly colors
+        # cycle will cycle infitely through the list of colors
         self.color_cycle = cycle(['#9e17bf','#d98d0b','#07e856','#e80707','#e807e8','#07e8e8'])
         
         # Get the data collection
@@ -87,11 +87,15 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             'visible': False,
             'zorder': 0,
         }
-        self.selector_line_dp1  = Lines( x = [0,0], y = [0,0], scales=self.dotplot_viewer.scales,  **line_props, label='selector_line_dp1')
-        self.selector_line_dp2  = Lines( x = [0,0], y = [0,0], scales=self.dotplot_viewer_2.scales,**line_props, label='selector_line_dp2')
-        self.selector_line_spec = Lines( x = [0,0], y = [0,0], scales=self.spectrum_viewer.scales, **line_props, label='selector_line_spec')
+        # self.dotplot_viewer.line  = Lines( x = [0,0], y = [0,0], scales=self.dotplot_viewer.scales,  **line_props, label='selector_line_dp1')
+        # self.dotplot_viewer_2.line  = Lines( x = [0,0], y = [0,0], scales=self.dotplot_viewer_2.scales,**line_props, label='selector_line_dp2')
+        # self.selector_line_spec = Lines( x = [0,0], y = [0,0], scales=self.spectrum_viewer.scales, **line_props, label='selector_line_spec')
+        self.vue_selector_lines_on()
+        self.dotplot_viewer.line.labels = ['selector_line_dp1']
+        self.dotplot_viewer.line.labels = ['selector_line_dp2']
         
-        self.selected_tower = self.create_subsets()
+        self.selected_tower = self.create_range_subsets(self.dotplot_viewer, self.example_seed_data, 'selected_tower')
+        self.selected_tower_2 = self.create_range_subsets(self.dotplot_viewer_2, self.example_seed_data, 'selected_tower_2')
         
         self.element = self.spectrum_viewer.element 
         # Both in angstroms
@@ -110,9 +114,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         link((self.dotplot_viewer.state, 'x_max'), (self.dotplot_viewer_2.state, 'x_max'))
         
 
-        # link(((self.selector_line_spec,'x'), self.selector_line_dp1,'x'), self.w2v, self.w2v)
-        # link(((self.selector_line_spec,'x'), self.selector_line_dp2,'x'), self.w2v, self.w2v)
-        
         # do something whenever the axis limits change
         for val in ['x_min','x_max']:
             add_callback(self.dotplot_viewer.state, val ,self._on_dotplot_change)
@@ -128,46 +129,69 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         
         self.observe(self._on_dialog_open, 'dialog')
         
-        # self.example_seed_data.hub.subscribe(
-        #     self, SubsetMessage,
-        #     filter = lambda msg: msg.data.label == self.example_seed_data.label ,
-        #     handler=self._on_data_change)
         
+    @staticmethod    
+    def link_variables(var1, var2, forward = lambda x: x, backward = lambda x: x):
+        """
+        "fake" the glue linking framework using callbacks
+        """
+        def update(var, value, new_value, func):
+            if getattr(var,value, None) != new_value:
+                setattr(var, value, func(new_value))
+            
+        add_callback(var1[0], var1[1], lambda change: update(var2[0], var2[1], change['new'], forward))
+        add_callback(var2[0], var2[1], lambda change: update(var1[0], var1[1], change['new'], backward))
         
-        
-        
-        # add_callback(self.dotplot_viewer.toolbar, 'active_tool', self._on_tool_change)
-        # self.dotplot_viewer.toolbar.observe(self._on_tool_change, 'active_tool')
-        
-        
-    
     
     def _on_dialog_open(self, change):
-        if change['new']:
+        if change['new'] & (not self.been_opened):
+            self.been_opened = True
+            print(change['new'], self.opened, self.dialog)
             self.spectrum_viewer.toolbar.set_tool_enabled("bqplot:home",True)
+            
             self.add_selector_lines()
+            
             self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
-            self.dotplot_viewer.add_event_callback(self.tower_select, events=['click'])
             self.dotplot_viewer.add_event_callback(self._update_selector_tool_dp, events=['mousemove'])
-            self.dotplot_viewer_2.add_event_callback(self._update_selector_tool_dp, events=['mousemove'])
+            self.dotplot_viewer_2.add_event_callback(self._update_selector_tool_dp2, events=['mousemove'])
+            
+            self.dotplot_viewer.add_event_callback(self.tower_select, events=['click'])
+            self.dotplot_viewer_2.add_event_callback(self.tower_select_2, events=['click'])
+            
             # self._on_dotplot_change()
             self.observe(self._on_data_change, ['show_first_measurment', 'show_second_measurment'])
             self.observe(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
             self.observe(self.on_zoom_tool_enabled, 'zoom_tool_enabled')
             
-            # self.spectrum_viewer.add_event_callback(self._on_spectrum_viewer_focus, events=['moustenter', 'mouseleave'])
-            # self.dotplot_viewer.add_event_callback(self._on_dotplot_viewer_focus, events=['moustenter', 'mouseleave'])
+            self.spectrum_viewer.add_event_callback(self._on_spectrum_viewer_focus, events=['moustenter', 'mouseleave'])
+            self.dotplot_viewer.add_event_callback(self._on_dotplot_viewer_focus, events=['moustenter', 'mouseleave'])
+            self.dotplot_viewer_2.add_event_callback(self._on_dotplot_viewer_focus, events=['moustenter', 'mouseleave'])
             
+        elif not change['new']:
+            pass
+            #self.vue_on_close()
         else:
-            self.vue_on_close()
+            pass
     
     def _on_dotplot_viewer_focus(self, event = {'event': None}):
         if event['event'] == 'mouseenter':
-            self.selector_line_dp1.visible = True
-            self.selector_line_dp2.visible = True
+            self.dotplot_viewer.line.visible = True
+            self.dotplot_viewer_2.line.visible = True
+            
+            self.dotplot_viewer.previous_line.visible = True
+            self.dotplot_viewer_2.previous_line.visible = True
+            
+            self.dotplot_viewer.previous_line_label.visible = True
+            self.dotplot_viewer_2.previous_line_label.visible = True
         elif event['event'] == 'mouseleave':
-            self.selector_line_dp1.visible = False
-            self.selector_line_dp2.visible = False
+            self.dotplot_viewer.line.visible = False
+            self.dotplot_viewer_2.line.visible = False
+            
+            self.dotplot_viewer.previous_line.visible = False
+            self.dotplot_viewer_2.previous_line.visible = False
+            
+            self.dotplot_viewer.previous_line_label.visible = False
+            self.dotplot_viewer_2.previous_line_label.visible = False
             pass
         pass
     
@@ -193,25 +217,33 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             tool_id = active_tool.tool_id
             self.dotplot_viewer_2.toolbar.active_tool = self.dotplot_viewer_2.toolbar.tools[tool_id]
     
-    def create_subsets(self):
+    def create_range_subsets(self, viewer, data, label = None):
         subset_init = {
-            'lo': self.dotplot_viewer.state.x_min,
-            'hi': self.dotplot_viewer.state.x_max,
-            'att': self.dotplot_viewer.state.x_att
+            'lo': viewer.state.x_min,
+            'hi': viewer.state.x_max,
+            'att': viewer.state.x_att
         }
         self.range_subset = RangeSubsetState(**subset_init)
         
         new_subset_init = {
-            'label': 'selected tower',
+            'label': label,
             'subset_state': self.range_subset,
             'color': next(self.color_cycle,'#000000')
         }
-        return self.example_seed_data.new_subset(**new_subset_init)
+        return data.new_subset(**new_subset_init)
     
-    def _on_dotplot_change(self, change = None): 
-       self._update_selector_tool_dp() # updates the x-position of the selector lines
-       self.add_selector_lines() # adds the selector lines back to the viewers
-       self.plot_measurements(self.example_galaxy_table._glue_data) # plots the measurements again
+    def _on_dotplot_change(self, change = None):
+        # self._update_selector_tool_dp() # updates the x-position of the selector lines
+        if change is not None:
+            # when it is not, then the function
+            # is being called by a layer change
+            # which automatically redraws the selector lines
+            self.add_selector_lines()
+        self.plot_measurements(self.example_galaxy_table._glue_data) # plots the measurements again
+    
+    def update_line_y_bounds(self, change = None):
+        self.dotplot_viewer.line.y = self.get_y_bounds(self.dotplot_viewer)
+        self.dotplot_viewer_2.line.y = self.get_y_bounds(self.dotplot_viewer_2)
     
         
     def on_zoom_tool_enabled(self, data=None):
@@ -227,18 +259,15 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         # self.create_subsets()
 
     def add_selector_lines(self):
-        self.dotplot_viewer.figure.marks = [m for m in self.dotplot_viewer.figure.marks if 'selector_line_dp1' not in m.labels] + [self.selector_line_dp1]
-        self.dotplot_viewer_2.figure.marks = [m for m in self.dotplot_viewer_2.figure.marks if 'selector_line_dp2' not in m.labels] + [self.selector_line_dp2]
-        # self.spectrum_viewer.figure.marks = self.spectrum_viewer.figure.marks + [self.spectrum_viewer.line]
-    
-    def vue_selector_lines_on(self, _data = None):
-        self.selector_line_dp1.visible = True
-        self.selector_line_dp2.visible = True
-    
-    def vue_selector_lines_off(self, _data = None):
-        self.selector_line_dp1.visible = False
-        self.selector_line_dp2.visible = False
+        print("adding selector lines")
+        self.dotplot_viewer.show_line(show = True, show_label = False)
+        self.dotplot_viewer_2.show_line(show = True, show_label = False)
+        self.dotplot_viewer.show_previous_line(show = True, show_label = True)
+        self.dotplot_viewer_2.show_previous_line(show = True, show_label = True)
         
+        # self.dotplot_viewer.figure.marks = [m for m in self.dotplot_viewer.figure.marks if 'selector_line_dp1' not in m.labels] + [self.dotplot_viewer.line]
+        # self.dotplot_viewer_2.figure.marks = [m for m in self.dotplot_viewer_2.figure.marks if 'selector_line_dp2' not in m.labels] + [self.dotplot_viewer_2.line]
+    
     def get_y_bounds(self, viewer, frac = 0.8):
         """ frac must be (0,1]"""
         y_min, y_max = viewer.state.y_min, viewer.state.y_max
@@ -266,6 +295,29 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
                 self._on_dotplot_change()
             
             layer = self.get_layer_by_name(self.dotplot_viewer_2, self.selected_tower.label)
+            layer.visible = False
+    
+    def tower_select_2(self, event = None):
+        # select the histogram bin corresponding to the x-position of the selector line
+        x = event['domain']['x']
+        if self.allow_tower_select:
+            # get bins from dotplot
+            layer = self.get_layer_by_name(self.dotplot_viewer_2, 'second measurement')
+            bins, hist = layer.bins, layer.hist
+            dx = bins[1] - bins[0]
+            index = self.search_sorted(bins, x) 
+            if hist[max(index-1,0)] > 0:
+                right_edge = bins[index]
+                left_edge = right_edge - dx
+                self.range_subset.lo = left_edge
+                self.range_subset.hi = right_edge
+                meas_subset = self.get_subset_by_name('second measurement')
+                self.selected_tower_2.subset_state = self.range_subset & meas_subset.subset_state
+                self.selected_tower_2.color = next(self.color_cycle)
+            
+                self._on_dotplot_change()
+            
+            layer = self.get_layer_by_name(self.dotplot_viewer, self.selected_tower_2.label)
             layer.visible = False
     
     @staticmethod
@@ -298,27 +350,30 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     def _update_selector_tool_dp(self, event = None):
         if event is not None:
             new_x = [event['domain']['x'], event['domain']['x']]
-            self.selector_line_dp1.x = new_x
-            self.selector_line_dp2.x = new_x
+            self.dotplot_viewer_2.line.x = new_x
             self.spectrum_viewer.line.x = self.v2w(new_x)
             self.spectrum_viewer.line_label.x = self.spectrum_viewer.line.x
-            
-        self.selector_line_dp1.y = self.get_y_bounds(self.dotplot_viewer)
-        self.selector_line_dp2.y = self.get_y_bounds(self.dotplot_viewer_2)
         
-        self.selector_line_dp1.visible = True
-        self.selector_line_dp2.visible = True
+        self.dotplot_viewer.line.visible = True
+        self.dotplot_viewer_2.line.visible = True
+    
+    def _update_selector_tool_dp2(self, event = None):
+        if event is not None:
+            new_x = [event['domain']['x'], event['domain']['x']]
+            self.dotplot_viewer.line.x = new_x
+            self.spectrum_viewer.line.x = self.v2w(new_x)
+            self.spectrum_viewer.line_label.x = self.spectrum_viewer.line.x
+        
+        self.dotplot_viewer.line.visible = True
+        self.dotplot_viewer_2.line.visible = True
 
 
     def _update_selector_tool_sv(self, event = None):
-        self.selector_line_dp1.x = self.w2v(self.spectrum_viewer.line.x)
-        self.selector_line_dp1.y = self.get_y_bounds(self.dotplot_viewer)
+        self.dotplot_viewer.line.x = self.w2v(self.spectrum_viewer.line.x)
+        self.dotplot_viewer_2.line.x = self.dotplot_viewer.line.x
         
-        self.selector_line_dp2.x = self.selector_line_dp1.x
-        self.selector_line_dp2.y = self.get_y_bounds(self.dotplot_viewer_2)
-        
-        self.selector_line_dp1.visible = True
-        self.selector_line_dp2.visible = True
+        self.dotplot_viewer.line.visible = True
+        self.dotplot_viewer_2.line.visible = True
 
 
     def plot_measurements(self, data):
@@ -427,12 +482,17 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
      
     def vue_prep_second_measurement(self, data = None):
         self.example_galaxy_table.filter_by(lambda item: item['measurement_number'] == 'second')
-
+        
     def vue_selector_lines_on(self, _data = None):
-        self.show_selector_lines = True        
+        self.show_selector_lines = True       
+        self.dotplot_viewer.line.visible = True
+        self.dotplot_viewer_2.line.visible = True
     
     def vue_selector_lines_off(self, _data = None):
-        self.show_selector_lines = True
+        self.show_selector_lines = False
+        self.dotplot_viewer.line.visible = False
+        self.dotplot_viewer_2.line.visible = False
+
     
     def vue_on_close(self, data = None):
         self.spectrum_viewer.state.reset_limits()
@@ -443,4 +503,4 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         self.unobserve(self._on_data_change, ['show_first_measurment', 'show_second_measurment'])
         self.unobserve(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
         self.unobserve(self.on_zoom_tool_enabled, 'zoom_tool_enabled')
-        self.spectrum_viewer.remove_event_callback(self._update_selector_tool_sv)
+        # self.spectrum_viewer.remove_event_callback(self._update_selector_tool_sv)
