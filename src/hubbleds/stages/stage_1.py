@@ -20,8 +20,7 @@ from traitlets import Bool, default, validate
 
 from ..components import SpectrumSlideshow, SelectionTool, SpectrumMeasurementTutorialSequence
 from ..data.styles import load_style
-from ..data_management import SDSS_DATA_LABEL, EXAMPLE_GALAXY_SEED_DATA, SPECTRUM_DATA_LABEL, \
-    STUDENT_MEASUREMENTS_LABEL, EXAMPLE_GALAXY_DATA, EXAMPLE_GALAXY_MEASUREMENTS
+from ..data_management import *
 from ..stage import HubbleStage
 from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, \
     MG_REST_LAMBDA, velocity_from_wavelengths
@@ -320,12 +319,12 @@ class StageOne(HubbleStage):
         galaxy_table = Table(
             self.session,
             data=self.get_data(STUDENT_MEASUREMENTS_LABEL),
-            glue_components=['name',
-                             'element',
-                             'restwave',
-                             'measwave',
-                             'velocity'],
-            key_component='name',
+            glue_components=[NAME_COMPONENT,
+                             ELEMENT_COMPONENT,
+                             RESTWAVE_COMPONENT,
+                             MEASWAVE_COMPONENT,
+                             VELOCITY_COMPONENT],
+            key_component=NAME_COMPONENT,
             names=['Galaxy Name',
                    'Element',
                    'Rest Wavelength (Å)',
@@ -352,15 +351,15 @@ class StageOne(HubbleStage):
         example_galaxy_table = Table(
             self.session,
             data=self.get_data(EXAMPLE_GALAXY_MEASUREMENTS),
-            glue_components=['name',
-                            'element',
-                            'restwave',
-                            'measwave',
-                            'velocity',
-                            'angular_size',
-                            'measurement_number',
-                            'student_id'],
-            key_component='measurement_number',
+            glue_components=[NAME_COMPONENT,
+                            ELEMENT_COMPONENT,
+                            RESTWAVE_COMPONENT,
+                            MEASWAVE_COMPONENT,
+                            VELOCITY_COMPONENT,
+                            ANGULAR_SIZE_COMPONENT,
+                            MEASUREMENT_NUMBER_COMPONENT,
+                            STUDENT_ID_COMPONENT],
+            key_component=MEASUREMENT_NUMBER_COMPONENT,
             names=['Galaxy Name',
                     'Element',
                     'Rest Wavelength (Å)',
@@ -372,7 +371,7 @@ class StageOne(HubbleStage):
             title='Example Galaxy',
             selected_color=self.table_selected_color(
                 self.app_state.dark_mode),
-            item_filter= lambda item: item['measurement_number'] == 'first',
+            item_filter= lambda item: item[MEASUREMENT_NUMBER_COMPONENT] == 'first',
             use_subset_group=False,
             single_select=True,
            tools=[add_velocities_tool2])
@@ -517,14 +516,14 @@ class StageOne(HubbleStage):
     def _update_state_from_measurements(self):
         student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         self.stage_state.gals_total = int(student_measurements.size)
-        measwaves = student_measurements["measwave"]
+        measwaves = student_measurements[MEASWAVE_COMPONENT]
         self.stage_state.obswaves_total = measwaves[measwaves != None].size
-        velocities = student_measurements["velocity"]
+        velocities = student_measurements[VELOCITY_COMPONENT]
         self.stage_state.velocities_total = velocities[velocities != None].size
         
         example_measurements = self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)
-        measwaves = example_measurements["measwave"]
-        velocities = example_measurements["velocity"]
+        measwaves = example_measurements[MEASWAVE_COMPONENT]
+        velocities = example_measurements[VELOCITY_COMPONENT]
 
     @debounce(wait=2)
     def _update_state_from_measurements_debounced(self):
@@ -689,7 +688,7 @@ class StageOne(HubbleStage):
 
         index = table.index
         measurements = table.glue_data
-        measwave = measurements["measwave"][index]
+        measwave = measurements[MEASWAVE_COMPONENT][index]
 
         sdss = self.get_data(SDSS_DATA_LABEL)
         sdss_index = next(
@@ -698,14 +697,14 @@ class StageOne(HubbleStage):
             element = sdss['element'][sdss_index]
             label = STUDENT_MEASUREMENTS_LABEL
         else:
-            element = measurements["element"][index]
+            element = measurements[ELEMENT_COMPONENT][index]
             label = EXAMPLE_GALAXY_MEASUREMENTS
 
         specview.update(name, element, z, previous=measwave)
         self.stage_state.element = element
         restwave = MG_REST_LAMBDA if element == 'Mg-I' else H_ALPHA_REST_LAMBDA
-        self.update_data_value(label, "element", element, index)
-        self.update_data_value(label, "restwave", restwave, index)
+        self.update_data_value(label, ELEMENT_COMPONENT, element, index)
+        self.update_data_value(label, RESTWAVE_COMPONENT, restwave, index)
         
     def _spectrum_slideshow_marker_changed(self, msg):
         self.stage_state.marker = msg['new']
@@ -765,16 +764,16 @@ class StageOne(HubbleStage):
 
         self.selection_tool.go_to_location(data["ra"][index],
                                            data["decl"][index], fov=GALAXY_FOV)
-        self.stage_state.lambda_rest = data["restwave"][index]
-        self.stage_state.lambda_obs = data["measwave"][index]
+        self.stage_state.lambda_rest = data[RESTWAVE_COMPONENT][index]
+        self.stage_state.lambda_obs = data[MEASWAVE_COMPONENT][index]
         self.stage_state.sel_gal_index = index
 
     #@print_function_name
     def add_new_measurement(self, data_label = EXAMPLE_GALAXY_MEASUREMENTS):
         data = self.data_collection[data_label]
         new_meas = {x.label:data[x][0] for x in data.main_components}
-        new_meas['measwave'] = 0
-        new_meas['measurement_number'] = 'second'
+        new_meas[MEASWAVE_COMPONENT] = 0
+        new_meas[MEASUREMENT_NUMBER_COMPONENT] = 'second'
         # new_meas['name'] = new_meas['name'].replace('.fits','')
         self.add_data_values(data_label,new_meas)
 
@@ -801,7 +800,7 @@ class StageOne(HubbleStage):
         self.stage_state.lambda_obs = new_value
 
         if index is not None:
-            self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "measwave",
+            self.update_data_value(STUDENT_MEASUREMENTS_LABEL, MEASWAVE_COMPONENT,
                                    new_value, index)
             self.story_state.update_student_data()
             self.stage_state.spectrum_clicked = True
@@ -827,11 +826,11 @@ class StageOne(HubbleStage):
                 if (index == 0) & (self.stage_state.allow_first_measurement_change & (self.stage_state.marker_reached('osm_tut'))):
                     # don't allow user to change the first measurement once we begin the tutorial section
                     return
-                self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, "measwave",
+                self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
                                     new_value, index)
                 if self.stage_state.marker_reached('smt_tut'):
-                    velocity = velocity_from_wavelengths(new_value,data['restwave'][index])
-                    self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, "velocity",
+                    velocity = velocity_from_wavelengths(new_value,data[RESTWAVE_COMPONENT][index])
+                    self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, VELOCITY_COMPONENT,
                                         velocity, index)
                 # self.story_state.update_student_data()
                 self.stage_state.spectrum_clicked = True
@@ -843,10 +842,10 @@ class StageOne(HubbleStage):
         data = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         index = self.galaxy_table.index
         if index is not None:
-            lamb_rest = data["restwave"][index]
-            lamb_meas = data["measwave"][index]
+            lamb_rest = data[RESTWAVE_COMPONENT][index]
+            lamb_meas = data[MEASWAVE_COMPONENT][index]
             velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
-            self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "velocity",
+            self.update_data_value(STUDENT_MEASUREMENTS_LABEL, VELOCITY_COMPONENT,
                                    velocity, index)
             self.story_state.update_student_data()
     
@@ -855,7 +854,7 @@ class StageOne(HubbleStage):
         index = table.index
         data_label = table._glue_data.label
         velocity = round(self.stage_state.student_vel)
-        self.update_data_value(data_label, "velocity",
+        self.update_data_value(data_label, VELOCITY_COMPONENT,
                                velocity, index)
 
     @property
@@ -947,13 +946,13 @@ class StageOne(HubbleStage):
             data = table.glue_data
             for item in table.items:
                 index = table.indices_from_items([item])[0]
-                if index is not None :#and data["velocity"][index] is None:
-                    lamb_rest = data["restwave"][index]
-                    lamb_meas = data["measwave"][index]
+                if index is not None :#and data[VELOCITY_COMPONENT][index] is None:
+                    lamb_rest = data[RESTWAVE_COMPONENT][index]
+                    lamb_meas = data[MEASWAVE_COMPONENT][index]
                     if lamb_rest is None or lamb_meas is None or (lamb_meas==0):
                         continue
                     velocity = velocity_from_wavelengths(lamb_meas, lamb_rest)
-                    self.update_data_value(data.label, "velocity",
+                    self.update_data_value(data.label, VELOCITY_COMPONENT,
                                         velocity, index)
             self.story_state.update_student_data()
 
@@ -975,7 +974,7 @@ class StageOne(HubbleStage):
     def initialize_spectrum_data(self, label):
         data = self.get_data(label)
         name = data[data.id['name']][0]
-        type = data[data.id['type']][0]
-        self.story_state.load_spectrum_data(name, type)
+        spectype = data[data.id['type']][0]
+        self.story_state.load_spectrum_data(name, spectype)
         data = self.get_data(name.split(".")[0])
         self.story_state.update_data(SPECTRUM_DATA_LABEL, data)

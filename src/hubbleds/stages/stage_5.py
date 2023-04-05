@@ -13,10 +13,7 @@ from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..data_management import \
-    ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
-    CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, STUDENT_DATA_LABEL, \
-    BEST_FIT_GALAXY_NAME
+from ..data_management import *
 from ..histogram_listener import HistogramListener
 from ..stage import HubbleStage
 from ..viewers import HubbleScatterView
@@ -244,10 +241,10 @@ class StageFour(HubbleStage):
 
         fit_table = Table(self.session,
                           data=student_data,
-                          glue_components=['name',
-                                           'velocity',
-                                           'distance'],
-                          key_component='name',
+                          glue_components=[NAME_COMPONENT,
+                                           VELOCITY_COMPONENT,
+                                           DISTANCE_COMPONENT],
+                          key_component=NAME_COMPONENT,
                           names=['Galaxy Name',
                                  'Velocity (km/s)',
                                  'Distance (Mpc)'],
@@ -301,7 +298,7 @@ class StageFour(HubbleStage):
         student_slider_subset_label = "student_slider_subset"
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
         self.student_slider_subset.style.alpha = 1
-        student_slider = IDSlider(class_summ_data, "student_id", "age", highlight_ids=[self.story_state.student_user["id"]])
+        student_slider = IDSlider(class_summ_data, STUDENT_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "py-student-slider")
         def student_slider_change(id, highlighted):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
@@ -320,10 +317,10 @@ class StageFour(HubbleStage):
         # Create the class slider
         class_slider_subset_label = "class_slider_subset"
         self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
-        class_slider = IDSlider(classes_summary_data, "class_id", "age")
+        class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT)
         self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
-            self.class_slider_subset.subset_state = all_data['class_id'] == id
+            self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
             color = class_slider.highlight_color if highlighted else class_slider.default_color
             self.class_slider_subset.style.color = color
         def class_slider_refresh(slider):
@@ -351,7 +348,7 @@ class StageFour(HubbleStage):
                     viewer.ignore(ignorer)
         
         # layers from the table selection have the same label, but we only want student_data selected
-        layer_viewer.ignore(lambda layer: layer.label == "fit_table_selected" and layer.data != student_data)
+        layer_viewer.ignore(lambda layer: layer.label == fit_table.subset_label and layer.data != student_data)
 
         def comparison_ignorer(x):
             return x.label == histogram_modify_label and x.data != self.histogram_listener.modify_data
@@ -578,9 +575,9 @@ class StageFour(HubbleStage):
             viewer.figure.axes[1].tick_format = '0'
             # viewer.figure.axes[1].num_ticks = 5
 
-        class_distr_viewer.state.x_att = class_summ_data.id['age']
-        all_distr_viewer_class.state.x_att = classes_summary_data.id['age']
-        all_distr_viewer_student.state.x_att = students_summary_data.id['age']
+        class_distr_viewer.state.x_att = class_summ_data.id[AGE_COMPONENT]
+        all_distr_viewer_class.state.x_att = classes_summary_data.id[AGE_COMPONENT]
+        all_distr_viewer_student.state.x_att = students_summary_data.id[AGE_COMPONENT]
 
         theme = "dark" if self.app_state.dark_mode else "light"
         style_name = f"default_histogram_{theme}"
@@ -629,8 +626,8 @@ class StageFour(HubbleStage):
         indices = where(data["name"] == BEST_FIT_GALAXY_NAME)
         if indices[0]:
             index = indices[0][0]
-            self.stage_state.hypgal_velocity = data["velocity"][index]
-            self.stage_state.hypgal_distance = data["distance"][index]
+            self.stage_state.hypgal_velocity = data[VELOCITY_COMPONENT][index]
+            self.stage_state.hypgal_distance = data[DISTANCE_COMPONENT][index]
             self.stage_state.our_age = (AGE_CONSTANT * self.stage_state.hypgal_distance/self.stage_state.hypgal_velocity)
 
     def _update_image_location(self, using_voila):

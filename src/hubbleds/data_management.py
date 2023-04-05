@@ -17,17 +17,38 @@ EXAMPLE_GALAXY_SEED_DATA = "example_galaxy_seed_data"
 EXAMPLE_GALAXY_DATA = "example_galaxy"
 EXAMPLE_GALAXY_MEASUREMENTS = "example_galaxy_data"
 EXAMPLE_GALAXY_STUDENT_DATA = "example_galaxy_student_data"
+
+
+### Data Components
+
+# Measurements
+MEASWAVE_COMPONENT = "measwave"
+RESTWAVE_COMPONENT = "restwave"
+VELOCITY_COMPONENT = "velocity"
+DISTANCE_COMPONENT = "distance"
+ANGULAR_SIZE_COMPONENT = "angular_size"
+NAME_COMPONENT = "name"
+STUDENT_ID_COMPONENT = "student_id"
+ELEMENT_COMPONENT = "element"
+
+# Sample measurements
+MEASUREMENT_NUMBER_COMPONENT = "measurement_number"
+
+# Summaries
+CLASS_ID_COMPONENT = "class_id"
+AGE_COMPONENT = "age"
+
 def reverse(d):
     return { v : k for k, v in d.items() }
 
 MEAS_TO_STATE = {
-    "measwave": "obs_wave_value",
-    "restwave": "rest_wave_value",
-    "velocity": "velocity_value",
-    "distance": "est_dist_value",
-    "name": "galaxy_name",
-    "student_id": "student_id",
-    "angular_size" : "ang_size_value"
+    MEASWAVE_COMPONENT: "obs_wave_value",
+    RESTWAVE_COMPONENT: "rest_wave_value",
+    VELOCITY_COMPONENT: "velocity_value",
+    DISTANCE_COMPONENT: "est_dist_value",
+    NAME_COMPONENT: "galaxy_name",
+    STUDENT_ID_COMPONENT: "student_id",
+    ANGULAR_SIZE_COMPONENT : "ang_size_value"
 }
 
 STATE_TO_MEAS = reverse(MEAS_TO_STATE)
