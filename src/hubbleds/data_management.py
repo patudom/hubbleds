@@ -48,81 +48,81 @@ H0_COMPONENT = "H0"
 ### Database keys
 
 # Measurements
-DB_MEASWAVE_KEY = "obs_wave_value"
-DB_RESTWAVE_KEY = "rest_wave_value"
-DB_VELOCITY_KEY = "velocity_value"
-DB_DISTANCE_KEY = "est_dist_value"
-DB_ANGSIZE_KEY = "ang_size_value"
-DB_RA_KEY = "ra"
-DB_DEC_KEY = "decl"
-DB_NAME_KEY = "name"
-DB_Z_KEY = "z"
-DB_GALTYPE_KEY = "type"
-DB_ELEMENT_KEY = "element"
-DB_STUDENT_ID_KEY = "student_id"
-DB_LAST_MODIFIED_KEY = "last_modified"
+DB_MEASWAVE_FIELD = "obs_wave_value"
+DB_RESTWAVE_FIELD = "rest_wave_value"
+DB_VELOCITY_FIELD = "velocity_value"
+DB_DISTANCE_FIELD = "est_dist_value"
+DB_ANGSIZE_FIELD = "ang_size_value"
+DB_RA_FIELD = "ra"
+DB_DEC_FIELD = "decl"
+DB_NAME_FIELD = "name"
+DB_Z_FIELD = "z"
+DB_GALTYPE_FIELD = "type"
+DB_ELEMENT_FIELD = "element"
+DB_STUDENT_ID_FIELD = "student_id"
+DB_LAST_MODIFIED_FIELD = "last_modified"
 
-DB_MEASNUM_KEY = "measurement_number"
+DB_MEASNUM_FIELD = "measurement_number"
 
-DB_GALNAME_KEY = "galaxy_name"
+DB_GALNAME_FIELD = "galaxy_name"
 
-DB_RESTWAVE_UNIT_KEY = "rest_wave_unit"
-DB_MEASWAVE_UNIT_KEY = "obs_wave_unit"
-DB_DISTANCE_UNIT_KEY = "est_dist_unit"
-DB_VELOCITY_UNIT_KEY = "velocity_unit"
-DB_ANGSIZE_UNIT_KEY = "ang_size_unit"
+DB_RESTWAVE_UNIT_FIELD = "rest_wave_unit"
+DB_MEASWAVE_UNIT_FIELD = "obs_wave_unit"
+DB_DISTANCE_UNIT_FIELD = "est_dist_unit"
+DB_VELOCITY_UNIT_FIELD = "velocity_unit"
+DB_ANGSIZE_UNIT_FIELD = "ang_size_unit"
 
-DB_MEASUREMENT_KEYS = [
-    DB_MEASWAVE_KEY,
-    DB_RESTWAVE_KEY,
-    DB_VELOCITY_KEY,
-    DB_DISTANCE_KEY,
-    DB_ANGSIZE_KEY,
-    DB_RA_KEY,
-    DB_DEC_KEY,
-    DB_NAME_KEY,
-    DB_Z_KEY,
-    DB_GALTYPE_KEY,
-    DB_ELEMENT_KEY,
-    DB_STUDENT_ID_KEY,
-    DB_LAST_MODIFIED_KEY
+DB_MEASUREMENT_FIELDS = [
+    DB_MEASWAVE_FIELD,
+    DB_RESTWAVE_FIELD,
+    DB_VELOCITY_FIELD,
+    DB_DISTANCE_FIELD,
+    DB_ANGSIZE_FIELD,
+    DB_RA_FIELD,
+    DB_DEC_FIELD,
+    DB_NAME_FIELD,
+    DB_Z_FIELD,
+    DB_GALTYPE_FIELD,
+    DB_ELEMENT_FIELD,
+    DB_STUDENT_ID_FIELD,
+    DB_LAST_MODIFIED_FIELD
 ]
 
 # Summaries
-DB_H0_KEY = "hubble_fit_value"
-DB_AGE_KEY = "age_value"
+DB_H0_FIELD = "hubble_fit_value"
+DB_AGE_FIELD = "age_value"
 
-DB_SUMMARY_KEYS = [
-    DB_H0_KEY,
-    DB_AGE_KEY
+DB_SUMMARY_FIELDS = [
+    DB_H0_FIELD,
+    DB_AGE_FIELD
 ]
 
 def reverse(d):
     return { v : k for k, v in d.items() }
 
 MEAS_TO_STATE = {
-    MEASWAVE_COMPONENT: DB_MEASWAVE_KEY,
-    RESTWAVE_COMPONENT: DB_RESTWAVE_KEY,
-    VELOCITY_COMPONENT: DB_VELOCITY_KEY,
-    DISTANCE_COMPONENT: DB_DISTANCE_KEY,
-    NAME_COMPONENT: DB_GALNAME_KEY,
-    STUDENT_ID_COMPONENT: DB_STUDENT_ID_KEY,
-    ANGULAR_SIZE_COMPONENT : DB_ANGSIZE_KEY
+    MEASWAVE_COMPONENT: DB_MEASWAVE_FIELD,
+    RESTWAVE_COMPONENT: DB_RESTWAVE_FIELD,
+    VELOCITY_COMPONENT: DB_VELOCITY_FIELD,
+    DISTANCE_COMPONENT: DB_DISTANCE_FIELD,
+    NAME_COMPONENT: DB_GALNAME_FIELD,
+    STUDENT_ID_COMPONENT: DB_STUDENT_ID_FIELD,
+    ANGULAR_SIZE_COMPONENT : DB_ANGSIZE_FIELD
 }
 
 STATE_TO_MEAS = reverse(MEAS_TO_STATE)
 
 SUMM_TO_STATE = {
-    H0_COMPONENT: DB_H0_KEY,
-    AGE_COMPONENT: DB_AGE_KEY
+    H0_COMPONENT: DB_H0_FIELD,
+    AGE_COMPONENT: DB_AGE_FIELD
 }
 
 STATE_TO_SUMM = reverse(SUMM_TO_STATE)
 
 UNITS_TO_STATE = {
-    DB_RESTWAVE_UNIT_KEY: "angstrom",
-    DB_MEASWAVE_KEY: "angstrom",
-    DB_DISTANCE_UNIT_KEY: "Mpc",
-    DB_VELOCITY_UNIT_KEY: "km / s",
-    DB_ANGSIZE_UNIT_KEY: "arcsecond"
+    DB_RESTWAVE_UNIT_FIELD: "angstrom",
+    DB_MEASWAVE_FIELD: "angstrom",
+    DB_DISTANCE_UNIT_FIELD: "Mpc",
+    DB_VELOCITY_UNIT_FIELD: "km / s",
+    DB_ANGSIZE_UNIT_FIELD: "arcsecond"
 }

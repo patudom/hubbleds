@@ -211,7 +211,7 @@ class HubblesLaw(Story):
             Z_COMPONENT: 0, ANGULAR_SIZE_COMPONENT: 0,
             ELEMENT_COMPONENT: "H-α",
             STUDENT_ID_COMPONENT: self.student_user["id"],
-            DB_LAST_MODIFIED_KEY: datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            DB_LAST_MODIFIED_FIELD: datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
     
     def setup_example_galaxy(self):
@@ -230,9 +230,9 @@ class HubblesLaw(Story):
         # create glue Data object [each dictionary item becomes a component]
         example_galaxy_seed_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements").json()
         example_galaxy_seed_data = {k: np.array([record[k] for record in example_galaxy_seed_data]) for k in example_galaxy_seed_data[0]}
-        good = example_galaxy_seed_data[DB_VELOCITY_KEY] != None
+        good = example_galaxy_seed_data[DB_VELOCITY_FIELD] != None
         example_galaxy_seed_data = {k: np.array(v)[good] for k,v in example_galaxy_seed_data.items()}
-        example_galaxy_seed_data[DB_VELOCITY_KEY] = np.array(example_galaxy_seed_data[DB_VELOCITY_KEY], dtype = type(example_galaxy_seed_data[DB_VELOCITY_KEY][0]))
+        example_galaxy_seed_data[DB_VELOCITY_FIELD] = np.array(example_galaxy_seed_data[DB_VELOCITY_FIELD], dtype = type(example_galaxy_seed_data[DB_VELOCITY_FIELD][0]))
         example_galaxy_seed_data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **example_galaxy_seed_data)
         
         self.data_collection.append(example_galaxy_seed_data)
@@ -268,11 +268,11 @@ class HubblesLaw(Story):
         # self.data_collection.append(example_galaxy_student_data)
         self.data_collection.append(example_galaxy_measurements)
 
-        self.app.add_link(example_galaxy_seed_data, DB_STUDENT_ID_KEY, example_galaxy_measurements, STUDENT_ID_COMPONENT)
-        self.app.add_link(example_galaxy_seed_data, DB_DISTANCE_KEY, example_galaxy_measurements, DISTANCE_COMPONENT)
-        self.app.add_link(example_galaxy_seed_data, DB_VELOCITY_KEY, example_galaxy_measurements, VELOCITY_COMPONENT)
-        self.app.add_link(example_galaxy_seed_data, DB_MEASNUM_KEY, example_galaxy_measurements, MEASUREMENT_NUMBER_COMPONENT)
-        self.app.add_link(example_galaxy_seed_data, DB_ANGSIZE_KEY, example_galaxy_measurements, ANGULAR_SIZE_COMPONENT)
+        self.app.add_link(example_galaxy_seed_data, DB_STUDENT_ID_FIELD, example_galaxy_measurements, STUDENT_ID_COMPONENT)
+        self.app.add_link(example_galaxy_seed_data, DB_DISTANCE_FIELD, example_galaxy_measurements, DISTANCE_COMPONENT)
+        self.app.add_link(example_galaxy_seed_data, DB_VELOCITY_FIELD, example_galaxy_measurements, VELOCITY_COMPONENT)
+        self.app.add_link(example_galaxy_seed_data, DB_MEASNUM_FIELD, example_galaxy_measurements, MEASUREMENT_NUMBER_COMPONENT)
+        self.app.add_link(example_galaxy_seed_data, DB_ANGSIZE_FIELD, example_galaxy_measurements, ANGULAR_SIZE_COMPONENT)
         
         return example_galaxy_measurements
 
@@ -362,7 +362,7 @@ class HubblesLaw(Story):
     def data_from_measurements(self, measurements):
         for measurement in measurements:
             measurement.update(measurement.get("galaxy", {}))
-        components = { STATE_TO_MEAS.get(k, k) : [measurement.get(k, None) for measurement in measurements] for k in DB_MEASUREMENT_KEYS }
+        components = { STATE_TO_MEAS.get(k, k) : [measurement.get(k, None) for measurement in measurements] for k in DB_MEASUREMENT_FIELDS }
 
         for i, name in enumerate(components[NAME_COMPONENT]):
             if name.endswith(self.name_ext):
@@ -370,7 +370,7 @@ class HubblesLaw(Story):
         return Data(**components)
 
     def data_from_summaries(self, summaries, id_key=None, label=None):
-        components = { STATE_TO_SUMM.get(k, k) : [summary.get(k, None) for summary in summaries] for k in DB_SUMMARY_KEYS }
+        components = { STATE_TO_SUMM.get(k, k) : [summary.get(k, None) for summary in summaries] for k in DB_SUMMARY_FIELDS }
         if id_key is not None:
             ids = [summary.get(id_key, None) for summary in summaries]
             ids = [x for x in ids if x is not None]
@@ -446,7 +446,7 @@ class HubblesLaw(Story):
 
     def fetch_class_data(self):
         def check_update(measurements):
-            last_modified = max([datetime.fromisoformat(x[DB_LAST_MODIFIED_KEY][:-1]) for x in measurements], default=None)
+            last_modified = max([datetime.fromisoformat(x[DB_LAST_MODIFIED_FIELD][:-1]) for x in measurements], default=None)
             need_update = self.class_last_modified is None or last_modified is None or last_modified > self.class_last_modified
             if need_update:
                 self.class_last_modified = last_modified
