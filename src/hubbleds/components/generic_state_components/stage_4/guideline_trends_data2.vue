@@ -11,7 +11,7 @@
     :state="state"
   >
     <template #before-next>
-      Click <v-icon>mdi-google-classroom</v-icon> in Toolbar.
+      Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-google-classroom</v-icon></v-btn> in Toolbar.
     </template>
 
     <div
@@ -24,7 +24,7 @@
         Since everyone in your class also measured 5 galaxies, let's look at a dataset that combines everyone's measurements.
       </p>
       <p>
-        Click <v-icon>mdi-google-classroom</v-icon> to display measurements from your entire class.
+        Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-google-classroom</v-icon></v-btn>  to display measurements from your entire class.
       </p>
     </div>
   </scaffold-alert>

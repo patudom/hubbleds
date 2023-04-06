@@ -11,7 +11,7 @@
     :state="state"
   >
     <template #before-next>
-      Click <v-icon>mdi-message-draw</v-icon> and draw a trend line.
+      Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-message-draw</v-icon></v-btn> and draw a trend line.
     </template>
 
     <div
@@ -21,7 +21,7 @@
         Now that you've drawn what conclusions you can from looking at individual students' measurements, let's turn back to your whole class's dataset.
       </p>
       <p>
-        Click <v-icon>mdi-message-draw</v-icon> in the Toolbar to activate the drawing tool and try drawing a trend line through your class's data points.
+        Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-message-draw</v-icon></v-btn> in the Toolbar to activate the drawing tool and try drawing a trend line through your class's data points.
       </p>
     </div>
   </scaffold-alert>

@@ -15,7 +15,7 @@
   >
 
     <template #before-next>
-      Click the <strong>SPECTRUM TUTORIAL</strong> button.
+      Click the <span style="background-color: #02838f; border-radius : 5px; padding: 1px"><strong> SPECTRUM TUTORIAL </strong></span>  button.
     </template>
 
     <div
@@ -32,7 +32,7 @@
       v-if="!(state.spec_tutorial_opened || state.marker == 'spe_tut1')"
     >    
       <p>
-        Click the <strong>SPECTRUM TUTORIAL</strong> button to learn what spectra can tell us about galaxies.
+        Click the <span style="background-color: #02838f; border-radius : 5px; padding: 1px"><strong> SPECTRUM TUTORIAL </strong></span> button to learn what spectra can tell us about galaxies.
       </p>
     </div>
     <div
@@ -40,7 +40,7 @@
       v-if="state.spec_tutorial_opened || state.marker == 'spe_tut1'"
     >
       <p>
-        You can reopen the <strong>SPECTRUM TUTORIAL</strong> any time you need a refresher about spectra.
+        You can reopen the <span style="background-color: #02838f; border-radius : 5px; padding: 1px"><strong>SPECTRUM TUTORIAL</strong></span> any time you need a refresher about spectra.
       </p>
     </div>
   </scaffold-alert>

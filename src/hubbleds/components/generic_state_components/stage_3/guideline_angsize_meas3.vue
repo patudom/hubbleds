@@ -11,7 +11,7 @@
     :state="state"
   >
     <template #before-next>
-      Click the <v-icon>mdi-ruler</v-icon> icon.
+      Click the <v-btn icon dark x-small disabled class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-ruler</v-icon></v-btn>  icon.
     </template>
 
     <div
@@ -21,7 +21,7 @@
         Zoom in or out so your entire galaxy is framed within the viewer.
       </p>    
       <p>
-        Click the <v-icon>mdi-ruler</v-icon> icon to activate the angular size measuring tool.
+        Click the <v-btn icon dark x-small disabled class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-ruler</v-icon></v-btn>  icon to activate the angular size measuring tool.
       </p>
     </div>
   </scaffold-alert>
