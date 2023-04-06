@@ -20,6 +20,10 @@ class HubbleDotPlotViewState(LineHoverViewerMixin,BqplotDotPlotView):
     def __init__(self, *args, **kwargs):
         super(HubbleDotPlotViewState, self).__init__(*args, **kwargs)
         
+    @staticmethod
+    def _label_text(value):
+        return f"{value:.0f} km/s"
+    
     def show_line(self, show = True, show_label = False):
         self.line.visible = show
         self.line_label.visible = show_label
@@ -55,6 +59,7 @@ HubbleDotPlotView = cds_viewer(
     viewer_tools=[
         "bqplot:home",
         "bqplot:xzoom",
+        'hubble:onebinselect'
     ],
     label="Dot Plot",
     state_cls=HubbleDotPlotViewerState
