@@ -36,8 +36,8 @@ class HubbleDotPlotViewState(LineHoverViewerMixin,BqplotDotPlotView):
         self.figure.marks = marks
         
     def show_previous_line(self, show = True, show_label = True):
-        self.previous_line.visible = show
-        self.previous_line_label.visible = show_label
+        self.previous_line.visible = False
+        self.previous_line_label.visible = False
         lines = [self.previous_line, self.previous_line_label]
         marks = [m for m in self.figure.marks if m not in lines]
         if show:
