@@ -446,8 +446,6 @@ class StageFour(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
 
     def _setup_scatter_layers(self):
-        dist_attr = "distance"
-        vel_attr = "velocity"
         layer_viewer = self.get_viewer("layer_viewer")
         comparison_viewer = self.get_viewer("comparison_viewer")
         all_viewer = self.get_viewer("all_viewer")
@@ -455,8 +453,8 @@ class StageFour(HubbleStage):
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
         for viewer in [comparison_viewer, layer_viewer, all_viewer]:
             viewer.add_data(student_data)
-            viewer.state.x_att = student_data.id[dist_attr]
-            viewer.state.y_att = student_data.id[vel_attr]
+            viewer.state.x_att = student_data.id[DISTANCE_COMPONENT]
+            viewer.state.y_att = student_data.id[VELOCITY_COMPONENT]
 
         student_layer = layer_viewer.layer_artist_for_data(student_data)
         student_layer.state.visible = False # Don't need to display this in Stage 4.
@@ -495,8 +493,8 @@ class StageFour(HubbleStage):
         class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
         # comparison_viewer.add_subset(self.student_slider_subset)
-        comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
-        comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
+        comparison_viewer.state.x_att = class_meas_data.id[DISTANCE_COMPONENT]
+        comparison_viewer.state.y_att = class_meas_data.id[VELOCITY_COMPONENT]
         comparison_viewer.state.reset_limits()
 
         comparison_viewer.toolbar.tools["hubble:linefit"].activate() 
@@ -515,8 +513,8 @@ class StageFour(HubbleStage):
         all_layer.state.color = "#78909C"
         all_layer.state.size = 2
         all_layer.state.visible = False
-        all_viewer.state.x_att = all_data.id[dist_attr]
-        all_viewer.state.y_att = all_data.id[vel_attr]
+        all_viewer.state.x_att = all_data.id[DISTANCE_COMPONENT]
+        all_viewer.state.y_att = all_data.id[VELOCITY_COMPONENT]
 
         # Set up all viewer tools
         all_fit_tool = all_viewer.toolbar.tools["hubble:linefit"]
