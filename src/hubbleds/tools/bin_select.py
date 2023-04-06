@@ -8,7 +8,7 @@ from glue_jupyter.bqplot.common.tools import INTERACT_COLOR
 from contextlib import nullcontext
 
 
-from bqplot.interacts import BrushIntervalSelector
+from bqplot.interacts import BrushIntervalSelector, IndexSelector
 
 from glue.core.roi import RangeROI
 from glue.core.subset import RangeSubsetState
@@ -65,10 +65,32 @@ class BinSelect(BqplotSelectionTool):
         self.tool_activated = True
     
 
-def get_contained_values(bin_centers, x_min, x_max):
-    # bin_centers is a 1D sorted array of bin centers
-    # x_min and x_max are the min and max of the selection
-    # returns only the bin values that are fully enclosed by the selection
-    left = np.searchsorted(bin_centers, x_min, side='left')
-    right = np.searchsorted(bin_centers, x_max, side='right')
-    return 
+
+
+
+# this decorator tells glue this is a viewer tool, so it knows what to do with
+# all this info
+@viewer_tool
+class SingleBinSelect(BqplotSelectionTool):
+    icon = 'glue_crosshair'
+    mdi_icon = "mdi-cursor-default-click"
+    tool_id = 'hubble:onebinselect'
+    action_text = 'Select a bins'
+    tool_tip = 'Select a bins'
+    tool_activated = CallbackProperty(False)
+    x = CallbackProperty(0)
+    
+
+    def __init__(self, viewer, **kwargs):
+
+        super().__init__(viewer, **kwargs)
+        
+        self.interact = None
+        
+
+    def activate(self):
+        return super().activate()
+    
+    def deactivate(self):
+        return super().deactivate()
+   
