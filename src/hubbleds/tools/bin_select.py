@@ -1,6 +1,9 @@
 from glue_jupyter.bqplot.common.tools import BqplotSelectionTool
 from glue.config import viewer_tool
 from echo import CallbackProperty
+from bqplot_image_gl.interacts import MouseInteraction, mouse_events
+from glue_jupyter.bqplot.common.tools import InteractCheckableTool
+
 
 from glue.config import viewer_tool
 from glue_jupyter.bqplot.common.tools import INTERACT_COLOR
@@ -71,7 +74,7 @@ class BinSelect(BqplotSelectionTool):
 # this decorator tells glue this is a viewer tool, so it knows what to do with
 # all this info
 @viewer_tool
-class SingleBinSelect(BqplotSelectionTool):
+class SingleBinSelect(InteractCheckableTool):
     icon = 'glue_crosshair'
     mdi_icon = "mdi-cursor-default-click"
     tool_id = 'hubble:onebinselect'
@@ -80,12 +83,47 @@ class SingleBinSelect(BqplotSelectionTool):
     tool_activated = CallbackProperty(False)
     x = CallbackProperty(0)
     
+    
+    
 
     def __init__(self, viewer, **kwargs):
 
         super().__init__(viewer, **kwargs)
         
-        self.interact = None
+        self.interact = MouseInteraction(
+            x_scale=self.viewer.scale_x,
+            y_scale=self.viewer.scale_y,
+            move_throttle=70,
+            next=None,
+            events=['click']
+        )
+        self.x =  [0,0]
+        self.interact.on_msg(self._message_handler)
+    
+    def _message_handler(self, interaction, content, buffers):
+        if content['event'] == 'click':
+            x = content['domain']['x']
+            self.tower_select(x)
+            
+    def tower_select(self, x):
+        # select the histogram bin corresponding to the x-position of the selector line
+        if x is None:
+            return
+        print('in tool tower_select')
+        viewer = self.viewer
+        layer = viewer.layers[0]
+        bins, hist = layer.bins, layer.hist
+        dx = bins[1] - bins[0]
+        index = np.searchsorted(bins, x, side='right')
+        # only update the subset if the bin is not empty
+        if hist[max(index-1,0)] > 0:
+            right_edge = bins[index]
+            left_edge = right_edge - dx
+            self.x = left_edge, right_edge
+        else:
+            self.x = None
+        
+        self.viewer.toolbar.active_tool = None
         
 
     def activate(self):
