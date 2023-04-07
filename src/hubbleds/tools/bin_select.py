@@ -2,7 +2,7 @@ from glue_jupyter.bqplot.common.tools import BqplotSelectionTool
 from glue.config import viewer_tool
 from echo import CallbackProperty
 from bqplot_image_gl.interacts import MouseInteraction, mouse_events
-from glue_jupyter.bqplot.common.tools import InteractCheckableTool
+from glue_jupyter.bqplot.common.tools import InteractCheckableTool, CheckableTool
 
 
 from glue.config import viewer_tool
@@ -82,6 +82,7 @@ class SingleBinSelect(InteractCheckableTool):
     tool_tip = 'Select a bins'
     tool_activated = CallbackProperty(False)
     x = CallbackProperty(0)
+    msg = CallbackProperty({'x':None,'viewer':None})
     
     
     
@@ -109,7 +110,6 @@ class SingleBinSelect(InteractCheckableTool):
         # select the histogram bin corresponding to the x-position of the selector line
         if x is None:
             return
-        print('in tool tower_select')
         viewer = self.viewer
         layer = viewer.layers[0]
         bins, hist = layer.bins, layer.hist
@@ -123,12 +123,17 @@ class SingleBinSelect(InteractCheckableTool):
         else:
             self.x = None
         
-        self.viewer.toolbar.active_tool = None
+        self.msg = {'x': self.x, 'viewer': viewer}
+        print(self.msg)
+        # self.viewer.toolbar.active_tool = None
         
 
     def activate(self):
         return super().activate()
     
     def deactivate(self):
+        print('deactivating')
+        self.x = None
+        self.msg = {'x': None, 'viewer': None}
         return super().deactivate()
    
