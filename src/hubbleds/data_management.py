@@ -17,32 +17,112 @@ EXAMPLE_GALAXY_SEED_DATA = "example_galaxy_seed_data"
 EXAMPLE_GALAXY_DATA = "example_galaxy"
 EXAMPLE_GALAXY_MEASUREMENTS = "example_galaxy_data"
 EXAMPLE_GALAXY_STUDENT_DATA = "example_galaxy_student_data"
+
+
+### Data Components
+
+# Measurements
+MEASWAVE_COMPONENT = "measwave"
+RESTWAVE_COMPONENT = "restwave"
+VELOCITY_COMPONENT = "Velocity (km/s)"
+DISTANCE_COMPONENT = "Distance (Mpc)"
+ANGULAR_SIZE_COMPONENT = "angular_size"
+NAME_COMPONENT = "name"
+STUDENT_ID_COMPONENT = "student_id"
+ELEMENT_COMPONENT = "element"
+RA_COMPONENT = "ra"
+DEC_COMPONENT = "decl"
+Z_COMPONENT = "z"
+GALTYPE_COMPONENT = "type"
+
+# Sample measurements
+SAMPLE_ID_COMPONENT = "id"
+MEASUREMENT_NUMBER_COMPONENT = "measurement_number"
+
+# Summaries
+CLASS_ID_COMPONENT = "class_id"
+AGE_COMPONENT = "Age (Gyr)"
+H0_COMPONENT = "H0"
+
+
+### Database keys
+
+# Measurements
+DB_MEASWAVE_FIELD = "obs_wave_value"
+DB_RESTWAVE_FIELD = "rest_wave_value"
+DB_VELOCITY_FIELD = "velocity_value"
+DB_DISTANCE_FIELD = "est_dist_value"
+DB_ANGSIZE_FIELD = "ang_size_value"
+DB_RA_FIELD = "ra"
+DB_DEC_FIELD = "decl"
+DB_NAME_FIELD = "name"
+DB_Z_FIELD = "z"
+DB_GALTYPE_FIELD = "type"
+DB_ELEMENT_FIELD = "element"
+DB_STUDENT_ID_FIELD = "student_id"
+DB_LAST_MODIFIED_FIELD = "last_modified"
+
+DB_MEASNUM_FIELD = "measurement_number"
+
+DB_GALNAME_FIELD = "galaxy_name"
+
+DB_RESTWAVE_UNIT_FIELD = "rest_wave_unit"
+DB_MEASWAVE_UNIT_FIELD = "obs_wave_unit"
+DB_DISTANCE_UNIT_FIELD = "est_dist_unit"
+DB_VELOCITY_UNIT_FIELD = "velocity_unit"
+DB_ANGSIZE_UNIT_FIELD = "ang_size_unit"
+
+DB_MEASUREMENT_FIELDS = [
+    DB_MEASWAVE_FIELD,
+    DB_RESTWAVE_FIELD,
+    DB_VELOCITY_FIELD,
+    DB_DISTANCE_FIELD,
+    DB_ANGSIZE_FIELD,
+    DB_RA_FIELD,
+    DB_DEC_FIELD,
+    DB_NAME_FIELD,
+    DB_Z_FIELD,
+    DB_GALTYPE_FIELD,
+    DB_ELEMENT_FIELD,
+    DB_STUDENT_ID_FIELD,
+    DB_LAST_MODIFIED_FIELD
+]
+
+# Summaries
+DB_H0_FIELD = "hubble_fit_value"
+DB_AGE_FIELD = "age_value"
+
+DB_SUMMARY_FIELDS = [
+    DB_H0_FIELD,
+    DB_AGE_FIELD
+]
+
 def reverse(d):
     return { v : k for k, v in d.items() }
 
 MEAS_TO_STATE = {
-    "measwave": "obs_wave_value",
-    "restwave": "rest_wave_value",
-    "velocity": "velocity_value",
-    "distance": "est_dist_value",
-    "name": "galaxy_name",
-    "student_id": "student_id",
-    "angular_size" : "ang_size_value"
+    MEASWAVE_COMPONENT: DB_MEASWAVE_FIELD,
+    RESTWAVE_COMPONENT: DB_RESTWAVE_FIELD,
+    VELOCITY_COMPONENT: DB_VELOCITY_FIELD,
+    DISTANCE_COMPONENT: DB_DISTANCE_FIELD,
+    NAME_COMPONENT: DB_GALNAME_FIELD,
+    STUDENT_ID_COMPONENT: DB_STUDENT_ID_FIELD,
+    ANGULAR_SIZE_COMPONENT : DB_ANGSIZE_FIELD
 }
 
 STATE_TO_MEAS = reverse(MEAS_TO_STATE)
 
 SUMM_TO_STATE = {
-    "H0": "hubble_fit_value",
-    "age": "age_value"
+    H0_COMPONENT: DB_H0_FIELD,
+    AGE_COMPONENT: DB_AGE_FIELD
 }
 
 STATE_TO_SUMM = reverse(SUMM_TO_STATE)
 
 UNITS_TO_STATE = {
-    "rest_wave_unit": "angstrom",
-    "obs_wave_unit": "angstrom",
-    "est_dist_unit": "Mpc",
-    "velocity_unit": "km / s",
-    "ang_size_unit": "arcsecond"
+    DB_RESTWAVE_UNIT_FIELD: "angstrom",
+    DB_MEASWAVE_FIELD: "angstrom",
+    DB_DISTANCE_UNIT_FIELD: "Mpc",
+    DB_VELOCITY_UNIT_FIELD: "km / s",
+    DB_ANGSIZE_UNIT_FIELD: "arcsecond"
 }
