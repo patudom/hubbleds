@@ -346,8 +346,8 @@ class StageTwo(HubbleStage):
             self.stage_state.angsizes_total = self.stage_state.angsizes_total + 1
 
         # self.stage_state.galaxy_dist = distance
-        # self.update_data_value("student_measurements", DISTANCE_COMPONENT, distance, index)
-        # self.update_data_value("student_measurements", ANGULAR_SIZE_COMPONENT, angular_size_as, index)
+        # self.update_data_value(STUDENT_MEASUREMENTS_LABEL, DISTANCE_COMPONENT, distance, index)
+        # self.update_data_value(STUDENT_MEASUREMENTS_LABEL, ANGULAR_SIZE_COMPONENT, angular_size_as, index)
 
         self.stage_state.meas_theta = round(angular_size.to(u.arcsec).value)
         self.update_data_value(STUDENT_MEASUREMENTS_LABEL, ANGULAR_SIZE_COMPONENT,

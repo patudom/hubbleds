@@ -203,12 +203,12 @@ class StageThree(HubbleStage):
             hubble_race_viewer.toolbar.set_tool_enabled(key, False)
         
         hubble_race_data = Data(label='hubble_race_data')
-        hubble_race_data.add_component([12,24,30], 'distance (km)')
-        hubble_race_data.add_component([4,8,10], 'velocity (km/hr)')
+        hubble_race_data.add_component([12,24,30], 'Distance (km)')
+        hubble_race_data.add_component([4,8,10], 'Velocity (km/hr)')
         self.add_data(hubble_race_data)
         hubble_race_viewer.add_data(hubble_race_data)
-        hubble_race_viewer.state.x_att = hubble_race_data.id['distance (km)']
-        hubble_race_viewer.state.y_att = hubble_race_data.id['velocity (km/hr)']
+        hubble_race_viewer.state.x_att = hubble_race_data.id['Distance (km)']
+        hubble_race_viewer.state.y_att = hubble_race_data.id['Velocity (km/hr)']
 
         hubble_slideshow = HubbleExpUniverseSlideshow([self.viewers["hubble_race_viewer"], self.viewers["layer_viewer"]], self.stage_state.image_location)
         self.add_component(hubble_slideshow, label='py-hubble-slideshow')
