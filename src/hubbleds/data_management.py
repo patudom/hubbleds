@@ -41,7 +41,7 @@ MEASUREMENT_NUMBER_COMPONENT = "measurement_number"
 
 # Summaries
 CLASS_ID_COMPONENT = "class_id"
-AGE_COMPONENT = "age"
+AGE_COMPONENT = "Age (Gyr)"
 H0_COMPONENT = "H0"
 
 

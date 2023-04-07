@@ -429,7 +429,10 @@ class HubblesLaw(Story):
             hubbles.append(h0)
             ages.append(age_in_gyr_simple(h0))
 
-        components = dict(hubble=hubbles, age=ages)
+        components = {
+            H0_COMPONENT: hubbles,
+            AGE_COMPONENT: ages
+        }
         components[id_field] = list(ids)
         new_data = Data(label=summ_label, **components)
 
