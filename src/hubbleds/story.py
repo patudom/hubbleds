@@ -2,7 +2,6 @@ from collections import defaultdict
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-# from fsspec import Callback
 import requests
 
 import ipyvuetify as v
@@ -18,12 +17,8 @@ from glue.core.component import CategoricalComponent, Component
 from glue.core.data_factories.fits import fits_reader
 from glue.core.subset import CategorySubsetState
 
-from .data_management import BEST_FIT_SUBSET_LABEL, CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, SDSS_DATA_LABEL, STATE_TO_MEAS, STATE_TO_SUMM, \
-    STUDENT_DATA_LABEL, STUDENT_MEASUREMENTS_LABEL, BEST_FIT_GALAXY_NAME
-from .utils import H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line
-
-from .data_management import EXAMPLE_GALAXY_DATA, EXAMPLE_GALAXY_MEASUREMENTS, EXAMPLE_GALAXY_STUDENT_DATA, EXAMPLE_GALAXY_SEED_DATA
-from .utils import MG_REST_LAMBDA
+from .data_management import *
+from .utils import H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line, MG_REST_LAMBDA
 
 @story_registry(name="hubbles_law")
 class HubblesLaw(Story):
@@ -33,25 +28,6 @@ class HubblesLaw(Story):
     validation_failure_counts = DictCallbackProperty({})
     has_best_fit_galaxy = CallbackProperty(False)
 
-    measurement_keys = [
-        "obs_wave_value",
-        "rest_wave_value",
-        "velocity_value",
-        "est_dist_value",
-        "ang_size_value",
-        "ra",
-        "decl",
-        "name",
-        "z",
-        "type",
-        "element",
-        "student_id",
-        "last_modified"
-    ]
-    summary_keys = [
-        "hubble_fit_value",
-        "age_value"
-    ]
     name_ext = ".fits"
 
     def __init__(self, *args, **kwargs):
@@ -99,24 +75,25 @@ class HubblesLaw(Story):
         all_student_summaries = all_json["studentData"]
         all_class_summaries = all_json["classData"]
         all_data = Data(
-            label="all_measurements",
+            label=ALL_DATA_LABEL,
             **{ STATE_TO_MEAS.get(k, k) : [x[k] for x in all_measurements] for k in all_measurements[0] }
         )
         HubblesLaw.prune_none(all_data)
         self.data_collection.append(all_data)
 
-        all_student_summ_data = self.data_from_summaries(all_student_summaries, label="all_student_summaries", id_key="student_id")
-        all_class_summ_data = self.data_from_summaries(all_class_summaries, label="all_class_summaries", id_key="class_id")
+        all_student_summ_data = self.data_from_summaries(all_student_summaries, label=ALL_STUDENT_SUMMARIES_LABEL, id_key=STUDENT_ID_COMPONENT)
+        all_class_summ_data = self.data_from_summaries(all_class_summaries, label=ALL_CLASS_SUMMARIES_LABEL, id_key=CLASS_ID_COMPONENT)
         self.data_collection.append(all_student_summ_data)
         self.data_collection.append(all_class_summ_data)
-        for comp in ['age', 'H0']:
+        for comp in [AGE_COMPONENT, H0_COMPONENT]:
             self.app.add_link(all_student_summ_data, comp, all_class_summ_data, comp)
 
         # Compose empty data containers to be populated by user
-        self.student_cols = ["name", "ra", "decl", "z", "type", "measwave",
-                         "restwave", "student_id", "velocity", "distance",
-                         "element", "angular_size"]
-        self.categorical_cols = ['name', 'element', 'type']
+        self.student_cols = [NAME_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT,
+                             GALTYPE_COMPONENT, MEASWAVE_COMPONENT, RESTWAVE_COMPONENT,
+                             STUDENT_ID_COMPONENT, VELOCITY_COMPONENT, DISTANCE_COMPONENT,
+                             ELEMENT_COMPONENT, ANGULAR_SIZE_COMPONENT]
+        self.categorical_cols = [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT]
         student_measurements = Data(label=STUDENT_MEASUREMENTS_LABEL)
         class_data = Data(label=CLASS_DATA_LABEL)
         student_data = Data(label=STUDENT_DATA_LABEL)
@@ -134,11 +111,11 @@ class HubblesLaw(Story):
         self.data_collection.append(student_measurements)
         self.data_collection.append(student_data)
         self.data_collection.append(class_data)
-        for comp in ['distance', 'velocity', 'student_id']:
+        for comp in [DISTANCE_COMPONENT, VELOCITY_COMPONENT, STUDENT_ID_COMPONENT]:
             self.app.add_link(student_measurements, comp, student_data, comp)
             self.app.add_link(student_measurements, comp, class_data, comp)
 
-        class_summary_cols = ["student_id", "H0", "age"]
+        class_summary_cols = [STUDENT_ID_COMPONENT, H0_COMPONENT, AGE_COMPONENT]
         class_summary_data = Data(label=CLASS_SUMMARY_LABEL)
         for col in class_summary_cols:
             component = Component(np.array([0]))
@@ -150,7 +127,7 @@ class HubblesLaw(Story):
         # example_galaxy_student_data
         # SINGLE_GALAXY_SEED_DATA
         example_galaxy_meas = self.setup_example_galaxy()
-        for comp in ['distance', 'velocity', 'student_id']:
+        for comp in [DISTANCE_COMPONENT, VELOCITY_COMPONENT, STUDENT_ID_COMPONENT]:
             self.app.add_link(student_measurements, comp, example_galaxy_meas, comp)
             self.app.add_link(student_measurements, comp, example_galaxy_meas, comp)
         # Make all data writeable
@@ -213,8 +190,8 @@ class HubblesLaw(Story):
         return dc[name]
 
     def _best_fit_galaxy(self, measurements):
-        distances = measurements["distance"]
-        velocities = measurements["velocity"]
+        distances = measurements[DISTANCE_COMPONENT]
+        velocities = measurements[VELOCITY_COMPONENT]
         line = fit_line(distances, velocities)
         if line is None:
             return None
@@ -224,17 +201,17 @@ class HubblesLaw(Story):
         d = round(0.5 * (dmin + dmax))
         v = round(line.slope.value * d)
         return {
-            "name": BEST_FIT_GALAXY_NAME,
-            "distance": d,
-            "velocity": v,
-            "ra": 0, "decl": 0,
-            "type": "Sp",
-            "measwave": 0,
-            "restwave": H_ALPHA_REST_LAMBDA,
-            "z": 0, "angular_size": 0,
-            "element": "H-α",
-            "student_id": self.student_user["id"],
-            "last_modified": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            NAME_COMPONENT: BEST_FIT_GALAXY_NAME,
+            DISTANCE_COMPONENT: d,
+            VELOCITY_COMPONENT: v,
+            RA_COMPONENT: 0, DEC_COMPONENT: 0,
+            GALTYPE_COMPONENT: "Sp",
+            MEASWAVE_COMPONENT: 0,
+            RESTWAVE_COMPONENT: H_ALPHA_REST_LAMBDA,
+            Z_COMPONENT: 0, ANGULAR_SIZE_COMPONENT: 0,
+            ELEMENT_COMPONENT: "H-α",
+            STUDENT_ID_COMPONENT: self.student_user["id"],
+            DB_LAST_MODIFIED_FIELD: datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
     
     def setup_example_galaxy(self):
@@ -253,27 +230,27 @@ class HubblesLaw(Story):
         # create glue Data object [each dictionary item becomes a component]
         example_galaxy_seed_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements").json()
         example_galaxy_seed_data = {k: np.array([record[k] for record in example_galaxy_seed_data]) for k in example_galaxy_seed_data[0]}
-        good = example_galaxy_seed_data['velocity_value'] != None
+        good = example_galaxy_seed_data[DB_VELOCITY_FIELD] != None
         example_galaxy_seed_data = {k: np.array(v)[good] for k,v in example_galaxy_seed_data.items()}
-        for k in ['velocity_value']: #, 'ang_size_value','obs_wave_value','rest_wave_value','est_dist_value']:
-            example_galaxy_seed_data[k] = np.array(example_galaxy_seed_data[k], dtype = type(example_galaxy_seed_data[k][0]))
+        example_galaxy_seed_data[DB_VELOCITY_FIELD] = np.array(example_galaxy_seed_data[DB_VELOCITY_FIELD], dtype = type(example_galaxy_seed_data[DB_VELOCITY_FIELD][0]))
         example_galaxy_seed_data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **example_galaxy_seed_data)
         
         self.data_collection.append(example_galaxy_seed_data)
         
         
         # Create empty Data for student measurements of example galaxy
-        single_gal_student_cols = ["id", "name", "ra", "decl", "z", "type", "measwave",
-                        "restwave", "student_id", "velocity", "distance",
-                        "element", "angular_size", "measurement_number"]
+        single_gal_student_cols = [SAMPLE_ID_COMPONENT, NAME_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT,
+                             GALTYPE_COMPONENT, MEASWAVE_COMPONENT, RESTWAVE_COMPONENT,
+                             STUDENT_ID_COMPONENT, VELOCITY_COMPONENT, DISTANCE_COMPONENT,
+                             ELEMENT_COMPONENT, ANGULAR_SIZE_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
         # empty_record = {x: np.array([], dtype='float64') for x in single_gal_student_cols}
-        empty_record = {x : ['X'] if x in ['id', 'element', 'type', 'name', 'measurement_number'] else [0] 
+        empty_record = {x : ['X'] if x in [SAMPLE_ID_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, NAME_COMPONENT, MEASUREMENT_NUMBER_COMPONENT] else [0] 
                 for x in single_gal_student_cols}
-        for col in ['name', 'element', 'type','ra','decl','z']:
+        for col in [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT]:
             empty_record[col] = example_galaxy_data[col]
-        empty_record['restwave'] = [H_ALPHA_REST_LAMBDA] if ('H' in example_galaxy_data['element'][0]) else [MG_REST_LAMBDA]
-        empty_record['measurement_number'] = ['first']
-        empty_record['measurement_number'] = np.asarray(empty_record['measurement_number'], dtype = ('<U6'))
+        empty_record[RESTWAVE_COMPONENT] = [H_ALPHA_REST_LAMBDA] if ('H' in example_galaxy_data[ELEMENT_COMPONENT][0]) else [MG_REST_LAMBDA]
+        empty_record[MEASUREMENT_NUMBER_COMPONENT] = ['first']
+        empty_record[MEASUREMENT_NUMBER_COMPONENT] = np.asarray(empty_record[MEASUREMENT_NUMBER_COMPONENT], dtype = ('<U6'))
         example_galaxy_measurements = Data(
             label=EXAMPLE_GALAXY_MEASUREMENTS,
             **empty_record)
@@ -291,11 +268,11 @@ class HubblesLaw(Story):
         # self.data_collection.append(example_galaxy_student_data)
         self.data_collection.append(example_galaxy_measurements)
 
-        self.app.add_link(example_galaxy_seed_data, 'student_id', example_galaxy_measurements, 'student_id')
-        self.app.add_link(example_galaxy_seed_data, 'est_dist_value', example_galaxy_measurements, 'distance')
-        self.app.add_link(example_galaxy_seed_data, 'velocity_value', example_galaxy_measurements, 'velocity')
-        self.app.add_link(example_galaxy_seed_data, 'measurement_number', example_galaxy_measurements, 'measurement_number')
-        self.app.add_link(example_galaxy_seed_data, 'ang_size_value', example_galaxy_measurements, 'angular_size')
+        self.app.add_link(example_galaxy_seed_data, DB_STUDENT_ID_FIELD, example_galaxy_measurements, STUDENT_ID_COMPONENT)
+        self.app.add_link(example_galaxy_seed_data, DB_DISTANCE_FIELD, example_galaxy_measurements, DISTANCE_COMPONENT)
+        self.app.add_link(example_galaxy_seed_data, DB_VELOCITY_FIELD, example_galaxy_measurements, VELOCITY_COMPONENT)
+        self.app.add_link(example_galaxy_seed_data, DB_MEASNUM_FIELD, example_galaxy_measurements, MEASUREMENT_NUMBER_COMPONENT)
+        self.app.add_link(example_galaxy_seed_data, DB_ANGSIZE_FIELD, example_galaxy_measurements, ANGULAR_SIZE_COMPONENT)
         
         return example_galaxy_measurements
 
@@ -317,10 +294,10 @@ class HubblesLaw(Story):
         dc = self.data_collection
         meas_data = dc[STUDENT_MEASUREMENTS_LABEL]
         df = meas_data.to_dataframe()
-        df = df[df['distance'].notna() & \
-                df['velocity'].notna() & \
-                df['angular_size'].notna()]
-        df["name"] = df["name"].astype(np.dtype(str))
+        df = df[df[DISTANCE_COMPONENT].notna() & \
+                df[VELOCITY_COMPONENT].notna() & \
+                df[ANGULAR_SIZE_COMPONENT].notna()]
+        df[NAME_COMPONENT] = df[NAME_COMPONENT].astype(np.dtype(str))
         main_components = [x.label for x in meas_data.main_components]
         components = { col: list(df[col]) for col in main_components }
         if not all(len(v) > 0 for v in components.values()):
@@ -345,10 +322,10 @@ class HubblesLaw(Story):
 
         # Make sure that the best-fit galaxy subset is correct
         if self.has_best_fit_galaxy:
-            c = student_data.get_component("name")
-            indices = np.where(c.labels == bfg["name"])[0]
+            c = student_data.get_component(NAME_COMPONENT)
+            indices = np.where(c.labels == bfg[NAME_COMPONENT])[0]
             codes = c.codes[indices]
-            subset_state = CategorySubsetState(student_data.id["name"], codes)
+            subset_state = CategorySubsetState(student_data.id[NAME_COMPONENT], codes)
             subset = next((s for s in student_data.subsets if s.label == BEST_FIT_SUBSET_LABEL), None)
             if subset is not None:
                 subset.subset_state = subset_state
@@ -385,15 +362,15 @@ class HubblesLaw(Story):
     def data_from_measurements(self, measurements):
         for measurement in measurements:
             measurement.update(measurement.get("galaxy", {}))
-        components = { STATE_TO_MEAS.get(k, k) : [measurement.get(k, None) for measurement in measurements] for k in self.measurement_keys }
+        components = { STATE_TO_MEAS.get(k, k) : [measurement.get(k, None) for measurement in measurements] for k in DB_MEASUREMENT_FIELDS }
 
-        for i, name in enumerate(components["name"]):
+        for i, name in enumerate(components[NAME_COMPONENT]):
             if name.endswith(self.name_ext):
-                components["name"][i] = name[:-len(self.name_ext)]
+                components[NAME_COMPONENT][i] = name[:-len(self.name_ext)]
         return Data(**components)
 
     def data_from_summaries(self, summaries, id_key=None, label=None):
-        components = { STATE_TO_SUMM.get(k, k) : [summary.get(k, None) for summary in summaries] for k in self.summary_keys }
+        components = { STATE_TO_SUMM.get(k, k) : [summary.get(k, None) for summary in summaries] for k in DB_SUMMARY_FIELDS }
         if id_key is not None:
             ids = [summary.get(id_key, None) for summary in summaries]
             ids = [x for x in ids if x is not None]
@@ -432,8 +409,8 @@ class HubblesLaw(Story):
     def update_summary_data(self, measurements, summ_label, id_field):
         dists = defaultdict(list)
         vels = defaultdict(list)
-        d = measurements["distance"]
-        v = measurements["velocity"]
+        d = measurements[DISTANCE_COMPONENT]
+        v = measurements[VELOCITY_COMPONENT]
         components = {}
         ids = set()
         for i in range(measurements.size):
@@ -452,7 +429,10 @@ class HubblesLaw(Story):
             hubbles.append(h0)
             ages.append(age_in_gyr_simple(h0))
 
-        components = dict(hubble=hubbles, age=ages)
+        components = {
+            H0_COMPONENT: hubbles,
+            AGE_COMPONENT: ages
+        }
         components[id_field] = list(ids)
         new_data = Data(label=summ_label, **components)
 
@@ -468,23 +448,16 @@ class HubblesLaw(Story):
         self._on_timer_cbs.append(cb)
 
     def fetch_class_data(self):
-        #print("Fetching class data")
         def check_update(measurements):
-            #print(sorted([[x["student_id"], x["last_modified"]] for x in measurements], key=lambda x: x[1], reverse=True)[0])
-            last_modified = max([datetime.fromisoformat(x["last_modified"][:-1]) for x in measurements], default=None)
-            #print(self.class_last_modified)
-            #print(last_modified)
-            # if not (self.class_last_modified is None or last_modified is None):
-            #     print(last_modified > self.class_last_modified)
+            last_modified = max([datetime.fromisoformat(x[DB_LAST_MODIFIED_FIELD][:-1]) for x in measurements], default=None)
             need_update = self.class_last_modified is None or last_modified is None or last_modified > self.class_last_modified
             if need_update:
                 self.class_last_modified = last_modified
-            #print("Do we need an update? ", need_update)
             return need_update
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
         updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, check_update=check_update)
         if updated is not None:
-            self.update_summary_data(updated, CLASS_SUMMARY_LABEL, "student_id")
+            self.update_summary_data(updated, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)
 
     def setup_for_student(self, app_state):
         super().setup_for_student(app_state)

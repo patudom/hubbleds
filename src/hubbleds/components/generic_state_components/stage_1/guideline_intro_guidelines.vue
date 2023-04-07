@@ -11,7 +11,7 @@
     <template #back-content>
       <div>
         Open menu to return to earlier stages.<br>
-        (Open/close menu with <v-icon>mdi-menu</v-icon> above)
+        (Open/close menu with <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #172c4d; border-radius: 5px;"><v-icon style="color:white!important;">mdi-menu</v-icon></v-btn> above)
       </div>
     </template>
     <div

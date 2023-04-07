@@ -14,9 +14,7 @@ from cosmicds.utils import (RepeatedTimer, extend_tool, load_template,
 from hubbleds.utils import IMAGE_BASE_URL
 
 from ..data.styles import load_style
-from ..data_management import (ALL_DATA_LABEL, CLASS_DATA_LABEL,
-                               HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL,
-                               STUDENT_DATA_LABEL)
+from ..data_management import *
 from ..stage import HubbleStage
 
 from ..viewers.viewers import HubbleScatterView
@@ -167,18 +165,16 @@ class StageFive(HubbleStage):
 
         # Set up links between various data sets
 
-        dist_attr = "distance"
-        vel_attr = "velocity"
-        for field in [dist_attr, vel_attr]:
+        for field in [DISTANCE_COMPONENT, VELOCITY_COMPONENT]:
             self.add_link(CLASS_DATA_LABEL, field, STUDENT_DATA_LABEL, field)
         self.add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL,
                       'Distance (Mpc)')
         self.add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL,
                       'Velocity (km/s)')
         self.add_link(HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)', STUDENT_DATA_LABEL,
-                      'distance')
+                      DISTANCE_COMPONENT)
         self.add_link(HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)', STUDENT_DATA_LABEL,
-                      'velocity')
+                      VELOCITY_COMPONENT)
 
         # Avoid picking up subsets of the different layers.
         prodata_viewer.ignore(lambda layer: layer.label not in [STUDENT_DATA_LABEL, CLASS_DATA_LABEL, HUBBLE_KEY_DATA_LABEL, HUBBLE_1929_DATA_LABEL] and isinstance(layer, Subset))
@@ -191,8 +187,8 @@ class StageFive(HubbleStage):
         class_layer.state.alpha = 1
         class_layer.state.size = 4
 
-        prodata_viewer.state.x_att = class_data.id['distance']
-        prodata_viewer.state.y_att = class_data.id['velocity']
+        prodata_viewer.state.x_att = student_data.id[DISTANCE_COMPONENT]
+        prodata_viewer.state.y_att = student_data.id[VELOCITY_COMPONENT]
 
         prodata_viewer.add_data(student_data)
         student_layer = prodata_viewer.layer_artist_for_data(student_data)
@@ -281,7 +277,6 @@ class StageFive(HubbleStage):
             
             elif new == 'pro_dat8':
                 # show all the ages
-                prodata_viewer = self.get_viewer("prodata_viewer")
                 prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             
             

@@ -34,7 +34,7 @@
       </div>
       <p>
         Since know how to use the Doppler equation, click the
-        <v-icon>mdi-run-fast</v-icon>
+        <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-run-fast</v-icon></v-btn>
         icon in the table header to have the velocities of the remaining galaxies calculated as well.
       </p>
     </div>
