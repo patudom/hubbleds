@@ -11,7 +11,7 @@
     :state="state"
   >
     <template #before-next>
-      Click <v-icon>mdi-message-draw</v-icon> and draw a trend line.
+      Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-message-draw</v-icon></v-btn> and draw a trend line.
     </template>
 
     <div
@@ -24,7 +24,7 @@
         Since we saw a trend in the larger class data set, let's start with a trend line. A <strong>trend line</strong> follows the observed trend in the graphed data.
       </p>
       <p>
-        Click <v-icon>mdi-message-draw</v-icon> in the Toolbar to activate the drawing tool and try drawing a trend line through your data points.
+        Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-message-draw</v-icon></v-btn>  in the Toolbar to activate the drawing tool and try drawing a trend line through your data points.
       </p>
     </div>
   </scaffold-alert>
