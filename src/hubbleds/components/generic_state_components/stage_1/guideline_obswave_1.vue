@@ -21,7 +21,7 @@
         Hover your mouse in the Spectrum Viewer. A vertical measuring tool identifies the wavelength as you move the tool left and right.
       </p>
       <p>
-        Align the measuring tool to the <strong><span style="color:#ff665e ; background-color: white; border-radius : 5px; padding: 1px">{{ state.galaxy.element }} (observed)</span></strong> marker and click. This records the <strong>observed wavelength</strong> in your table.
+        Align the measuring tool to the <strong><span style="color:#ff665e; background-color: white; border-radius : 5px; padding: 3px">{{ state.galaxy.element }} (observed)</span></strong> marker and click. This records the <strong>observed wavelength</strong> in your table.
       </p>
     </div>
   </scaffold-alert>

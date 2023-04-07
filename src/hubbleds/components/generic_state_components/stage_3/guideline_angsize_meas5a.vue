@@ -11,7 +11,7 @@
     :state="state"
   >
     <template #before-next>
-      Click the <span style="background-color: #02838f; border-radius : 5px; padding: 1px"><strong> MEASUREMENT DOS AND DONTS </strong></span> button.
+      Click <span style="background-color: #02838f; border-radius: 5px; padding: 3px; color:white!important;">MEASUREMENT DOS AND DONTS</span> button.
     </template>
 
     <div
@@ -21,7 +21,7 @@
         You may adjust your measurement by clicking on the ends of the green line and moving them to a new location.
       </p>
       <p>
-        Click <span style="background-color: #02838f; border-radius : 5px; padding: 1px"><strong> MEASUREMENT DOS AND DONTS </strong></span> for tips on how to ensure the most accurate results.
+        Click <span style="background-color: #02838f; border-radius: 5px; padding: 3px; color:white!important;">MEASUREMENT DOS AND DONTS</span> for tips on how to ensure the most accurate results.
       </p>
     </div>
   </scaffold-alert>
