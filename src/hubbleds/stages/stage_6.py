@@ -187,8 +187,8 @@ class StageFive(HubbleStage):
         class_layer.state.alpha = 1
         class_layer.state.size = 4
 
-        prodata_viewer.state.x_att = student_data.id[DISTANCE_COMPONENT]
-        prodata_viewer.state.y_att = student_data.id[VELOCITY_COMPONENT]
+        prodata_viewer.state.x_att = class_data.id[DISTANCE_COMPONENT]
+        prodata_viewer.state.y_att = class_data.id[VELOCITY_COMPONENT]
 
         prodata_viewer.add_data(student_data)
         student_layer = prodata_viewer.layer_artist_for_data(student_data)
