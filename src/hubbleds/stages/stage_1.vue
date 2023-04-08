@@ -108,6 +108,11 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
+        <guideline-doppler-calc-6
+          v-if="stage_state.marker === 'dop_cal6'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
       </v-col>
       <v-col
         cols="12"
@@ -159,11 +164,6 @@
         />
         <guideline-obswave-2
           v-if="stage_state.marker === 'obs_wav2'"
-          v-intersect.once="scrollIntoView"
-          :state="stage_state"
-        />
-        <guideline-doppler-calc-6
-          v-if="stage_state.marker === 'dop_cal6'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
