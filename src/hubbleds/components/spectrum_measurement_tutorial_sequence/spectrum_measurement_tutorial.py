@@ -230,7 +230,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         self.plot_measurements(self.example_galaxy_table._glue_data, update_only = True)
     
     def _on_tool_change(self, change):
-        print('on tool change')
         active_tool = change['new']
         if active_tool is not None:
             tool_id = active_tool.tool_id
@@ -293,7 +292,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     def toggle_tower_select(self,viewer):
         # self.allow_tower_select = not self.allow_tower_select
         x = viewer.toolbar.tools['hubble:onebinselect'].x
-        print('toggle_tower_select')
         if x is None:
             return
         
@@ -362,7 +360,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
 
     def plot_measurements(self, data, update_only = False):
         """ data should be a glue data"""
-        print('run plot_measurements')
         data = data.to_dataframe()
         vel = data['velocity']
         
@@ -387,13 +384,12 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             self.second_meas_plotted = False
         
         if self.first_meas_plotted and self.first_meas_line not in self.dotplot_viewer.figure.marks:
-            print('adding first meas line')
+
             self.dotplot_viewer.figure.marks = self.dotplot_viewer.figure.marks + [self.first_meas_line]
         if self.second_meas_plotted and self.second_meas_line not in self.dotplot_viewer_2.figure.marks:
-            print('adding second meas line')
             self.dotplot_viewer_2.figure.marks = self.dotplot_viewer_2.figure.marks + [self.second_meas_line]
         
-        print( id(self.dotplot_viewer.figure.marks[-1]), id(self.first_meas_line) )
+
         self.show_measurements_on_specviewer()
     
     def show_measurements_on_specviewer(self):
