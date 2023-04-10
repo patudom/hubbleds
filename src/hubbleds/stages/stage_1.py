@@ -259,56 +259,36 @@ class StageOne(HubbleStage):
             add_callback(sf_tool, "flagged", self._on_spectrum_flagged)
         
         # Add new dotplot viewer with single galaxy seed data
-        dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer')
-        dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2')
+        dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer', viewer_label = 'Example Galaxy Measurement')
+        dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2', viewer_label = 'Second Measurement')
         
-        # extend_tool(dotplot_viewer,'bqplot:xzoom', lambda : print('activated (1)'), lambda : print('deactivated (1)'), activate_before_tool=False,deactivate_before_tool=False)
-        # # extend_tool(dotplot_viewer,'bqplot:xzoom', lambda : print('activated before'), lambda : print('deactivated before'), activate_before_tool=True, deactivate_before_tool=True)
-        
-        # extend_tool(dotplot_viewer_2,'bqplot:xzoom', lambda : print('activated (2)'), lambda : print('deactivated (2)'), activate_before_tool=False,deactivate_before_tool=False)
-        # # extend_tool(dotplot_viewer_2,'bqplot:xzoom', lambda : print('activated 2 before'), lambda : print('deactivated 2 before'), activate_before_tool=True, deactivate_before_tool=True)
-    
-        # @print_function_name
-        # def activate_dv2():
-        #     print('activating for dotplot_viewer_2')
-        #     dotplot_viewer_2.toolbar.active_tool = dotplot_viewer_2.toolbar.tools['bqplot:xzoom']
-        # @print_function_name
-        # def deactivate_dv2():
-        #     print('deactivating for dotplot_viewer_2 (does nothing)')
-        # extend_tool(dotplot_viewer,'bqplot:xzoom', activate_dv2, activate_before_tool=False,deactivate_before_tool=False)
-        
-        # def activate_dv1():
-        #     print('activating for dotplot_viewer')
-        #     dotplot_viewer.toolbar.active_tool = dotplot_viewer.toolbar.tools['bqplot:xzoom']
-        # def deactivate_dv1():
-        #     print('deactivating for dotplot_viewer')
-        #     dotplot_viewer.toolbar.active_tool = None
-        # extend_tool(dotplot_viewer_2,'bqplot:xzoom', activate_dv1, deactivate_dv1, activate_before_tool=False)
-        
+                
         #     HubbleHistogramView, label="dotplot_viewer")
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
         first = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='first', label='first measurement')
         second = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='second', label='second measurement')
+        
+        # the layer what you find in viewer.layers[0].state.layer or viewer.state.layers[0].layer
+        # which is either the glue Data or Subset object that is being displayed
+        dotplot_viewer.ignore(lambda layer: layer in [second])
+        dotplot_viewer_2.ignore(lambda layer: layer in [first])
+        
         for i,viewer in enumerate([dotplot_viewer, dotplot_viewer_2]):
             viewer.add_data(example_galaxy_data)
             viewer.state.x_att = example_galaxy_data.id['velocity_value']
+            viewer.layer_artist_for_data(example_galaxy_data).visible = False
             viewer.figure.axes[0].label = 'Velocity (km/s)'
             viewer.state.hist_n_bin = 75
-            viewer.layers[0].visible = False
-            viewer.layers[1].visible = False
-            viewer.layers[2].visible = False
             viewer.state.alpha = 1
             viewer.state.reset_limits()
             viewer.state.viewer_height = 150
-            viewer.layer_artist_for_data(example_galaxy_data).state.color = '#787878'
-            viewer.layer_artist_for_data(first).state.color = '#787878'
-            viewer.layer_artist_for_data(second).state.color = '#787878'
+            viewer.layer_artist_for_data(example_galaxy_data).state.color = '#e642f5'
+            for subset in [first, second]:
+                layer = viewer.layer_artist_for_data(subset)
+                if layer is not None:
+                    layer.state.color = '#787878'
+
         
-        
-        dotplot_viewer.layers[1].visible = True
-        dotplot_viewer.LABEL = "Example Galaxy Measurements"
-        dotplot_viewer_2.layers[2].visible = True
-        dotplot_viewer_2.LABEL = "Second Measurements"
         
         add_velocities_tool = dict(
             id="update-velocities",
