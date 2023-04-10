@@ -82,7 +82,6 @@ class SingleBinSelect(InteractCheckableTool):
     tool_tip = 'Select a bins'
     tool_activated = CallbackProperty(False)
     x = CallbackProperty(0)
-    msg = CallbackProperty({'x':None,'viewer':None})
     
     
     
@@ -91,6 +90,14 @@ class SingleBinSelect(InteractCheckableTool):
 
         super().__init__(viewer, **kwargs)
         
+        
+        subset_init = {
+            'lo': viewer.state.x_min,
+            'hi': viewer.state.x_max,
+            'att': viewer.state.x_att
+        }
+        self.subset_state = RangeSubsetState(**subset_init)
+        self.roi = RangeROI(min=viewer.state.x_min, max=viewer.state.x_max, orientation='x')
         self.interact = MouseInteraction(
             x_scale=self.viewer.scale_x,
             y_scale=self.viewer.scale_y,
@@ -120,20 +127,17 @@ class SingleBinSelect(InteractCheckableTool):
             right_edge = bins[index]
             left_edge = right_edge - dx
             self.x = left_edge, right_edge
+            self.subset_state = RangeSubsetState(lo=left_edge, hi=right_edge, att=viewer.state.x_att)
         else:
             self.x = None
         
-        self.msg = {'x': self.x, 'viewer': viewer}
-        print(self.msg)
-        # self.viewer.toolbar.active_tool = None
+
+        self.viewer.toolbar.active_tool = None
         
 
     def activate(self):
         return super().activate()
     
     def deactivate(self):
-        print('deactivating')
-        self.x = None
-        self.msg = {'x': None, 'viewer': None}
         return super().deactivate()
    
