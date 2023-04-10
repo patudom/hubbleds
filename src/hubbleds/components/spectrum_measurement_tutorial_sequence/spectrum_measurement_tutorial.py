@@ -197,14 +197,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             self.dotplot_viewer.add_event_callback(self._update_selector_tool_dp, events=['mousemove'])
             self.dotplot_viewer_2.add_event_callback(self._update_selector_tool_dp2, events=['mousemove'])
             
-            # keep these here as a backup
-            # self.dotplot_viewer.add_event_callback(
-            #     callback = lambda event: self.tower_select('first',event), 
-            #     events=['click'])
-            # self.dotplot_viewer_2.add_event_callback(
-            #     callback = lambda event: self.tower_select('second', event), 
-            #     events=['click'])
-            
             self.observe(lambda msg: self.plot_measurements(self.example_galaxy_table._glue_data), ['show_first_measurment', 'show_second_measurment'])
             self.observe(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
             self.observe(self.on_zoom_tool_enabled, 'zoom_tool_enabled')
@@ -317,44 +309,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         meas_subset = self.get_data_subset_by_name(self.glue_data, layer_label)
         
         tower_subset.subset_state = tool_subset & meas_subset.subset_state
-        
-        
-    def tower_select(self, which = 'first',  event = None):
-        # select the histogram bin corresponding to the x-position of the selector line
-        if (not self.allow_tower_select) or (event is None):
-            print('tower select', 'not allowed', which, event)
-            return
-        
-        # are we on the first or second measurement
-        # get the approriate pieces
-        x = event['domain']['x']
-        if x is None:
-            print('tower select x is None')
-            return
-        print('tower select', x, which)
-        layer_label = self.which_measurement[which]['label']
-        subset_label = layer_label
-        viewer = self.which_measurement[which]['viewer']
-        
-        tower_subset = self.selected_tower if which == 'first' else self.selected_tower_2
-        
-        layer = self.get_layer_by_name(viewer, layer_label)
-        
-        bins, hist = layer.bins, layer.hist
-        dx = bins[1] - bins[0]
-        index = self.search_sorted(bins, x) 
-        # only update the subset if the bin is not empty
-        if hist[max(index-1,0)] > 0:
-            right_edge = bins[index]
-            left_edge = right_edge - dx
-            self.range_subset.lo = left_edge
-            self.range_subset.hi = right_edge
-            meas_subset = self.get_data_subset_by_name(self.glue_data, subset_label)
-            tower_subset.subset_state = self.range_subset & meas_subset.subset_state
-            tower_subset.color = next(self.color_cycle)
-        
-            
-        self.dotplot_viewer.toolbar.active_tool = None
     
     
     @staticmethod
