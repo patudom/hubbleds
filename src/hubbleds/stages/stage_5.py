@@ -65,8 +65,6 @@ class StageState(CDSState):
     cla_low_age = CallbackProperty(0)
     cla_high_age = CallbackProperty(0)
 
-    reveal_iter = CallbackProperty(0)
-
     age_calc_state = DictCallbackProperty({
         'hint1_dialog': False,
         'hint2_dialog': False,
