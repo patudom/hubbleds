@@ -16,11 +16,11 @@
         You entered:
       </p>
       <v-card
-        class="JaxEquation pa-3"
+        class="JaxEquation pa-3 entered-card"
         color="info lighten-1"
         elevation="0"
       >
-        $$ t = {{ Math.round(state.age_const) }}  \times \frac{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_distance).toFixed(0) }} } } \text{ Mpc} } { \textcolor{black}{\colorbox{#FFAB91}{ {{ (state.hypgal_velocity).toFixed(0) }} } }  \text{ km/s} }  \text{   Gyr}$$
+        {{ youEnteredMJax }}
       </v-card>    
       <p class="mt-4">
         Dividing through gives an estimated age of the universe from your dataset:
@@ -54,7 +54,6 @@
             class="my-1"
           >
             <v-col
-              
             >
               \(t\)
             </v-col>
@@ -136,6 +135,35 @@ mjx-mstyle {
 
 <script>
 module.exports = {
-  props: ['state']
+  props: ['state'],
+  data() {
+    return {
+      youEnteredMJax: this.enteredMJax(this.state.hypgal_distance, this.state.hypgal_velocity)
+    };
+  },
+  methods: {
+    enteredMJax(distance, velocity) {
+      return `$$ t = ${Math.round(this.state.age_const)}  \\times \\frac{\\textcolor{black}{\\colorbox{#FFAB91}{ ${distance.toFixed(0)} } } \\text{ Mpc} } { \\textcolor{black}{\\colorbox{#FFAB91}{ ${velocity.toFixed(0)} } }  \\text{ km/s} }  \\text{   Gyr}$$`
+    },
+    resetEnteredMJax(distance, velocity) {
+      const youEnteredCard = this.$el.querySelector(".entered-card");
+        this.youEnteredMJax = this.enteredMJax(distance, velocity);
+        youEnteredCard.textContent = this.youEnteredMJax;
+        youEnteredCard.querySelectorAll("mjx-container").forEach(el => youEnteredCard.remove(el));
+        MathJax.typesetPromise([youEnteredCard]);
+    }
+  },
+  watch: {
+    'state.hypgal_distance': {
+      handler(distance) {
+        this.resetEnteredMJax(distance, this.state.hypgal_velocity);
+      }
+    },
+    'state.hypgal_velocity': {
+      handler(velocity) {
+        this.resetEnteredMJax(this.state.hypgal_distance, velocity);
+      }
+    }
+  }
 }
 </script>
