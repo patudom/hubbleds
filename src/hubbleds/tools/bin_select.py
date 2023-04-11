@@ -77,7 +77,7 @@ class BinSelect(BqplotSelectionTool):
 class SingleBinSelect(InteractCheckableTool):
     icon = 'glue_crosshair'
     mdi_icon = "mdi-cursor-default-click"
-    tool_id = 'hubble:onebinselect'
+    tool_id = 'hubble:towerselect'
     action_text = 'Select a bins'
     tool_tip = 'Select a bins'
     tool_activated = CallbackProperty(False)

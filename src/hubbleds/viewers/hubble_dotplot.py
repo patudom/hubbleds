@@ -59,7 +59,7 @@ HubbleDotPlotView = cds_viewer(
     viewer_tools=[
         "bqplot:home",
         "bqplot:xzoom",
-        'hubble:onebinselect'
+        'hubble:towerselect'
     ],
     label="Dot Plot",
     state_cls=HubbleDotPlotViewerState

@@ -291,7 +291,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     
     def toggle_tower_select(self,viewer):
         # self.allow_tower_select = not self.allow_tower_select
-        x = viewer.toolbar.tools['hubble:onebinselect'].x
+        x = viewer.toolbar.tools['hubble:towerselect'].x
         if x is None:
             return
         
@@ -303,7 +303,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         
         tower_subset = self.selected_tower if which == 'first' else self.selected_tower_2
 
-        tool_subset = viewer.toolbar.tools['hubble:onebinselect'].subset_state
+        tool_subset = viewer.toolbar.tools['hubble:towerselect'].subset_state
         meas_subset = self.get_data_subset_by_name(self.glue_data, layer_label)
         
         tower_subset.subset_state = tool_subset & meas_subset.subset_state
