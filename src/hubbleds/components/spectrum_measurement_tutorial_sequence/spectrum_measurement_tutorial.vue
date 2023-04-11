@@ -205,10 +205,11 @@ module.exports = {
         this.allow_specview_mouse_interaction = true
       }
       if (val == 4) {
-        this.turn_on_tower_selector() 
+        
       }
       if (val == 5) {  }
       if (val == 6) { 
+        this.turn_on_tower_selector() 
       }
       if (val == 7) { 
         this.enable_zoom_tool(); // this is a toggle. here were toggle it on, call again to toggle off
