@@ -139,5 +139,6 @@ class SingleBinSelect(InteractCheckableTool):
         return super().activate()
     
     def deactivate(self):
+        self.x = None
         return super().deactivate()
    

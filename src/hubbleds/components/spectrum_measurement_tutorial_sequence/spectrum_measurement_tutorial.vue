@@ -30,7 +30,7 @@
       >
         <v-toolbar-title
         >
-        Velocity Measurement Tutorial
+        Velocity Measurement Tutorial (Step #{{ step  }})
         </v-toolbar-title>
       </v-toolbar>
 
@@ -38,10 +38,12 @@
     <v-row>
       <v-col class="tutorial-frame" cols="4">
         <guidelines-spectrum-measurement-tutorial
-        @step="(val) => {this.step = val}"
+        @step="(val) => {this.step = val; this.maxStepCompleted = Math.max(this.maxStepCompleted, val)}"
         :toStep="this.step"
         :showControls="true"
+        :nextDisabled="this.next_disabled"
         @close="() => { $emit('close'); dialog = false; opened = true;  on_close() }"
+        @turnOnSpecViewer="() => { this.show_specviewer = true; this.next_disabled = false; }"
         />
       </v-col>
       <!-- Put the viewers in here -->
@@ -73,16 +75,10 @@
       </v-col>
     </v-row>
     <v-card-actions>
-      <v-btn text @click="() =>  { $emit('close'); dialog = false; step = 0; opened = true;  on_close() }">
+      <v-btn style="background-color: purple;" text @click="() =>  { $emit('close'); dialog = false; step = 0; opened = true;  on_close() }">
           <span> Finish tutorial </span>
         </v-btn>
-        <v-chip> show_table: {{ show_table }} </v-chip>
-        <v-chip> show_dotplot: {{ show_dotplot }} </v-chip>
-        <v-chip> show_specviewer: {{ show_specviewer }} </v-chip>
-        <v-chip> show_second_measurment: {{ show_second_measurment }} </v-chip>
-        <v-chip> show_first_measurment: {{ show_first_measurment }} </v-chip>
-        <v-chip> zoom_tool_enabled: {{ zoom_tool_enabled }} </v-chip>
-        <v-chip> mouse interaction {{ allow_specview_mouse_interaction }} </v-chip>
+
     </v-card-actions>
     <v-card-actions
         class="justify-space-between"
@@ -148,19 +144,16 @@
 {
   /* margin: 10px; */
   padding: 2%;
-  background-color: navy;
-  /* outline: 2px solid red; */
-  
 }
 
 .viewers-frame {
-  background-color: rgb(174, 1, 27);
-  padding: 2%
+  padding: 2%;
+  padding-left: 2%
 }
 
-.second-dotplot > * header {
-  /* display: none !important; */
-  background-color: aliceblue !important;
+div.viewers-frame > div.row > div.second-dotplot  > div.v-card > header {
+  background-color: transparent !important;
+  /* outline: 2px solid red; */
 }
 
 </style>
@@ -184,37 +177,46 @@ module.exports = {
   watch: {
     step(val) {
       this.$emit('step', val)
-      console.log('spectrum measurement tutorial step: ' + val)
+      console.log('0-indexed spectrum measurement tutorial step: ' + val)
 
       // val == 0 never gets run
-      if (val == 0) {}
+      if (val == 0) {
+        // this never get's called. anything you want done here 
+        // should be done when in the python __init__ function
+        // this.tracking_lines_off() // turn off the tracking lines
+      }
 
       if (val === 1) {
         console.log("step 1: showing 1st measurment")
-        this.allow_specview_mouse_interaction = false; // disable mouse interaction
+        
+        this.allow_specview_mouse_interaction = false; // disable mouse interaction on spectrum-viewer
         this.show_first_measurment = true // shows the first measurement on dotplot 1
         this.show_table = true // shows the example galaxy table
         // Ex: setting x-axis limits manually
         // this.set_x_axis_limits({ xmin: 0, xmax: 30000 }) // in velocity (km/s)
+        // SEQUENCING::: no zoom tool yet
         
       }
-      if (val == 2) { }
-      if (val == 3) {
-        this.show_specviewer = true;
+      if (val == 2) {
+        // this.show_specviewer = true; // done by clicking button in step 2
+       }
+      if (val == 3) {// turn on the tower selector
+        this.tracking_lines_on()
         this.allow_specview_mouse_interaction = true
-        this.selector_lines_on()
       }
       if (val == 4) {
-        this.zoom_tool_enabled = true;
-        
+        this.turn_on_tower_selector() 
       }
       if (val == 5) {  }
-      if (val == 6) { }
-      if (val == 7) { }
+      if (val == 6) { 
+      }
+      if (val == 7) { 
+        this.enable_zoom_tool(); // this is a toggle. here were toggle it on, call again to toggle off
+      }
       if (val == 8) { }
       if (val == 9) { }
       if (val == 10) { }
-      if (val == 11) {}
+      if (val == 11) { }
       if (val == 12) { }
       if (val == 13) { }
       if (val == 14) { }
@@ -223,8 +225,8 @@ module.exports = {
       if (val == 17) { }
       if (val == 18) {   
         console.log("Adding second measurement")
-        this.selector_lines_off()
-        this.prep_second_measurement() // filter table to only show second measurement
+        // this.tracking_lines_off()
+        this.show_second_measurement_table() // filter table to only show second measurement
         this.show_second_measurment = true // show dotplot 2
 
          }

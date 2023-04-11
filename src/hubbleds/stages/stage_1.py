@@ -261,6 +261,10 @@ class StageOne(HubbleStage):
         # Add new dotplot viewer with single galaxy seed data
         dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer', viewer_label = 'Example Galaxy Measurement')
         dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2', viewer_label = 'Second Measurement')
+        dotplot_viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
+        dotplot_viewer_2.toolbar.set_tool_enabled('hubble:towerselect', False)
+        dotplot_viewer.toolbar.set_tool_enabled('bqplot:xzoom', False)
+        dotplot_viewer_2.toolbar.set_tool_enabled('bqplot:xzoom', False)
         
                 
         #     HubbleHistogramView, label="dotplot_viewer")
@@ -793,9 +797,9 @@ class StageOne(HubbleStage):
 
 
         new_value = round(event["domain"]["x"], 0)
-        table = self.get_widget("example_galaxy_table")
+        # table = self.get_widget("example_galaxy_table")
         index = self.example_galaxy_table.index
-        
+        print(index, f"index is none: {index is None}")
         data = self.example_galaxy_table.glue_data
         if data['name'][index] in self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)['name']:
             
@@ -803,8 +807,9 @@ class StageOne(HubbleStage):
             self.stage_state.lambda_obs = new_value
 
             if index is not None:
-                # want to switch 2nd condition to just state variable, which should be set to false when we reach the tutorial section
-                if (index == 0) & (self.stage_state.allow_first_measurement_change & (self.stage_state.marker_reached('osm_tut'))):
+                # if we're on the first example galaxy and we've reached the tutorial, don't allow changes to
+                # the first measurement anymore. when it changes to the second measurement we'll allow it again
+                if (index == 0) & (self.stage_state.marker_reached('osm_tut')):
                     # don't allow user to change the first measurement once we begin the tutorial section
                     return
                 self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, "measwave",
