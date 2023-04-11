@@ -13,7 +13,7 @@
   >
    
     <template #before-next>
-      Click the <strong>UNCERTAINTY TUTORIAL</strong> button.
+      Click <span style="background-color: #02838f; border-radius : 5px; padding: 3px; color:white!important;">UNCERTAINTY TUTORIAL</span> button.
     </template>
 
     <div
@@ -23,7 +23,7 @@
         Before we go further, let's explore some reasons <strong>why</strong> different students and different classes may have obtained different age values for the universe.
       </p>
       <p>
-        We can explain this using a concept called <strong>uncertainty</strong>. Click the <strong>UNCERTAINTY TUTORIAL</strong> button to learn about this important concept for interpreting data.
+        We can explain this using a concept called <strong>uncertainty</strong>. Click the <span style="background-color: #02838f; border-radius : 5px; padding: 3px; color:white!important;">UNCERTAINTY TUTORIAL</span> button to learn about this important concept for interpreting data.
       </p>
     </div>
   </scaffold-alert>

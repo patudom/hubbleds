@@ -11,7 +11,7 @@ from echo import CallbackProperty, add_callback, ignore_callback
 from traitlets import default, Bool
 
 from ..components import DistanceSidebar, DistanceTool, DosDontsSlideShow
-from ..data_management import STUDENT_MEASUREMENTS_LABEL, EXAMPLE_GALAXY_MEASUREMENTS, EXAMPLE_GALAXY_SEED_DATA
+from ..data_management import *
 from ..stage import HubbleStage
 from ..utils import DISTANCE_CONSTANT, GALAXY_FOV, HUBBLE_ROUTE_PATH, IMAGE_BASE_URL, distance_from_angular_size, format_fov
 
@@ -193,10 +193,10 @@ class StageTwo(HubbleStage):
                  activate=self.update_distances)
         distance_table = Table(self.session,
                                data=self.get_data(STUDENT_MEASUREMENTS_LABEL),
-                               glue_components=['name',
-                                                'angular_size',
-                                                'distance'],
-                               key_component='name',
+                               glue_components=[NAME_COMPONENT,
+                                                ANGULAR_SIZE_COMPONENT,
+                                                DISTANCE_COMPONENT],
+                               key_component=NAME_COMPONENT,
                                names=['Galaxy Name',
                                       'θ (arcsec)',
                                       'Distance (Mpc)'],
@@ -213,10 +213,10 @@ class StageTwo(HubbleStage):
         
         example_galaxy_distance_table = Table(self.session,
                                data=self.get_data(EXAMPLE_GALAXY_MEASUREMENTS),
-                               glue_components=['name',
-                                                'angular_size',
-                                                'distance'],
-                               key_component='name',
+                               glue_components=[NAME_COMPONENT,
+                                                ANGULAR_SIZE_COMPONENT,
+                                                DISTANCE_COMPONENT],
+                               key_component=NAME_COMPONENT,
                                names=['Galaxy Name',
                                       'θ (arcsec)',
                                       'Distance (Mpc)'],
@@ -325,7 +325,7 @@ class StageTwo(HubbleStage):
         self.stage_state.galaxy = galaxy
         self.stage_state.galaxy_dist = None
         self.distance_tool.measuring_allowed = bool(galaxy)
-        self.stage_state.meas_theta = data["angular_size"][index]
+        self.stage_state.meas_theta = data[ANGULAR_SIZE_COMPONENT][index]
 
         if self.stage_state.marker == 'cho_row1' or self.stage_state.marker == 'cho_row2':
             self.stage_state.move_marker_forward(self.stage_state.marker)
@@ -355,7 +355,7 @@ class StageTwo(HubbleStage):
 
     def _make_measurement(self):
         galaxy = self.stage_state.galaxy
-        index = self.get_data_indices(STUDENT_MEASUREMENTS_LABEL, 'name',
+        index = self.get_data_indices(STUDENT_MEASUREMENTS_LABEL, NAME_COMPONENT,
                                       lambda x: x == galaxy["name"],
                                       single=True)
         angular_size = self.distance_tool.angular_size
@@ -367,17 +367,17 @@ class StageTwo(HubbleStage):
         if index is None:
             return
         data = self.distance_table.glue_data
-        curr_value = data["angular_size"][index]
+        curr_value = data[ANGULAR_SIZE_COMPONENT][index]
 
         if curr_value is None:
             self.stage_state.angsizes_total = self.stage_state.angsizes_total + 1
 
         # self.stage_state.galaxy_dist = distance
-        # self.update_data_value("student_measurements", "distance", distance, index)
-        # self.update_data_value("student_measurements", "angular_size", angular_size_as, index)
+        # self.update_data_value(STUDENT_MEASUREMENTS_LABEL, DISTANCE_COMPONENT, distance, index)
+        # self.update_data_value(STUDENT_MEASUREMENTS_LABEL, ANGULAR_SIZE_COMPONENT, angular_size_as, index)
 
         self.stage_state.meas_theta = round(angular_size.to(u.arcsec).value)
-        self.update_data_value(STUDENT_MEASUREMENTS_LABEL, "angular_size",
+        self.update_data_value(STUDENT_MEASUREMENTS_LABEL, ANGULAR_SIZE_COMPONENT,
                                self.stage_state.meas_theta, index)
         self.story_state.update_student_data()
         with ignore_callback(self.stage_state, 'make_measurement'):
@@ -412,7 +412,7 @@ class StageTwo(HubbleStage):
         if index is None:
             return
         distance = distance_from_angular_size(self.stage_state.meas_theta)
-        self.update_data_value("student_measurements", "distance", distance,
+        self.update_data_value(STUDENT_MEASUREMENTS_LABEL, DISTANCE_COMPONENT, distance,
                                index)
         self.story_state.update_student_data()
         if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.
@@ -423,12 +423,12 @@ class StageTwo(HubbleStage):
         data = table.glue_data
         for item in table.items:
             index = table.indices_from_items([item])[0]
-            if index is not None and data["distance"][index] is None:
-                theta = data["angular_size"][index]
+            if index is not None and data[DISTANCE_COMPONENT][index] is None:
+                theta = data[ANGULAR_SIZE_COMPONENT][index]
                 if theta is None:
                     continue
                 distance = round(DISTANCE_CONSTANT / theta, 0)
-                self.update_data_value("student_measurements", "distance",
+                self.update_data_value(STUDENT_MEASUREMENTS_LABEL, DISTANCE_COMPONENT,
                                        distance, index)
         self.story_state.update_student_data()
         if tool is not None:
@@ -449,7 +449,7 @@ class StageTwo(HubbleStage):
     
     def get_distance_count(self):
         student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
-        distances = student_measurements["distance"]
+        distances = student_measurements[DISTANCE_COMPONENT]
         self.stage_state.distances_total = distances[distances != None].size
     
     def update_viewer_style(self, dark):

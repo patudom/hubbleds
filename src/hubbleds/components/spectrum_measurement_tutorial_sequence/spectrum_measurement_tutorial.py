@@ -15,6 +15,7 @@ from cosmicds.utils import vertical_line_mark
 
 
 
+from hubbleds.data_management import VELOCITY_COMPONENT
 from glue.core.message import NumericalDataChangedMessage, SubsetUpdateMessage
 from glue.core import HubListener
 from glue.core.subset import RangeSubsetState
