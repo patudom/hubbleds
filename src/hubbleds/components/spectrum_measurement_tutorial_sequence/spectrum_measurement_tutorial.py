@@ -8,7 +8,7 @@ from cosmicds.utils import extend_tool
 from bqplot import Label
 
 from glue_jupyter.link import link
-from echo import add_callback
+from echo import add_callback, ignore_callback
 from bqplot import Label
 from bqplot.marks import Lines, Scatter
 from cosmicds.utils import vertical_line_mark
@@ -263,9 +263,12 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         if change is not None:
             self.add_selector_lines()
         
-        y_max = max(self.dotplot_viewer.state.y_max, self.dotplot_viewer_2.state.y_max)
-        self.dotplot_viewer.state.y_max = y_max
-        self.dotplot_viewer_2.state.y_max = y_max
+ 
+        # y_max = max(self.dotplot_viewer.state.y_max, self.dotplot_viewer_2.state.y_max)
+        # with ignore_callback(self.dotplot_viewer.state, 'y_max'):
+        #     self.dotplot_viewer.state.y_max = y_max
+        # with ignore_callback(self.dotplot_viewer_2.state, 'y_max'):
+        #     self.dotplot_viewer_2.state.y_max = y_max
         
         self.plot_measurements(self.example_galaxy_table._glue_data) # plots the measurements again
 
@@ -409,7 +412,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
 
     def plot_measurements(self, data):
         """ data should be a glue data"""
-        vel = data.to_dataframe()['velocity']
+        vel = data.to_dataframe()[VELOCITY_COMPONENT]
         
         if self.show_first_measurment:
             viewer = self.dotplot_viewer
