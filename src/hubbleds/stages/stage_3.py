@@ -163,9 +163,9 @@ class StageTwo(HubbleStage):
 
         self.add_component(DistanceTool(), label="py-distance-tool")
         
-        dotplot_viewer_ang = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_ang',)
-        dotplot_viewer_ang_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_ang_2')
-       
+        dotplot_viewer_ang = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_ang', viewer_label = 'Example Galaxy Measurement')
+        dotplot_viewer_ang_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_ang_2', viewer_label = 'Second Measurement')
+        
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
         # first = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='first')
         # second = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='second')
@@ -184,11 +184,6 @@ class StageTwo(HubbleStage):
             # viewer.layer_artist_for_data(EXAMPLE_GALAXY_SEED_DATA+'.1').state.color = '#787878'
             # viewer.layer_artist_for_data(EXAMPLE_GALAXY_SEED_DATA+'.2').state.color = '#787878'
         
-        
-        # dotplot_viewer_ang.layers[1].visible = True
-        dotplot_viewer_ang.LABEL = "Example Galaxy Measurements"
-        # dotplot_viewer_ang_2.layers[2].visible = True
-        dotplot_viewer_ang_2.LABEL = "Second Measurements"
 
         add_distances_tool = \
             dict(id="update-distances",
