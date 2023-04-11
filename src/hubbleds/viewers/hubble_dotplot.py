@@ -29,10 +29,8 @@ class HubbleDotPlotViewState(LineHoverViewerMixin,BqplotDotPlotView):
         self.line_label.visible = show_label
         lines = [self.line, self.line_label]
         marks = [m for m in self.figure.marks if m not in lines]
-        if show:
-            marks = [self.line] + marks
-        if show_label:
-            marks = [self.line_label] + marks
+        marks = [self.line] + marks
+        marks = [self.line_label] + marks
         self.figure.marks = marks
         
     def show_previous_line(self, show = True, show_label = True):
@@ -40,16 +38,18 @@ class HubbleDotPlotViewState(LineHoverViewerMixin,BqplotDotPlotView):
         self.previous_line_label.visible = False
         lines = [self.previous_line, self.previous_line_label]
         marks = [m for m in self.figure.marks if m not in lines]
-        if show:
-            marks = [self.previous_line] + marks
-        if show_label:
-            marks = [self.previous_line_label] + marks
+        marks = [self.previous_line] + marks
+        marks = [self.previous_line_label] + marks
         self.figure.marks = marks
+    
+    def add_lines_to_figure(self):
+        self.show_line(show = self.line.visible, show_label = self.line_label.visible)
+        self.show_previous_line(show = self.previous_line.visible, show_label = self.previous_line_label.visible)
     
     def redraw(self):
         super().redraw()
-        self.show_line(show = self.line.visible, show_label = self.line_label.visible)
-        self.show_previous_line(show = self.previous_line.visible, show_label = self.previous_line_label.visible)
+        self.add_lines_to_figure()
+        
         
 
 
