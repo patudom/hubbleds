@@ -149,8 +149,22 @@
                     <v-col
                       cols="8"
                       offset-lg="1"
-                    > 
-                      <c-exploration-tool id="exploration-tool">
+                    >
+                      <v-row>
+                        <v-col>
+                          <c-exploration-tool id="exploration-tool">
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <div
+                            class="text-center grey--text"
+                            style="width: 100%;"
+                          >
+                            Interactive view provided by WorldWide Telescope
+                          </div>
+                        </v-col>
+                      </v-row>
                     </v-col>
                     <v-col
                       cols="4"
@@ -200,20 +214,33 @@
                       </v-row>
                     </v-col>
                   </v-row>
-                  <v-row>
-                    <div
-                      class="text-center grey--text"
-                      style="width: 100%;"
-                    >
-                      Interactive view provided by WorldWide Telescope
-                    </div>
-                  </v-row>
                 </div>
               </v-col>
             </v-row>
             <v-snackbar
               v-model="timer_done[0]"
-            >Prompting text goes here</v-snackbar>
+              timeout="500000"
+              transition="fab-transition"
+              top
+              right
+              color="cyan lighten-2"
+              class="pa-4 black--text"
+              style="font-size: 1.25rem;"
+              multi-line
+              elevation="24"
+            >
+              Be sure to move on to the next slide after you've had a chance to explore.
+              <v-btn
+                color="accent"
+                class="mx-4 black--text"
+                @click="{
+                  timer_done[0] = false;
+                  step++;
+                }"
+              >
+                move on
+              </v-btn>
+            </v-snackbar>
           </v-container>                                      
         </v-card-text>
       </v-window-item>
@@ -798,6 +825,10 @@
 
 #exploration-tool, #exploration-tool2, #exploration-tool3 {
   height: 400px;
+}
+
+.v-snack__content {
+  padding: 12px 16px;
 }
 </style>
 
