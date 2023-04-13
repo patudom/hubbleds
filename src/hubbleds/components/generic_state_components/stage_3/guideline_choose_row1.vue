@@ -18,7 +18,7 @@
       class="mb-4"
     >
       <p>
-        Click a row in your table to choose one of your galaxies.
+        Select the example galaxy.
       </p>
     </div>
   </scaffold-alert>

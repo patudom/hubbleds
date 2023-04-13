@@ -17,6 +17,9 @@
     <div
       class="mb-4"
     >
+    <p>
+      Try adjusting the brightness slider to make the faint edges of the galaxy easier to see.
+    </p>
       <p>
         You may adjust your measurement by clicking on the ends of the green line and moving them to a new location.
       </p>

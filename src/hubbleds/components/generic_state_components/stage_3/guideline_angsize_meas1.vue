@@ -23,6 +23,9 @@
       <p>
         The green vertical line on the left tells you the <strong>angular size</strong> of the patch of sky being displayed.
       </p>
+      <p>
+        Like last time, we will begin with measuring our example galaxy
+      </p>
     </div>
   </scaffold-alert>
 </template>

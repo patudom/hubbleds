@@ -43,6 +43,11 @@ class StageState(CDSState):
     meas_theta = CallbackProperty(0)
     distance_calc_count = CallbackProperty(0)
     
+    show_dotplot1 = CallbackProperty(False)
+    show_dotplot2 = CallbackProperty(False)
+    show_exgal_table = CallbackProperty(False)
+    show_galaxy_table = CallbackProperty(True)
+    
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
     
@@ -224,7 +229,7 @@ class StageTwo(HubbleStage):
                                selected_color=self.table_selected_color(
                                    self.app_state.dark_mode),
                                use_subset_group=False,
-                            #    item_filter= lambda item: item['measurement_number'] == 'first',
+                               item_filter= lambda item: item[MEASUREMENT_NUMBER_COMPONENT] == 'first',
                                single_select=True)
 
         self.add_widget(example_galaxy_distance_table, label="example_galaxy_distance_table")

@@ -92,18 +92,13 @@
         </v-row>
         
         <v-row>
-          <v-card class="dotplot" v-if="true" width="90%">
+          <v-card class="dotplot" v-if="stage_state.show_dotplot1" width="90%">
           <jupyter-widget :widget="viewers.dotplot_viewer_ang"/>
           </v-card>
         </v-row>
         <v-row>
-          <v-card class='dotplot' v-if="true" width="90%">
+          <v-card class='dotplot' v-if="stage_state.show_dotplot2" width="90%">
           <jupyter-widget :widget="viewers.dotplot_viewer_ang_2"/>
-          </v-card>
-        </v-row>
-        <v-row>
-          <v-card class='example-galaxy-table' v-if="true" width="90%">
-          <jupyter-widget :widget="widgets.example_galaxy_distance_table"/>
           </v-card>
         </v-row>
         
@@ -160,7 +155,9 @@
           :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
           outlined
         >
-          <jupyter-widget :widget="widgets.distance_table" />        
+          <jupyter-widget v-if="stage_state.show_galaxy_table" :widget="widgets.distance_table" />        
+          <jupyter-widget v-if="stage_state.show_exgal_table" :widget="widgets.example_galaxy_distance_table"/>
+        </v-row>
         </v-card>
         <v-btn
           v-if="show_team_interface"
