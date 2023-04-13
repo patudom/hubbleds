@@ -13,10 +13,7 @@ from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
 
-from ..data_management import \
-    ALL_CLASS_SUMMARIES_LABEL, ALL_DATA_LABEL, ALL_STUDENT_SUMMARIES_LABEL, BEST_FIT_SUBSET_LABEL, \
-    CLASS_DATA_LABEL, CLASS_SUMMARY_LABEL, STUDENT_DATA_LABEL, \
-    BEST_FIT_GALAXY_NAME
+from ..data_management import *
 from ..histogram_listener import HistogramListener
 from ..stage import HubbleStage
 from ..viewers import HubbleScatterView
@@ -67,8 +64,6 @@ class StageState(CDSState):
 
     cla_low_age = CallbackProperty(0)
     cla_high_age = CallbackProperty(0)
-
-    reveal_iter = CallbackProperty(0)
 
     age_calc_state = DictCallbackProperty({
         'hint1_dialog': False,
@@ -244,10 +239,10 @@ class StageFour(HubbleStage):
 
         fit_table = Table(self.session,
                           data=student_data,
-                          glue_components=['name',
-                                           'velocity',
-                                           'distance'],
-                          key_component='name',
+                          glue_components=[NAME_COMPONENT,
+                                           VELOCITY_COMPONENT,
+                                           DISTANCE_COMPONENT],
+                          key_component=NAME_COMPONENT,
                           names=['Galaxy Name',
                                  'Velocity (km/s)',
                                  'Distance (Mpc)'],
@@ -257,9 +252,7 @@ class StageFour(HubbleStage):
         self.add_widget(fit_table, label="fit_table")
 
         # Set up links between various data sets
-        dist_attr = "distance"
-        vel_attr = "velocity"
-        for field in [dist_attr, vel_attr]:
+        for field in [DISTANCE_COMPONENT, VELOCITY_COMPONENT]:
             self.add_link(CLASS_DATA_LABEL, field, ALL_DATA_LABEL, field)
 
         # Create viewers
@@ -301,7 +294,7 @@ class StageFour(HubbleStage):
         student_slider_subset_label = "student_slider_subset"
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
         self.student_slider_subset.style.alpha = 1
-        student_slider = IDSlider(class_summ_data, "student_id", "age", highlight_ids=[self.story_state.student_user["id"]])
+        student_slider = IDSlider(class_summ_data, STUDENT_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "py-student-slider")
         def student_slider_change(id, highlighted):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
@@ -320,10 +313,10 @@ class StageFour(HubbleStage):
         # Create the class slider
         class_slider_subset_label = "class_slider_subset"
         self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
-        class_slider = IDSlider(classes_summary_data, "class_id", "age")
+        class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT)
         self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
-            self.class_slider_subset.subset_state = all_data['class_id'] == id
+            self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
             color = class_slider.highlight_color if highlighted else class_slider.default_color
             self.class_slider_subset.style.color = color
         def class_slider_refresh(slider):
@@ -351,7 +344,7 @@ class StageFour(HubbleStage):
                     viewer.ignore(ignorer)
         
         # layers from the table selection have the same label, but we only want student_data selected
-        layer_viewer.ignore(lambda layer: layer.label == "fit_table_selected" and layer.data != student_data)
+        layer_viewer.ignore(lambda layer: layer.label == fit_table.subset_label and layer.data != student_data)
 
         def comparison_ignorer(x):
             return x.label == histogram_modify_label and x.data != self.histogram_listener.modify_data
@@ -451,8 +444,6 @@ class StageFour(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
 
     def _setup_scatter_layers(self):
-        dist_attr = "distance"
-        vel_attr = "velocity"
         layer_viewer = self.get_viewer("layer_viewer")
         comparison_viewer = self.get_viewer("comparison_viewer")
         all_viewer = self.get_viewer("all_viewer")
@@ -460,8 +451,8 @@ class StageFour(HubbleStage):
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
         for viewer in [comparison_viewer, layer_viewer, all_viewer]:
             viewer.add_data(student_data)
-            viewer.state.x_att = student_data.id[dist_attr]
-            viewer.state.y_att = student_data.id[vel_attr]
+            viewer.state.x_att = student_data.id[DISTANCE_COMPONENT]
+            viewer.state.y_att = student_data.id[VELOCITY_COMPONENT]
 
         student_layer = layer_viewer.layer_artist_for_data(student_data)
         student_layer.state.visible = False # Don't need to display this in Stage 4.
@@ -500,8 +491,8 @@ class StageFour(HubbleStage):
         class_layer.state.visible = False  # Turn off layer with the whole class
         class_layer.state.zorder = 2
         # comparison_viewer.add_subset(self.student_slider_subset)
-        comparison_viewer.state.x_att = class_meas_data.id[dist_attr]
-        comparison_viewer.state.y_att = class_meas_data.id[vel_attr]
+        comparison_viewer.state.x_att = class_meas_data.id[DISTANCE_COMPONENT]
+        comparison_viewer.state.y_att = class_meas_data.id[VELOCITY_COMPONENT]
         comparison_viewer.state.reset_limits()
 
         comparison_viewer.toolbar.tools["hubble:linefit"].activate() 
@@ -520,8 +511,8 @@ class StageFour(HubbleStage):
         all_layer.state.color = "#78909C"
         all_layer.state.size = 2
         all_layer.state.visible = False
-        all_viewer.state.x_att = all_data.id[dist_attr]
-        all_viewer.state.y_att = all_data.id[vel_attr]
+        all_viewer.state.x_att = all_data.id[DISTANCE_COMPONENT]
+        all_viewer.state.y_att = all_data.id[VELOCITY_COMPONENT]
 
         # Set up all viewer tools
         all_fit_tool = all_viewer.toolbar.tools["hubble:linefit"]
@@ -578,9 +569,9 @@ class StageFour(HubbleStage):
             viewer.figure.axes[1].tick_format = '0'
             # viewer.figure.axes[1].num_ticks = 5
 
-        class_distr_viewer.state.x_att = class_summ_data.id['age']
-        all_distr_viewer_class.state.x_att = classes_summary_data.id['age']
-        all_distr_viewer_student.state.x_att = students_summary_data.id['age']
+        class_distr_viewer.state.x_att = class_summ_data.id[AGE_COMPONENT]
+        all_distr_viewer_class.state.x_att = classes_summary_data.id[AGE_COMPONENT]
+        all_distr_viewer_student.state.x_att = students_summary_data.id[AGE_COMPONENT]
 
         theme = "dark" if self.app_state.dark_mode else "light"
         style_name = f"default_histogram_{theme}"
@@ -629,8 +620,8 @@ class StageFour(HubbleStage):
         indices = where(data["name"] == BEST_FIT_GALAXY_NAME)
         if indices[0]:
             index = indices[0][0]
-            self.stage_state.hypgal_velocity = data["velocity"][index]
-            self.stage_state.hypgal_distance = data["distance"][index]
+            self.stage_state.hypgal_velocity = data[VELOCITY_COMPONENT][index]
+            self.stage_state.hypgal_distance = data[DISTANCE_COMPONENT][index]
             self.stage_state.our_age = (AGE_CONSTANT * self.stage_state.hypgal_distance/self.stage_state.hypgal_velocity)
 
     def _update_image_location(self, using_voila):

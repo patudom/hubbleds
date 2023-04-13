@@ -12,6 +12,7 @@ from cosmicds.utils import vertical_line_mark
 
 
 from cosmicds.viewers.dotplot.state import DotPlotViewerState
+from hubbleds.data_management import VELOCITY_COMPONENT
 from glue.core.message import NumericalDataChangedMessage
 from glue.core import HubListener
 
@@ -197,7 +198,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         """ data should be a glue data"""
         data = data.to_dataframe()
         # data = self.example_galaxy_table._glue_data.to_dataframe()
-        vel = data['velocity']
+        vel = data[VELOCITY_COMPONENT]
         
         if self.show_first_measurment:
             viewer = self.dotplot_viewer

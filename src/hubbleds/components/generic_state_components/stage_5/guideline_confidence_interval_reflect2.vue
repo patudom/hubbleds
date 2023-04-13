@@ -1,10 +1,11 @@
 <template>
   <scaffold-alert
     title-text="Identify Your Confidence Interval"
+    ref="scaffold"
     @back="state.marker_backward = 1"
     @next="() => {
-      if (state.reveal_iter < 3) {
-        state.reveal_iter = state.reveal_iter + 1;
+      if (revealIter < 3) {
+        revealIter = revealIter + 1;
       }
       else {
         state.marker_forward = 1;
@@ -88,7 +89,7 @@
       </v-row>
 
       <v-row
-        v-if="state.reveal_iter >= 1"
+        v-if="revealIter >= 1"
       >
         <v-col
           cols="12"
@@ -151,7 +152,7 @@
         </v-col>
       </v-row>
       <v-row
-        v-if="state.reveal_iter >= 1"
+        v-if="revealIter >= 1"
       >
         <v-col
           cols="12"
@@ -184,14 +185,14 @@
       </v-row>
 
       <v-row
-        v-if="state.reveal_iter >= 2"
+        v-if="revealIter >= 2"
       >
         <v-col>
           3. Explain why you chose your values using information from the scatterplot and/or the histogram:
         </v-col>
       </v-row>
       <v-row
-        v-if="state.reveal_iter >= 2"
+        v-if="revealIter >= 2"
       >
         <v-col>
           <free-response
@@ -205,7 +206,7 @@
       </v-row>
 
       <v-row
-        v-if="state.reveal_iter >= 3"
+        v-if="revealIter >= 3"
       >
         <v-col
           cols="12"
@@ -264,7 +265,7 @@
         </v-col>
       </v-row>
       <v-row
-        v-if="state.reveal_iter >= 3"
+        v-if="revealIter >= 3"
       >
         <v-col>
           <free-response
@@ -282,7 +283,23 @@
 
 <script>
 module.exports = {
-  props: ['state']
+  props: ['state'],
+  data() {
+    return {
+      revealIter: 0
+    }
+  },
+  watch: {
+    revealIter(_value) {
+      const scaffold = this.$refs.scaffold;
+      this.$nextTick(() => {
+        scaffold.$refs.next.$el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      });
+    }
+  }
 }
 </script>
 

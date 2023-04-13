@@ -23,14 +23,12 @@ class HubbleLineDrawTool(LineDrawTool):
         endpoint = getattr(self, 'endpoint', None)
         if endpoint is not None and self.viewer.toolbar.active_tool is None:
             self.clear()
-            self.tool_tip = "Draw a trend line"
-    
-    def activate(self):
-        super().activate()
+            self.tool_tip = self.draw_tool_tip
     
     def deactivate(self):
         super().deactivate()
-        self.tool_tip = "Update trend line. Double click graph to clear"
+        if self.line is not None:
+            self.tool_tip = "Update trend line. Double click graph to clear"
         
     def erase_line(self):
         super().clear()
