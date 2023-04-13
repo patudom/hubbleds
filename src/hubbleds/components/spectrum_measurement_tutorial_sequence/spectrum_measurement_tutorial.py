@@ -249,18 +249,17 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             viewer.previous_line_label.visible = False
     
     def _activate_gray_markers(self, viewer, event = {'event': None}):
-        print('viewer id', id(viewer))
-        print('spectrum viewer id', id(self.spectrum_viewer))
-        if viewer is self.spectrum_viewer:
-            w = event['domain']['x']
-            v = self.w2v(w)
-        else:
-            v = event['domain']['x']
-            w = self.v2w(v)
+        if self.show_selector_lines:
+            if viewer is self.spectrum_viewer:
+                w = event['domain']['x']
+                v = self.w2v(w)
+            else:
+                v = event['domain']['x']
+                w = self.v2w(v)
         
-        self.dotplot_viewer._on_click(event = {'domain': {'x': v}})
-        self.dotplot_viewer_2._on_click(event = {'domain': {'x': v}})
-        self.spectrum_viewer._on_click(event = {'domain': {'x': w}})
+            self.dotplot_viewer._on_click(event = {'domain': {'x': v}})
+            self.dotplot_viewer_2._on_click(event = {'domain': {'x': v}})
+            self.spectrum_viewer._on_click(event = {'domain': {'x': w}})
 
 
     
