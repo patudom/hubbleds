@@ -282,14 +282,15 @@ class StageOne(HubbleStage):
             viewer.layer_artist_for_data(example_galaxy_data).visible = False
             viewer.figure.axes[0].label = 'Velocity (km/s)'
             viewer.state.hist_n_bin = 75
-            viewer.state.alpha = 1
             viewer.state.reset_limits()
             viewer.state.viewer_height = 150
-            viewer.layer_artist_for_data(example_galaxy_data).state.color = '#e642f5'
             for subset in [first, second]:
                 layer = viewer.layer_artist_for_data(subset)
                 if layer is not None:
                     layer.state.color = '#787878'
+                    layer.state.alpha = 1
+                    layer.state.skew = 0.1
+                    layer.state.rotation = 90
 
         
         
