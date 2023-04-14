@@ -2,7 +2,7 @@ from echo import delay_callback
 from glue.viewers.scatter.state import ScatterViewerState
 from glue_jupyter.bqplot.histogram import BqplotHistogramView
 from glue_jupyter.bqplot.scatter import BqplotScatterView
-from cosmicds.viewers import cds_viewer
+from cosmicds.viewers.cds_viewer import cds_viewer
 from cosmicds.viewers.dotplot.viewer import BqplotDotPlotView
 
 

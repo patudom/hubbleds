@@ -9,7 +9,7 @@ from glue_jupyter.bqplot.scatter import BqplotScatterView, \
     BqplotScatterLayerArtist
 
 from cosmicds.mixins import LineHoverStateMixin, LineHoverViewerMixin
-from cosmicds.viewers.cds_viewers import cds_viewer
+from cosmicds.viewers.cds_viewer import cds_viewer
 from ..utils import H_ALPHA_REST_LAMBDA, MG_REST_LAMBDA
 
 __all__ = ['SpectrumView', 'SpectrumViewLayerArtist', 'SpectrumViewerState']
