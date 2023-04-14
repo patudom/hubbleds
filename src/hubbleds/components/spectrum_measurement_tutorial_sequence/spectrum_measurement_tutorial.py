@@ -205,6 +205,17 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             self.dotplot_viewer_2.add_event_callback(
                 callback = lambda event: self._on_viewer_focus(self.dotplot_viewer_2, event),
                 events=['moustenter', 'mouseleave'])
+            
+            
+            self.dotplot_viewer.add_event_callback(
+                callback = lambda event:self._activate_gray_markers(self.dotplot_viewer, event), 
+                events=['click'])
+            self.dotplot_viewer_2.add_event_callback(
+                callback = lambda event:self._activate_gray_markers(self.dotplot_viewer_2, event), 
+                events=['click'])
+            self.spectrum_viewer.add_event_callback(
+                callback = lambda event:self._activate_gray_markers(self.spectrum_viewer, event), 
+                events=['click'])
 
         else:
             pass
@@ -236,6 +247,20 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             # viewer.line.visible = False
             viewer.previous_line.visible = False
             viewer.previous_line_label.visible = False
+    
+    def _activate_gray_markers(self, viewer, event = {'event': None}):
+        if self.show_selector_lines:
+            if viewer is self.spectrum_viewer:
+                w = event['domain']['x']
+                v = self.w2v(w)
+            else:
+                v = event['domain']['x']
+                w = self.v2w(v)
+        
+            self.dotplot_viewer._on_click(event = {'domain': {'x': v}})
+            self.dotplot_viewer_2._on_click(event = {'domain': {'x': v}})
+            self.spectrum_viewer._on_click(event = {'domain': {'x': w}})
+
 
     
     def _on_data_change(self, message):
