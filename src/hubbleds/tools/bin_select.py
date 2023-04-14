@@ -48,16 +48,16 @@ class BinSelect(BqplotSelectionTool):
             bin_centers = (bins[:-1] + bins[1:]) / 2
             if self.interact.selected is not None:
                 x = self.interact.selected
-                if x is not None and len(x):
-                    print(x)
-                    if min(x) != max(x):
-                        left = np.searchsorted(bin_centers, min(x), side='left')
-                        right = np.searchsorted(bin_centers, max(x), side='right')
-                        x = bins[left], bins[right]
-                    self.x_min = min(x)
-                    self.x_max = max(x)
-                    roi = RangeROI(min=min(x), max=max(x), orientation='x')
-                    self.viewer.apply_roi(roi)
+                x_min = min(x)
+                x_max = max(x)
+                if x_min != x_max:
+                    left = np.searchsorted(bin_centers, x_min, side='left')
+                    right = np.searchsorted(bin_centers, x_max, side='right')
+                    x = bins[left], bins[right]
+                self.x_min = x_min
+                self.x_max = x_max
+                roi = RangeROI(min=x_min, max=x_max, orientation='x')
+                self.viewer.apply_roi(roi)
             self.interact.selected = None
         
 

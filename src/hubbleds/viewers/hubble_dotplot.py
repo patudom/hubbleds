@@ -13,7 +13,7 @@ class HubbleDotPlotViewerState(LineHoverStateMixin,DotPlotViewerState):
         super().__init__(*args, **kwargs)
         
 
-class HubbleDotPlotViewState(LineHoverViewerMixin,BqplotDotPlotView):
+class HubbleDotPlotViewer(LineHoverViewerMixin,BqplotDotPlotView):
     
     _state_cls = HubbleDotPlotViewerState
     
@@ -54,7 +54,7 @@ class HubbleDotPlotViewState(LineHoverViewerMixin,BqplotDotPlotView):
 
 
 HubbleDotPlotView = cds_viewer(
-    HubbleDotPlotViewState,
+    HubbleDotPlotViewer,
     name="HubbleDotPlotView",
     viewer_tools=[
         "bqplot:home",
