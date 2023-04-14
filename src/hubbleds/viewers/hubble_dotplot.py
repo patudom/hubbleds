@@ -4,7 +4,7 @@ from cosmicds.viewers.dotplot.state import DotPlotViewerState
 
 from cosmicds.mixins import LineHoverStateMixin, LineHoverViewerMixin
 
-__all__ = [ 'HubbleDotPlotView', 'HubbleDotPlotViewState', 'HubbleDotPlotViewerState']
+__all__ = [ 'HubbleDotPlotView', 'HubbleDotPlotViewer', 'HubbleDotPlotViewerState']
 
 
 class HubbleDotPlotViewerState(LineHoverStateMixin,DotPlotViewerState):
@@ -18,7 +18,7 @@ class HubbleDotPlotViewer(LineHoverViewerMixin,BqplotDotPlotView):
     _state_cls = HubbleDotPlotViewerState
     
     def __init__(self, *args, **kwargs):
-        super(HubbleDotPlotViewState, self).__init__(*args, **kwargs)
+        super(HubbleDotPlotViewer, self).__init__(*args, **kwargs)
         
     @staticmethod
     def _label_text(value):
