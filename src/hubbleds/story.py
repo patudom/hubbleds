@@ -6,6 +6,7 @@ import requests
 
 import ipyvuetify as v
 import numpy as np
+from numpy.random import Generator, PCG64, SeedSequence
 from astropy.io import fits
 from cosmicds.phases import Story
 from cosmicds.registries import story_registry
@@ -236,10 +237,11 @@ class HubblesLaw(Story):
         # example_galaxy_seed_data = {k: np.array(v)[good] for k,v in example_galaxy_seed_data.items()}
 
         # This block chooses a subset of size N from the seed data
-        np.random.seed(42)
+        seq = SeedSequence(42)
+        gen = Generator(PCG64(seq))
         indices = np.arange(len(good))
         indices = indices[1::2]
-        random_subset = np.random.choice(indices[good[1::2]], size=40, replace=False)
+        random_subset = gen.choice(indices[good[1::2]], size=40, replace=False)
         random_subset = np.ravel(np.column_stack((random_subset, random_subset+1)))
         example_galaxy_seed_data = {k: np.array(v)[random_subset] for k,v in example_galaxy_seed_data.items()}
 
