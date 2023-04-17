@@ -433,7 +433,28 @@
             </v-row>
             <v-snackbar
               v-model="timer_done[1]"
-            >Prompting text goes here</v-snackbar>
+              timeout="500000"
+              transition="fab-transition"
+              top
+              right
+              color="cyan lighten-2"
+              class="pa-4 black--text"
+              style="font-size: 1.25rem;"
+              multi-line
+              elevation="24"
+            >
+              Be sure to move on to the next slide after you've had a chance to explore.
+              <v-btn
+                color="accent"
+                class="mx-4 black--text"
+                @click="{
+                  timer_done[1] = false;
+                  step++;
+                }"
+              >
+                move on
+              </v-btn>
+            </v-snackbar>
           </v-container>
         </v-card-text>
       </v-window-item>
@@ -588,7 +609,28 @@
             </v-row>
             <v-snackbar
               v-model="timer_done[2]"
-            >Prompting text goes here</v-snackbar>
+              timeout="500000"
+              transition="fab-transition"
+              top
+              right
+              color="cyan lighten-2"
+              class="pa-4 black--text"
+              style="font-size: 1.25rem;"
+              multi-line
+              elevation="24"
+            >
+              Be sure to move on to the next slide after you've had a chance to explore.
+              <v-btn
+                color="accent"
+                class="mx-4 black--text"
+                @click="{
+                  timer_done[0] = false;
+                  step++;
+                }"
+              >
+                move on
+              </v-btn>
+            </v-snackbar>
           </v-container>   
         </v-card-text>
       </v-window-item>
