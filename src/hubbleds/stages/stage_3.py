@@ -172,7 +172,7 @@ class StageTwo(HubbleStage):
                                                 DISTANCE_COMPONENT],
                                key_component=NAME_COMPONENT,
                                names=['Galaxy Name',
-                                      'θ (arcsec)',
+                                      '&theta; (arcsec)',
                                       'Distance (Mpc)'],
                                title='My Galaxies',
                                selected_color=self.table_selected_color(
@@ -192,7 +192,7 @@ class StageTwo(HubbleStage):
                                                 DISTANCE_COMPONENT],
                                key_component=NAME_COMPONENT,
                                names=['Galaxy Name',
-                                      'θ (arcsec)',
+                                      '&theta; (arcsec)',
                                       'Distance (Mpc)'],
                                title='Example Galaxy',
                                selected_color=self.table_selected_color(
