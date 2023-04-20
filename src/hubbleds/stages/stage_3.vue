@@ -62,30 +62,16 @@
           v-if="stage_state.marker == 'est_dis2'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <guideline-dotplot-seq1
-          v-if="stage_state.marker == 'dot_seq1'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-dotplot-seq2
-          v-if="stage_state.marker == 'dot_seq2'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-dotplot-seq3
-          v-if="stage_state.marker == 'dot_seq3'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-dotplot-seq4
-        v-if="stage_state.marker == 'dot_seq4'" 
+        
+        <guideline-dotplot-seq6
+          v-if="stage_state.marker == 'dot_seq6'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
         <guideline-dotplot-seq5
           v-if="stage_state.marker == 'dot_seq5'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <guideline-dotplot-seq6
-          v-if="stage_state.marker == 'dot_seq6'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
+        
       </v-col>
       <v-col
         cols="12"
@@ -96,6 +82,7 @@
             class="py-0"
           >
             <v-card
+              v-if="stage_state.distance_tool_shown.includes(stage_state.marker)"
               :color="stage_state.csv_highlights.includes(stage_state.marker) ? 'info' : 'black'"
               :class="stage_state.csv_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
               outlined
@@ -149,6 +136,22 @@
           v-if="stage_state.marker == 'est_dis4'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
+          <guideline-dotplot-seq1
+          v-if="stage_state.marker == 'dot_seq1'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-dotplot-seq2
+          v-if="stage_state.marker == 'dot_seq2'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-dotplot-seq3
+          v-if="stage_state.marker == 'dot_seq3'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-dotplot-seq4
+        v-if="stage_state.marker == 'dot_seq4'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
         <guideline-fill-remaining-galaxies
           v-if="stage_state.marker == 'fil_rem1'" 
           :state="stage_state"
@@ -187,7 +190,7 @@
           </v-card>
         </v-row>
         <v-row>
-          <v-card class='dotplot' v-if="stage_state.show_dotplot2_ang || ((stage_state.indices['dot_seq5'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))" width="90%">
+          <v-card class='dotplot' v-if="stage_state.show_dotplot2_ang || ((stage_state.indices['dot_seq6'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))" width="90%">
           <jupyter-widget :widget="viewers.dotplot_viewer_ang_2"/>
           </v-card>
         </v-row>

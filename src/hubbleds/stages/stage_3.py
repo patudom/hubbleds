@@ -58,8 +58,8 @@ class StageState(CDSState):
     show_dotplot2 = CallbackProperty(False)
     show_dotplot1_ang = CallbackProperty(False)
     show_dotplot2_ang = CallbackProperty(False)
-    show_exgal_table = CallbackProperty(True)
-    show_galaxy_table = CallbackProperty(True)
+    show_exgal_table = CallbackProperty(False)
+    show_galaxy_table = CallbackProperty(False)
     
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
@@ -85,7 +85,6 @@ class StageState(CDSState):
         'dot_seq3',
         'dot_seq4', # show dot plot ang size
         'ang_siz5a', # directs to dos/donts # hide angular size
-        
         'dot_seq5', 
         'dot_seq6', # show dot plot dist 2
         'rep_rem1',
@@ -116,6 +115,27 @@ class StageState(CDSState):
         'cho_row2',
         'est_dis3',
         'est_dis4',
+        'fil_rem1',
+        'two_com1',
+    ])
+    
+    distance_tool_shown = CallbackProperty([
+        'ang_siz1',
+        'cho_row1',
+        'ang_siz2',
+        'ang_siz2b',
+        'ang_siz3',
+        'ang_siz4',
+        'ang_siz5',
+        'est_dis1',
+        'est_dis2',
+        'cho_row2',
+        'est_dis3',
+        'est_dis4',
+        'ang_siz5a', 
+        'dot_seq5', 
+        'dot_seq6', 
+        'rep_rem1',
         'fil_rem1',
         'two_com1',
     ])
@@ -214,6 +234,14 @@ class StageTwo(HubbleStage):
         dotplot_viewer_dist = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_dist', viewer_label = 'First Distance Measurement')
         dotplot_viewer_dist_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_dist_2', viewer_label = 'Second Distance Measurement')
         
+        dotplot_viewer_ang._label_text = lambda value: f"{value:.1f} arcmin"
+        dotplot_viewer_ang_2._label_text = lambda value: f"{value:.1f} arcmin"
+        
+        dotplot_viewer_dist._label_text = lambda value: f"{value:.1f} Mpc"
+        dotplot_viewer_dist_2._label_text = lambda value: f"{value:.1f} Mpc"
+        
+        for viewer in [dotplot_viewer_ang, dotplot_viewer_ang_2, dotplot_viewer_dist, dotplot_viewer_dist_2]:
+            viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
         
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
         first = next((s for s in example_galaxy_data.subsets if s.label=='first measurement'), None)
@@ -352,7 +380,7 @@ class StageTwo(HubbleStage):
         self._update_viewer_style(dark=self.app_state.dark_mode)
         
     def _on_marker_update(self, old, new):
-        print(f"Marker update: {old} -> {new}")
+        print_log(f"Marker update: {old} -> {new}")
         if not self.trigger_marker_update_cb:
             return
         markers = self.stage_state.markers
@@ -368,22 +396,51 @@ class StageTwo(HubbleStage):
                 new)
         if advancing and (new == "cho_row1" or new == "cho_row2"):
             self.distance_table.selected = []
+            self.example_galaxy_distance_table.selected = []
             self.distance_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, instant=True)
             self.distance_tool.reset_canvas()
             # need to turn off ruler marker also.False
             # and start stage 2 at the start coordinates
+        
+
         if advancing and (new == "dot_seq1"):
             self.show_dotplot1 = True
+            
         if advancing and (new == 'dot_seq4'):
-            print("Showing dotplot1_ang")
             self.show_dotplot1_ang = True
-            print('value of show_dotplot1_ang: ', self.show_dotplot1_ang)
+            v1 = self.get_viewer('dotplot_viewer_dist')
+            v2 = self.get_viewer('dotplot_viewer_ang')
+            # previous line shows up when you click on the figure
+            v1.show_previous_line(show = True, show_label = True)
+            v2.show_previous_line(show = True, show_label = True)
+            def _on_dotplot_click(plot, event):
+                # it doesn't matter which plot we get the event from
+                # because d = C / \theta and \theta = C / d
+                event['domain']['x'] = round(DISTANCE_CONSTANT / event['domain']['x'], 0)
+                if event is None:
+                    print("No event")
+                    return
+                if plot is v1:
+                    v2._on_click(event)
+                else:
+                    v1._on_click(event)
+            v1.add_event_callback(lambda event:_on_dotplot_click(v1,event), events=['click'])
+            v2.add_event_callback(lambda event:_on_dotplot_click(v2,event), events=['click'])
+            
         if advancing and (new == 'dot_seq5'):
-            table = self.get_widget('example_galaxy_distance_table')
-            table.filter = None
-            self.show_dotplot1_ang= False
+            self.show_dotplot1 = False
+            self.show_dotplot1_ang = False
+            self.show_dotplot2 = False
+            
+            # self.example_galaxy_distance_table.selected = []
+            self.example_galaxy_distance_table.filter_by(None)
+            
+        if advancing and (new == 'dot_seq6'):
+            self.example_galaxy_distance_table.selected = []
             self.show_dotplot2 = True
+            self.show_dotplot2_ang = True
+            
         if advancing and (new == 'rep_rem1'):
             self.show_dotplot1 = False
             self.show_dotplot2 = False
