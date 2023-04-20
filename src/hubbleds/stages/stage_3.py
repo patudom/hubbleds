@@ -18,6 +18,10 @@ from ..utils import DISTANCE_CONSTANT, GALAXY_FOV, HUBBLE_ROUTE_PATH, IMAGE_BASE
 from ..viewers import HubbleDotPlotView
 from ..data.styles import load_style
 from cosmicds.utils import  update_figure_css
+from numpy import searchsorted
+
+from bqplot.marks import Scatter
+
 
 log = logging.getLogger()
 
@@ -295,7 +299,7 @@ class StageTwo(HubbleStage):
                                                 ANGULAR_SIZE_COMPONENT,
                                                 DISTANCE_COMPONENT,
                                                 MEASUREMENT_NUMBER_COMPONENT],
-                               key_component=NAME_COMPONENT,
+                               key_component=MEASUREMENT_NUMBER_COMPONENT,
                                names=['Galaxy Name',
                                       'θ (arcsec)',
                                       'Distance (Mpc)',
@@ -380,7 +384,7 @@ class StageTwo(HubbleStage):
         self._update_viewer_style(dark=self.app_state.dark_mode)
         
     def _on_marker_update(self, old, new):
-        print_log(f"Marker update: {old} -> {new}")
+        # print_log(f"Marker update: {old} -> {new}")
         if not self.trigger_marker_update_cb:
             return
         markers = self.stage_state.markers
@@ -446,7 +450,46 @@ class StageTwo(HubbleStage):
             self.show_dotplot2 = False
             self.show_dotplot1_ang = False
             self.show_dotplot2_ang = False
+        
+        if advancing and (new == 'fil_rem1'):
+            tool = self.distance_table.get_tool("update-distances")
+            tool["disabled"] = False
+            self.distance_table.update_tool(tool)
+    
+    @staticmethod
+    def add_point(viewer, x, color, label = None): 
+        scales = {'x': viewer.figure.scale_x, 'y': viewer.figure.scale_y}
+        size = viewer.layers[0].bars.default_size 
+        return  Scatter(x=[x], y=[1], 
+                         scales=scales, colors=[color], 
+                         labels=[label], opacities = [1],
+                         default_size = size,marker='circle',)
 
+    @staticmethod
+    def add_mark(viewer, mark):
+        marks = viewer.figure.marks
+        # function to flatten list of lists
+        def flatten(l):
+            return [item for sublist in l for item in (sublist if len(sublist) > 0 else [None])]
+        labels = flatten([m.labels for m in marks])
+        if mark.labels[0] in labels:
+            old_mark = marks[labels.index(mark.labels[0])]
+            old_mark.x = mark.x
+        else:
+            viewer.figure.marks = marks + [mark]
+        
+        print(viewer,len(viewer.figure.marks))
+        
+    @staticmethod  
+    def binned_x(bins, x):
+        index = searchsorted(bins, x, side='right')
+        return (bins[index] + bins[index-1]) / 2
+    
+    def plot_measurement(self, viewer, x, color, label = None):
+        # x needs to be in a bin
+        x_bin = self.binned_x(viewer.state.bins, x)
+        mark = self.add_point(viewer, x_bin, color, label)
+        self.add_mark(viewer, mark)
 
     def _on_step_index_update(self, index):
         # If we aren't on this stage, ignore
@@ -553,6 +596,28 @@ class StageTwo(HubbleStage):
         elif data_label == EXAMPLE_GALAXY_MEASUREMENTS:
             self.update_example_data_value(data_label, ANGULAR_SIZE_COMPONENT,
                                self.stage_state.meas_theta, index)
+            colors = ["#FF0000", "#0000FF"]
+            labels = ['First', 'Second']
+            v1 = self.get_viewer('dotplot_viewer_ang')
+            v2 = self.get_viewer('dotplot_viewer_ang_2')
+            
+            v3 = self.get_viewer('dotplot_viewer_dist')
+            v4 = self.get_viewer('dotplot_viewer_dist_2')
+
+            
+            self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index])
+            self.plot_measurement(v2, self.stage_state.meas_theta, color = colors[index], label = labels[index])
+            self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
+            self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
+            
+            if self.stage_state.marker_after('est_dis4'):
+                self.add_student_distance()
+            
+            for val in ['x_min','x_max','layers']:
+                add_callback(v1.state, val , lambda x: self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index]))
+                add_callback(v2.state, val , lambda x: self.plot_measurement(v2, self.stage_state.meas_theta, color = colors[index], label = labels[index]))
+                add_callback(v3.state, val , lambda x: self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
+                add_callback(v4.state, val , lambda x: self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
             
 
         # if data_label == STUDENT_MEASUREMENTS_LABEL:

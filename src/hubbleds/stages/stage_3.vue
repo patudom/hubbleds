@@ -81,8 +81,8 @@
           <v-col
             class="py-0"
           >
+          <!-- v-if="stage_state.distance_tool_shown.includes(stage_state.marker)" -->
             <v-card
-              v-if="stage_state.distance_tool_shown.includes(stage_state.marker)"
               :color="stage_state.csv_highlights.includes(stage_state.marker) ? 'info' : 'black'"
               :class="stage_state.csv_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
               outlined
