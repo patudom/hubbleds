@@ -30,6 +30,7 @@
             allowfullscreen
             allow="accelerometer; clipboard-write; gyroscope"
             class="wwt-iframe"
+            title="WorldWide Telescope"
             :src="`https://web.wwtassets.org/research/latest/?origin=${window.location.origin}`"
           >
             <p>ERROR: cannot display AAS WorldWide Telescope research app!</p>
@@ -45,6 +46,13 @@ module.exports = {
   mounted() {
     const iframe = this.$el.querySelector(".wwt-iframe");
 
+    /**
+     * For now, I'm using the research app because we can't include script tags
+     * in templates, and requirejs was giving some issues when I tried loading
+     * the WWT SDK programmatically.
+     * TODO: Figure this out!
+     */
+
     // The app needs some time to be ready to accept messages
     setTimeout(() => {
       console.log("About to post!");
@@ -58,3 +66,9 @@ module.exports = {
 }
 </script>
 
+<style scoped>
+.wwt-iframe {
+  width: 100% !important;
+  height: 500px !important;
+}
+</style>

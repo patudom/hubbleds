@@ -1,30 +1,33 @@
 <template>
-  <v-container>
-    <v-row v-if="show_team_interface">
-      <v-col>
-        <v-btn
-          color="error"
-          class="black--text"
-          @click="() => {
-            console.log('stage state:', stage_state);
-            console.log('story state:', story_state);
-          }"
-        >
-          State
-        </v-btn>
-        <v-btn
-          color="error"
-          class="black--text"
-          @click="() => {
-            stage_state.marker = 'sho_est1';
-          }"
-        >
-          jump
-        </v-btn>
-        Marker: {{ stage_state.marker }}
-      </v-col>
-    </v-row>
-
+<v-container>
+  <v-row v-if="stage_state.show_team_interface">
+    <v-col>
+      <v-btn
+        color="error"
+        class="black--text"
+        @click="() => {
+          console.log('stage state:', stage_state);
+          console.log('story state:', story_state);
+        }"
+      >
+        State
+      </v-btn>
+      <v-btn
+        color="error"
+        class="black--text"
+        @click="() => {
+          stage_state.marker = 'sho_est1';
+        }"
+      >
+        jump
+      </v-btn>
+      Marker: {{ stage_state.marker }}
+    </v-col>
+  </v-row>
+  <v-container v-if="!stage_state.stage_ready">
+    <stage-4-waiting-screen/>
+  </v-container>
+  <v-container v-else>
     <!--------------------- TABLE ROW ----------------------->
     <v-row
       class="d-flex align-stretch"
@@ -187,6 +190,7 @@
       </v-col>
     </v-row>
   </v-container>
+</v-container>
 </template>
 
 
