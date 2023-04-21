@@ -55,7 +55,6 @@ module.exports = {
 
     // The app needs some time to be ready to accept messages
     setTimeout(() => {
-      console.log("About to post!");
       iframe.contentWindow.postMessage({
         event: "modify_settings",
         target: "app",
