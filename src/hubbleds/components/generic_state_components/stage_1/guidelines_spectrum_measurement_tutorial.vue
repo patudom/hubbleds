@@ -7,7 +7,7 @@
     class="window-style"
     >
       <v-window-item :value="0" class="window-item-style">
-        <p>This graph displays the range of velocity measurements that have been
+        <p>This graph, a histogram, displays the range of velocity measurements that have been
           made for the example galaxy (by you, your classmates, and
           others who have completed this Data Story).
         </p>
@@ -23,6 +23,9 @@
         </p>
         <p>
           A few measurements have velocities that are very different from the measurements in the “tower.”
+        </p>
+        <p>
+          Your measurment is shown as an orange dot on the graph.
         </p>
         <p>
           Which measurements do you expect are closest to the “true” velocity of the galaxy?
@@ -44,21 +47,40 @@
       </v-window-item>
     
       <v-window-item :value="2" class="window-item-style">
-        <p>
-          Let's explore what is happening with the points that are outside the tower.
-        </p>
+          <p>
+          It would help to know what wavelengths on the spectrum graph these measurements correspond to.
+          </p>
+          <v-btn
+            v-if="!this.showText2"
+            color="primary"
+            @click="() => {$emit('turnOnSpecViewer'); this.showText2 = true;}"
+            >
+            Show Spectrum Graph
+          </v-btn>
+          <p v-if="this.showText2">
+            The wavelength axis of the spectrum graph and the wavelength axis of the histogram are set so that the wavelength and velocity ranges always correspond to the same range.
+          </p>
+          <p> Your measuremtnt is displayed as an orange line on the bottom of this graph</p>
       </v-window-item>
     
       <v-window-item :value="3" class="window-item-style">
         <p>
-          It would help to know what wavelengths on the spectrum graph these measurements correspond to.
+          Let's explore what is happening with the points that are outside the tower.
         </p>
         <p>
-          Use the <strong>selector tool</strong> to highlight one of the measurements outside the tower.
+          Hover your mouse over the dotplot near a point outside the tower. The blue lines shows the current position of your cursor and labels it's velocity on the dotplot.
+          <!-- Use the to highlight one of the measurements outside the tower. -->
+        </p>
+        <p>
+          The wavelength that corresponds to that velocity is displayed as a line on the spectrum graph.
+        </p>
+        <p>
+          Clicking will place a temporary gray marker on the graph
         </p>
       </v-window-item>
-    
+      
       <v-window-item :value="4" class="window-item-style">
+        <strong style="color: red;">SKIP?</strong>
         <p>
           The wavelength that corresponds to that velocity is displayed as a line on the spectrum graph.
         </p>
@@ -68,23 +90,29 @@
       </v-window-item>
     
       <v-window-item :value="5" class="window-item-style">
+        <strong style="color: red;">SKIP?</strong>
         <p>
-          Try selecting another point outside the “tower” and see where that lies on the spectrum graph.
+          Try pointing to something outside the “tower” and see where that lies on the spectrum graph.
         </p>
       </v-window-item>
     
       <v-window-item :value="6" class="window-item-style">
         <p>
-          Now use the <i>selector tool</i> to highlight one of the measurements in the tower.
+          Now use the <i>selector tool</i> <v-icon>mdi-cursor-default-click</v-icon> to highlight a tower.
         </p>
+        
       </v-window-item>
     
       <v-window-item :value="7" class="window-item-style">
+
         <p>
-          Notice that measurements in the “tower” correspond to the red H-alpha marker.
+          Use the zoom tool <v-icon>mdi-select-search</v-icon> to highlight the region around the tower.
         </p>
         <p>
-          Measurements outside the tower might correspond to other lines or the edge of the spectrum, but are not near the
+          Notice how what was once a single tower splits in to multiple towers when we zoom in and use smaller bins. 
+        </p>
+        <p>
+         Some measurements outside the tower might correspond to other lines or the edge of the spectrum, but are not near the
           red H-alpha marker.
         </p>
       </v-window-item>
@@ -124,7 +152,7 @@
     
       <v-window-item :value="10" class="window-item-style">
         <p>
-          Now that we know our measured value should be in the tower, we can look more closely at the values around the
+          Now that we know our measured value should be in the tower, we can look more closely at the values inside the
           tower and exclude the outliers outside the tower.
         </p>
         <p> Use the zoom <v-icon>mdi-select-search</v-icon> tool </p>
@@ -255,7 +283,8 @@
         </v-btn>
         <v-spacer></v-spacer>
           <v-btn
-          v-if="step < length-1"
+          v-if="(step < length-1)"
+          :disabled="nextDisabled"
           color="accent"
           class="black--text"
           depressed
@@ -268,7 +297,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); dialog = false; step = 0; opened = true;  reset_spectrum_viewer_limits() }"
+          @click="() => { $emit('close'); }"
         >
           Done
         </v-btn>
@@ -287,14 +316,16 @@
 <script>
 module.exports = {
 
-  props: ['toStep', 'showControls'],
+  props: ['toStep', 'showControls', 'nextDisabled'],
 
   data: () => {
     return {
       step: 0,
       length: 19,
       toStep: 0,
-      showControls: false
+      showControls: false,
+      showText2: false,
+      nextDisabled: false,
     }
   },
 
@@ -319,6 +350,10 @@ module.exports = {
 
     toStep(val) {
       this.step = val
+    },
+
+    nextDisabled(val) {
+      console.log('nextDisabled', val)
     }
   },
 }

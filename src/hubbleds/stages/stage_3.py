@@ -15,6 +15,10 @@ from ..data_management import *
 from ..stage import HubbleStage
 from ..utils import DISTANCE_CONSTANT, GALAXY_FOV, HUBBLE_ROUTE_PATH, IMAGE_BASE_URL, distance_from_angular_size, format_fov
 
+from ..viewers import HubbleDotPlotView
+from ..data.styles import load_style
+from cosmicds.utils import  update_figure_css
+
 log = logging.getLogger()
 
 
@@ -158,6 +162,28 @@ class StageTwo(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         self.add_component(DistanceTool(), label="py-distance-tool")
+        
+        dotplot_viewer_ang = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_ang', viewer_label = 'Example Galaxy Measurement')
+        dotplot_viewer_ang_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_ang_2', viewer_label = 'Second Measurement')
+        
+        example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
+        # first = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='first')
+        # second = example_galaxy_data.new_subset(example_galaxy_data.id['measurement_number']=='second')
+        for i,viewer in enumerate([dotplot_viewer_ang, dotplot_viewer_ang_2]):
+            viewer.add_data(example_galaxy_data)
+            viewer.state.x_att = example_galaxy_data.id['est_dist_value']
+            viewer.figure.axes[0].label = 'Angular Size (arcminutes))'
+            viewer.state.hist_n_bin = 75
+            # viewer.layers[0].visible = False
+            # viewer.layers[1].visible = False
+            # viewer.layers[2].visible = False
+            viewer.state.alpha = 1
+            viewer.state.reset_limits()
+            viewer.state.viewer_height = 150
+            viewer.layer_artist_for_data(example_galaxy_data).state.color = '#787878'
+            # viewer.layer_artist_for_data(EXAMPLE_GALAXY_SEED_DATA+'.1').state.color = '#787878'
+            # viewer.layer_artist_for_data(EXAMPLE_GALAXY_SEED_DATA+'.2').state.color = '#787878'
+        
 
         add_distances_tool = \
             dict(id="update-distances",
@@ -198,6 +224,7 @@ class StageTwo(HubbleStage):
                                selected_color=self.table_selected_color(
                                    self.app_state.dark_mode),
                                use_subset_group=False,
+                            #    item_filter= lambda item: item['measurement_number'] == 'first',
                                single_select=True)
 
         self.add_widget(example_galaxy_distance_table, label="example_galaxy_distance_table")
@@ -424,6 +451,15 @@ class StageTwo(HubbleStage):
         student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         distances = student_measurements[DISTANCE_COMPONENT]
         self.stage_state.distances_total = distances[distances != None].size
+    
+    def update_viewer_style(self, dark):
+        viewers = ['dotplot_viewer_ang','dotplot_viewer_ang_2']
+        viewer_type = ["histogram","histogram"]
+        theme_name = "dark" if dark else "light"
+        for viewer, vtype in zip(viewers, viewer_type):
+            viewer = self.get_viewer(viewer)
+            style = load_style(f"default_{vtype}_{theme_name}")
+            update_figure_css(viewer, style_dict=style)
 
     @property
     def distance_sidebar(self):

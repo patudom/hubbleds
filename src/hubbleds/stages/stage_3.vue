@@ -90,6 +90,23 @@
             <py-dosdonts-slideshow />
           </v-col>
         </v-row>
+        
+        <v-row>
+          <v-card class="dotplot" v-if="true" width="90%">
+          <jupyter-widget :widget="viewers.dotplot_viewer_ang"/>
+          </v-card>
+        </v-row>
+        <v-row>
+          <v-card class='dotplot' v-if="true" width="90%">
+          <jupyter-widget :widget="viewers.dotplot_viewer_ang_2"/>
+          </v-card>
+        </v-row>
+        <v-row>
+          <v-card class='example-galaxy-table' v-if="true" width="90%">
+          <jupyter-widget :widget="widgets.example_galaxy_distance_table"/>
+          </v-card>
+        </v-row>
+        
       </v-col>
       <v-col
         cols="12"
