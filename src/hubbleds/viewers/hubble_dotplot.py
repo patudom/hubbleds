@@ -1,4 +1,4 @@
-from cosmicds.viewers import cds_viewer
+from cosmicds.viewers.cds_viewer import cds_viewer
 from cosmicds.viewers.dotplot.viewer import BqplotDotPlotView
 from cosmicds.viewers.dotplot.state import DotPlotViewerState
 
