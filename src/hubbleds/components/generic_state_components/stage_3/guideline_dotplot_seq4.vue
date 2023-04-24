@@ -36,7 +36,7 @@
             ]" 
           :correct-answers="[0]"
           :neutral-answers="[1,2]"
-          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          @select="(opt) => { if (opt.correct) { console.log('correct'); } }"
           score-tag="ang_meas_dist_relation">
 
           </mc-radiogroup>

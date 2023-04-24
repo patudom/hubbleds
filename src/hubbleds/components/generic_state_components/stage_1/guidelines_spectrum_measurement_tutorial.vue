@@ -41,7 +41,7 @@
             'Typically, the <i>wisdom of crowds</i> would tell you that the true value is in the tower.'
             ]" 
           :correct-answers="[0]"
-          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          @select="(opt) => { if (opt.correct) { console.log('correct'); this.nextDisabled = false} }"
           score-tag="spec_meas_tut1">
         </mc-radiogroup>
       </v-window-item>
@@ -143,7 +143,7 @@
             'Intersting! Perhaps by the end of this section we will arrive at a more confident answer.'
             ]" 
           :neutral-answers="[0,1,2]"
-          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          @select="(opt) => { if (opt.correct) { console.log('correct'); } }"
           score-tag="spec_meas_tut2">
             >
           </mc-radiogroup>
@@ -233,7 +233,7 @@
             ]"
             :feedbacks="['Great!','Intersting!','Interesting']" 
           :neutral-answers="[0,1,2]"
-          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          @select="(opt) => { if (opt.correct) { console.log('correct'); } }"
           score-tag="spec_meas_tut3">
             >
             >

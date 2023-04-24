@@ -33,7 +33,7 @@
             ]" 
           :correct-answers="[1]"
           :neutral-answers="[2]"
-          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          @select="(opt) => { if (opt.correct) { console.log('correct'); } }"
           score-tag="ange_meas_concensus">
             >
           </mc-radiogroup>
