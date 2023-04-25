@@ -199,7 +199,6 @@ class StageState(CDSState):
 ])
 class StageTwo(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
-    START_COORDINATES = SkyCoord(213 * u.deg, 61 * u.deg, frame='icrs')
 
     _state_cls = StageState
 
@@ -401,8 +400,6 @@ class StageTwo(HubbleStage):
         if advancing and (new == "cho_row1" or new == "cho_row2"):
             self.distance_table.selected = []
             self.example_galaxy_distance_table.selected = []
-            self.distance_tool.widget.center_on_coordinates(
-                self.START_COORDINATES, instant=True)
             self.distance_tool.reset_canvas()
             # need to turn off ruler marker also.False
             # and start stage 2 at the start coordinates
