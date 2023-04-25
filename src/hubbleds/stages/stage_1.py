@@ -34,10 +34,15 @@ log = logging.getLogger()
 
 
 import inspect
+from IPython.display import Javascript, display
 
-def print_log(*args, **kwargs):
+def print_log(*args, color = None, **kwargs):
     if True:
-        print(*args, **kwargs)
+        # print(*args, **kwargs)
+        s = 'py: ' + ' '.join([str(a) for a in args])
+        color = color or 'grey'
+        display(Javascript(f'console.log("%c{s}","color:{color}");'))
+
     return
 def print_function_name(func):
     def wrapper(*args, **kwargs):
@@ -472,6 +477,17 @@ class StageOne(HubbleStage):
         smts_viewers = [self.viewers["dotplot_viewer"],self.viewers["dotplot_viewer_2"], self.viewers["spectrum_viewer"], self.get_widget("example_galaxy_table")]
         spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state)
         self.add_component(spectrum_measurement_tutorial, label='c-spectrum-measurement-tutorial')
+        def _smts_state_update(change):
+            print_log('update spectrum tutorial state',color='red')
+            # print the changes between the two states
+            dict_old = change['old']
+            dict_new = change['new']
+            for key in dict_new:
+                if self.stage_state.spectrum_tut_state[key] != dict_new[key]:
+                    print_log('changed', key, 'from', dict_old[key], 'to', dict_new[key],color='red')
+            
+            self.stage_state.spectrum_tut_state = change['new']
+        spectrum_measurement_tutorial.observe(_smts_state_update, ['tutorial_state'])
 
         # INITIALIZE STATE VARIABLES WHEN LOADING A STORED STATE
         # reset the state variables when we load a story state

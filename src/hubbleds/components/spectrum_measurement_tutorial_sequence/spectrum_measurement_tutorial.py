@@ -186,11 +186,8 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     
     def _on_tutorial_state_change(self, change):
         self.print_log(f'name: {change["name"]}, old: {change["old"]}, new: {change["new"]}')
-        # self.tutorial_state[change['name']] = change['new']
-        self.tutorial_state.update({change['name']:change['new']})
-        self.tutorial_state = self.tutorial_state
         self.saving_state.update({change['name']:change['new']})
-        self.print_log(f'tutorial_state: {self.tutorial_state.items()}')
+        self.tutorial_state = self.saving_state.copy()
     
     def _on_dialog_open(self, change):
         if change['new'] & (not self.been_opened):
