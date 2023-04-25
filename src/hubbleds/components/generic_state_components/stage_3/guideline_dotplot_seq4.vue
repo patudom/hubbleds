@@ -26,7 +26,7 @@
       <mc-radiogroup 
           :radio-options="[
             'A large distance corresponds to a small angular size',
-            'A small distance corresponds to a large angular size',
+            'A large distance corresponds to a large angular size',
             'There is no relation between distance and the measured angular size',
             ]"
             :feedbacks="[
