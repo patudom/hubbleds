@@ -57,6 +57,7 @@ class StageState(CDSState):
     show_ruler = CallbackProperty(False)
     meas_theta = CallbackProperty(0)
     distance_calc_count = CallbackProperty(0)
+    ruler_clicked_total = CallbackProperty(0)
     
     show_dotplot1 = CallbackProperty(False)
     show_dotplot2 = CallbackProperty(False)
@@ -547,12 +548,16 @@ class StageTwo(HubbleStage):
     
     @print_function_name
     def _ruler_click_count_update(self, change):
-        if change["new"] == 1:
+        count = change["new"]
+        self.stage_state.ruler_clicked_total = count
+        if count == 1:
             self.stage_state.marker = 'ang_siz4'  # auto-advance guideline if it's the first ruler click
     
     @print_function_name
     def _measurement_count_update(self, change):
-        if change["new"] == 1:
+        count = change["new"]
+        self.stage_state.n_meas = count
+        if count == 1:
             self.stage_state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
 
     def _show_ruler_changed(self, show):
