@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     :title-text="state.angsizes_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'"
-    @back="state.marker = 'ang_siz6'"
-    @next="state.marker = 'est_dis1'"
+    @back="state.marker = 'dot_seq5'"
+    @next="state.marker = 'fil_rem1'"
     :can-advance="(state) => state.angsizes_total >= 5"
     :state="state"
   >

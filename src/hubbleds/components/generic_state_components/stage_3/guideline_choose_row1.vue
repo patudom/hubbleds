@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     title-text="Choose a Galaxy"
-    @back="state.marker = 'ang_siz1'"
-    @next="state.marker = 'ang_siz2'"
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
     :can-advance="(state) => state.galaxy_selected"
     :state="state"
   >
@@ -18,7 +18,7 @@
       class="mb-4"
     >
       <p>
-        Click a row in your table to choose one of your galaxies.
+        Select the example galaxy.
       </p>
     </div>
   </scaffold-alert>

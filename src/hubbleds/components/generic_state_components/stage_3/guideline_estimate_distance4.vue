@@ -5,9 +5,9 @@
     max-width="800"
     elevation="6"
     header-text="Estimate Distance"
-    @back="state.marker = 'est_dis3'"
+    @back="state.marker_backward = 1"
     @next="() => {
-      state.marker = 'fil_rem1';
+      state.marker_forward = 1;
       state.distance_calc_count += 1;
     }"
   >

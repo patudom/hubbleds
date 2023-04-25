@@ -5,7 +5,7 @@
     max-width="800"
     elevation="6"
     title-text="Estimate Distance"
-    @back="state.marker = 'est_dis4'"
+    @back="state.marker = 'rep_rem1'"
     @next="state.marker = 'two_com1'"
     :can-advance="(state) => state.distances_total == 5"
     :state="state"

@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     title-text="Angular Size Measurement"
-    @back="state.marker = 'ang_siz5'"
-    @next="state.marker = 'ang_siz6'"
+    @back="state.marker_backward = 1"
+    @next="state.marker_forward = 1"
     :can-advance="(state) => state.dos_donts_opened"
     :state="state"
   >
