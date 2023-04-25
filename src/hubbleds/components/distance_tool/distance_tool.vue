@@ -134,7 +134,7 @@ export default {
       this.fovCanvas.height = parent.clientHeight;
       this.fovContext = this.fovCanvas.getContext('2d');
       this.fovContext.lineWidth = 3;
-      this.fovContext.strokeStyle = 'lime';
+      this.fovContext.strokeStyle = '#00B0FF';
 
       const leftPadding = 5;
       const verticalPadding = 5;
