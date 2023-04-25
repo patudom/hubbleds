@@ -6,6 +6,7 @@ import requests
 
 import ipyvuetify as v
 import numpy as np
+from numpy.random import Generator, PCG64, SeedSequence
 from astropy.io import fits
 from cosmicds.phases import Story
 from cosmicds.registries import story_registry
@@ -231,7 +232,19 @@ class HubblesLaw(Story):
         example_galaxy_seed_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements").json()
         example_galaxy_seed_data = {k: np.array([record[k] for record in example_galaxy_seed_data]) for k in example_galaxy_seed_data[0]}
         good = example_galaxy_seed_data[DB_VELOCITY_FIELD] != None
-        example_galaxy_seed_data = {k: np.array(v)[good] for k,v in example_galaxy_seed_data.items()}
+
+        # Uncomment this and comment out next block to get all seed galaxies
+        # example_galaxy_seed_data = {k: np.array(v)[good] for k,v in example_galaxy_seed_data.items()}
+
+        # This block chooses a subset of size N from the seed data
+        seq = SeedSequence(42)
+        gen = Generator(PCG64(seq))
+        indices = np.arange(len(good))
+        indices = indices[1::2]
+        random_subset = gen.choice(indices[good[1::2]], size=40, replace=False)
+        random_subset = np.ravel(np.column_stack((random_subset, random_subset+1)))
+        example_galaxy_seed_data = {k: np.array(v)[random_subset] for k,v in example_galaxy_seed_data.items()}
+
         example_galaxy_seed_data[DB_VELOCITY_FIELD] = np.array(example_galaxy_seed_data[DB_VELOCITY_FIELD], dtype = type(example_galaxy_seed_data[DB_VELOCITY_FIELD][0]))
         example_galaxy_seed_data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **example_galaxy_seed_data)
         

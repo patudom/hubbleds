@@ -160,6 +160,14 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         self.dotplot_viewer_2.ignore(lambda layer: layer.label == 'selected_tower')
         self.selected_tower = self.create_range_subsets(self.dotplot_viewer, self.glue_data, 'selected_tower')
         self.selected_tower_2 = self.create_range_subsets(self.dotplot_viewer_2, self.glue_data, 'selected_tower_2')
+
+        # for viewer in [self.dotplot_viewer, self.dotplot_viewer_2]:
+        #     for subset in [self.selected_tower, self.selected_tower_2]:
+        #         if subset is not None:
+        #             layer = viewer.layer_artist_for_data(subset)
+        #             if layer is not None:
+        #                 layer.state.skew = 0.3
+        #                 layer.state.rotation = 90 # This is currently being ignored - not sure why
         
         # clear_subsets currently does nothing
         extend_tool(self.dotplot_viewer, 'bqplot:home', partial(self.clear_subsets,self.dotplot_viewer))
