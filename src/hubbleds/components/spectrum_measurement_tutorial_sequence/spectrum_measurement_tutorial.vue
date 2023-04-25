@@ -30,7 +30,7 @@
       >
         <v-toolbar-title
         >
-        Velocity Measurement Tutorial (Step #{{ step  }})
+        Velocity Measurement Tutorial (Step #{{ step  }}, max step completed: {{ maxStepCompleted }})
         </v-toolbar-title>
       </v-toolbar>
 
@@ -38,12 +38,19 @@
     <v-row>
       <v-col class="tutorial-frame" cols="4">
         <guidelines-spectrum-measurement-tutorial
-        @step="(val) => {this.step = val; this.maxStepCompleted = Math.max(this.maxStepCompleted, val)}"
+        @step="(val) => { 
+          if (val > this.step) {
+            this.maxStepCompleted = Math.max(this.maxStepCompleted, this.step);
+          }
+          this.step = val; 
+        }"
         :toStep="this.step"
         :showControls="true"
         :nextDisabled="this.next_disabled"
+        @nextDisabled="(val) => { this.next_disabled = val }"
         @close="() => { $emit('close'); dialog = false; opened = true;  on_close() }"
-        @turnOnSpecViewer="() => { this.show_specviewer = true; this.next_disabled = false; }"
+        @turnOnSpecViewer="() => { this.show_specviewer = true; this.next_disabled = false; console.log(this) }"
+        
         />
       </v-col>
       <!-- Put the viewers in here -->
@@ -77,7 +84,11 @@
     <v-card-actions>
       <v-btn style="background-color: purple;" text @click="() =>  { $emit('close'); dialog = false; step = 0; opened = true;  on_close() }">
           <span> Finish tutorial </span>
-        </v-btn>
+      </v-btn>
+    <!-- create a button the console logs this.tutorial_state -->
+    <v-btn style="background-color: purple;" text @click="log_out_state">
+          <span> Log tutorial state </span>
+      </v-btn>
 
     </v-card-actions>
     <v-card-actions
@@ -172,12 +183,15 @@ module.exports = {
         ? this.length - 1
         : this.step - 1
     },
+
+    log_out_state() {
+      console.log(this.tutorial_state)
+    },
   },
 
   watch: {
     step(val) {
       this.$emit('step', val)
-      console.log('0-indexed spectrum measurement tutorial step: ' + val)
 
       // val == 0 never gets run
       if (val == 0) {

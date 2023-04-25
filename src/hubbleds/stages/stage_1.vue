@@ -138,6 +138,7 @@
         <c-spectrum-measurement-tutorial
           v-if="stage_state.show_meas_tutorial || (stage_state.indices[stage_state.marker] >= stage_state.indices['smt_tut'])"
           :state="stage_state"
+          @step="(step) => { stage_state.spectrum_tut_state.step = step; console.log('updating step to',step)}"
           @close="() => { return; }"
           />
       </v-col>

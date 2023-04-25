@@ -83,7 +83,29 @@ class StageState(CDSState):
             "Your Galaxy's Velocity",
         ]
     })
-
+    
+    # place state variables from spectrum_measurement_tutorial.py here
+    spectrum_tut_vars = {v: False for v in [
+            'dialog',
+            'opened',
+            'been_opened',
+            'show_specviewer', 
+            'show_dotplot', 
+            'show_table', 
+            'allow_specview_mouse_interaction', 
+            'show_first_measurment', 
+            'show_second_measurment', 
+            'zoom_tool_enabled', 
+            'show_selector_lines', 
+            'subset_created',
+            'next_disabled',
+            ]}
+    spectrum_tut_vars['show_dotplot'] = True
+    spectrum_tut_vars['show_selector_lines'] = True
+    spectrum_tut_vars.update({'step': 0, 'length':19, 'maxStepCompleted': 0})
+    spectrum_tut_state = DictCallbackProperty(spectrum_tut_vars)
+    
+    
     marker = CallbackProperty("")
     marker_backward = CallbackProperty()
     marker_forward = CallbackProperty()
@@ -446,7 +468,8 @@ class StageOne(HubbleStage):
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_update)
         
         # ADD SPECTRUM MEASUREMENT TUTORIAL
-        spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence([self.viewers["dotplot_viewer"],self.viewers["dotplot_viewer_2"], self.viewers["spectrum_viewer"], self.get_widget("example_galaxy_table")])
+        smts_viewers = [self.viewers["dotplot_viewer"],self.viewers["dotplot_viewer_2"], self.viewers["spectrum_viewer"], self.get_widget("example_galaxy_table")]
+        spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state)
         self.add_component(spectrum_measurement_tutorial, label='c-spectrum-measurement-tutorial')
 
         # INITIALIZE STATE VARIABLES WHEN LOADING A STORED STATE

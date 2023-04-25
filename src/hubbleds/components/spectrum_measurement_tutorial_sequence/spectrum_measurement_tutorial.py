@@ -1,5 +1,6 @@
+from fsspec import Callback
 import ipyvuetify as v
-from traitlets import Int, Bool, Unicode, Instance
+from traitlets import Int, Bool, Unicode, Instance, Dict
 from cosmicds.utils import load_template
 from ipywidgets import widget_serialization, DOMWidget
 
@@ -8,7 +9,7 @@ from cosmicds.utils import extend_tool
 from bqplot import Label
 
 from glue_jupyter.link import link
-from echo import add_callback, ignore_callback
+from echo import add_callback, ignore_callback, CallbackProperty
 from bqplot import Label
 from bqplot.marks import Lines, Scatter
 from cosmicds.utils import vertical_line_mark
@@ -23,7 +24,7 @@ from glue.core.subset import RangeSubsetState
 from itertools import cycle
 from functools import partial
 # theme_colors()
-
+from IPython.display import Javascript, display
 class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     template = load_template("./spectrum_measurement_tutorial.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
@@ -45,19 +46,29 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     show_second_measurment = Bool(False).tag(sync=True)
     zoom_tool_enabled = Bool(False).tag(sync=True)
     show_selector_lines = Bool(True).tag(sync=True)
-    allow_tower_select = Bool(True).tag(sync=True)
     subset_created = Bool(False).tag(sync=True)
     next_disabled = Bool(False).tag(sync=True)
+    tutorial_state = Dict({}).tag(sync=True)
 
     _titles = [
         "Measurement Tutorial",
     ]
     _default_title = "Specrum Measurement Tutorial"
 
-    def __init__(self, viewer_layouts, *args, **kwargs):
+    def __init__(self, viewer_layouts, tutorial_state,  *args, **kwargs):
         
         self.currentTitle = self._default_title
+        self.tutorial_state.update(tutorial_state)
+        self.saving_state  = tutorial_state
         
+        # loop through all the keys in the tutorial state and set the values
+        # so that self.variable stores the correct value and make sure the 
+        # value in the tutorial state is updated when the value changes
+        for key in self.tutorial_state.keys():
+            setattr(self, key, self.tutorial_state[key])
+            self.observe(self._on_tutorial_state_change, [key])
+        
+        self.disable_next_button = [1, 9, 17]
         
         self.dotplot_viewer_widget = viewer_layouts[0]
         self.dotplot_viewer_2_widget = viewer_layouts[1]
@@ -161,7 +172,17 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
                     deactivate_cb = partial(self.toggle_tower_select,self.dotplot_viewer_2), 
                     deactivate_before_tool=True)
         
-            
+        # run through steps to open run necessary setup calls in the vue file
+        for i in range(self.maxStepCompleted):
+            self.step = i
+    
+    def _on_tutorial_state_change(self, change):
+        self.print_log(f'name: {change["name"]}, old: {change["old"]}, new: {change["new"]}')
+        # self.tutorial_state[change['name']] = change['new']
+        self.tutorial_state.update({change['name']:change['new']})
+        self.tutorial_state = self.tutorial_state
+        self.saving_state.update({change['name']:change['new']})
+        self.print_log(f'tutorial_state: {self.tutorial_state.items()}')
     
     def _on_dialog_open(self, change):
         if change['new'] & (not self.been_opened):
@@ -224,18 +245,27 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         # can use this for sequencing steps, an alternative to doing it in javascript
         old_step = change['old']
         new_step = change['new']
-        print('step changed from {} to {}'.format(old_step, new_step))
         
-        if (new_step == 2) and (self.show_specviewer == False):
-            self.next_disabled = True
+        if self.maxStepCompleted >= new_step:
+            self.next_disabled = False
+            return
         
-        if (new_step == 6) and (self.maxStepCompleted == 6):
+        if (new_step in self.disable_next_button):
+            self.print_log('py disable next button step {}'.format(new_step))
             self.next_disabled = True
-            def advance(*args):
-                self.unobserve(advance, 'subset_created')
-                self.next_disabled = False
-                self.step = self.step + 1
-            self.observe(advance, 'subset_created')
+            return
+        
+        if (new_step == 2):
+            self.next_disabled = not self.tutorial_state['show_specviewer']
+            return
+        
+        if (new_step == 6):
+            self.next_disabled = self.tutorial_state['subset_created']
+            if not self.next_disabled:
+                def allow_advance(*args):
+                    self.unobserve(allow_advance, 'subset_created')
+                    self.next_disabled = False
+                self.observe(allow_advance, 'subset_created')
             
     
     def _on_viewer_focus(self, viewer, event = {'event': None}):
@@ -318,7 +348,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     
     
     def toggle_tower_select(self,viewer):
-        # self.allow_tower_select = not self.allow_tower_select
         x = viewer.toolbar.tools['hubble:towerselect'].x
         if x is None:
             self.subset_created = False
@@ -445,6 +474,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             index = self.search_sorted(bins, vel[0])
             x = (bins[index] + bins[index-1]) / 2
             self.first_meas_line.x = [x,x]
+            self.first_meas_line.default_size = self.dotplot_viewer.layers[0].bars.default_size * 5
             self.first_meas_plotted = True
         else:
             self.first_meas_plotted = False
@@ -455,6 +485,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             index = self.search_sorted(bins, vel[1])
             x = (bins[index] + bins[index-1]) / 2
             self.second_meas_line.x = [x,x]
+            self.second_meas_line.default_size = self.dotplot_viewer_2.layers[0].bars.default_size * 5
             self.second_meas_plotted = True
         else:
             self.second_meas_plotted = False
@@ -591,3 +622,11 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             self.spectrum_viewer.remove_event_callback(self._update_selector_tool_sv)
         except:
             pass
+
+    def print_log(self, *args, **kwargs):
+        # combine all args into a single string
+        s = ' '.join([str(a) for a in args])
+        s = 'py: ' + s
+        # print this to the javascript console
+        # create needed imports
+        display(Javascript(f'console.log("%c{s}","color:green");'))
