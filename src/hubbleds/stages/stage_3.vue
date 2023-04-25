@@ -53,16 +53,7 @@
         <guideline-repeat-remaining-galaxies
           v-if="stage_state.marker == 'rep_rem1'" 
           :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-estimate-distance1
-          v-if="stage_state.marker == 'est_dis1'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-estimate-distance2
-          v-if="stage_state.marker == 'est_dis2'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        
+          v-intersect.once="scrollIntoView" />        
         <guideline-dotplot-seq6
           v-if="stage_state.marker == 'dot_seq6'" 
           :state="stage_state"
@@ -122,6 +113,14 @@
           v-intersect.once="scrollIntoView" />
         <guideline-angsize-meas5
           v-if="stage_state.marker == 'ang_siz5'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-estimate-distance1
+          v-if="stage_state.marker == 'est_dis1'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-estimate-distance2
+          v-if="stage_state.marker == 'est_dis2'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
         <guideline-choose-row2
