@@ -120,7 +120,7 @@ class HubbleStage(Stage):
 
         if comp_name == "angular_size":
             distance = data[DISTANCE_COMPONENT][index]
-            if distance != 0:
+            if distance is not None:
                 new_distance = distance_from_angular_size(value)
                 self.update_example_data_value(dc_name, DISTANCE_COMPONENT, new_distance, index, block_submit=True)
 
