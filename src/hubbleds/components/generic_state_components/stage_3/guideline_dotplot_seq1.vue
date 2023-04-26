@@ -24,7 +24,7 @@
         This dot plot shows the distrubution of distances measured.
       </p> 
       <p>
-        The red dot shows your measurement. 
+        The red-orange dot shows your measurement. 
       </p>
     </div>
   </scaffold-alert>
