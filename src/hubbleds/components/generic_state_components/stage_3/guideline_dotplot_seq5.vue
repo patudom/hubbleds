@@ -16,7 +16,10 @@
       class="mb-4"
     >
       <p>
-        You may now either make a second measurement on the example galaxy using what you've learned and see how your answer changes, or you may move on to meauring the sizes for your 5 galaxies. 
+        You can now remeasure the example galaxy using what you've learned and see how your answer changes
+      </p>
+      <p>
+        Or move on to measure the sizes for your 5 galaxies. 
       </p>
       
       <p>
@@ -29,7 +32,7 @@
           state.marker = 'dot_seq6a'
         }"
       >
-         <strong>Make second measurement</strong>
+         <strong>Remeasure example</strong>
       </v-btn>
     </p><p>
       <v-btn 
@@ -41,7 +44,7 @@
           state.marker = 'rep_rem1'
         }"
       >
-         <strong>Continue to my galaxies</strong>
+         <strong>Move on to my galaxies</strong>
       </v-btn>
     </p>
       

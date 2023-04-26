@@ -13,15 +13,15 @@
       class="mb-4"
     >
       <p>
-        We now show the distribution of angular size measurements for this galaxy. Click on different locations on the graph of distances to see where they are on the angular size measurement plot. 
+        We now show the distribution of angular size measurements for this galaxy. Click on different locations in the graph of angular sizes to see where they are on the distance measurement plot above. 
       </p>
       <p>
         What relationship do you see between the angular size and distance measurements?
       </p>
       <mc-radiogroup 
           :radio-options="[
-            'A large distance corresponds to a small angular size',
-            'A large distance corresponds to a large angular size',
+            'A large angular size corresponds to a small distance',
+            'A large angular size corresponds to a large distance',
             'There is no relation between distance and the measured angular size',
             ]"
             :feedbacks="[

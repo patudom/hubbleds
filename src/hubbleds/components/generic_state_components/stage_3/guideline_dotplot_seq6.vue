@@ -12,13 +12,13 @@
     
     <div class="mb-4">
       <p>
-        Now, in the upper graph we show you the distribution of first measurements as you saw earlier in this stage.
+        In the upper graph we show the distribution of first measurements as you saw earlier.
       </p>
       <p>
-        In the lower graph, we show you the distribution of second measurements, with yours marked in blue.
+        In the lower graph, we show the distribution of second distance measurements, with yours marked in blue.
       </p>
       <p>
-        Based on these two histograms, which set of measurments shows better concensus on the the distance to the galaxy?
+        Based on these two histograms, which set of measurments shows better concensus on the distance to the galaxy?
       </p>
       <mc-radiogroup
         :radio-options="[
