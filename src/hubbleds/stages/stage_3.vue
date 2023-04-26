@@ -65,19 +65,12 @@
         <guideline-repeat-remaining-galaxies
           v-if="stage_state.marker == 'rep_rem1'" 
           :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-estimate-distance1
-          v-if="stage_state.marker == 'est_dis1'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-estimate-distance2
-          v-if="stage_state.marker == 'est_dis2'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
+          v-intersect.once="scrollIntoView" />        
         <guideline-dotplot-seq6
           v-if="stage_state.marker == 'dot_seq6'" 
           :state="stage_state"
-          v-intersect.once="scrollIntoView" />
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.dot_seq6_q = true" />
         <guideline-dotplot-seq5
           v-if="stage_state.marker == 'dot_seq5'" 
           :state="stage_state"
@@ -135,6 +128,14 @@
           v-if="stage_state.marker == 'ang_siz5'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
+        <guideline-estimate-distance1
+          v-if="stage_state.marker == 'est_dis1'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-estimate-distance2
+          v-if="stage_state.marker == 'est_dis2'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
         <guideline-choose-row2
           v-if="stage_state.marker == 'cho_row2'" 
           :state="stage_state"
@@ -175,13 +176,19 @@
         <guideline-dotplot-seq2
           v-if="stage_state.marker == 'dot_seq2'" 
           :state="stage_state"
-          v-intersect.once="scrollIntoView" />
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.dot_seq2_q = true"/>
         <guideline-dotplot-seq3
           v-if="stage_state.marker == 'dot_seq3'" 
           :state="stage_state"
-          v-intersect.once="scrollIntoView" />
+          v-intersect.once="scrollIntoView"/>
         <guideline-dotplot-seq4
         v-if="stage_state.marker == 'dot_seq4'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" 
+          @ready="stage_state.dot_seq4_q = true"/>
+        <guideline-dotplot-seq6a
+          v-if="stage_state.marker == 'dot_seq6a'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
         <guideline-fill-remaining-galaxies

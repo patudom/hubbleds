@@ -1,19 +1,14 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Measurement Comparison"
     @back="state.marker_backward = 1"
     @next="state.marker_forward = 1"
-    :can-advance="(state) => true"
+    :can-advance="(state) => state.dot_seq2_q"
     :state="state"
   >
     <template #before-next>
-      nothing
+      Choose a response
     </template>
-
     <div
       class="mb-4"
     >
@@ -32,8 +27,9 @@
             'If the measurements cluster around a single common value, there is consensus. If they cluster around more than one value, there is not consensus.'
             ]" 
           :correct-answers="[1]"
+          :wrong-answers="[0]"
           :neutral-answers="[2]"
-          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          @select="(opt) => { if (opt.correct) { console.log('correct'); $emit('ready'); } }"
           score-tag="ange_meas_concensus">
             >
           </mc-radiogroup>
