@@ -40,6 +40,7 @@ class DistanceTool(v.VueTemplate):
     reset_style = Bool(False).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
+    START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
 
     def __init__(self, *args, **kwargs):
         self.widget = WWTJupyterWidget(hide_all_chrome=True)
@@ -58,6 +59,8 @@ class DistanceTool(v.VueTemplate):
         # Temp update to set background to SDSS. Once we remove galaxies without SDSS WWT tiles from the catalog, make background DSS again, and set wwt.foreground_opacity = 0, per Peter Williams.
         self.widget.background = 'SDSS: Sloan Digital Sky Survey (Optical)'
         self.widget.foreground = 'SDSS: Sloan Digital Sky Survey (Optical)'
+        self.widget.center_on_coordinates(self.START_COORDINATES, fov= 42 * u.arcmin, #start in close enough to see galaxies
+                                          instant=True)
 
     def reset_canvas(self):
         self.send({"method": "reset", "args": []})

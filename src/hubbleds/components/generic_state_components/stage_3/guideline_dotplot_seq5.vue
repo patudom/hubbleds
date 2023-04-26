@@ -7,7 +7,7 @@
     title-text="Measurement Comparison"
     @back="state.marker_backward = 1"
     @next= "() => { 
-      if (can_advance === 1) { state.marker = 'dop_seq6' }
+      if (can_advance === 1) { state.marker = 'dop_seq6a' }
         else if (can_advance === 2) { state.marker = 'rep_rem1' }
          }"
     :can-advance="can_advance > 2"
@@ -22,7 +22,7 @@
       </p>
       
       <p>
-      <v-btn block color="secondary" @click="() => {can_advance = 1; state.marker = 'dot_seq6'}">
+      <v-btn block color="secondary" @click="() => {can_advance = 1; state.marker = 'dot_seq6a'}">
          Make second measurement
       </v-btn>
     </p><p>

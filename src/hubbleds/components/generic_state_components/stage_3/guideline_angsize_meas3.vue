@@ -21,6 +21,9 @@
         Zoom in or out so your entire galaxy is framed within the viewer.
       </p>    
       <p>
+        Adjust the brightness using the <v-icon>mdi-brightness-6</v-icon></v-btn> slider if needed.
+      </p>      
+      <p>
         Click the <v-btn icon dark x-small disabled class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-ruler</v-icon></v-btn>  icon to activate the angular size measuring tool.
       </p>
     </div>
@@ -30,6 +33,10 @@
 
 <script>
 module.exports = {
- props: ['state']
+  props: ['state'],
+  created() {
+    console.log(this);
+    console.log(this.state.ruler_clicked_total);
+  }
 }
 </script>
