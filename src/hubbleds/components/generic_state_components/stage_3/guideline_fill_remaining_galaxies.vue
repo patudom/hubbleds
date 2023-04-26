@@ -19,7 +19,7 @@
       class="mb-4"
     >
       <p>
-        Great. Now we can use the same distance equation from earlier.
+        Now we can use the same distance equation from earlier.
       </p>
       <p>
         Click the <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-tape-measure</v-icon></v-btn> icon in the table toolbar to auto-calculate distances for the remaining galaxies.
