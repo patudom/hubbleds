@@ -224,7 +224,8 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             self.spectrum_viewer.add_event_callback(
                 callback = lambda event:self._activate_gray_markers(self.spectrum_viewer, event), 
                 events=['click'])
-
+        elif change['new'] & self.been_opened:
+            self.vue_on_reopen()
         else:
             pass
     
@@ -599,3 +600,12 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             self.spectrum_viewer.remove_event_callback(self._update_selector_tool_sv)
         except:
             pass
+        
+    def vue_on_reopen(self):
+        self.plot_measurements(self.example_galaxy_table._glue_data)
+        # reconnect the callbacks
+        self.observe(self._on_data_change, ['show_first_measurment', 'show_second_measurment'])
+        self.observe(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
+        self.observe(self.vue_enable_zoom_tool, 'zoom_tool_enabled')
+        self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
+        
