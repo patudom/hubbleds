@@ -67,7 +67,7 @@ class StageState(CDSState):
     show_galaxy_table = CallbackProperty(False)
     
     dot_seq2_q = CallbackProperty(False)
-    dot_seq4_q = CallbackProperty(False)
+    dot_seq4a_q = CallbackProperty(False)
     dot_seq6_q = CallbackProperty(False)
     exgal_second_row_selected = CallbackProperty(False)
     exgal_second_measured = CallbackProperty(True) # This should initialize as False and be set to True when the condition is met - will do later.
@@ -95,6 +95,7 @@ class StageState(CDSState):
         'dot_seq2',
         'dot_seq3',
         'dot_seq4', # show dot plot ang size
+        'dot_seq4a',
         'ang_siz5a', # directs to dos/donts # hide angular size
         'dot_seq5', 
         'dot_seq5a',
