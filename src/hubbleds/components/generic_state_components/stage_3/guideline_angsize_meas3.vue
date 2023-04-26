@@ -33,10 +33,6 @@
 
 <script>
 module.exports = {
-  props: ['state'],
-  created() {
-    console.log(this);
-    console.log(this.state.ruler_clicked_total);
-  }
+  props: ['state']
 }
 </script>
