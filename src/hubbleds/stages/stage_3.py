@@ -482,8 +482,11 @@ class StageTwo(HubbleStage):
         
     @staticmethod  
     def binned_x(bins, x):
-        index = searchsorted(bins, x, side='right')
-        return (bins[index] + bins[index-1]) / 2
+        # index = searchsorted(bins, x, side='right')
+        # return (bins[index] + bins[index-1]) / 2
+        bin_width = bins[1] - bins[0]
+        index = int((x - bins[0])/bin_width)
+        return bins[0] + bin_width * (index + 1/2)
     
     def plot_measurement(self, viewer, x, color, label = None):
         # x needs to be in a bin
