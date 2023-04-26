@@ -100,7 +100,6 @@ class StageState(CDSState):
         'dot_seq6', # show dot plot dist 2
         'rep_rem1',
         'fil_rem1',
-        'two_com1',
     ])
 
     step_markers = CallbackProperty([
@@ -127,7 +126,6 @@ class StageState(CDSState):
         'est_dis3',
         'est_dis4',
         'fil_rem1',
-        'two_com1',
     ])
     
     distance_tool_shown = CallbackProperty([
@@ -148,7 +146,6 @@ class StageState(CDSState):
         'dot_seq6', 
         'rep_rem1',
         'fil_rem1',
-        'two_com1',
     ])
 
     _NONSERIALIZED_PROPERTIES = [

@@ -147,7 +147,11 @@
         <guideline-repeat-remaining-galaxies
           v-if="stage_state.marker == 'rep_rem1'" 
           :state="stage_state"
-          v-intersect.once="scrollIntoView" />   
+          v-intersect.once="scrollIntoView" />
+        <guideline-fill-remaining-galaxies
+          v-if="stage_state.marker == 'fil_rem1'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
         cols="12"
@@ -189,14 +193,6 @@
           @ready="stage_state.dot_seq4_q = true"/>
         <guideline-dotplot-seq6a
           v-if="stage_state.marker == 'dot_seq6a'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-fill-remaining-galaxies
-          v-if="stage_state.marker == 'fil_rem1'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-stage-3-complete
-          v-if="stage_state.marker == 'two_com1'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
       </v-col>
