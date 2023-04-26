@@ -18,7 +18,7 @@
       class="mb-4"
     >
       <p>
-        The histogram shows the distrubution of distances measured for this galaxy from you and others who have completed this Data Story. The red dot shows your measurment. 
+        The dot plot shows the distrubution of distances measured for this galaxy from you and a random subset of others who have completed this Data Story. The red dot shows your measurment. 
       </p>
     </div>
   </scaffold-alert>
