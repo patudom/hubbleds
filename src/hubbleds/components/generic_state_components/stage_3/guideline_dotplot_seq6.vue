@@ -1,8 +1,8 @@
 <template>
   <scaffold-alert
     title-text="Second Measurement Comparison"
-    @back="state.marker = 'dot_seq6a'"
-    @next="state.marker = 'rep_rem1'"
+    @back="state.marker = 'dot_seq5c'"
+    @next="state.marker = 'dot_seq7'"
     :can-advance="(state) => state.dot_seq6_q"
     :state="state"
     >

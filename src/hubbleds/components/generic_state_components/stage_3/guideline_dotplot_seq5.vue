@@ -29,7 +29,7 @@
         elevation="2"
         @click="() => {
           state.show_ruler = true;
-          state.marker = 'dot_seq6a'
+          state.marker = 'dot_seq5a'
         }"
       >
          <strong>Remeasure example</strong>
