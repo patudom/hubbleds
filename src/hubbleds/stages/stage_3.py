@@ -606,6 +606,8 @@ class StageTwo(HubbleStage):
             self.update_data_value(data_label, ANGULAR_SIZE_COMPONENT,
                                 self.stage_state.meas_theta, index)
         elif data_label == EXAMPLE_GALAXY_MEASUREMENTS:
+            if (index==0) and self.stage_state.marker_reached('dot_seq1'):
+                return
             self.update_example_data_value(data_label, ANGULAR_SIZE_COMPONENT,
                                self.stage_state.meas_theta, index)
             colors = ["#FF0000", "#0000FF"]
