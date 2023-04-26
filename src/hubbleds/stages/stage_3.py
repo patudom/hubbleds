@@ -690,10 +690,19 @@ class StageTwo(HubbleStage):
             table.update_tool(tool)
         self.get_distance_count()
     
+    def fill_table(self, table, tool=None):
+        print("in fill_table")
+        self.update_data_value(table._glue_data.label, ANGULAR_SIZE_COMPONENT, 35, 0)
+        self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT, distance_from_angular_size(35), 0)
+
     @print_function_name
     def vue_update_distances(self, _args):
         self.update_distances(self.distance_table)
         self.update_distances(self.example_galaxy_distance_table)
+
+    def vue_fill_table(self, _args):
+        print("in vue_fill_table")
+        self.fill_table(self.example_galaxy_distance_table)
     
     @print_function_name
     def vue_add_distance_data_point(self, _args=None):
