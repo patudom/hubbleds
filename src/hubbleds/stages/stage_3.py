@@ -623,20 +623,23 @@ class StageTwo(HubbleStage):
             v3 = self.get_viewer('dotplot_viewer_dist')
             v4 = self.get_viewer('dotplot_viewer_dist_2')
 
-            
-            self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index])
-            self.plot_measurement(v2, self.stage_state.meas_theta, color = colors[index], label = labels[index])
-            self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
-            self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
+            if index == 0:
+                self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index])
+                self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
+            if index == 1:
+                self.plot_measurement(v2, self.stage_state.meas_theta, color = colors[index], label = labels[index])
+                self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
             
             if self.stage_state.marker_after('est_dis4'):
                 self.add_student_distance()
             
             for val in ['x_min','x_max','layers']:
-                add_callback(v1.state, val , lambda x: self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index]))
-                add_callback(v2.state, val , lambda x: self.plot_measurement(v2, self.stage_state.meas_theta, color = colors[index], label = labels[index]))
-                add_callback(v3.state, val , lambda x: self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
-                add_callback(v4.state, val , lambda x: self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
+                if index == 0:
+                    add_callback(v1.state, val , lambda x: self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index]))
+                    add_callback(v3.state, val , lambda x: self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
+                if index == 1:
+                    add_callback(v2.state, val , lambda x: self.plot_measurement(v2, self.stage_state.meas_theta, color = colors[index], label = labels[index]))
+                    add_callback(v4.state, val , lambda x: self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
             
 
         # if data_label == STUDENT_MEASUREMENTS_LABEL:
