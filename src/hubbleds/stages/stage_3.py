@@ -615,7 +615,7 @@ class StageTwo(HubbleStage):
                 return
             self.update_example_data_value(data_label, ANGULAR_SIZE_COMPONENT,
                                self.stage_state.meas_theta, index)
-            colors = ["#FF0000", "#0000FF"]
+            colors = ["#FB5607", "#FB5607"]
             labels = ['First', 'Second']
             v1 = self.get_viewer('dotplot_viewer_ang')
             v2 = self.get_viewer('dotplot_viewer_ang_2')
