@@ -74,8 +74,8 @@ class HubbleStage(Stage):
 
     def update_data_value(self, dc_name, comp_name, value, index, block_submit=False):
         super().update_data_value(dc_name, comp_name, value, index)
-
-        if dc_name != STUDENT_MEASUREMENTS_LABEL:
+        print('update data value', dc_name)
+        if dc_name not in [STUDENT_MEASUREMENTS_LABEL, EXAMPLE_GALAXY_MEASUREMENTS]:
             return
 
         # Update dependent values, if the student has already has a value for them
@@ -100,37 +100,11 @@ class HubbleStage(Stage):
                 and not block_submit:
             measurement = {comp.label: data[comp][index] for comp in
                            data.main_components}
-            self.submit_measurement(measurement)
-    
-    def update_example_data_value(self, dc_name, comp_name, value, index, block_submit=False):
-        super().update_data_value(dc_name, comp_name, value, index)
-
-        if dc_name != EXAMPLE_GALAXY_MEASUREMENTS:
-            return
-
-        # Update dependent values, if the student has already has a value for them
-        # We block submission to avoid sending unnecessary requests
-        data = self.data_collection[dc_name]
-        if comp_name == "measwave":
-            velocity = data[VELOCITY_COMPONENT][index]
-            if velocity is not None:
-                rest = data["restwave"][index]
-                new_velocity = velocity_from_wavelengths(value, rest)
-                self.update_example_data_value(dc_name, VELOCITY_COMPONENT , new_velocity, index, block_submit=True)
-
-        if comp_name == "angular_size":
-            distance = data[DISTANCE_COMPONENT][index]
-            if distance is not None:
-                new_distance = distance_from_angular_size(value)
-                self.update_example_data_value(dc_name, DISTANCE_COMPONENT, new_distance, index, block_submit=True)
-
-        # Submit a measurement, if necessary
-        # if self.app_state.update_db \
-        #         and comp_name in MEAS_TO_STATE.keys() \
-        #         and not block_submit:
-        #     measurement = {comp.label: data[comp][index] for comp in
-        #                    data.main_components}
-        #     self.submit_example_galaxy_measurement(measurement)
+            if dc_name == STUDENT_MEASUREMENTS_LABEL:
+                self.submit_measurement(measurement)
+            elif dc_name == EXAMPLE_GALAXY_MEASUREMENTS:
+                pass
+                #self.submit_example_galaxy_measurement(measurement)
 
     def add_data_values(self, dc_name, values):
         super().add_data_values(dc_name, values)
