@@ -22,11 +22,11 @@
       </p>
       
       <p>
-      <v-btn block color="secondary" @click="() => {can_advance = 1; state.marker = 'dot_seq6a'}">
+      <v-btn block color="secondary" @click="() => {can_advance = 1; state.show_ruler = true; state.marker = 'dot_seq6a'}">
          Make second measurement
       </v-btn>
     </p><p>
-      <v-btn block color="secondary" @click="() => {can_advance = 2; state.marker = 'rep_rem1' }">
+      <v-btn block color="secondary" @click="() => {can_advance = 2; state.show_ruler = true; state.marker = 'rep_rem1' }">
          Continue to my galaxies
       </v-btn>
     </p>

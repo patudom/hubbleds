@@ -9,6 +9,7 @@
     @next="() => {
       state.marker_forward = 1;
       state.distance_calc_count += 1;
+      state.show_ruler = false;
     }"
   >
     <div
