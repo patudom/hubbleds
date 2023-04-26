@@ -6,13 +6,11 @@
     elevation="6"
     title-text="Measurement Comparison"
     @back="state.marker_backward = 1"
-    @next= "() => { 
-      if (can_advance === 1) { state.marker = 'dop_seq6a' }
-        else if (can_advance === 2) { state.marker = 'rep_rem1' }
-         }"
-    :can-advance="can_advance > 2"
+    :can-advance="(state) => false"
     :state="state"
   >
+    <template #next-content>
+    </template>
 
     <div
       class="mb-4"
@@ -22,12 +20,28 @@
       </p>
       
       <p>
-      <v-btn block color="secondary" @click="() => {can_advance = 1; state.show_ruler = true; state.marker = 'dot_seq6a'}">
-         Make second measurement
+      <v-btn 
+        block color="accent"
+        class="black--text"
+        elevation="2"
+        @click="() => {
+          state.show_ruler = true;
+          state.marker = 'dot_seq6a'
+        }"
+      >
+         <strong>Make second measurement</strong>
       </v-btn>
     </p><p>
-      <v-btn block color="secondary" @click="() => {can_advance = 2; state.show_ruler = true; state.marker = 'rep_rem1' }">
-         Continue to my galaxies
+      <v-btn 
+        block color="accent"
+        class="black--text"
+        elevation="2"
+        @click="() => {
+          state.show_ruler = true;
+          state.marker = 'rep_rem1'
+        }"
+      >
+         <strong>Continue to my galaxies</strong>
       </v-btn>
     </p>
       
