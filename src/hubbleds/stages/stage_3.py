@@ -616,14 +616,13 @@ class StageTwo(HubbleStage):
         # self.update_data_value(STUDENT_MEASUREMENTS_LABEL, ANGULAR_SIZE_COMPONENT, angular_size_as, index)
 
         self.stage_state.meas_theta = round(angular_size.to(u.arcsec).value)
-        if data_label == STUDENT_MEASUREMENTS_LABEL:
-            self.update_data_value(data_label, ANGULAR_SIZE_COMPONENT,
-                                self.stage_state.meas_theta, index)
-        elif data_label == EXAMPLE_GALAXY_MEASUREMENTS:
+
+        self.update_data_value(data_label, ANGULAR_SIZE_COMPONENT,
+                            self.stage_state.meas_theta, index)
+        if data_label == EXAMPLE_GALAXY_MEASUREMENTS:
             if (index==0) and self.stage_state.marker_reached('dot_seq1'):
                 return
-            self.update_example_data_value(data_label, ANGULAR_SIZE_COMPONENT,
-                               self.stage_state.meas_theta, index)
+
             colors = ["#FB5607", "#FB5607"]
             labels = ['First', 'Second']
             v1 = self.get_viewer('dotplot_viewer_ang')
@@ -687,12 +686,10 @@ class StageTwo(HubbleStage):
         if index is None:
             return
         distance = distance_from_angular_size(self.stage_state.meas_theta)
-        if table is self.distance_table:
-            self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT, distance,
-                                index)
-        elif table is self.example_galaxy_distance_table:
-            self.update_example_data_value(table._glue_data.label, DISTANCE_COMPONENT, distance,
-                                index)
+
+        self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT, distance,
+                            index)
+
         self.story_state.update_student_data()
         if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.
             self.enable_distance_tool(True)
@@ -709,13 +706,8 @@ class StageTwo(HubbleStage):
                     continue
                 print(theta)
                 distance = distance_from_angular_size(theta)
-                if table is self.distance_table:
-                    self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT,
-                                       distance, index)
-                elif table is self.example_galaxy_distance_table:
-                    self.update_example_data_value(table._glue_data.label, DISTANCE_COMPONENT,
-                                        distance, index)
-
+                self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT,
+                                    distance, index)
         self.story_state.update_student_data()
         if tool is not None:
             table.update_tool(tool)

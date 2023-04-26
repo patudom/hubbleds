@@ -447,7 +447,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         """ data should be a glue data"""
         vel = data.to_dataframe()[VELOCITY_COMPONENT]
         
-        if self.show_first_measurment:
+        if self.show_first_measurment and (vel[0] is not None):
             viewer = self.dotplot_viewer
             bins = viewer.state.bins
             index = self.search_sorted(bins, vel[0])
@@ -457,7 +457,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         else:
             self.first_meas_plotted = False
         
-        if self.show_second_measurment:
+        if self.show_second_measurment and (vel[1] is not None):
             viewer = self.dotplot_viewer_2
             bins = viewer.state.bins
             index = self.search_sorted(bins, vel[1])
