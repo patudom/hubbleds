@@ -367,6 +367,15 @@ class StageTwo(HubbleStage):
                 new_index = marker_index - 1
                 self.stage_state.marker = self.stage_state.marker[new_index]
         
+        # Show_ruler should be true from marker ang_siz3 to est_dis4 (inclusive) and from dot_seq5b forward.
+        if  self.stage_state.marker_reached('ang_siz3') and (not self.stage_state.marker_after('est_dis4')):
+            self.stage_state.show_ruler = True
+        elif self.stage_state.marker_reached('dot_seq5b'):
+            self.stage_state.show_ruler = True
+        else:
+            self.stage_state.show_ruler = False
+
+
     def setup_dotplot_viewers(self):
         
         dist_dotplots = [self.get_viewer('dotplot_viewer_dist'), self.get_viewer('dotplot_viewer_dist_2')]
