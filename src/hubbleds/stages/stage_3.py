@@ -70,6 +70,7 @@ class StageState(CDSState):
     dot_seq4_q = CallbackProperty(False)
     dot_seq6_q = CallbackProperty(False)
     exgal_second_row_selected = CallbackProperty(False)
+    exgal_second_measured = CallbackProperty(True) # This should initialize as False and be set to True when the condition is met - will do later.
     
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
@@ -96,8 +97,11 @@ class StageState(CDSState):
         'dot_seq4', # show dot plot ang size
         'ang_siz5a', # directs to dos/donts # hide angular size
         'dot_seq5', 
-        'dot_seq6a', 
+        'dot_seq5a',
+        'dot_seq5b',
+        'dot_seq5c',
         'dot_seq6', # show dot plot dist 2
+        'dot_seq7',
         'rep_rem1',
         'fil_rem1',
     ])
@@ -435,12 +439,12 @@ class StageTwo(HubbleStage):
             v1.add_event_callback(lambda event:_on_dotplot_click(v1,event), events=['click'])
             v2.add_event_callback(lambda event:_on_dotplot_click(v2,event), events=['click'])
             
-        if advancing and (new == 'dot_seq5'):
+        if advancing and (new == 'dot_seq5a'):
             self.show_dotplot1 = False
             self.show_dotplot1_ang = False
             self.show_dotplot2 = False
             
-            # self.example_galaxy_distance_table.selected = []
+            self.example_galaxy_distance_table.selected = []
             self.example_galaxy_distance_table.filter_by(None)
             
         if advancing and (new == 'dot_seq6'):
@@ -536,8 +540,10 @@ class StageTwo(HubbleStage):
             self.stage_state.move_marker_forward(self.stage_state.marker)
             self.stage_state.galaxy_selected = True
     
-        if self.stage_state.marker == 'dot_seq6a':
+        if self.stage_state.marker == 'dot_seq5a':
             self.stage_state.exgal_second_row_selected = index == 1
+            if self.stage_state.exgal_second_row_selected == 1:
+                self.stage_state.marker = 'dot_seq5b'
         self._update_viewer_style(dark=self.app_state.dark_mode)
     
     @print_function_name
@@ -769,7 +775,7 @@ class StageTwo(HubbleStage):
 
     @property
     def last_guideline(self):
-        return self.get_component('guideline-stage-3-complete')
+        return self.get_component('guideline_fill_remaining_galaxies')
 
     def _on_stage_complete(self, complete):
         if complete:
@@ -777,4 +783,4 @@ class StageTwo(HubbleStage):
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
-            self.last_guideline.stage_3_complete = False
+            self.stage_state.stage_3_complete = False
