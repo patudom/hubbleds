@@ -17,7 +17,7 @@
           class="black--text"
           @click="() => {
             console.log('jumping');
-            stage_state.marker = 'est_dis4';
+            stage_state.marker = 'dot_seq5';
             fill_table();
 
           }"
@@ -62,10 +62,6 @@
           v-if="stage_state.marker == 'ang_siz6'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <guideline-repeat-remaining-galaxies
-          v-if="stage_state.marker == 'rep_rem1'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />        
         <guideline-dotplot-seq6
           v-if="stage_state.marker == 'dot_seq6'" 
           :state="stage_state"
@@ -148,6 +144,10 @@
           v-if="stage_state.marker == 'est_dis4'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
+        <guideline-repeat-remaining-galaxies
+          v-if="stage_state.marker == 'rep_rem1'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />   
       </v-col>
       <v-col
         cols="12"
