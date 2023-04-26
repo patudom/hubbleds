@@ -6,7 +6,10 @@
     elevation="6"
     title-text="Second Measurement Comparison"
     @back="state.marker = 'dot_seq5'"
-    @next="state.marker = 'dot_seq5b'"
+    @next="() => {
+      state.show_ruler = true;
+      state.marker = 'dot_seq5b'
+    }"         
     :can-advance="(state) => state.exgal_second_row_selected"
     :state="state"
     >

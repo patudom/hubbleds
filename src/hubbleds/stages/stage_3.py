@@ -544,6 +544,7 @@ class StageTwo(HubbleStage):
         if self.stage_state.marker == 'dot_seq5a':
             self.stage_state.exgal_second_row_selected = index == 1
             if self.stage_state.exgal_second_row_selected == 1:
+                self.stage_state.show_ruler = True
                 self.stage_state.marker = 'dot_seq5b'
         self._update_viewer_style(dark=self.app_state.dark_mode)
     
