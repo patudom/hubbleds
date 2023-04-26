@@ -66,6 +66,11 @@ class StageState(CDSState):
     show_exgal_table = CallbackProperty(False)
     show_galaxy_table = CallbackProperty(False)
     
+    dot_seq2_q = CallbackProperty(False)
+    dot_seq4_q = CallbackProperty(False)
+    dot_seq6_q = CallbackProperty(False)
+    exgal_second_row_selected = CallbackProperty(False)
+    
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
     
@@ -91,6 +96,7 @@ class StageState(CDSState):
         'dot_seq4', # show dot plot ang size
         'ang_siz5a', # directs to dos/donts # hide angular size
         'dot_seq5', 
+        'dot_seq6a', 
         'dot_seq6', # show dot plot dist 2
         'rep_rem1',
         'fil_rem1',
@@ -405,6 +411,8 @@ class StageTwo(HubbleStage):
             # need to turn off ruler marker also.False
             # and start stage 2 at the start coordinates
         
+        if advancing and (new == 'ang_siz5'):
+            self.distance_tool.reset_canvas()
 
         if advancing and (new == "dot_seq1"):
             self.show_dotplot1 = True
@@ -531,6 +539,8 @@ class StageTwo(HubbleStage):
             self.stage_state.move_marker_forward(self.stage_state.marker)
             self.stage_state.galaxy_selected = True
     
+        if self.stage_state.marker == 'dot_seq6a':
+            self.stage_state.exgal_second_row_selected = index == 1
         self._update_viewer_style(dark=self.app_state.dark_mode)
     
     @print_function_name
