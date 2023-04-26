@@ -18,7 +18,10 @@
       class="mb-4"
     >
       <p>
-        This dot plot shows the distrubution of distances measured for this galaxy (from you and a random subset of others who have completed this Data Story.)
+        Let's see how your measurement compares with a random subset of measured values from others who have completed this Data Story.
+      </p>
+      <p>
+        This dot plot shows the distrubution of distances measured.
       </p> 
       <p>
         The red dot shows your measurement. 

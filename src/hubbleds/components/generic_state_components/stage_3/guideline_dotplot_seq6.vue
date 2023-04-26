@@ -27,9 +27,9 @@
           'I am not sure',
           ]"
         :feedbacks="[
-          'Not quite! In which histogram is the data more clustered around a single value?',
-          'Correct! The second set of measurements cluster around one common value',
-          'Consider where the measurements cluster around a single common value.'
+          'Not quite. Consider which dot plot has measurements that cluster around fewer common values.',
+          'Correct. The second set of measurements clusters around fewer common values',
+          'Consider which dot plot has measurements that cluster around fewer common values.'
           ]"
         :correct-answers="[1]"
         :wrong-answers="[0]"
