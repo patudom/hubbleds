@@ -492,6 +492,7 @@ class StageOne(HubbleStage):
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()
+        self.vue_select_galaxies()
     
     #@print_function_name
     def _on_measurements_changed(self, msg):
