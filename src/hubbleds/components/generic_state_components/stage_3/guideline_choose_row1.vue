@@ -11,14 +11,14 @@
     :state="state"
   >
     <template #before-next>
-      Select a galaxy from your table.
+      Select example galaxy from table.
     </template>
 
     <div
       class="mb-4"
     >
       <p>
-        Select the example galaxy.
+        Click on the row with the example galaxy to select it.
       </p>
     </div>
   </scaffold-alert>

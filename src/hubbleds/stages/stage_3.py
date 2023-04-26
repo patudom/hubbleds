@@ -57,6 +57,7 @@ class StageState(CDSState):
     show_ruler = CallbackProperty(False)
     meas_theta = CallbackProperty(0)
     distance_calc_count = CallbackProperty(0)
+    ruler_clicked_total = CallbackProperty(0)
     
     show_dotplot1 = CallbackProperty(False)
     show_dotplot2 = CallbackProperty(False)
@@ -64,6 +65,11 @@ class StageState(CDSState):
     show_dotplot2_ang = CallbackProperty(False)
     show_exgal_table = CallbackProperty(False)
     show_galaxy_table = CallbackProperty(False)
+    
+    dot_seq2_q = CallbackProperty(False)
+    dot_seq4_q = CallbackProperty(False)
+    dot_seq6_q = CallbackProperty(False)
+    exgal_second_row_selected = CallbackProperty(False)
     
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
@@ -90,6 +96,7 @@ class StageState(CDSState):
         'dot_seq4', # show dot plot ang size
         'ang_siz5a', # directs to dos/donts # hide angular size
         'dot_seq5', 
+        'dot_seq6a', 
         'dot_seq6', # show dot plot dist 2
         'rep_rem1',
         'fil_rem1',
@@ -199,7 +206,6 @@ class StageState(CDSState):
 ])
 class StageTwo(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
-    START_COORDINATES = SkyCoord(213 * u.deg, 61 * u.deg, frame='icrs')
 
     _state_cls = StageState
 
@@ -401,12 +407,12 @@ class StageTwo(HubbleStage):
         if advancing and (new == "cho_row1" or new == "cho_row2"):
             self.distance_table.selected = []
             self.example_galaxy_distance_table.selected = []
-            self.distance_tool.widget.center_on_coordinates(
-                self.START_COORDINATES, instant=True)
             self.distance_tool.reset_canvas()
             # need to turn off ruler marker also.False
             # and start stage 2 at the start coordinates
         
+        if advancing and (new == 'ang_siz5'):
+            self.distance_tool.reset_canvas()
 
         if advancing and (new == "dot_seq1"):
             self.show_dotplot1 = True
@@ -536,6 +542,8 @@ class StageTwo(HubbleStage):
             self.stage_state.move_marker_forward(self.stage_state.marker)
             self.stage_state.galaxy_selected = True
     
+        if self.stage_state.marker == 'dot_seq6a':
+            self.stage_state.exgal_second_row_selected = index == 1
         self._update_viewer_style(dark=self.app_state.dark_mode)
     
     @print_function_name
@@ -550,12 +558,16 @@ class StageTwo(HubbleStage):
     
     @print_function_name
     def _ruler_click_count_update(self, change):
-        if change["new"] == 1:
+        count = change["new"]
+        self.stage_state.ruler_clicked_total = count
+        if count == 1:
             self.stage_state.marker = 'ang_siz4'  # auto-advance guideline if it's the first ruler click
     
     @print_function_name
     def _measurement_count_update(self, change):
-        if change["new"] == 1:
+        count = change["new"]
+        self.stage_state.n_meas = count
+        if count == 1:
             self.stage_state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
 
     def _show_ruler_changed(self, show):
@@ -597,6 +609,8 @@ class StageTwo(HubbleStage):
             self.update_data_value(data_label, ANGULAR_SIZE_COMPONENT,
                                 self.stage_state.meas_theta, index)
         elif data_label == EXAMPLE_GALAXY_MEASUREMENTS:
+            if (index==0) and self.stage_state.marker_reached('dot_seq1'):
+                return
             self.update_example_data_value(data_label, ANGULAR_SIZE_COMPONENT,
                                self.stage_state.meas_theta, index)
             colors = ["#FF0000", "#0000FF"]
