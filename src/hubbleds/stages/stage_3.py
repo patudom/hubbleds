@@ -375,7 +375,7 @@ class StageTwo(HubbleStage):
         else:
             self.stage_state.show_ruler = False
             
-        if self.stage_state.marker_reached("dot_seq4a"):
+        if self.stage_state.marker_reached("ang_siz5a"):
             # hide lines
             dotplot_viewer_dist.remove_lines_from_figure(line=True, previous_line = True)
             dotplot_viewer_ang.remove_lines_from_figure(line=True, previous_line = True)
@@ -441,7 +441,7 @@ class StageTwo(HubbleStage):
             v1.show_previous_line(show = True, show_label = True)
             v2.show_previous_line(show = True, show_label = True)
             def _on_dotplot_click(plot, event):
-                if self.stage_state.marker_reached('dot_seq4a'):
+                if self.stage_state.marker_reached('ang_siz5a'):
                     return
                 # it doesn't matter which plot we get the event from
                 # because d = C / \theta and \theta = C / d
@@ -456,7 +456,7 @@ class StageTwo(HubbleStage):
             v1.add_event_callback(lambda event:_on_dotplot_click(v1,event), events=['click'])
             v2.add_event_callback(lambda event:_on_dotplot_click(v2,event), events=['click'])
         
-        if advancing and (new == "dot_seq4a"):
+        if advancing and (new == "ang_siz5a"):
             # hide lines
             v1 = self.get_viewer('dotplot_viewer_dist')
             v2 = self.get_viewer('dotplot_viewer_ang')
