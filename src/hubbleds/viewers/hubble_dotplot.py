@@ -46,6 +46,20 @@ class HubbleDotPlotViewer(LineHoverViewerMixin,BqplotDotPlotView):
         self.show_line(show = self.line.visible, show_label = self.line_label.visible)
         self.show_previous_line(show = self.previous_line.visible, show_label = self.previous_line_label.visible)
     
+    def remove_marks(self, marks):
+        # make sure marks is a list
+        if not isinstance(marks, list):
+            marks = [marks]
+
+        keep_marks = [m for m in self.figure.marks if m not in marks]
+        self.figure.marks = keep_marks
+        
+    def remove_lines_from_figure(self, line = True, previous_line = True):
+        if line:
+            self.remove_marks([self.line, self.line_label])
+        if previous_line:
+            self.remove_marks([self.previous_line, self.previous_line_label])
+    
     def redraw(self):
         super().redraw()
         self.add_lines_to_figure()
