@@ -12,6 +12,18 @@
         >
           State
         </v-btn>
+        <v-btn
+          color="error"
+          class="black--text"
+          @click="() => {
+            console.log('jumping');
+            stage_state.marker = 'dot_seq5';
+            fill_table();
+
+          }"
+        >
+          jump
+        </v-btn>
         Marker: {{ stage_state.marker }}
       </v-col>
     </v-row>
@@ -50,20 +62,14 @@
           v-if="stage_state.marker == 'ang_siz6'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <guideline-repeat-remaining-galaxies
-          v-if="stage_state.marker == 'rep_rem1'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />        
-        <guideline-dotplot-seq6
-          v-if="stage_state.marker == 'dot_seq6'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.dot_seq6_q = true" />
         <guideline-dotplot-seq5
           v-if="stage_state.marker == 'dot_seq5'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        
+        <guideline-dotplot-seq5b
+          v-if="stage_state.marker == 'dot_seq5b'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
       </v-col>
       <v-col
         cols="12"
@@ -103,6 +109,7 @@
         <py-distance-sidebar />
       </v-col>
     </v-row>
+
     <v-row>
       <v-col
         cols="12"
@@ -136,6 +143,43 @@
           v-if="stage_state.marker == 'est_dis4'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
+        <guideline-dotplot-seq5a
+          v-if="stage_state.marker == 'dot_seq5a'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-dotplot-seq5c
+          v-if="stage_state.marker == 'dot_seq5c'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-repeat-remaining-galaxies
+          v-if="stage_state.marker == 'rep_rem1'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-fill-remaining-galaxies
+          v-if="stage_state.marker == 'fil_rem1'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+      </v-col>
+      <v-col
+        cols="12"
+        lg="8"
+        class="galtable_column"
+      >
+        <v-card
+          :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
+          :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
+          outlined
+        >
+          <jupyter-widget v-if="stage_state.show_galaxy_table || (stage_state.indices[stage_state.marker] >= stage_state.indices['rep_rem1'])" :widget="widgets.distance_table" />        
+          <jupyter-widget v-if="stage_state.show_exgal_table || (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1'])" :widget="widgets.example_galaxy_distance_table"/>
+        </v-card>
+      </v-col>
+    </v-row>  
+    <v-row>
+      <v-col
+        cols="12"
+        lg="4"
+      >
           <guideline-dotplot-seq1
           v-if="stage_state.marker == 'dot_seq1'" 
           :state="stage_state"
@@ -149,21 +193,13 @@
           v-if="stage_state.marker == 'dot_seq3'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
-        <guideline-dotplot-seq4
-        v-if="stage_state.marker == 'dot_seq4'" 
+        <guideline-dotplot-seq6
+          v-if="stage_state.marker == 'dot_seq6'" 
           :state="stage_state"
-          v-intersect.once="scrollIntoView" 
-          @ready="stage_state.dot_seq4_q = true"/>
-        <guideline-dotplot-seq6a
-          v-if="stage_state.marker == 'dot_seq6a'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-fill-remaining-galaxies
-          v-if="stage_state.marker == 'fil_rem1'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-stage-3-complete
-          v-if="stage_state.marker == 'two_com1'" 
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.dot_seq6_q = true" />
+        <guideline-dotplot-seq7
+          v-if="stage_state.marker == 'dot_seq7'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
       </v-col>
@@ -171,43 +207,58 @@
         cols="12"
         lg="8"
       >
-        <v-card
-          :color="stage_state.table_highlights.includes(stage_state.marker) ? 'info' : 'black'"
-          :class="stage_state.table_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
-          outlined
-        >
-          <jupyter-widget v-if="stage_state.show_galaxy_table || (stage_state.indices[stage_state.marker] >= stage_state.indices['rep_rem1'])" :widget="widgets.distance_table" />        
-          <jupyter-widget v-if="stage_state.show_exgal_table || (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1'])" :widget="widgets.example_galaxy_distance_table"/>
-        </v-card>
-        
         <v-row>
-          <v-card class="dotplot" v-if="stage_state.show_dotplot1 || ((stage_state.indices['dot_seq1'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))" width="90%">
-          <jupyter-widget :widget="viewers.dotplot_viewer_dist"/>
-          </v-card>
+          <v-col
+            class="py-0"
+          >
+            <v-card class="dotplot" v-if="stage_state.show_dotplot1 || ((stage_state.indices['dot_seq1'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))">
+            <jupyter-widget :widget="viewers.dotplot_viewer_dist"/>
+            </v-card>
+
+            <v-card class="dotplot" v-if="stage_state.show_dotplot2 || ((stage_state.indices['dot_seq6'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))">
+              <jupyter-widget :widget="viewers.dotplot_viewer_dist_2"/>
+            </v-card>
+          </v-col>
         </v-row>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col
+        cols="12"
+        lg="4"
+      >
+        <guideline-dotplot-seq4
+        v-if="stage_state.marker == 'dot_seq4'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView"/>
+        <guideline-dotplot-seq4a
+        v-if="stage_state.marker == 'dot_seq4a'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" 
+          @ready="stage_state.dot_seq4a_q = true"/>
+      </v-col>
+      <v-col
+        cols="12"
+        lg="8"
+      >
         <v-row>
-          <v-card class='dotplot' v-if="stage_state.show_dotplot1_ang || stage_state.marker == 'dot_seq4'" width="90%">
-          <jupyter-widget :widget="viewers.dotplot_viewer_ang"/>
-          </v-card>
+          <v-col
+            class="py-0"
+          >
+            <v-card class='dotplot' v-if="stage_state.show_dotplot1_ang || stage_state.marker == 'dot_seq4' || stage_state.marker == 'dot_seq4a'">
+              <jupyter-widget :widget="viewers.dotplot_viewer_ang"/>
+            </v-card>
+            <v-btn
+              v-if="show_team_interface"
+              color="error"
+              class="black--text"
+              @click="update_distances()"
+            >
+              calculate distances
+            </v-btn>
+          </v-col>
         </v-row>
-        <v-row>
-          <v-card class="dotplot" v-if="stage_state.show_dotplot2 || ((stage_state.indices['dot_seq5'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))" width="90%">
-          <jupyter-widget :widget="viewers.dotplot_viewer_dist_2"/>
-          </v-card>
-        </v-row>
-        <v-row>
-          <v-card class='dotplot' v-if="stage_state.show_dotplot2_ang || ((stage_state.indices['dot_seq6'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))" width="90%">
-          <jupyter-widget :widget="viewers.dotplot_viewer_ang_2"/>
-          </v-card>
-        </v-row>
-        <v-btn
-          v-if="show_team_interface"
-          color="error"
-          class="black--text"
-          @click="update_distances()"
-        >
-          calculate distances
-        </v-btn>
       </v-col>
     </v-row>
   </v-container>

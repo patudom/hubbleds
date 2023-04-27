@@ -22,9 +22,9 @@
             'I am not sure',
             ]"
             :feedbacks="[
-            'Not quite! Consider where the measurements cluster around a single common value.',
-            'Correct! The measurements cluster around two common values, so there is no concensus.',
-            'Consider where the measurements cluster around a single common value.'
+            'Not quite. Consider whether the measurements cluster around a single common value.',
+            'Correct! The measurements cluster around more than one common value, so there is no concensus.',
+            'If the measurements cluster around a single common value, there is consensus. If they cluster around more than one value, there is not consensus.'
             ]" 
           :correct-answers="[1]"
           :wrong-answers="[0]"
@@ -49,7 +49,7 @@
           dense
           color="info darken-1"
         >
-        A set of measurements shows consensus when all of the measurements tend to cluster around a single rather than multiple values
+        A set of measurements shows consensus when all of the measurements tend to cluster around a single rather than multiple values.
         </v-alert>
     </div>
   </scaffold-alert>

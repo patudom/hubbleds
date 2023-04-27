@@ -6,15 +6,20 @@
     elevation="6"
     title-text="Second Measurement Comparison"
     @back="state.marker = 'dot_seq5'"
-    @next="state.marker = 'dot_seq6'"
+    @next="() => {
+      state.show_ruler = true;
+      state.marker = 'dot_seq5b'
+    }"         
     :can-advance="(state) => state.exgal_second_row_selected"
     :state="state"
     >
+    <template #before-next>
+        Select second measurement row
+    </template>
     <div class="mb-4">
       <p>
-        Click on the second row with the <it>second</it> and make your second measurement considering the tips we've given on making accurate measurements. 
+        Click on the new row labeled <strong>second</strong> to remeasure the galaxy angular size.
       </p>
-      
     </div>
   </scaffold-alert>
 </template>
