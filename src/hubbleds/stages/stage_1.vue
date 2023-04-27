@@ -17,6 +17,16 @@
         >
           State
         </v-btn>
+        <v-btn
+          color="error"
+          class="black--text"
+          @click="() => {
+            stage_state.marker = 'smt_tut';
+            fill_table();
+          }"
+        >
+          Jump
+        </v-btn>
         Marker: {{ stage_state.marker }}
       </v-col>
     </v-row>
