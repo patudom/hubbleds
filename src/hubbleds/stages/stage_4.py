@@ -11,6 +11,7 @@ from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty, add_callback, remove_callback, DictCallbackProperty
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
+from glue_jupyter.link import link
 from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
@@ -32,6 +33,7 @@ class StageState(CDSState):
     trend_line_drawn = CallbackProperty(False)
     best_fit_clicked = CallbackProperty(False)
     stage_4_complete = CallbackProperty(False)
+    stage_ready = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -161,6 +163,9 @@ class StageThree(HubbleStage):
         
         add_callback(self.stage_state, 'stage_4_complete',
                      self._on_stage_4_complete)
+
+
+        link((self.story_state, 'enough_students_ready'), (self.stage_state, 'stage_ready'))
 
         self.show_team_interface = self.app_state.show_team_interface
 

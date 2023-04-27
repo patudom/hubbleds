@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
@@ -16,6 +16,7 @@ from echo.callback_container import CallbackContainer
 from glue.core import Data
 from glue.core.component import CategoricalComponent, Component
 from glue.core.data_factories.fits import fits_reader
+from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import CategorySubsetState
 
 from .data_management import *
@@ -28,6 +29,7 @@ class HubblesLaw(Story):
     calculations = DictCallbackProperty({})
     validation_failure_counts = DictCallbackProperty({})
     has_best_fit_galaxy = CallbackProperty(False)
+    enough_students_ready = CallbackProperty(False)
 
     name_ext = ".fits"
 
@@ -39,6 +41,10 @@ class HubblesLaw(Story):
         self._on_timer_cbs = CallbackContainer()
 
         self.add_callback('has_best_fit_galaxy', self.update_student_data)
+
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
+                           handler=self._on_class_data_updated)
 
         # Load data needed for Hubble's Law
         data_dir = Path(__file__).parent / "data"
@@ -462,6 +468,14 @@ class HubblesLaw(Story):
 
     def on_timer(self, cb):
         self._on_timer_cbs.append(cb)
+
+    def _on_class_data_updated(self, _message):
+        if not self.enough_students_ready:
+            class_data = self.data_collection[CLASS_DATA_LABEL]
+            counter = Counter(class_data[STUDENT_ID_COMPONENT])
+            students_ready = len([k for k, v in counter.items() if v >= 5])
+            if students_ready >= 6:
+                self.enough_students_ready = True
 
     def fetch_class_data(self):
         def check_update(measurements):
