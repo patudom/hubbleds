@@ -70,7 +70,7 @@ class StageState(CDSState):
     dot_seq4a_q = CallbackProperty(False)
     dot_seq6_q = CallbackProperty(False)
     exgal_second_row_selected = CallbackProperty(False)
-    exgal_second_measured = CallbackProperty(True) # This should initialize as False and be set to True when the condition is met - will do later.
+    exgal_second_measured = CallbackProperty(False) # This should initialize as False and be set to True when the condition is met - will do later.
     
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
@@ -636,6 +636,9 @@ class StageTwo(HubbleStage):
         if data_label == EXAMPLE_GALAXY_MEASUREMENTS:
             if (index==0) and self.stage_state.marker_reached('dot_seq1'):
                 return
+            
+            if (index == 1) and self.stage_state.marker == 'dot_seq5b':
+                self.stage_state.exgal_second_measured = True
 
             colors = ["#FB5607", "#FB5607"]
             labels = ['First', 'Second']
