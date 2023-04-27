@@ -468,17 +468,19 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             self.dotplot_viewer_2.line_label.x = [new_x]
             self.dotplot_viewer_2.line_label.text = [self.dotplot_viewer_2._label_text(new_x)]
 
-
-
+    @staticmethod
+    def get_bin(bins, x):
+        bin_width = bins[1] - bins[0]
+        index = int((x - bins[0])/bin_width)
+        return bins[0] + bin_width * (index + 1/2)
+    
     def plot_measurements(self, data):
         """ data should be a glue data"""
         vel = data.to_dataframe()[VELOCITY_COMPONENT]
         
         if self.show_first_measurment and (vel[0] is not None):
             viewer = self.dotplot_viewer
-            bins = viewer.state.bins
-            index = self.search_sorted(bins, vel[0])
-            x = (bins[index] + bins[index-1]) / 2
+            x = self.get_bin(viewer.state.bins, vel[0])
             self.first_meas_line.x = [x,x]
             self.first_meas_line.default_size = self.dotplot_viewer.layers[0].bars.default_size * 5
             self.first_meas_plotted = True
@@ -488,8 +490,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         if self.show_second_measurment and (vel[1] is not None):
             viewer = self.dotplot_viewer_2
             bins = viewer.state.bins
-            index = self.search_sorted(bins, vel[1])
-            x = (bins[index] + bins[index-1]) / 2
+            x = self.get_bin(viewer.state.bins, vel[1])
             self.second_meas_line.x = [x,x]
             self.second_meas_line.default_size = self.dotplot_viewer_2.layers[0].bars.default_size * 5
             self.second_meas_plotted = True
