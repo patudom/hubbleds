@@ -639,6 +639,7 @@ class StageTwo(HubbleStage):
             
             if (index == 1) and self.stage_state.marker == 'dot_seq5b':
                 self.stage_state.exgal_second_measured = True
+                self.stage_state.marker_forward = 1
 
             colors = ["#FB5607", "#FB5607"]
             labels = ['First', 'Second']

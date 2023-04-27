@@ -13,6 +13,9 @@
       <p>
         Your angular size and distance measurements are now entered in the table.
       </p>
+      <p>
+        Click and drag the ends of the green measurement line if you want to make adjustments.
+      </p>
     </div>
   </scaffold-alert>
 </template>
