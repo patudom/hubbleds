@@ -18,10 +18,7 @@
       class="mb-4"
     >
       <p>
-        You may adjust your measurement by clicking on the ends of the green line and moving them to a new location.
-      </p>
-      <p>
-        Click <span style="background-color: #02838f; border-radius: 5px; padding: 3px; color:white!important;">MEASUREMENT DOS AND DONTS</span> for tips on how to ensure the most accurate results.
+        Given that there was not consensus on the angular size measurements for the galaxy, click <span style="background-color: #02838f; border-radius: 5px; padding: 3px; color:white!important;">MEASUREMENT DOS AND DONTS</span> for tips on how to ensure the most accurate results.
       </p>
     </div>
   </scaffold-alert>

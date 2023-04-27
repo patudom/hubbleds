@@ -23,6 +23,9 @@
       <p>
         With the button held down, drag to the other edge of your galaxy and release the button.
       </p>
+      <p>
+        If you want to adjust your measurement, you can click on the ends of the green line and move them to a new location.
+      </p>
     </div>
   </scaffold-alert>
 </template>

@@ -242,7 +242,8 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             self.spectrum_viewer.add_event_callback(
                 callback = lambda event:self._activate_gray_markers(self.spectrum_viewer, event), 
                 events=['click'])
-
+        elif change['new'] & self.been_opened:
+            self.vue_on_reopen()
         else:
             pass
     
@@ -473,7 +474,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         """ data should be a glue data"""
         vel = data.to_dataframe()[VELOCITY_COMPONENT]
         
-        if self.show_first_measurment:
+        if self.show_first_measurment and (vel[0] is not None):
             viewer = self.dotplot_viewer
             bins = viewer.state.bins
             index = self.search_sorted(bins, vel[0])
@@ -484,7 +485,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         else:
             self.first_meas_plotted = False
         
-        if self.show_second_measurment:
+        if self.show_second_measurment and (vel[1] is not None):
             viewer = self.dotplot_viewer_2
             bins = viewer.state.bins
             index = self.search_sorted(bins, vel[1])
@@ -628,6 +629,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         except:
             pass
 
+
     def print_log(self, *args, **kwargs):
         # combine all args into a single string
         s = ' '.join([str(a) for a in args])
@@ -635,3 +637,13 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         # print this to the javascript console
         # create needed imports
         display(Javascript(f'console.log("%c{s}","color:green");'))
+        
+    def vue_on_reopen(self):
+        self.plot_measurements(self.example_galaxy_table._glue_data)
+        # reconnect the callbacks
+        self.observe(self._on_data_change, ['show_first_measurment', 'show_second_measurment'])
+        self.observe(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
+        self.observe(self.vue_enable_zoom_tool, 'zoom_tool_enabled')
+        self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
+        
+

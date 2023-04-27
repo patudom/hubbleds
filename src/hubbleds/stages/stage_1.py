@@ -531,6 +531,7 @@ class StageOne(HubbleStage):
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()
+        # self.vue_select_galaxies()
     
     #@print_function_name
     def _on_measurements_changed(self, msg):
@@ -853,7 +854,8 @@ class StageOne(HubbleStage):
                     return
                 self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
                                     new_value, index)
-                if self.stage_state.marker_reached('smt_tut'):
+                # if we are in the tutorial, update the velocity
+                if self.stage_state.marker == 'smt_tut':
                     velocity = velocity_from_wavelengths(new_value,data[RESTWAVE_COMPONENT][index])
                     self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, VELOCITY_COMPONENT,
                                         velocity, index)

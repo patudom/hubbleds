@@ -3,6 +3,7 @@
 
 <v-dialog
   v-model="dialog"
+  persistent
   id="spec_meas_tut"
   min-height="100rem"
   max-width="90%"

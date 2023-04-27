@@ -256,29 +256,32 @@ class HubblesLaw(Story):
                              GALTYPE_COMPONENT, MEASWAVE_COMPONENT, RESTWAVE_COMPONENT,
                              STUDENT_ID_COMPONENT, VELOCITY_COMPONENT, DISTANCE_COMPONENT,
                              ELEMENT_COMPONENT, ANGULAR_SIZE_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
-        # empty_record = {x: np.array([], dtype='float64') for x in single_gal_student_cols}
-        empty_record = {x : ['X'] if x in [SAMPLE_ID_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, NAME_COMPONENT, MEASUREMENT_NUMBER_COMPONENT] else [0] 
-                for x in single_gal_student_cols}
-        for col in [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT]:
-            empty_record[col] = example_galaxy_data[col]
-        empty_record[RESTWAVE_COMPONENT] = [H_ALPHA_REST_LAMBDA] if ('H' in example_galaxy_data[ELEMENT_COMPONENT][0]) else [MG_REST_LAMBDA]
-        empty_record[MEASUREMENT_NUMBER_COMPONENT] = ['first']
-        empty_record[MEASUREMENT_NUMBER_COMPONENT] = np.asarray(empty_record[MEASUREMENT_NUMBER_COMPONENT], dtype = ('<U6'))
-        example_galaxy_measurements = Data(
-            label=EXAMPLE_GALAXY_MEASUREMENTS,
-            **empty_record)
-
         
-        # categorical_cols = ['id', 'element', 'type', 'name', 'measurement_number']
-        # example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
-        # for col in single_gal_student_cols:
-        #     categorical = col in categorical_cols
-        #     ctype = Component
-        #     meas_comp = ctype(example_galaxy_data[col]) if col in ['name', 'element', 'type','ra','decl','z'] else ctype(np.array([]))
-        #     example_galaxy_measurements.add_component(meas_comp, col)
+        categorical_components = [SAMPLE_ID_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, NAME_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
+        transfered_components = [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT]
+        empty_record = {}
+        for col in transfered_components:
+            empty_record[col] = example_galaxy_data[col][0]
         
-        # example_galaxy_measurements.append(empty_record)
-        # self.data_collection.append(example_galaxy_student_data)
+        empty_record[RESTWAVE_COMPONENT] = H_ALPHA_REST_LAMBDA if ('H' in example_galaxy_data[ELEMENT_COMPONENT][0]) else MG_REST_LAMBDA
+        empty_record[MEASUREMENT_NUMBER_COMPONENT] = 'first'
+        
+        example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
+        
+        for col in single_gal_student_cols:
+            categorical = col in categorical_components
+            ctype = CategoricalComponent if categorical else Component
+            meas_comp = ctype(np.array([]))
+            example_galaxy_measurements.add_component(meas_comp, col)
+        
+        # add in the prefilled data
+        main_components = [x.label for x in example_galaxy_measurements.main_components]
+        component_dict = {c : list(example_galaxy_measurements[c]) for c in main_components}
+        for component, vals in component_dict.items():
+            vals.append(empty_record.get(component, None))
+        new_data = Data(label=example_galaxy_measurements.label, **component_dict)
+        example_galaxy_measurements.update_values_from_data(new_data)
+        
         self.data_collection.append(example_galaxy_measurements)
 
         self.app.add_link(example_galaxy_seed_data, DB_STUDENT_ID_FIELD, example_galaxy_measurements, STUDENT_ID_COMPONENT)

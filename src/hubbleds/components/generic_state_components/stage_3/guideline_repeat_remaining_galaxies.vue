@@ -27,10 +27,10 @@
       v-if="state.angsizes_total >= 5"
     >
       <p>
-        You have measured the angular size for all of your galaxies.
+        You have measured angular sizes for all of your galaxies.
       </p>
       <p>
-        You can continue to refine your measurements, or, if you are satisfied with your measurements, you can move on.
+        You can continue to refine your measurements, or, if you are satisfied, you can move on.
       </p>
     </div>
   </scaffold-alert>
