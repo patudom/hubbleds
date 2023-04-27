@@ -12,7 +12,7 @@
       <v-toolbar-title
         class="text-h6 text-uppercase font-weight-regular"
       >
-        Waiting Screen
+        Take a quick break
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <speech-synthesizer
@@ -24,8 +24,9 @@
     <v-card-text>
       <v-container>
         <v-row>
-          <p>Very few of your classmates have finished taking their data, so let's wait for them to catch up.</p>
-          <p>While you do, feel free to explore the sky using WorldWide Telescope!</p>
+          <p>You and your classmates will be comparing your measurements in the next section, but we need to wait a few moments for more of them to catch up.</p>
+          <p>While you wait, you can explore the same sky viewer you saw in the introduction.</p>
+          <p>This screen will autoadvance when enough classmates are ready to proceed.</p>
           <iframe
             allowfullscreen
             allow="accelerometer; clipboard-write; gyroscope"
