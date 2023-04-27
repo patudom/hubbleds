@@ -15,10 +15,10 @@
         In the upper graph we show the distribution of first measurements as you saw earlier.
       </p>
       <p>
-        In the lower graph, we show the distribution of second distance measurements, with yours marked in red-orange.
+        In the lower graph, we show the distribution of second distance measurements. Yours are again marked in red-orange.
       </p>
       <p>
-        Based on these two histograms, which set of measurments shows better concensus on the distance to the galaxy?
+        Based on these two histograms, which set of measurements shows better concensus on the distance to the galaxy?
       </p>
       <mc-radiogroup
         :radio-options="[
