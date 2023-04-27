@@ -965,3 +965,12 @@ class StageOne(HubbleStage):
         self.story_state.load_spectrum_data(name, spectype)
         data = self.get_data(name.split(".")[0])
         self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
+
+    def fill_table(self, table, tool=None):
+        print("in fill_table")
+        self.update_data_value(table._glue_data.label, MEASWAVE_COMPONENT, 6811, 0) 
+        self.update_data_value(table._glue_data.label, VELOCITY_COMPONENT, 11241, 0)
+
+    def vue_fill_table(self, _args):
+        print("in vue_fill_table")
+        self.fill_table(self.example_galaxy_table)
