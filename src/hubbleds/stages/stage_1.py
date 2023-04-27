@@ -34,10 +34,15 @@ log = logging.getLogger()
 
 
 import inspect
+from IPython.display import Javascript, display
 
-def print_log(*args, **kwargs):
+def print_log(*args, color = None, **kwargs):
     if True:
-        print(*args, **kwargs)
+        # print(*args, **kwargs)
+        s = 'py: ' + ' '.join([str(a) for a in args])
+        color = color or 'grey'
+        display(Javascript(f'console.log("%c{s}","color:{color}");'))
+
     return
 def print_function_name(func):
     def wrapper(*args, **kwargs):
@@ -83,7 +88,29 @@ class StageState(CDSState):
             "Your Galaxy's Velocity",
         ]
     })
-
+    
+    # place state variables from spectrum_measurement_tutorial.py here
+    spectrum_tut_vars = {v: False for v in [
+            'dialog',
+            'opened',
+            'been_opened',
+            'show_specviewer', 
+            'show_dotplot', 
+            'show_table', 
+            'allow_specview_mouse_interaction', 
+            'show_first_measurment', 
+            'show_second_measurment', 
+            'zoom_tool_enabled', 
+            'show_selector_lines', 
+            'subset_created',
+            'next_disabled',
+            ]}
+    spectrum_tut_vars['show_dotplot'] = True
+    spectrum_tut_vars['show_selector_lines'] = True
+    spectrum_tut_vars.update({'step': 0, 'length':19, 'maxStepCompleted': 0})
+    spectrum_tut_state = DictCallbackProperty(spectrum_tut_vars)
+    
+    
     marker = CallbackProperty("")
     marker_backward = CallbackProperty()
     marker_forward = CallbackProperty()
@@ -447,8 +474,20 @@ class StageOne(HubbleStage):
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_update)
         
         # ADD SPECTRUM MEASUREMENT TUTORIAL
-        spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence([self.viewers["dotplot_viewer"],self.viewers["dotplot_viewer_2"], self.viewers["spectrum_viewer"], self.get_widget("example_galaxy_table")])
+        smts_viewers = [self.viewers["dotplot_viewer"],self.viewers["dotplot_viewer_2"], self.viewers["spectrum_viewer"], self.get_widget("example_galaxy_table")]
+        spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state)
         self.add_component(spectrum_measurement_tutorial, label='c-spectrum-measurement-tutorial')
+        def _smts_state_update(change):
+            print_log('update spectrum tutorial state',color='red')
+            # print the changes between the two states
+            dict_old = change['old']
+            dict_new = change['new']
+            for key in dict_new:
+                if self.stage_state.spectrum_tut_state[key] != dict_new[key]:
+                    print_log('changed', key, 'from', dict_old[key], 'to', dict_new[key],color='red')
+            
+            self.stage_state.spectrum_tut_state = change['new']
+        spectrum_measurement_tutorial.observe(_smts_state_update, ['tutorial_state'])
 
         # INITIALIZE STATE VARIABLES WHEN LOADING A STORED STATE
         # reset the state variables when we load a story state

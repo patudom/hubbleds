@@ -41,7 +41,7 @@
             'Typically, the <i>wisdom of crowds</i> would tell you that the true value is in the tower.'
             ]" 
           :correct-answers="[0]"
-          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          @select="(opt) => { if (opt.correct) { this.nextDisabled = false} }"
           score-tag="spec_meas_tut1">
         </mc-radiogroup>
       </v-window-item>
@@ -143,7 +143,7 @@
             'Intersting! Perhaps by the end of this section we will arrive at a more confident answer.'
             ]" 
           :neutral-answers="[0,1,2]"
-          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          @select="(opt) => { if (opt.correct) { this.nextDisabled = false } }"
           score-tag="spec_meas_tut2">
             >
           </mc-radiogroup>
@@ -233,7 +233,7 @@
             ]"
             :feedbacks="['Great!','Intersting!','Interesting']" 
           :neutral-answers="[0,1,2]"
-          :selected-callback="(opt) => { if (opt.correct) { console.log('correct'); } }"
+          @select="(opt) => { if (opt.correct) { this.nextDisabled = false} }"
           score-tag="spec_meas_tut3">
             >
             >
@@ -277,7 +277,7 @@
           class="black--text"
           color="accent"
           depressed
-          @click="prev"
+          @click="() => {this.prev();}"
         >
           Back
         </v-btn>
@@ -288,7 +288,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { step++; }"
+          @click="() => { this.next();}"
         >
           {{ step < length-1 ? 'next' : '' }}
         </v-btn>
@@ -344,16 +344,16 @@ module.exports = {
 
   watch: {
     step(val) {
-      this.$emit('step', val)
-      
+      this.$emit('step', this.step)
     },
 
     toStep(val) {
-      this.step = val
+      this.step = val;
     },
 
     nextDisabled(val) {
-      console.log('nextDisabled', val)
+      console.log('gsm extDisabled', val)
+      this.$emit('nextDisabled', val)
     }
   },
 }
