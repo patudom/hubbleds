@@ -76,11 +76,13 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
     ]
     _default_title = "Specrum Measurement Tutorial"
 
-    def __init__(self, viewer_layouts, tutorial_state,  *args, **kwargs):
+    def __init__(self, viewer_layouts, tutorial_state, indices, *args, **kwargs):
         
         self.currentTitle = self._default_title
         self.tutorial_state = tutorial_state
         # self.saving_state  = tutorial_state
+        
+        self.indices = indices
         
         # loop through all the keys in the tutorial state and set the values
         # so that self.variable stores the correct value and make sure the 
@@ -296,39 +298,41 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                     self.next_disabled = False
                 self.observe(allow_advance, 'subset_created')
     
+    def reached(self, check, current):
+        return self.indices[current] >= self.indices[check]
+    
     def _on_marker_change(self, old, new):
         self.print_log(f"marker change: {old} -> {new}")
         
-
+        advancing = (self.indices[new] - self.indices[old]) == 1
         
         if new == 'dot_seq1':
-            pass
-        try:
-            self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_mouse_moved)
-        except:
-            print_log('on_mouse_moved not found')
-        try:
-            self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_click) # turns on measuring interaction
-        except:
-            print_log('on_click not found')
+            try:
+                self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_mouse_moved)
+            except:
+                print_log('on_mouse_moved not found')
+            try:
+                self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_click) # turns on measuring interaction
+            except:
+                print_log('on_click not found')
             
-        if new == 'dot_seq5':
+        if new == 'dot_seq4':
             self.show_first_measurment = True
+            
         
-        if new == 'dot_seq6':
+        if new == 'dot_seq5':
             self.vue_tracking_lines_on()
             #self.spectrum_viewer.add_event_callback(self.spectrum_viewer._on_mouse_moved, events=['mousemove'])
             #self.spectrum_viewer.add_event_callback(self.spectrum_viewer._on_click, events=['click'])
         
-        if new == 'dot_seq7':
-            
+        if new == 'dot_seq6':
             self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
             self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", True)
             def set_active():
-                self.zoom_tool_activated = True
+                self.tutorial_state['dot_zoomed'] = True
             extend_tool(self.dotplot_viewer, "bqplot:xzoom", activate_cb=set_active)
         
-        if new == "osm_tut":
+        if new == "dot_seq13":
             self.show_second_measurment = True
             self.example_galaxy_table.filter_by(lambda item: item['measurement_number'] == 'second')
   

@@ -169,8 +169,7 @@ class StageState(CDSState):
         'dot_seq10',
         'dot_seq11',
         'dot_seq12', # go split make second measuremtn or remaining galaxies
-        'osm_tut',
-        'smt_tut',
+        'dot_seq13',
         'rem_gal1',
         'ref_dat1',
         'dop_cal6',
@@ -500,7 +499,7 @@ class StageOne(HubbleStage):
         
         # ADD SPECTRUM MEASUREMENT TUTORIAL
         smts_viewers = [self.viewers["dotplot_viewer"],self.viewers["dotplot_viewer_2"], self.viewers["spectrum_viewer"], self.get_widget("example_galaxy_table")]
-        self.spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state)
+        self.spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state, self.stage_state.indices)
         # self.add_component(spectrum_measurement_tutorial, label='c-spectrum-measurement-tutorial')
         def print_dict_diff(dict_old, dict_new):
             for key in dict_new:
@@ -614,9 +613,6 @@ class StageOne(HubbleStage):
             # self.stage_state.show_galaxy_table = False
             # self.stage_state.show_example_galaxy_table = True
             
-        if advancing and new == "osm_tut":
-            print_log("showing osm tutorial")
-            self.stage_state.show_meas_tutorial = True
             
         if advancing and new == "cho_row1" and self.example_galaxy_table.index is not None:
             self.stage_state.spec_viewer_reached = True
@@ -657,7 +653,7 @@ class StageOne(HubbleStage):
             if (not self.spectrum_measurement_tutorial.been_opened) and self.stage_state.marker_before('rem_gal1'):
                 self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
          
-        if self.stage_state.marker_reached('int_dot1') and self.stage_state.marker_before('osm_tut'):
+        if self.stage_state.marker_reached('int_dot1') and self.stage_state.marker_before('rem_gal1'):
             self.spectrum_measurement_tutorial._on_marker_change(old, new)
         
         if advancing and new == "rem_gal1":
