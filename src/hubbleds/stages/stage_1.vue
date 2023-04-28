@@ -243,7 +243,8 @@
               :class="stage_state.spec_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
               outlined
             >
-              This is where velocity measurement dot plot goes
+                <jupyter-widget :widget="viewers.dotplot_viewer"/>
+                <jupyter-widget :widget="viewers.dotplot_viewer_2"/>
             </v-card>
           </v-col>
         </v-row>
