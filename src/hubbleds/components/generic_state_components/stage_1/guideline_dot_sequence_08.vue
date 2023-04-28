@@ -1,18 +1,35 @@
 <template>
   <scaffold-alert
+    title-text="Check Measurement"
     @back="() => { state.marker_backward = 1; }"
     @next="() => { state.marker_forward = 1; }"
-    :can-advance="(state) => state.dot_zoomed"
+    :can-advance="(state) => state.dot_seq8_q"
     :state="state"
   >
     <template #before-next>
-      Zoom in
+      Choose a response
     </template>
     <div>
       <p>
-        Click and drag across the cluster of velocity measurements to zoom in.
+        Based on this graph do you think there is <it>concensus</it> on the velocity of this galaxy?
       </p>
-      <span style="color:#1DE9B6!important">After user zooms in, autoadvance to next guideline</span>
+      <mc-radiogroup 
+          :radio-options="[
+            'Yes',
+            'No',
+            'I am not sure',
+            ]"
+            :feedbacks="[
+            'Try again. In the zoomed out dot plot, it may have seemed like there was consensus, but when we exclude outliers, the measurements are clustered around more than one velocity value.',
+            'Correct. When we exclude outliers, we see that measurements are clustered around more than one velocity value.',
+            'Consider only the range of values that excludes outliers. If measurements are clustered around a single velocity value, there is consensus. If they are clustered around multiple values, there is not consensus.'
+            ]" 
+          :correct-answers="[1]"
+          :neutral-answers="[2]"
+          @select="(opt) => { if (opt.correct) { console.log('correct'); $emit('ready'); } }"
+          score-tag="vel_meas_concensus">
+            >
+          </mc-radiogroup>
     </div>
   </scaffold-alert>
 </template>

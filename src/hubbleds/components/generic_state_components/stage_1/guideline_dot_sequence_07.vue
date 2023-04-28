@@ -1,18 +1,20 @@
 <template>
   <scaffold-alert
+    title-text="Consensus"
     @back="() => { state.marker_backward = 1; }"
     @next="() => { state.marker_forward = 1; }"
-    :can-advance="(state) => state.dot_zoom_activated"
     :state="state"
   >
-    <template #before-next>
-      Click <span style="color:#1DE9B6!important">magnifying glass icon</span>
-    </template>
     <div>
       <p>
-        Let's take a closer look at the cluster of measurements to the right of the graph. Click <span style="color:#1DE9B6!important">insert magnifying glass icon here</span> to activate the zoom tool.
+        With the wisdom of crowds, we want to know whether there is <strong>consensus</strong> in everyone's measurements.
       </p>
-      <span style="color:#1DE9B6!important">After zoom tool is activated, autoadvance to next guideline</span>
+      <p>
+        If there is consensus, the measurements will tend to cluster around a single value.
+      </p>
+      <p>
+        If there is not consensus, the measurements will be scattered across a range of values or clustered around more than one value.
+      </p>
     </div>
   </scaffold-alert>
 </template>

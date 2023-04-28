@@ -7,11 +7,14 @@
   >
     <div>
       <p>
-        Your measured wavelength is marked in orange-red on the spectrum viewer.
+        Move your mouse left and right in the velocity dot plot. 
       </p>
-      <span style="color:#1DE9B6!important">
-        <strong>This guidline is where wavelength marker should turn on in viewer.</strong>
-      </span>
+      <p>
+        Click on a velocity to mark the corresponding wavelength in the spectrum viewer below.
+      </p>
+      <p>
+        See if you can identify features in the spectrum viewer that correspond to outliers or to the larger cluster of velocity measurements.
+      </p>
     </div>
   </scaffold-alert>
 </template>

@@ -1,16 +1,13 @@
 <template>
   <scaffold-alert
-    title-text="Your measurement vs Others'"
+    title-text="Velocity and Wavelength"
     @back="() => { state.marker_backward = 1; }"
     @next="() => { state.marker_forward = 1; }"
     :state="state"
   >
     <div>
       <p>
-        Another thing to check is whether your measurement is close or far away from other values.
-      </p>
-      <p>
-        If your measurement is very far from others, that makes it an <strong>outlier</strong> and you may need to adjust how you made your measurement.
+        Whether or not your point is an outlier, it can be helpful to know how the measured velocities correspond to the measured wavelengths in the spectrum.
       </p>
     </div>
   </scaffold-alert>

@@ -1,34 +1,20 @@
 <template>
   <scaffold-alert
-    title-text="Check Measurement"
+    title-text="Your measurement vs Others'"
     @back="() => { state.marker_backward = 1; }"
     @next="() => { state.marker_forward = 1; }"
-    :can-advance="(state) => state.dot_seq2_q"
     :state="state"
   >
-    <template #before-next>
-      Choose a response
-    </template>
     <div>
       <p>
-        Based on this graph do you think there is <it>concensus</it> on the velocity of this galaxy?
+        One thing to check is whether your measurement is close or far away from other values.
       </p>
-      <mc-radiogroup 
-          :radio-options="[
-            'Yes',
-            'No',
-            'I am not sure',
-            ]"
-            :feedbacks="[
-            'Yes, most of the measurements appear in a cluster towards the right of the graph. Note, though, that they span a large range in velocity values.',
-            'This case could go either way. Most of the measurements appear in a cluster towards the right of the graph, but they span a very large range in velocity values.',
-            'Yeah, sometimes it is hard to tell. Most of the measurements appear in a cluster towards the right of the graph, but they span a large range in velocity values.'
-            ]" 
-          :neutral-answers="[0,1,2]"
-          @select="(opt) => { if (opt.correct || opt.neutral) { console.log('correct'); $emit('ready'); } }"
-          score-tag="vel_meas_concensus">
-            >
-          </mc-radiogroup>
+      <p>
+        If a measurement is very far from others, that makes it an <strong>outlier</strong> and may indicate that the value was measured incorrectly.
+      </p>
+      <p>
+        If your measurement is an outlier, don't worry. You will have a chance to remeasure it.
+      </p>
     </div>
   </scaffold-alert>
 </template>

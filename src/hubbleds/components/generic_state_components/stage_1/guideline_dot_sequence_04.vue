@@ -7,8 +7,11 @@
   >
     <div>
       <p>
-        Whether or not your point is an outlier, it can be helpful to know how the measured velocities correspond to the measured wavelengths in the spectrum.
+        Your measured wavelength is marked in orange-red on the spectrum viewer.
       </p>
+      <span style="color:#1DE9B6!important">
+        <strong>This guidline is where wavelength marker should turn on in viewer.</strong>
+      </span>
     </div>
   </scaffold-alert>
 </template>

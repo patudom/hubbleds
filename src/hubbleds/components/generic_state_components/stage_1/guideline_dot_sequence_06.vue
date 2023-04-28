@@ -1,19 +1,15 @@
 <template>
   <scaffold-alert
-    title-text="Velocity and Wavelength"
     @back="() => { state.marker_backward = 1; }"
     @next="() => { state.marker_forward = 1; }"
     :state="state"
   >
     <div>
       <p>
-        Move your mouse left and right in the velocity dot plot. 
+        Let's now focus on the part of the dot plot that includes most of the data. (In other words, we will ignore outliers).
       </p>
       <p>
-        Click on a velocity to mark the corresponding wavelength in the spectrum viewer below.
-      </p>
-      <p>
-        See if you can identify features in the spectrum viewer that correspond to outliers or to the larger cluster of velocity measurements.
+        As you did in the tutorial, use (zoom tool icon) to zoom in around the main cluster of data.
       </p>
     </div>
   </scaffold-alert>

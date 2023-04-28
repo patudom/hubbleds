@@ -7,13 +7,7 @@
   >
     <div>
       <p>
-        The first thing to check is whether there is <strong>consensus</strong> in everyone's measurements.
-      </p>
-      <p>
-        If there is consensus, the measurements will tend to cluster around a single value.
-      </p>
-      <p>
-        If there is not consensus, the measurements will be scattered across a range of values or clustered around more than one value.
+        Recall that this dot plot provides one way to check our own velocity measurement using the <strong>wisdom of crowds</strong>. 
       </p>
     </div>
   </scaffold-alert>
