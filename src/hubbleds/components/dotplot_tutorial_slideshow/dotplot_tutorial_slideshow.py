@@ -32,6 +32,7 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
     def __init__(self, viewers, *args, **kwargs):
         self.currentTitle = self._default_title
         self.dotplot_viewer = viewers[0]
+        self.dotplot_viewer_viewer = viewers[0].viewer
         # self.layer_viewer = viewers[1]
 
         def update_title(change):
@@ -45,3 +46,11 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         self.observe(update_title, names=["step"])
 
         super().__init__(*args, **kwargs)
+    
+    def vue_activate_zoom_tool(self, _data = None):
+        self.dotplot_viewer_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
+    
+    def vue_activate_selector(self, _data = None):
+        self.dotplot_viewer_viewer.toolbar.set_tool_enabled("hubble:towerselect", True)
+    
+    

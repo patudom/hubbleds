@@ -31,7 +31,9 @@
         Marker: {{ stage_state.marker }}
       </v-col>
       <v-col>
-            <py-dotplot-tutorial-slideshow />
+            <py-dotplot-tutorial-slideshow
+            v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1']"
+             />
             </v-col>
     </v-row>
 

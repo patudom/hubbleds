@@ -51,6 +51,24 @@
           style="height: 70vh;"
           class="overflow-auto"
         >
+        
+        <v-btn
+          class="black--text"
+          color="accent"
+          depressed
+          @click="activate_zoom_tool"
+        >
+          activate zoom tool
+        </v-btn>
+        
+        <v-btn
+          class="black--text"
+          color="accent"
+          depressed
+          @click="activate_selector"
+        >
+          activate tower selection
+        </v-btn>
 
         <v-window-item :value="0" class="no-transition">
           <v-card-text>

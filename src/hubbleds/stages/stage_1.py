@@ -515,6 +515,7 @@ class StageOne(HubbleStage):
             print_dict_diff(self.stage_state.spectrum_tut_state, dict_new)
             self.stage_state.spectrum_tut_state = change['new']
         self.spectrum_measurement_tutorial.observe(_smts_state_update, ['tutorial_state'])
+        # self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
         
 
         # INITIALIZE STATE VARIABLES WHEN LOADING A STORED STATE
