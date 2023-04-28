@@ -32,7 +32,6 @@
       </v-col>
       <v-col>
             <py-dotplot-tutorial-slideshow
-            v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1']"
              />
             </v-col>
     </v-row>
@@ -134,8 +133,8 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
-        <guideline-dot-sequence-13
-          v-if="stage_state.marker === 'dot_seq13'"
+        <guideline-dot-sequence-12
+          v-if="stage_state.marker === 'dot_seq12'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
@@ -181,11 +180,6 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
-        <guideline-note-to-team
-          v-if="stage_state.marker === 'not_tea1'"
-          v-intersect.once="scrollIntoView"
-          :state="stage_state"
-        />
         <guideline-dot-sequence-01
           v-if="stage_state.marker === 'dot_seq1'"
           v-intersect.once="scrollIntoView"
@@ -195,15 +189,14 @@
           v-if="stage_state.marker === 'dot_seq2'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
-          @ready="stage_state.dot_seq2_q = true"
         />
         <guideline-dot-sequence-03
           v-if="stage_state.marker === 'dot_seq3'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
-        <guideline-dot-sequence-04
-          v-if="stage_state.marker === 'dot_seq4'"
+        <guideline-dot-sequence-05
+          v-if="stage_state.marker === 'dot_seq5'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
@@ -221,14 +214,10 @@
           v-if="stage_state.marker === 'dot_seq8'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
+          @ready="stage_state.dot_seq8_q = true"
         />
         <guideline-dot-sequence-09
           v-if="stage_state.marker === 'dot_seq9'"
-          v-intersect.once="scrollIntoView"
-          :state="stage_state"
-        />
-        <guideline-dot-sequence-10
-          v-if="stage_state.marker === 'dot_seq10'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
@@ -243,6 +232,9 @@
           <v-col
             class="py-0"
           >
+            <py-dotplot-tutorial-slideshow
+            v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1']"
+             />
             <v-card
               :color="stage_state.spec_highlights.includes(stage_state.marker) ? 'info' : 'black'"
               :class="stage_state.spec_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
@@ -312,18 +304,18 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
-        <guideline-dot-sequence-05
-          v-if="stage_state.marker === 'dot_seq5'"
+        <guideline-dot-sequence-04
+          v-if="stage_state.marker === 'dot_seq4'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-10
+          v-if="stage_state.marker === 'dot_seq10'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
         <guideline-dot-sequence-11
           v-if="stage_state.marker === 'dot_seq11'"
-          v-intersect.once="scrollIntoView"
-          :state="stage_state"
-        />
-        <guideline-dot-sequence-12
-          v-if="stage_state.marker === 'dot_seq12'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />

@@ -60,7 +60,7 @@ class StageState(CDSState):
     dotplot_tutorial_opened = CallbackProperty(True) # Need to initialize as false later
     dot_zoom_activated = CallbackProperty(True) # Need to initialize as false later
     dot_zoomed = CallbackProperty(True) # Need to initialize as false later
-    dot_seq2_q = CallbackProperty(False)
+    dot_seq8_q = CallbackProperty(False)
     lambda_used = CallbackProperty(False)
     lambda_on = CallbackProperty(False)
     waveline_set = CallbackProperty(False)
@@ -157,20 +157,18 @@ class StageState(CDSState):
         'dop_cal5',
         'che_mea1',
         'int_dot1', # add dot plot tutorial (like hubble race)
-        'not_tea1', #this will get taken out once implemented
         'dot_seq1',
         'dot_seq2',
         'dot_seq3',
         'dot_seq4',
         'dot_seq5', # show first measurement
-        'dot_seq6', # add markers and sleector
+        'dot_seq6',
         'dot_seq7', # activate and check for zoom tool, auto advance
         'dot_seq8', # allow next after zoomed (pat: auto advance)
         'dot_seq9',
         'dot_seq10',
         'dot_seq11',
-        'dot_seq12', # by this point need to be around H-alpha
-        'dot_seq13', # go split make second measuremtn or remaining galaxies
+        'dot_seq12', # go split make second measuremtn or remaining galaxies
         'osm_tut',
         'smt_tut',
         'rem_gal1',
