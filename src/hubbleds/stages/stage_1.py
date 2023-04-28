@@ -57,6 +57,10 @@ class StageState(CDSState):
     gal_selected = CallbackProperty(False)
     spec_viewer_reached = CallbackProperty(False)
     spec_tutorial_opened = CallbackProperty(False)
+    dotplot_tutorial_opened = CallbackProperty(True) # Need to initialize as false later
+    dot_zoom_activated = CallbackProperty(True) # Need to initialize as false later
+    dot_zoomed = CallbackProperty(True) # Need to initialize as false later
+    dot_seq2_q = CallbackProperty(False)
     lambda_used = CallbackProperty(False)
     lambda_on = CallbackProperty(False)
     waveline_set = CallbackProperty(False)
@@ -148,6 +152,22 @@ class StageState(CDSState):
         # 'dop_cal3',
         'dop_cal4',
         'dop_cal5',
+        'che_mea1',
+        'int_dot1',
+        'not_tea1', #this will get taken out once implemented
+        'dot_seq1',
+        'dot_seq2',
+        'dot_seq3',
+        'dot_seq4',
+        'dot_seq5',
+        'dot_seq6',
+        'dot_seq7',
+        'dot_seq8',
+        'dot_seq9',
+        'dot_seq10',
+        'dot_seq11',
+        'dot_seq12',
+        'dot_seq13',
         'osm_tut',
         'smt_tut',
         'rem_gal1',
@@ -1005,3 +1025,12 @@ class StageOne(HubbleStage):
         self.story_state.load_spectrum_data(name, spectype)
         data = self.get_data(name.split(".")[0])
         self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
+
+    def fill_table(self, table, tool=None):
+        print("in fill_table")
+        self.update_data_value(table._glue_data.label, MEASWAVE_COMPONENT, 6830, 0) 
+        self.update_data_value(table._glue_data.label, VELOCITY_COMPONENT, 12130, 0)
+
+    def vue_fill_table(self, _args):
+        print("in vue_fill_table")
+        self.fill_table(self.example_galaxy_table)
