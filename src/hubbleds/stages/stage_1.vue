@@ -30,6 +30,9 @@
         </v-btn>
         Marker: {{ stage_state.marker }}
       </v-col>
+      <v-col>
+            <py-dotplot-tutorial-slideshow />
+            </v-col>
     </v-row>
 
     <v-row>

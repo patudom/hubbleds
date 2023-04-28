@@ -18,7 +18,7 @@ from glue.core.message import NumericalDataChangedMessage, SubsetUpdateMessage
 from numpy import isin
 from traitlets import Bool, default, validate
 
-from ..components import SpectrumSlideshow, SelectionTool, SpectrumMeasurementTutorialSequence
+from ..components import SpectrumSlideshow, SelectionTool, SpectrumMeasurementTutorialSequence, DotplotTutorialSlideshow
 from ..data.styles import load_style
 from ..data_management import *
 from ..stage import HubbleStage
@@ -437,6 +437,10 @@ class StageOne(HubbleStage):
                                    names=['marker'])
         spectrum_slideshow.observe(self._spectrum_slideshow_tutorial_opened,
                                    names=['opened'])
+        
+        dotplot_slideshow = DotplotTutorialSlideshow([self.viewers["dotplot_viewer"]])
+        self.add_component(dotplot_slideshow, label='py-dotplot-tutorial-slideshow')
+        # dotplot_slideshow.observe(self._on_slideshow_opened, names=['opened']) # not implemented
         
         # callback places velocity value in table
         add_callback(self.stage_state, 'student_vel',

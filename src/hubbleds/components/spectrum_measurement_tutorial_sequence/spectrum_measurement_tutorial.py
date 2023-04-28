@@ -321,12 +321,16 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             #self.spectrum_viewer.add_event_callback(self.spectrum_viewer._on_click, events=['click'])
         
         if new == 'dot_seq7':
-            self.show_second_measurment = True
+            
             self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
             self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", True)
             def set_active():
                 self.zoom_tool_activated = True
             extend_tool(self.dotplot_viewer, "bqplot:xzoom", activate_cb=set_active)
+        
+        if new == "osm_tut":
+            self.show_second_measurment = True
+            self.example_galaxy_table.filter_by(lambda item: item['measurement_number'] == 'second')
   
             
             
