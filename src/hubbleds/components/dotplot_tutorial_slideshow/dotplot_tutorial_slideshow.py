@@ -11,7 +11,7 @@ from ipywidgets import widget_serialization, DOMWidget
 class DotplotTutorialSlideshow(v.VuetifyTemplate):
     template = load_template("dotplot_tutorial_slideshow.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
-    length = Int(3).tag(sync=True)
+    length = Int(5).tag(sync=True)
     dialog = Bool(False).tag(sync=True)
     opened = Bool(False).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
@@ -24,7 +24,9 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
     _titles = [
         "Title 1",
         "Title 2",
-        "Title 3 (with plot)",
+        "Title 3",
+        "Title 4",
+        "Title 5",
 
     ]
     _default_title = "Dot Plot Tutorial"
