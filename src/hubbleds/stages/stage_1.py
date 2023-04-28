@@ -14,7 +14,7 @@ from echo import add_callback, ignore_callback, CallbackProperty, \
     DictCallbackProperty, ListCallbackProperty, delay_callback, \
     callback_property
 from glue.core import Data
-from glue.core.message import NumericalDataChangedMessage
+from glue.core.message import NumericalDataChangedMessage, SubsetUpdateMessage
 from numpy import isin
 from traitlets import Bool, default, validate
 
@@ -23,12 +23,12 @@ from ..data.styles import load_style
 from ..data_management import *
 from ..stage import HubbleStage
 from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, \
-    MG_REST_LAMBDA, velocity_from_wavelengths
+    MG_REST_LAMBDA, SPEED_OF_LIGHT, velocity_from_wavelengths
 from ..viewers import SpectrumView, HubbleDotPlotView
 from ..viewers.viewers import HubbleHistogramView
 from glue.core.data_factories import load_data
 from bqplot.marks import Lines
-
+from glue_jupyter.link import link
 
 log = logging.getLogger()
 
@@ -39,8 +39,8 @@ from IPython.display import Javascript, display
 def print_log(*args, color = None, **kwargs):
     if True:
         # print(*args, **kwargs)
-        s = 'py: ' + ' '.join([str(a) for a in args])
-        color = color or 'grey'
+        s = 'stage 1: ' + ' '.join([str(a) for a in args])
+        color = color or 'red'
         display(Javascript(f'console.log("%c{s}","color:{color}");'))
 
     return
@@ -104,7 +104,7 @@ class StageState(CDSState):
             'allow_specview_mouse_interaction', 
             'show_first_measurment', 
             'show_second_measurment', 
-            'zoom_tool_enabled', 
+            'zoom_tool_activated', 
             'show_selector_lines', 
             'subset_created',
             'next_disabled',
@@ -153,21 +153,21 @@ class StageState(CDSState):
         'dop_cal4',
         'dop_cal5',
         'che_mea1',
-        'int_dot1',
+        'int_dot1', # add dot plot tutorial (like hubble race)
         'not_tea1', #this will get taken out once implemented
         'dot_seq1',
         'dot_seq2',
         'dot_seq3',
         'dot_seq4',
-        'dot_seq5',
-        'dot_seq6',
-        'dot_seq7',
-        'dot_seq8',
+        'dot_seq5', # show first measurement
+        'dot_seq6', # add markers and sleector
+        'dot_seq7', # activate and check for zoom tool, auto advance
+        'dot_seq8', # allow next after zoomed (pat: auto advance)
         'dot_seq9',
         'dot_seq10',
         'dot_seq11',
-        'dot_seq12',
-        'dot_seq13',
+        'dot_seq12', # by this point need to be around H-alpha
+        'dot_seq13', # go split make second measuremtn or remaining galaxies
         'osm_tut',
         'smt_tut',
         'rem_gal1',
@@ -495,19 +495,23 @@ class StageOne(HubbleStage):
         
         # ADD SPECTRUM MEASUREMENT TUTORIAL
         smts_viewers = [self.viewers["dotplot_viewer"],self.viewers["dotplot_viewer_2"], self.viewers["spectrum_viewer"], self.get_widget("example_galaxy_table")]
-        spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state)
-        self.add_component(spectrum_measurement_tutorial, label='c-spectrum-measurement-tutorial')
+        self.spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state)
+        # self.add_component(spectrum_measurement_tutorial, label='c-spectrum-measurement-tutorial')
+        def print_dict_diff(dict_old, dict_new):
+            for key in dict_new:
+                if dict_old[key] != dict_new[key]:
+                    print_log('changed', key, 'from', dict_old[key], 'to', dict_new[key],color='red')
+        
+
         def _smts_state_update(change):
             print_log('update spectrum tutorial state',color='red')
             # print the changes between the two states
             dict_old = change['old']
             dict_new = change['new']
-            for key in dict_new:
-                if self.stage_state.spectrum_tut_state[key] != dict_new[key]:
-                    print_log('changed', key, 'from', dict_old[key], 'to', dict_new[key],color='red')
-            
+            print_dict_diff(self.stage_state.spectrum_tut_state, dict_new)
             self.stage_state.spectrum_tut_state = change['new']
-        spectrum_measurement_tutorial.observe(_smts_state_update, ['tutorial_state'])
+        self.spectrum_measurement_tutorial.observe(_smts_state_update, ['tutorial_state'])
+        
 
         # INITIALIZE STATE VARIABLES WHEN LOADING A STORED STATE
         # reset the state variables when we load a story state
@@ -629,7 +633,18 @@ class StageOne(HubbleStage):
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
-
+        
+        # activate the dot plot sequence stuff
+        if self.stage_state.marker_reached('int_dot1'):
+            if (not self.spectrum_measurement_tutorial.been_opened) and self.stage_state.marker_before('rem_gal1'):
+                self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
+         
+        if self.stage_state.marker_reached('int_dot1') and self.stage_state.marker_before('osm_tut'):
+            self.spectrum_measurement_tutorial._on_marker_change(old, new)
+        
+        if advancing and new == "rem_gal1":
+            self.spectrum_measurement_tutorial.vue_on_close()
+    
     def _on_step_index_update(self, index):
         # If we aren't on this stage, ignore
         if self.story_state.stage_index != self.index:
@@ -1034,3 +1049,110 @@ class StageOne(HubbleStage):
     def vue_fill_table(self, _args):
         print("in vue_fill_table")
         self.fill_table(self.example_galaxy_table)
+    
+    
+    ################################
+    ### dotplot_sequence methods ###
+    ################################
+    # @property
+    # def dotplot_viewer(self):
+    #     return self.get_viewer('dotplot_viewer')
+    
+    # @property
+    # def dotplot_viewer_2(self):
+    #     return self.get_viewer('dotplot_viewer_2')
+    
+    # @property
+    # def spectrum_viewer(self):
+    #     return self.get_viewer('spectrum_viewer')
+    
+    # @staticmethod
+    # def v2w(vel):
+    #         return H_ALPHA_REST_LAMBDA * (1 + vel / SPEED_OF_LIGHT)
+        
+    # @staticmethod
+    # def w2v(wave):
+    #     return SPEED_OF_LIGHT * (wave / H_ALPHA_REST_LAMBDA - 1)
+        
+    # @staticmethod
+    # def get_bin(bins, x):
+    #     bin_width = bins[1] - bins[0]
+    #     index = int((x - bins[0])/bin_width)
+    #     return bins[0] + bin_width * (index + 1/2)
+    
+    # def _on_viewer_focus(self, viewer, event = {'event': None}):
+    #     if event['event'] == 'mouseenter':
+    #         # viewer.line.visible = True
+    #         viewer.previous_line.visible = True
+    #         viewer.previous_line_label.visible = True
+    #     elif event['event'] == 'mouseleave':
+    #         # viewer.line.visible = False
+    #         viewer.previous_line.visible = False
+    #         viewer.previous_line_label.visible = False
+    
+    # def _activate_gray_markers(self, viewer, event = {'event': None}):
+    #     if self.show_selector_lines:
+    #         if viewer is self.spectrum_viewer:
+    #             w = event['domain']['x']
+    #             v = self.w2v(w)
+    #         else:
+    #             v = event['domain']['x']
+    #             w = self.v2w(v)
+        
+    #         self.dotplot_viewer._on_click(event = {'domain': {'x': v}})
+    #         self.dotplot_viewer_2._on_click(event = {'domain': {'x': v}})
+    #         self.spectrum_viewer._on_click(event = {'domain': {'x': w}})
+    
+    # def add_selector_lines(self):
+    #     self.dotplot_viewer.add_lines_to_figure()
+    #     self.dotplot_viewer_2.add_lines_to_figure()
+    
+    # def setup_dotplot_viewers(self):
+        
+    #     link((self.dotplot_viewer.state, 'x_min'), (self.dotplot_viewer_2.state, 'x_min'))
+    #     link((self.dotplot_viewer.state, 'x_max'), (self.dotplot_viewer_2.state, 'x_max'))
+    #     link((self.dotplot_viewer_2.state, 'x_min'), (self.spectrum_viewer.state, 'x_min'), self.v2w, self.w2v)
+    #     link((self.dotplot_viewer_2.state, 'x_max'), (self.spectrum_viewer.state, 'x_max'), self.v2w, self.w2v)
+        
+    #     self.example_galaxy_table._glue_data.hub.subscribe(
+    #             self, NumericalDataChangedMessage,
+    #             filter = lambda msg: msg.data.label == self.example_galaxy_table._glue_data.label ,
+    #             handler=self._on_data_change)
+            
+    #     self.example_galaxy_table._glue_data.hub.subscribe(
+    #         self, SubsetUpdateMessage,handler=self._on_data_change)
+        
+    #     self.add_selector_lines() 
+    #     self.vue_tracking_lines_off()
+    #     self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom",self.zoom_tool_enabled)
+        
+    #     self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
+    #     self.dotplot_viewer.add_event_callback(self._update_selector_tool_dp, events=['mousemove'])
+    #     self.dotplot_viewer_2.add_event_callback(self._update_selector_tool_dp2, events=['mousemove'])
+
+    #     self.observe(lambda msg: self.plot_measurements(self.example_galaxy_table._glue_data), ['show_first_measurment', 'show_second_measurment'])
+    #     self.observe(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
+    #     self.observe(self._on_step_change, ['step'])
+        
+    #     self.spectrum_viewer.add_event_callback(
+    #         callback = lambda event: self._on_viewer_focus(self.spectrum_viewer, event), 
+    #         events=['moustenter', 'mouseleave'])
+    #     self.dotplot_viewer.add_event_callback(
+    #         callback = lambda event: self._on_viewer_focus(self.dotplot_viewer, event),
+    #         events=['moustenter', 'mouseleave'])
+    #     self.dotplot_viewer_2.add_event_callback(
+    #         callback = lambda event: self._on_viewer_focus(self.dotplot_viewer_2, event),
+    #         events=['moustenter', 'mouseleave'])
+        
+        
+    #     self.dotplot_viewer.add_event_callback(
+    #         callback = lambda event:self._activate_gray_markers(self.dotplot_viewer, event), 
+    #         events=['click'])
+    #     self.dotplot_viewer_2.add_event_callback(
+    #         callback = lambda event:self._activate_gray_markers(self.dotplot_viewer_2, event), 
+    #         events=['click'])
+    #     self.spectrum_viewer.add_event_callback(
+    #         callback = lambda event:self._activate_gray_markers(self.spectrum_viewer, event), 
+    #         events=['click'])
+        
+        

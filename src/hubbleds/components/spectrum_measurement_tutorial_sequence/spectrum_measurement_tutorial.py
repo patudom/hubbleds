@@ -1,4 +1,5 @@
 from fsspec import Callback
+# from hubbleds.stages.stage_1 import print_log
 import ipyvuetify as v
 from traitlets import Int, Bool, Unicode, Instance, Dict
 from cosmicds.utils import load_template
@@ -25,7 +26,27 @@ from itertools import cycle
 from functools import partial
 # theme_colors()
 from IPython.display import Javascript, display
-class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
+
+
+import inspect
+from IPython.display import Javascript, display
+
+def print_log(*args, color = None, **kwargs):
+    if True:
+        # print(*args, **kwargs)
+        s = 'spe tut: ' + ' '.join([str(a) for a in args])
+        color = color or 'green'
+        display(Javascript(f'console.log("%c{s}","color:{color}");'))
+
+    return
+def print_function_name(func):
+    def wrapper(*args, **kwargs):
+        calling_function_name = inspect.stack()[1][3]
+        print_log(f"Calling  {func.__name__} from {calling_function_name}")
+        return func(*args, **kwargs)
+    return wrapper
+
+class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
     template = load_template("./spectrum_measurement_tutorial.vue", __file__, traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
     length = Int(19).tag(sync=True)
@@ -44,7 +65,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     allow_specview_mouse_interaction = Bool(False).tag(sync=True)
     show_first_measurment = Bool(False).tag(sync=True)
     show_second_measurment = Bool(False).tag(sync=True)
-    zoom_tool_enabled = Bool(False).tag(sync=True)
+    zoom_tool_activated = Bool(False).tag(sync=True)
     show_selector_lines = Bool(True).tag(sync=True)
     subset_created = Bool(False).tag(sync=True)
     next_disabled = Bool(False).tag(sync=True)
@@ -58,8 +79,8 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     def __init__(self, viewer_layouts, tutorial_state,  *args, **kwargs):
         
         self.currentTitle = self._default_title
-        self.tutorial_state.update(tutorial_state)
-        self.saving_state  = tutorial_state
+        self.tutorial_state = tutorial_state
+        # self.saving_state  = tutorial_state
         
         # loop through all the keys in the tutorial state and set the values
         # so that self.variable stores the correct value and make sure the 
@@ -120,7 +141,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
         self.spec_view_first = self.vertical_line_mark(self.spectrum_viewer, x = 0, color = self.first_meas_line.colors[0], label = 'spec_view_first')
         self.spec_view_second = self.vertical_line_mark(self.spectrum_viewer, x = 0, color = self.second_meas_line.colors[0] , label = 'spec_view_second')
         self.spec_view_first_label = Label(
-                        text=["my vel"],
+                        text=["first"],
                         x=[self.spec_view_first.x[0]],
                         y=[self.spec_view_first.y[1]],
                         x_offset=10,
@@ -131,7 +152,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
                     )
         
         self.spec_view_second_label = Label(
-                        text=["my vel"],
+                        text=["second"],
                         x=[self.spec_view_second.x[0]],
                         y=[self.spec_view_second.y[1]],
                         x_offset=10,
@@ -186,8 +207,10 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     
     def _on_tutorial_state_change(self, change):
         self.print_log(f'name: {change["name"]}, old: {change["old"]}, new: {change["new"]}')
-        self.saving_state.update({change['name']:change['new']})
-        self.tutorial_state = self.saving_state.copy()
+        temp_state = self.tutorial_state.copy()
+        temp_state.update({change['name']:change['new']})
+        # self.tutorial_state.update({change['name']:change['new']})
+        self.tutorial_state =  temp_state
     
     def _on_dialog_open(self, change):
         if change['new'] & (not self.been_opened):
@@ -212,7 +235,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
             
             self.add_selector_lines()
             self.vue_tracking_lines_off()
-            self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom",self.zoom_tool_enabled)
+            self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom",self.zoom_tool_activated)
             
             self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
             self.dotplot_viewer.add_event_callback(self._update_selector_tool_dp, events=['mousemove'])
@@ -272,7 +295,43 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
                     self.unobserve(allow_advance, 'subset_created')
                     self.next_disabled = False
                 self.observe(allow_advance, 'subset_created')
+    
+    def _on_marker_change(self, old, new):
+        self.print_log(f"marker change: {old} -> {new}")
+        
+
+        
+        if new == 'dot_seq1':
+            pass
+        try:
+            self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_mouse_moved)
+        except:
+            print_log('on_mouse_moved not found')
+        try:
+            self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_click) # turns on measuring interaction
+        except:
+            print_log('on_click not found')
             
+        if new == 'dot_seq5':
+            self.show_first_measurment = True
+        
+        if new == 'dot_seq6':
+            self.vue_tracking_lines_on()
+            #self.spectrum_viewer.add_event_callback(self.spectrum_viewer._on_mouse_moved, events=['mousemove'])
+            #self.spectrum_viewer.add_event_callback(self.spectrum_viewer._on_click, events=['click'])
+        
+        if new == 'dot_seq7':
+            self.show_second_measurment = True
+            self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
+            self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", True)
+            def set_active():
+                self.zoom_tool_activated = True
+            extend_tool(self.dotplot_viewer, "bqplot:xzoom", activate_cb=set_active)
+  
+            
+            
+        
+    
     
     def _on_viewer_focus(self, viewer, event = {'event': None}):
         if event['event'] == 'mouseenter':
@@ -570,9 +629,9 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate,HubListener):
     # vue callable functions
     
     def vue_enable_zoom_tool(self, data=None):
-        self.zoom_tool_enabled = not self.zoom_tool_enabled
-        self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", self.zoom_tool_enabled)
-        self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", self.zoom_tool_enabled)
+        self.zoom_tool_activated = not self.zoom_tool_activated
+        self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", self.zoom_tool_activated)
+        self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", self.zoom_tool_activated)
   
   
     def vue_set_x_axis_limits(self, data = None):
