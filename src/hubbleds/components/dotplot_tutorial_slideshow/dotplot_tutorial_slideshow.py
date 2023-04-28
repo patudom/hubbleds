@@ -56,7 +56,8 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         self.dotplot_viewer_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
     
     def vue_activate_selector(self, _data = None):
-        self.dotplot_viewer_viewer.toolbar.set_tool_enabled("hubble:towerselect", True)
+        # self.dotplot_viewer_viewer.toolbar.set_tool_enabled("hubble:towerselect", True)
+        self.dotplot_viewer_viewer.show_previous_line(True, True)
     
     def on_zoom_active(self, *args, **kwargs):
         self.vue_removeMeasuringTool()
@@ -68,4 +69,4 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         self.dotplot_viewer_viewer.show_line(True, True)
     
     def vue_removeMeasuringTool(self, _data = None):
-        self.dotplot_viewer_viewer.remove_lines_from_figure(line=True)
+        self.dotplot_viewer_viewer.remove_lines_from_figure(line=True, previous_line=True)
