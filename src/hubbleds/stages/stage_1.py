@@ -898,7 +898,7 @@ class StageOne(HubbleStage):
             if index is not None:
                 # if we're on the first example galaxy and we've reached the tutorial, don't allow changes to
                 # the first measurement anymore. when it changes to the second measurement we'll allow it again
-                if (index == 0) & (self.stage_state.marker_reached('osm_tut')):
+                if (index == 0) & (self.stage_state.marker_reached('int_dot1')):
                     # don't allow user to change the first measurement once we begin the tutorial section
                     return
                 self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
