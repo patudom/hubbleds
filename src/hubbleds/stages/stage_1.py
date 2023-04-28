@@ -134,6 +134,9 @@ class StageState(CDSState):
     allow_first_measurement_change = CallbackProperty(True)
     allow_second_measurement_change = CallbackProperty(True)
     
+    random_state_variable = CallbackProperty(True)
+    
+    
     markers = CallbackProperty([
         'mee_gui1',
         'sel_gal1',
@@ -596,34 +599,43 @@ class StageOne(HubbleStage):
                 new)
         if advancing and new == "dop_cal6":
             self.stage_state.doppler_calc_complete = True
+            
         if advancing and old == "sel_gal1":
             self.selection_tool.show_galaxies()
             self.selection_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, fov=60 * u.deg, instant=True)
+            
         if advancing and old == "sel_gal3":
             self.galaxy_table.selected = []
             self.example_galaxy_table.selected = []
             self.selection_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, instant=True)
+            
         if advancing and new == 'sel_gal4':
             print_log('commented out: showing example galaxy table')
             # self.stage_state.show_galaxy_table = False
             # self.stage_state.show_example_galaxy_table = True
+            
         if advancing and new == "osm_tut":
             print_log("showing osm tutorial")
             self.stage_state.show_meas_tutorial = True
+            
         if advancing and new == "cho_row1" and self.example_galaxy_table.index is not None:
             self.stage_state.spec_viewer_reached = True
             self.stage_state.marker = "mee_spe1"
+            
         if advancing and old == "dop_cal2" and (self.example_galaxy_table.index is not None) :
             self.stage_state.doppler_calc_reached = True
             self.stage_state.marker = "dop_cal4"
+            
         if advancing and old == "dop_cal2":
             self.selection_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, instant=True)
+            
         if advancing and new == "res_wav1":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:restwave", True)
+            
         if advancing and new == "obs_wav1":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.add_event_callback(spectrum_viewer._on_mouse_moved,
@@ -634,6 +646,7 @@ class StageOne(HubbleStage):
                                                events=['click'])
             spectrum_viewer.add_event_callback(self.on_spectrum_click_example_galaxy,
                                                events=['click'])
+            
         if advancing and new == "obs_wav2":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
@@ -641,6 +654,8 @@ class StageOne(HubbleStage):
         
         # activate the dot plot sequence stuff
         if self.stage_state.marker_reached('int_dot1'):
+            print_log(f'int_dot1 reached and random state variable set from {self.stage_state.random_state_variable} to False')
+            self.stage_state.random_state_variable = False
             if (not self.spectrum_measurement_tutorial.been_opened) and self.stage_state.marker_before('rem_gal1'):
                 self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
          
