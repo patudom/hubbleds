@@ -1,7 +1,7 @@
 import ipyvuetify as v
 from pathlib import Path
 from traitlets import Int, Bool, Unicode, List, Instance
-from cosmicds.utils import load_template
+from cosmicds.utils import load_template, extend_tool
 from glue_jupyter.state_traitlets_helpers import GlueState
 from ipywidgets import widget_serialization, DOMWidget
 
@@ -36,6 +36,9 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         self.dotplot_viewer = viewers[0]
         self.dotplot_viewer_viewer = viewers[0].viewer
         # self.layer_viewer = viewers[1]
+        
+        extend_tool(self.dotplot_viewer_viewer, "bqplot:xzoom", activate_cb=self.on_zoom_active, deactivate_cb=self.on_zoom_deactive)
+        
 
         def update_title(change):
             index = change["new"]
@@ -55,4 +58,14 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
     def vue_activate_selector(self, _data = None):
         self.dotplot_viewer_viewer.toolbar.set_tool_enabled("hubble:towerselect", True)
     
+    def on_zoom_active(self, *args, **kwargs):
+        self.vue_removeMeasuringTool()
+        
+    def on_zoom_deactive(self, *args, **kwargs):
+        self.vue_activateMeasuringTool()
     
+    def vue_activateMeasuringTool(self, _data = None):
+        self.dotplot_viewer_viewer.show_line(True, True)
+    
+    def vue_removeMeasuringTool(self, _data = None):
+        self.dotplot_viewer_viewer.remove_lines_from_figure(line=True)

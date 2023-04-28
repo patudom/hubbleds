@@ -268,6 +268,18 @@ export default {
       const isInteractStep = this.interactSteps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
       this.maxStepCompleted = Math.max(this.maxStepCompleted, newCompleted);
+
+      if (newStep == 1) {
+        this.activateMeasuringTool();
+      }
+
+      if (newStep == 2) {
+        this.activate_zoom_tool();
+      }
+
+      if (newStep == 3) {
+        this.activate_selector();
+      }
     },
   },
 

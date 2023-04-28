@@ -652,8 +652,8 @@ class StageOne(HubbleStage):
         
         # activate the dot plot sequence stuff
         if self.stage_state.marker_reached('int_dot1'):
-            print_log(f'int_dot1 reached and random state variable set from {self.stage_state.random_state_variable} to False')
-            self.stage_state.random_state_variable = False
+            print_log(f'int_dot1 reached and random state variable set from {self.stage_state.dot_zoomed} to False')
+            self.stage_state.dot_zoomed = False
             if (not self.spectrum_measurement_tutorial.been_opened) and self.stage_state.marker_before('rem_gal1'):
                 self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
          
