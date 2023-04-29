@@ -307,10 +307,13 @@ class StageOne(HubbleStage):
         # Add new dotplot viewer with single galaxy seed data
         dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer', viewer_label = 'Example Galaxy Measurement')
         dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2', viewer_label = 'Second Measurement')
+        dotplot_viewer_3 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_3', viewer_label = 'Dot Plot Graph')
         dotplot_viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
         dotplot_viewer_2.toolbar.set_tool_enabled('hubble:towerselect', False)
+        dotplot_viewer_3.toolbar.set_tool_enabled('hubble:towerselect', False)
         dotplot_viewer.toolbar.set_tool_enabled('bqplot:xzoom', False)
         dotplot_viewer_2.toolbar.set_tool_enabled('bqplot:xzoom', False)
+        dotplot_viewer_3.toolbar.set_tool_enabled('bqplot:xzoom', False)
         
                 
         #     HubbleHistogramView, label="dotplot_viewer")
@@ -322,8 +325,9 @@ class StageOne(HubbleStage):
         # which is either the glue Data or Subset object that is being displayed
         dotplot_viewer.ignore(lambda layer: layer in [second])
         dotplot_viewer_2.ignore(lambda layer: layer in [first])
+        dotplot_viewer_3.ignore(lambda layer: layer in [second])
         
-        for i,viewer in enumerate([dotplot_viewer, dotplot_viewer_2]):
+        for i,viewer in enumerate([dotplot_viewer, dotplot_viewer_2,dotplot_viewer_3]):
             viewer.add_data(example_galaxy_data)
             viewer.state.x_att = example_galaxy_data.id['velocity_value']
             viewer.layer_artist_for_data(example_galaxy_data).visible = False
@@ -438,7 +442,7 @@ class StageOne(HubbleStage):
         spectrum_slideshow.observe(self._spectrum_slideshow_tutorial_opened,
                                    names=['opened'])
         
-        dotplot_slideshow = DotplotTutorialSlideshow([self.viewers["dotplot_viewer"]])
+        dotplot_slideshow = DotplotTutorialSlideshow([self.viewers["dotplot_viewer_3"]])
         self.add_component(dotplot_slideshow, label='py-dotplot-tutorial-slideshow')
         # dotplot_slideshow.observe(self._on_slideshow_opened, names=['opened']) # not implemented
         
@@ -898,7 +902,7 @@ class StageOne(HubbleStage):
             if index is not None:
                 # if we're on the first example galaxy and we've reached the tutorial, don't allow changes to
                 # the first measurement anymore. when it changes to the second measurement we'll allow it again
-                if (index == 0) & (self.stage_state.marker_reached('int_dot1')):
+                if (index == 0) & (self.stage_state.marker_reached('che_mea1')):
                     # don't allow user to change the first measurement once we begin the tutorial section
                     return
                 self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
