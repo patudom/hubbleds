@@ -6,10 +6,10 @@
   >
     <div>
       <p>
-        Let's now focus on the part of the dot plot that includes most of the data. (In other words, we will ignore outliers).
+        Let's focus on the part of the dot plot that includes most of the data and ignore outliers.
       </p>
       <p>
-        As you did in the tutorial, use (zoom tool icon) to zoom in around the main cluster of data.
+        As you did in the tutorial, use <v-icon>mdi-select-search</v-icon> to zoom in around the main tower of data.
       </p>
     </div>
   </scaffold-alert>

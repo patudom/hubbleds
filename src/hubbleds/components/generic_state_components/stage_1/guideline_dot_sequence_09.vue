@@ -6,10 +6,11 @@
   >
     <div>
       <p>
-        Without consensus, it helps to check again what wavelength measurements correspond with the different clusters of velocity measurements.
+        To make sure everyone is making the best measurements, use the measuring tool to compare which spectrum features match the velocity bins.
+        
       </p>
       <p>
-        Click on the velocity values to mark their corresponding wavelength in the spectrum viewer. (We have zoomed in to the corresponding wavelength range.)
+        (Notice we zoomed in to the corresponding wavelength range in the spectrum viewer below.)
       </p>
     </div>
   </scaffold-alert>

@@ -10,10 +10,10 @@
         One thing to check is whether your measurement is close or far away from other values.
       </p>
       <p>
-        If a measurement is very far from others, that makes it an <strong>outlier</strong> and may indicate that the value was measured incorrectly.
+        A far away measurement is called an <strong>outlier</strong> and may indicate that the value was measured incorrectly.
       </p>
       <p>
-        If your measurement is an outlier, don't worry. You will have a chance to remeasure it.
+        Don't worry if your value is an outlier. You will have a chance to remeasure it.
       </p>
     </div>
   </scaffold-alert>

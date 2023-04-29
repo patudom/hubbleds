@@ -6,7 +6,7 @@
   >
     <div>
       <p>
-       Click the second row of the example galaxy table and take your second measurement keeping in mind what you learned from the dot plots. 
+       This bottom dot plot shows second measurements. Zoom in to see if there is more consensus in the second measurements than for the first measurements above.
       </p>
     </div>
   </scaffold-alert>

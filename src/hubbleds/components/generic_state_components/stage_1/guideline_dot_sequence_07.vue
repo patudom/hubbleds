@@ -7,13 +7,13 @@
   >
     <div>
       <p>
-        With the wisdom of crowds, we want to know whether there is <strong>consensus</strong> in everyone's measurements.
+        With a wisdom of crowds approach, we hope to see <strong>consensus</strong> in everyone's measurements.
       </p>
       <p>
-        If there is consensus, the measurements will tend to cluster around a single value.
+        <strong>consensus</strong>: measurements tend to cluster around a single value.
       </p>
       <p>
-        If there is not consensus, the measurements will be scattered across a range of values or clustered around more than one value.
+        <strong>no consensus</strong>: measurements are scattered across a range of values or clustered around more than one value.
       </p>
     </div>
   </scaffold-alert>

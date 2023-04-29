@@ -6,7 +6,7 @@
   >
     <div>
       <p>
-        The H-alpha line is the one in the middle that corresponds to the marker. It may have been tempting to choose the tallest line present, but you should always choose the line that aligns with the marker.
+        It may have been tempting to choose the tallest line present, but you should always choose the line that aligns with the marker.
       </p>
     </div>
   </scaffold-alert>

@@ -6,7 +6,7 @@
   >
     <div>
       <p>
-        When you measured the line earlier, you may have noticed that there is actually a trio of lines here. And you might have wondered which of them is the one you should have measured. The tallest one? The middle one?
+        You might have noticed that there is a trio of lines near the H-&#945; marker. And you might have wondered which of them you should have measured. The tallest one? The middle one?
       </p>
 
       <v-btn
@@ -24,7 +24,7 @@
         dense
         color="info darken-1"
       >
-        Many galaxies have this trio of lines. The H-alpha line is the one in the middle that corresponds to the marker. The emission lines to the left and right are cause by nitrogen in the galaxy.
+        Many galaxies have this trio of lines. The H-&#945; line is the one in the middle that corresponds to the marker. The emission lines to the left and right are cause by nitrogen in the galaxy.
       </v-alert>
     </div>
   </scaffold-alert>

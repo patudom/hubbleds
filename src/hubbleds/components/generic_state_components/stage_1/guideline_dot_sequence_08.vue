@@ -20,7 +20,7 @@
             'I am not sure',
             ]"
             :feedbacks="[
-            'Try again. In the zoomed out dot plot, it may have seemed like there was consensus, but when we exclude outliers, the measurements are clustered around more than one velocity value.',
+            'Try again. Make sure you zoom in to where most of the data points are and see if they are clustered around more than one velocity value.',
             'Correct. When we exclude outliers, we see that measurements are clustered around more than one velocity value.',
             'Consider only the range of values that excludes outliers. If measurements are clustered around a single velocity value, there is consensus. If they are clustered around multiple values, there is not consensus.'
             ]" 

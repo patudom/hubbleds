@@ -13,7 +13,7 @@
         id="slideshow-button"
         @click.stop="() => { dialog = true; opened = true }"
       >
-        Dot Plot (Histogram) Tutorial
+        Dot Plot Tutorial
       </v-btn>
     </template>
     <v-card
