@@ -394,7 +394,7 @@ class StageTwo(HubbleStage):
                 viewer.figure.axes[0].label = 'Distance (Mpc)'
             elif viewer in ang_dotplots:
                 viewer.state.x_att = data.id[DB_ANGSIZE_FIELD]
-                viewer.figure.axes[0].label = 'Angular Size (arcminutes))'
+                viewer.figure.axes[0].label = 'Angular Size (arcseconds))'
             viewer.state.hist_n_bin = 75
             viewer.state.alpha = 1
             viewer.state.reset_limits()
