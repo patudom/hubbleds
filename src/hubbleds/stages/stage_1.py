@@ -170,6 +170,7 @@ class StageState(CDSState):
         'dot_seq11',
         'dot_seq12', # go split make second measuremtn or remaining galaxies
         'dot_seq13',
+        'dot_seq14',
         'rem_gal1',
         'ref_dat1',
         'dop_cal6',
@@ -308,9 +309,12 @@ class StageOne(HubbleStage):
         dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer', viewer_label = 'Example Galaxy Measurement')
         dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2', viewer_label = 'Second Measurement')
         dotplot_viewer_3 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_3', viewer_label = 'Dot Plot Graph')
-        dotplot_viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
-        dotplot_viewer_2.toolbar.set_tool_enabled('hubble:towerselect', False)
-        dotplot_viewer_3.toolbar.set_tool_enabled('hubble:towerselect', False)
+
+        ### Disable anything to do with towerselect for now
+        # dotplot_viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
+        # dotplot_viewer_2.toolbar.set_tool_enabled('hubble:towerselect', False)
+        # dotplot_viewer_3.toolbar.set_tool_enabled('hubble:towerselect', False)
+
         dotplot_viewer.toolbar.set_tool_enabled('bqplot:xzoom', False)
         dotplot_viewer_2.toolbar.set_tool_enabled('bqplot:xzoom', False)
         dotplot_viewer_3.toolbar.set_tool_enabled('bqplot:xzoom', False)
@@ -966,8 +970,8 @@ class StageOne(HubbleStage):
 
 
     def _update_viewer_style(self, dark):
-        viewers = ['dotplot_viewer','dotplot_viewer_2']
-        viewer_type = ["histogram","histogram"]
+        viewers = ['dotplot_viewer','dotplot_viewer_2','dotplot_viewer_3']
+        viewer_type = ["histogram","histogram","histogram"]
         theme_name = "dark" if dark else "light"
         for viewer, vtype in zip(viewers, viewer_type):
             viewer = self.get_viewer(viewer)
