@@ -196,6 +196,8 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         extend_tool(self.dotplot_viewer, 'bqplot:home', partial(self.clear_subsets,self.dotplot_viewer))
         extend_tool(self.dotplot_viewer_2, 'bqplot:home', partial(self.clear_subsets,self.dotplot_viewer_2))
         
+        extend_tool(self.dotplot_viewer,'bqplot:home', self.spectrum_viewer.state.reset_limits, activate_before_tool = False)
+        
         extend_tool(self.dotplot_viewer,'hubble:towerselect', 
                     deactivate_cb = partial(self.toggle_tower_select, self.dotplot_viewer), 
                     deactivate_before_tool=True)
