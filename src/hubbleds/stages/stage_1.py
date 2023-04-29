@@ -880,7 +880,7 @@ class StageOne(HubbleStage):
     def add_student_velocity(self, table, *args, **kwargs):
         index = table.index
         data_label = table._glue_data.label
-        if hasattr(self.stage_state.student_vel, '__round__'):
+        if self.stage_state.student_vel is None:
             return
         velocity = round(self.stage_state.student_vel)
         self.update_data_value(data_label, VELOCITY_COMPONENT,
