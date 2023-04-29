@@ -19,7 +19,7 @@
                   <!-- Professional Data stage -->
     <v-row
       class="d-flex align-stretch"
-          v-if="stage_state.indices[stage_state.marker] <= stage_state.indices['sto_fin1']"
+          v-if="stage_state.indices[stage_state.marker] <= stage_state.indices['sto_fin2']"
     >
       <v-col
         cols="12"
@@ -76,8 +76,11 @@
         <guideline-story-finish
           v-if="stage_state.marker == 'sto_fin1'"
           v-intersect.once="scrollIntoView"
-          :state="stage_state"
-          :story_state="story_state"/>
+          :state="stage_state"/>
+        <guideline-story-finish2
+          v-if="stage_state.marker == 'sto_fin2'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"/>
 
       </v-col>
       <v-col
