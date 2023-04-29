@@ -1,5 +1,6 @@
 import ipyvuetify as v
 from pathlib import Path
+from sympy import preview
 from traitlets import Int, Bool, Unicode, List, Instance
 from cosmicds.utils import load_template, extend_tool
 from glue_jupyter.state_traitlets_helpers import GlueState
@@ -36,6 +37,7 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         self.dotplot_viewer = viewers[0]
         self.dotplot_viewer_viewer = viewers[0].viewer
         # self.layer_viewer = viewers[1]
+        self.dotplot_viewer_viewer.add_lines_to_figure()
         
         extend_tool(self.dotplot_viewer_viewer, "bqplot:xzoom", activate_cb=self.on_zoom_active, deactivate_cb=self.on_zoom_deactive)
         
@@ -56,17 +58,23 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         self.dotplot_viewer_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
     
     def vue_activate_selector(self, _data = None):
-        # self.dotplot_viewer_viewer.toolbar.set_tool_enabled("hubble:towerselect", True)
-        self.dotplot_viewer_viewer.show_previous_line(True, True)
-    
-    def on_zoom_active(self, *args, **kwargs):
-        self.vue_removeMeasuringTool()
+        self.dotplot_viewer_viewer.show_previous_line(False, False)
+        self.dotplot_viewer_viewer.add_event_callback(self.dotplot_viewer_viewer._on_click, events = ['click'])
         
-    def on_zoom_deactive(self, *args, **kwargs):
-        self.vue_activateMeasuringTool()
-    
     def vue_activateMeasuringTool(self, _data = None):
         self.dotplot_viewer_viewer.show_line(True, True)
     
     def vue_removeMeasuringTool(self, _data = None):
-        self.dotplot_viewer_viewer.remove_lines_from_figure(line=True, previous_line=True)
+        self.dotplot_viewer_viewer.remove_event_callback( self.dotplot_viewer_viewer._on_click)
+        self.dotplot_viewer_viewer.show_previous_line(False, False)
+        self.dotplot_viewer_viewer.show_line(False, False)
+    
+    
+    def on_zoom_active(self, *args, **kwargs):
+        self.vue_removeMeasuringTool()
+            
+    def on_zoom_deactive(self, *args, **kwargs):
+        self.vue_activateMeasuringTool()
+        if self.step >=3:
+            self.vue_activate_selector()
+
