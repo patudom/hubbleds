@@ -6,8 +6,8 @@ from astropy.coordinates import SkyCoord
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import load_template, API_URL
-from echo import CallbackProperty, add_callback, ignore_callback, callback_property
+from cosmicds.utils import extend_tool, load_template, API_URL
+from echo import CallbackProperty, add_callback, ignore_callback, callback_property, delay_callback
 from traitlets import default, Bool
 
 from ..components import DistanceSidebar, DistanceTool, DosDontsSlideShow
@@ -23,6 +23,7 @@ from numpy import searchsorted
 from bqplot.marks import Scatter
 
 from glue_jupyter.link import link
+from functools import partial
 
 log = logging.getLogger()
 
@@ -409,6 +410,17 @@ class StageTwo(HubbleStage):
         link((dist_dotplots[0].state, 'x_min'), (dist_dotplots[1].state, 'x_min'))
         link((dist_dotplots[0].state, 'x_max'), (dist_dotplots[1].state, 'x_max'))
         
+        def set_x_lim(viewer):
+            xmin = min(min(m.x) for m in viewer.figure.marks if len(m.x))
+            xmax = max(max(m.x) for m in viewer.figure.marks if len(m.x))
+            padding = (xmax-xmin) * 0.05
+            with delay_callback(viewer.state, 'x_min', 'x_max'):
+                viewer.state.x_min = xmin - padding
+                viewer.state.x_max = xmax + padding
+        viewers = dist_dotplots + ang_dotplots
+        for i in range(len(viewers)):
+            extend_tool(viewers[i], 'bqplot:home', partial(set_x_lim,viewers[i]), activate_before_tool= False)
+        
         self._update_viewer_style(dark=self.app_state.dark_mode)
         
     def _on_marker_update(self, old, new):
@@ -656,12 +668,16 @@ class StageTwo(HubbleStage):
             
             v3 = self.get_viewer('dotplot_viewer_dist')
             v4 = self.get_viewer('dotplot_viewer_dist_2')
+            
 
             if index == 0:
                 self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index])
                 self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
+                v1.toolbar.tools['bqplot:home'].activate()
+                v3.toolbar.tools['bqplot:home'].activate()
             if index == 1:
                 self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
+                v4.toolbar.tools['bqplot:home'].activate()
             
             if self.stage_state.marker_after('est_dis4'):
                 self.add_student_distance()
