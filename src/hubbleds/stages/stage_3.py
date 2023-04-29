@@ -401,6 +401,14 @@ class StageTwo(HubbleStage):
             viewer.state.viewer_height = 150
             viewer.layer_artist_for_data(data).state.color = '#787878'
         
+        def d_a(x):
+            return DISTANCE_CONSTANT / x
+        
+        link((dist_dotplots[0].state, 'x_min'), (ang_dotplots[0].state, 'x_max'), d_a, d_a)
+        link((dist_dotplots[0].state, 'x_max'), (ang_dotplots[0].state, 'x_min'), d_a, d_a)
+        link((dist_dotplots[0].state, 'x_min'), (dist_dotplots[1].state, 'x_min'))
+        link((dist_dotplots[0].state, 'x_max'), (dist_dotplots[1].state, 'x_max'))
+        
         self._update_viewer_style(dark=self.app_state.dark_mode)
         
     def _on_marker_update(self, old, new):
