@@ -245,8 +245,12 @@
               :class="stage_state.spec_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
               outlined
             >
-                <jupyter-widget :widget="viewers.dotplot_viewer"/>
-                <jupyter-widget :widget="viewers.dotplot_viewer_2"/>
+                <jupyter-widget :widget="viewers.dotplot_viewer"
+                v-if="stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq13']"
+                />
+                <jupyter-widget :widget="viewers.dotplot_viewer_2"
+                v-if="stage_state.marker == 'dot_seq13'"
+                />
             </v-card>
           </v-col>
         </v-row>
