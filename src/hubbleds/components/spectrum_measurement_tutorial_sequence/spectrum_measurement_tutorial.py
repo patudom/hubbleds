@@ -219,11 +219,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             self.been_opened = True
             self.spectrum_viewer.toolbar.set_tool_enabled("bqplot:home",True)
             
-            # link x-axes
-            link((self.dotplot_viewer.state, 'x_min'), (self.dotplot_viewer_2.state, 'x_min'))
-            link((self.dotplot_viewer.state, 'x_max'), (self.dotplot_viewer_2.state, 'x_max'))
-            link((self.dotplot_viewer_2.state, 'x_min'), (self.spectrum_viewer.state, 'x_min'), self.v2w, self.w2v)
-            link((self.dotplot_viewer_2.state, 'x_max'), (self.spectrum_viewer.state, 'x_max'), self.v2w, self.w2v)
+            
             
             self.example_galaxy_table._glue_data.hub.subscribe(
                 self, NumericalDataChangedMessage,
@@ -245,7 +241,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             
             self.observe(lambda msg: self.plot_measurements(self.example_galaxy_table._glue_data), ['show_first_measurment', 'show_second_measurment'])
             self.observe(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
-            self.observe(self._on_step_change, ['step'])
+            # self.observe(self._on_step_change, ['step'])
             
             self.spectrum_viewer.add_event_callback(
                 callback = lambda event: self._on_viewer_focus(self.spectrum_viewer, event), 
@@ -272,6 +268,33 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         else:
             pass
     
+    
+    def _on_step_change(self, change):
+        # can use this for sequencing steps, an alternative to doing it in javascript
+        old_step = change['old']
+        new_step = change['new']
+        
+        if self.maxStepCompleted >= new_step:
+            self.next_disabled = False
+            return
+        
+        if (new_step in self.disable_next_button):
+            self.print_log('py disable next button step {}'.format(new_step))
+            self.next_disabled = True
+            return
+        
+        if (new_step == 2):
+            self.next_disabled = not self.tutorial_state['show_specviewer']
+            return
+        
+        if (new_step == 6):
+            self.next_disabled = self.tutorial_state['subset_created']
+            if not self.next_disabled:
+                def allow_advance(*args):
+                    self.unobserve(allow_advance, 'subset_created')
+                    self.next_disabled = False
+                self.observe(allow_advance, 'subset_created')
+
     def _on_step_change(self, change):
         # can use this for sequencing steps, an alternative to doing it in javascript
         old_step = change['old']
@@ -306,6 +329,10 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         
         advancing = (self.indices[new] - self.indices[old]) == 1
         
+        if new == 'int_dot1':
+            link((self.spectrum_viewer.state, 'x_min'), (self.dotplot_viewer.state, 'x_min'), self.w2v, self.v2w )
+            link((self.spectrum_viewer.state, 'x_max'), (self.dotplot_viewer.state, 'x_max'), self.w2v, self.v2w)
+        
         if new == 'dot_seq1':
             try:
                 self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_mouse_moved)
@@ -316,25 +343,56 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             except:
                 print_log('on_click not found')
             
+        if new == 'dot_seq2':
+            self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
+            #self.dotplot_viewer.show_previous_line(True, True)
+            #self.dotplot_viewer.show_line(True, True)
+            
+            
         if new == 'dot_seq4':
             self.show_first_measurment = True
             
         
         if new == 'dot_seq5':
-            self.vue_tracking_lines_on()
-            #self.spectrum_viewer.add_event_callback(self.spectrum_viewer._on_mouse_moved, events=['mousemove'])
-            #self.spectrum_viewer.add_event_callback(self.spectrum_viewer._on_click, events=['click'])
-        
-        if new == 'dot_seq6':
-            self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
-            self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", True)
-            def set_active():
-                self.tutorial_state['dot_zoomed'] = True
-            extend_tool(self.dotplot_viewer, "bqplot:xzoom", activate_cb=set_active)
+            self.dotplot_viewer.show_line(True,True)
+            self.dotplot_viewer.show_previous_line()
+            self.dotplot_viewer.add_event_callback(self.dotplot_viewer._on_click, events = ['click'])
+            def activateMeasuringTool(viewer):
+                viewer.show_line(True, True)
+            
+            def activate_selector(viewer):
+                viewer.show_previous_line(False, False)
+                
+            
+            def removeMeasuringTool(viewer):
+                try:
+                    viewer.remove_event_callback(viewer._on_click)
+                except:
+                    pass
+                viewer.show_previous_line(False, False)
+                viewer.show_line(False, False)
+            
+            def on_zoom_active(viewer, *args, **kwargs):
+                removeMeasuringTool(viewer)
+                
+            
+            def on_zoom_deactive(viewer, *args, **kwargs):
+                activateMeasuringTool(viewer)
+                activate_selector(viewer)
+                
+            extend_tool(self.dotplot_viewer, "bqplot:xzoom", 
+                        activate_cb=partial(on_zoom_active, self.dotplot_viewer), 
+                        deactivate_cb=partial(on_zoom_deactive, self.dotplot_viewer))
+            extend_tool(self.dotplot_viewer_2, "bqplot:xzoom", 
+                        activate_cb=partial(on_zoom_active, self.dotplot_viewer_2), 
+                        deactivate_cb=partial(on_zoom_deactive, self.dotplot_viewer_2))
         
         if new == "dot_seq13":
+            self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", True)
+            link((self.spectrum_viewer.state, 'x_min'), (self.dotplot_viewer_2.state, 'x_min'), self.w2v, self.v2w)
+            link((self.spectrum_viewer.state, 'x_max'), (self.dotplot_viewer_2.state, 'x_max'), self.w2v, self.v2w)
             self.show_second_measurment = True
-            self.example_galaxy_table.filter_by(lambda item: item['measurement_number'] == 'second')
+            self.example_galaxy_table.filter_by(None)#lambda item: item['measurement_number'] == 'second')
   
             
             
@@ -390,14 +448,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
     def _on_dotplot_change(self, change = None):
         if change is not None:
             self.add_selector_lines()
-        
- 
-        # y_max = max(self.dotplot_viewer.state.y_max, self.dotplot_viewer_2.state.y_max)
-        # with ignore_callback(self.dotplot_viewer.state, 'y_max'):
-        #     self.dotplot_viewer.state.y_max = y_max
-        # with ignore_callback(self.dotplot_viewer_2.state, 'y_max'):
-        #     self.dotplot_viewer_2.state.y_max = y_max
-        
         self.plot_measurements(self.example_galaxy_table._glue_data) # plots the measurements again
 
         
