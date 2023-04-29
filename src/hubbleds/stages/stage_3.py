@@ -22,6 +22,7 @@ from numpy import searchsorted
 
 from bqplot.marks import Scatter
 
+from glue_jupyter.link import link
 
 log = logging.getLogger()
 
@@ -241,18 +242,16 @@ class StageTwo(HubbleStage):
         self.add_component(DistanceTool(), label="py-distance-tool")
         
         dotplot_viewer_ang = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_ang', viewer_label = 'First Angular Size Measurement')
-        dotplot_viewer_ang_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_ang_2', viewer_label = 'Second Angular Size Measurement')
         
         dotplot_viewer_dist = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_dist', viewer_label = 'First Distance Measurement')
         dotplot_viewer_dist_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_dist_2', viewer_label = 'Second Distance Measurement')
         
         dotplot_viewer_ang._label_text = lambda value: f"{value:.1f} arcmin"
-        dotplot_viewer_ang_2._label_text = lambda value: f"{value:.1f} arcmin"
         
         dotplot_viewer_dist._label_text = lambda value: f"{value:.1f} Mpc"
         dotplot_viewer_dist_2._label_text = lambda value: f"{value:.1f} Mpc"
         
-        for viewer in [dotplot_viewer_ang, dotplot_viewer_ang_2, dotplot_viewer_dist, dotplot_viewer_dist_2]:
+        for viewer in [dotplot_viewer_ang, dotplot_viewer_dist, dotplot_viewer_dist_2]:
             viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
         
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
@@ -264,7 +263,6 @@ class StageTwo(HubbleStage):
         dotplot_viewer_ang.ignore(lambda layer: layer in [second])
         dotplot_viewer_dist.ignore(lambda layer: layer in [second])
         
-        dotplot_viewer_ang_2.ignore(lambda layer: layer in [first])
         dotplot_viewer_dist_2.ignore(lambda layer: layer in [first])
         
         self.setup_dotplot_viewers()
@@ -384,7 +382,7 @@ class StageTwo(HubbleStage):
     def setup_dotplot_viewers(self):
         
         dist_dotplots = [self.get_viewer('dotplot_viewer_dist'), self.get_viewer('dotplot_viewer_dist_2')]
-        ang_dotplots = [self.get_viewer('dotplot_viewer_ang'), self.get_viewer('dotplot_viewer_ang_2')]
+        ang_dotplots = [self.get_viewer('dotplot_viewer_ang')]
         
         data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
         
@@ -647,7 +645,6 @@ class StageTwo(HubbleStage):
             colors = ["#FB5607", "#FB5607"]
             labels = ['First', 'Second']
             v1 = self.get_viewer('dotplot_viewer_ang')
-            v2 = self.get_viewer('dotplot_viewer_ang_2')
             
             v3 = self.get_viewer('dotplot_viewer_dist')
             v4 = self.get_viewer('dotplot_viewer_dist_2')
@@ -656,7 +653,6 @@ class StageTwo(HubbleStage):
                 self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index])
                 self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
             if index == 1:
-                self.plot_measurement(v2, self.stage_state.meas_theta, color = colors[index], label = labels[index])
                 self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
             
             if self.stage_state.marker_after('est_dis4'):
@@ -667,7 +663,6 @@ class StageTwo(HubbleStage):
                     add_callback(v1.state, val , lambda x: self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index]))
                     add_callback(v3.state, val , lambda x: self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
                 if index == 1:
-                    add_callback(v2.state, val , lambda x: self.plot_measurement(v2, self.stage_state.meas_theta, color = colors[index], label = labels[index]))
                     add_callback(v4.state, val , lambda x: self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
             
 
@@ -768,8 +763,8 @@ class StageTwo(HubbleStage):
         self.stage_state.distances_total = distances[distances != None].size
     
     def _update_viewer_style(self, dark):
-        viewers = ['dotplot_viewer_ang','dotplot_viewer_ang_2','dotplot_viewer_dist','dotplot_viewer_dist_2']
-        viewer_type = ["histogram","histogram","histogram","histogram"]
+        viewers = ['dotplot_viewer_ang','dotplot_viewer_dist','dotplot_viewer_dist_2']
+        viewer_type = ["histogram","histogram","histogram"]
         theme_name = "dark" if dark else "light"
         for viewer, vtype in zip(viewers, viewer_type):
             viewer = self.get_viewer(viewer)
