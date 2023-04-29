@@ -165,16 +165,26 @@
         > 
           <jupyter-widget :widget="widgets.example_galaxy_table"/>
         </v-card>
-        <c-spectrum-measurement-tutorial
-          v-if="stage_state.show_meas_tutorial || (stage_state.indices[stage_state.marker] >= stage_state.indices['smt_tut'])"
-          :state="stage_state"
-          @step="(step) => { stage_state.spectrum_tut_state.step = step; console.log('updating step to',step)}"
-          @close="() => { return; }"
-          />
       </v-col>
     </v-row>
 
-<!-- Row for Velocity Dot Plot -->
+    <v-row>
+      <v-col
+        cols="12"
+        lg="6"
+      >
+      </v-col>
+      <v-col
+        cols="12"
+        lg="4"
+      >     
+        <py-dotplot-tutorial-slideshow
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1']"
+        />
+      </v-col>
+    </v-row>
+
+<!-- Row for First Velocity Dot Plot -->
     <v-row>
       <v-col
         cols="12"
@@ -232,24 +242,50 @@
         lg="8"
       >
         <v-row
-          v-if = "stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1']"
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1'] && stage_state.indices[stage_state.marker] != stage_state.indices['dot_seq13']"
         >
           <v-col
             class="py-0"
           >
-            <py-dotplot-tutorial-slideshow
-            v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1']"
-             />
             <v-card
-              :color="stage_state.spec_highlights.includes(stage_state.marker) ? 'info' : 'black'"
-              :class="stage_state.spec_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
               outlined
             >
                 <jupyter-widget :widget="viewers.dotplot_viewer"
-                v-if="stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq13']"
                 />
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+
+
+<!-- Row for 2nd Velocity Dot Plot -->
+    <v-row>
+      <v-col
+        cols="12"
+        lg="4"
+      >
+        <guideline-dot-sequence-14
+          v-if="stage_state.marker === 'dot_seq14'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        lg="8"
+      >
+        <v-row
+          v-if="stage_state.indices[stage_state.marker] == stage_state.indices['dot_seq14']"
+        >
+          <v-col
+            class="py-0"
+          >
+            <v-card
+              outlined
+            >
                 <jupyter-widget :widget="viewers.dotplot_viewer_2"
-                v-if="stage_state.marker == 'dot_seq13'"
+                v-if="stage_state.marker == 'dot_seq14'"
                 />
             </v-card>
           </v-col>
@@ -330,7 +366,7 @@
         />
       </v-col>
       <v-col
-        v-if="stage_state.spec_viewer_reached"
+        v-if="stage_state.spec_viewer_reached && stage_state.indices[stage_state.marker] < stage_state.indices['int_dot1'] || stage_state.indices[stage_state.marker] >= stage_state.indices['dot_seq4'] && stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq14'] "
         cols="12"
         lg="8"
       >

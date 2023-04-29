@@ -136,7 +136,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         self.second_meas_plotted = False
         
         self.first_meas_line = self.add_point(self.dotplot_viewer, x = 0, color = '#FB5607', label = 'first_meas_line')
-        self.second_meas_line = self.add_point(self.dotplot_viewer_2, x = 0, color = '#0000ff', label = 'second_meas_line')
+        self.second_meas_line = self.add_point(self.dotplot_viewer_2, x = 0, color = '#FB5607', label = 'second_meas_line')
         self.first_meas_line.visible = True
         self.second_meas_line.visible = True
         
@@ -171,18 +171,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         for val in ['x_min','x_max','layers']:
             add_callback(self.dotplot_viewer.state, val ,self._on_dotplot_change)
             add_callback(self.dotplot_viewer_2.state, val ,self._on_dotplot_change)
-        
-        
-        # create initial tower selection subsets
-        self.component = self.glue_data.id[self.dotplot_viewer.state.x_att]
-        self.comp_data = self.glue_data[self.component]
-        self.range_subset = None
-        
-        # create the ignorer before creating the subset
-        self.dotplot_viewer.ignore(lambda layer: layer.label == 'selected_tower_2')
-        self.dotplot_viewer_2.ignore(lambda layer: layer.label == 'selected_tower')
-        self.selected_tower = self.create_range_subsets(self.dotplot_viewer, self.glue_data, 'selected_tower')
-        self.selected_tower_2 = self.create_range_subsets(self.dotplot_viewer_2, self.glue_data, 'selected_tower_2')
 
         # for viewer in [self.dotplot_viewer, self.dotplot_viewer_2]:
         #     for subset in [self.selected_tower, self.selected_tower_2]:
@@ -197,13 +185,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         extend_tool(self.dotplot_viewer_2, 'bqplot:home', partial(self.clear_subsets,self.dotplot_viewer_2))
         
         extend_tool(self.dotplot_viewer,'bqplot:home', self.spectrum_viewer.state.reset_limits, activate_before_tool = False)
-        
-        extend_tool(self.dotplot_viewer,'hubble:towerselect', 
-                    deactivate_cb = partial(self.toggle_tower_select, self.dotplot_viewer), 
-                    deactivate_before_tool=True)
-        extend_tool(self.dotplot_viewer_2,'hubble:towerselect', 
-                    deactivate_cb = partial(self.toggle_tower_select,self.dotplot_viewer_2), 
-                    deactivate_before_tool=True)
         
         # run through steps to open run necessary setup calls in the vue file
         for i in range(self.maxStepCompleted):
@@ -334,6 +315,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         if new == 'int_dot1':
             link((self.spectrum_viewer.state, 'x_min'), (self.dotplot_viewer.state, 'x_min'), self.w2v, self.v2w )
             link((self.spectrum_viewer.state, 'x_max'), (self.dotplot_viewer.state, 'x_max'), self.w2v, self.v2w)
+            self.show_first_measurment = True
         
         if new == 'dot_seq1':
             try:
@@ -349,10 +331,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
             #self.dotplot_viewer.show_previous_line(True, True)
             #self.dotplot_viewer.show_line(True, True)
-            
-            
-        if new == 'dot_seq4':
-            self.show_first_measurment = True
             
         
         if new == 'dot_seq5':
@@ -390,17 +368,16 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                         deactivate_cb=partial(on_zoom_deactive, self.dotplot_viewer_2))
         
         if new == "dot_seq13":
+            self.example_galaxy_table.filter_by(None)#lambda item: item['measurement_number'] == 'second')
+    
+        if new == "dot_seq14":
             self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", True)
             link((self.spectrum_viewer.state, 'x_min'), (self.dotplot_viewer_2.state, 'x_min'), self.w2v, self.v2w)
             link((self.spectrum_viewer.state, 'x_max'), (self.dotplot_viewer_2.state, 'x_max'), self.w2v, self.v2w)
             self.show_second_measurment = True
             self.example_galaxy_table.filter_by(None)#lambda item: item['measurement_number'] == 'second')
-  
-            
-            
-        
-    
-    
+
+
     def _on_viewer_focus(self, viewer, event = {'event': None}):
         if event['event'] == 'mouseenter':
             # viewer.line.visible = True
@@ -469,30 +446,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         y_min, y_max = viewer.state.y_min, viewer.state.y_max
         frac = (1 - frac) / 2 if frac > 0 else 0
         return y_min + frac * (y_max - y_min), y_max - frac * (y_max - y_min)
-    
-    
-    
-    def toggle_tower_select(self,viewer):
-        x = viewer.toolbar.tools['hubble:towerselect'].x
-        if x is None:
-            self.subset_created = False
-            return
-        
-        which = 'second' if viewer == self.dotplot_viewer_2 else 'first'
-        
-        # get label of measurement layer (works before other layer is already filtered out by ignore)
-        layer = next((l for l in viewer.state.layers if 'measurement' in l.layer.label),None)
-        layer_label = layer.layer.label if layer is not None else None  
-        
-        tower_subset = self.selected_tower if which == 'first' else self.selected_tower_2
-
-        tool_subset = viewer.toolbar.tools['hubble:towerselect'].subset_state
-        meas_subset = self.get_data_subset_by_name(self.glue_data, layer_label)
-        
-        tower_subset.subset_state = tool_subset & meas_subset.subset_state
-        
-        self.subset_created = True
-    
         
     def v2w(self, v):
         # convert v from velocity (km/s) to wavelength (Angstroms)
@@ -722,12 +675,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                 viewer.remove_event_callback(viewer._on_click)
             except:
                 pass
-            
-
-    def vue_turn_on_tower_selector(self, _data = None):
-        # enable the tower selector tool
-        self.dotplot_viewer.toolbar.set_tool_enabled('hubble:towerselect', True)
-        self.dotplot_viewer_2.toolbar.set_tool_enabled('hubble:towerselect', True)
     
     def vue_on_close(self, data = None):
         # need to clean up the spectrum viewer before returning to the main page
