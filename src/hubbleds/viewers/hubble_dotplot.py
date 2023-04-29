@@ -24,23 +24,26 @@ class HubbleDotPlotViewer(LineHoverViewerMixin,BqplotDotPlotView):
     def _label_text(value):
         return f"{value:.0f} km/s"
     
+    def add_marks(self, new_marks):
+        marks = []
+        for new_mark in new_marks:
+            if new_mark not in self.figure.marks:
+                marks += [new_mark]
+        
+        if len(marks) > 0:
+            self.figure.marks = self.figure.marks + marks
+        
     def show_line(self, show = True, show_label = False):
         self.line.visible = show
         self.line_label.visible = show_label
         lines = [self.line, self.line_label]
-        marks = [m for m in self.figure.marks if m not in lines]
-        marks = [self.line] + marks
-        marks = [self.line_label] + marks
-        self.figure.marks = marks
+        self.add_marks(lines)
         
     def show_previous_line(self, show = True, show_label = True):
         self.previous_line.visible = False
         self.previous_line_label.visible = False
         lines = [self.previous_line, self.previous_line_label]
-        marks = [m for m in self.figure.marks if m not in lines]
-        marks = [self.previous_line] + marks
-        marks = [self.previous_line_label] + marks
-        self.figure.marks = marks
+        self.add_marks(lines)
     
     def add_lines_to_figure(self):
         self.show_line(show = self.line.visible, show_label = self.line_label.visible)
