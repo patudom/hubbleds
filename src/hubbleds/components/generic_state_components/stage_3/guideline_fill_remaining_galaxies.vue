@@ -1,13 +1,10 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Estimate Distance"
+    next-text="stage 4"
     @back="state.marker = 'rep_rem1'"
     @next="state.stage_3_complete = true;"
-    :can-advance="(state) => state.distances_total == 5"
+    :can-advance="(state) => state.distances_total === 5"
     :state="state"
   >
     <template #before-next>

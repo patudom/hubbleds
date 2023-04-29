@@ -1,15 +1,11 @@
 <template>
   <scaffold-alert
-      class="mb-4 mx-auto"
-      color="info"
-      elevation="6"
-      max-width="800"
       title-text="Velocity Calculation"
-      :can-advance="(state) => state.velocities_total === 5"
       next-text="stage 2"
-      :state="state"
       @back="() => { state.marker_backward = 1; }"
-      @next="() => { state.completed = true; }"
+      @next="() => { state.stage_1_complete = true; }"
+      :can-advance="(state) => state.velocities_total === 5"
+      :state="state"
   >
     <template #before-next>
       Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-run-fast</v-icon></v-btn> button
