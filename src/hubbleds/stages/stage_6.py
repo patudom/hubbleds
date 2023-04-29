@@ -1,6 +1,8 @@
 from os.path import join
 from pathlib import Path
 
+from numpy import where, round
+
 from echo import CallbackProperty, add_callback, callback_property
 from glue.core.message import NumericalDataChangedMessage
 from glue.core import Subset
@@ -11,7 +13,7 @@ from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import (RepeatedTimer, extend_tool, load_template,
                             update_figure_css)
-from hubbleds.utils import IMAGE_BASE_URL
+from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 
 from ..data.styles import load_style
 from ..data_management import *
@@ -152,7 +154,9 @@ class StageFive(HubbleStage):
         self.hub.subscribe(self, NumericalDataChangedMessage,
                            filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
                            handler=self._on_class_data_update)
-
+        if self.story_state.has_best_fit_galaxy:
+            self._update_hypgal_info()
+        
     def setup_prodata_viewer(self):
         # load the prodata_viewer
         prodata_viewer = self.get_viewer("prodata_viewer")
@@ -279,5 +283,22 @@ class StageFive(HubbleStage):
                 # show all the ages
                 prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             
+            if self.stage_state.marker_reached('pro_dat1'):
+                self._update_hypgal_info()
             
+    def _update_hypgal_info(self):
+        data = self.get_data(STUDENT_DATA_LABEL)
+        indices = where(data[NAME_COMPONENT] == BEST_FIT_GALAXY_NAME)
+        if (indices[0].size > 0):
+            index = indices[0][0]
+            vel = data[VELOCITY_COMPONENT][index]
+            dist = data[DISTANCE_COMPONENT][index]
+            self.stage_state.our_age = (AGE_CONSTANT * dist/vel)
+        else:
+            vel = round(data[VELOCITY_COMPONENT],0)
+            dist = round(data[DISTANCE_COMPONENT], 0)
+            slope = sum(dist * vel) / sum(dist * dist) # least squares fit w/ no intercept
+            self.stage_state.our_age = AGE_CONSTANT / slope
+            
+
      
