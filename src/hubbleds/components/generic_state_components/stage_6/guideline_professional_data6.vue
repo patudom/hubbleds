@@ -31,11 +31,11 @@
           score-tag="pro-dat6"
         >
         </mc-radiogroup>
-      <v-card color="secondary">
+      <!-- <v-card color="secondary">
         <v-card-text>
           It's possible this card is giving incorrect feedback. Talk to a neighbor or instructor if you are unsure.
         </v-card-text>
-      </v-card>
+      </v-card> -->
       </v-container>
     </div>
   </guideline-professional-data>
