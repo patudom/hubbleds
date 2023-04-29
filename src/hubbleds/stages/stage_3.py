@@ -800,13 +800,9 @@ class StageTwo(HubbleStage):
     def current_table_data_label(self):
         return self.current_table._glue_data.label
 
-    @property
-    def last_guideline(self):
-        return self.get_component('guideline_fill_remaining_galaxies')
-
     def _on_stage_complete(self, complete):
         if complete:
-            self.story_state.stage_index = 4
+            self.story_state.stage_index = self.story_state.stage_index + 1
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first

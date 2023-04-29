@@ -162,8 +162,7 @@ class StageThree(HubbleStage):
         super().__init__(*args, **kwargs)
         
         add_callback(self.stage_state, 'stage_4_complete',
-                     self._on_stage_4_complete)
-
+                     self._on_stage_complete)
 
         link((self.story_state, 'enough_students_ready'), (self.stage_state, 'stage_ready'))
 
@@ -473,8 +472,8 @@ class StageThree(HubbleStage):
         if value and not linefit_tool.active:
             linefit_tool.activate()
     
-    def _on_stage_4_complete(self, change):
-        if change:
+    def _on_stage_complete(self, complete):
+        if complete:
             self.story_state.stage_index =  self.story_state.stage_index + 1
 
             # We need to do this so that the stage will be moved forward every

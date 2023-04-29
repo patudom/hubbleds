@@ -220,7 +220,7 @@ class StageFour(HubbleStage):
         self._setup_complete = False
     
         add_callback(self.stage_state, 'stage_5_complete',
-                     self._on_stage_5_complete)
+                     self._on_stage_complete)
 
         add_callback(self.story_state, 'responses', self.age_calc_update_guesses)
 
@@ -647,9 +647,9 @@ class StageFour(HubbleStage):
         if value and not linefit_tool.active:
             linefit_tool.activate()
     
-    def _on_stage_5_complete(self, change):
-        if change:
-            self.story_state.stage_index = 6
+    def _on_stage_complete(self, complete):
+        if complete:
+            self.story_state.stage_index = self.story_state.stage_index + 1
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first

@@ -63,7 +63,7 @@ class StageState(CDSState):
     obswaves_total = CallbackProperty(0)
     velocities_total = CallbackProperty(0)
     zoom_tool_activated = CallbackProperty(False)
-    completed = CallbackProperty(False)
+    stage_1_complete = CallbackProperty(False)
     show_meas_tutorial = CallbackProperty(False)
     
     
@@ -421,8 +421,7 @@ class StageOne(HubbleStage):
         # callback places velocity value in table
         add_callback(self.stage_state, 'student_vel',
                      lambda *args, **kwargs: self.add_student_velocity(example_galaxy_table, *args, **kwargs))
-        add_callback(self.stage_state, 'completed',
-                     self.complete_stage_1)
+        add_callback(self.stage_state, 'stage_1_complete', self._on_stage_complete)
         
         def break_this(x):
             print('changed show_galaxy_table to', x)
@@ -672,10 +671,6 @@ class StageOne(HubbleStage):
             self.selection_tool.select_galaxy(galaxy)
     
     #@print_function_name
-    def complete_stage_1(self, msg):
-        with delay_callback(self.story_state, 'stage_index'):
-            self.story_state.step_complete = True
-            self.story_state.stage_index = 2
 
     def vue_fill_data(self, _args=None):
         self._filling_data = True
@@ -1005,3 +1000,22 @@ class StageOne(HubbleStage):
         self.story_state.load_spectrum_data(name, spectype)
         data = self.get_data(name.split(".")[0])
         self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
+
+    def _on_stage_complete(self, complete):
+        if complete:
+            self.story_state.stage_index = self.story_state.stage_index + 1
+            print("end Stage 1. stage_state.stage_1_complete value after last guideline:", self.stage_state.stage_1_complete)
+
+            # We need to do this so that the stage will be moved forward every
+            # time the button is clicked, not just the first
+            self.stage_state.stage_1_complete = False
+
+            print("end Stage 1. stage_state.stage_1_complete value after reinitializing to false:", self.stage_state.stage_1_complete)
+
+    def vue_print_state(self, _args=None):
+        print("stage state:")
+        print(self.stage_state)
+        print("   ")
+        print("story state:")
+        print(self.story_state)
+
