@@ -319,11 +319,6 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
-        <!-- <guideline-open-spectrum-measurement-tutorial
-          v-if="stage_state.marker === 'osm_tut' || stage_state.marker === 'smt_tut'"
-          v-intersect.once="scrollIntoView"
-          :state="stage_state"
-        /> -->
         <guideline-remaining-gals
           v-if="stage_state.marker === 'rem_gal1'"
           v-intersect.once="scrollIntoView"

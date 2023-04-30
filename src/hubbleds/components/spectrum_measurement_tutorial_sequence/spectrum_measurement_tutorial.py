@@ -251,58 +251,9 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         else:
             pass
     
-    
     def _on_step_change(self, change):
-        # can use this for sequencing steps, an alternative to doing it in javascript
-        old_step = change['old']
-        new_step = change['new']
-        
-        if self.maxStepCompleted >= new_step:
-            self.next_disabled = False
-            return
-        
-        if (new_step in self.disable_next_button):
-            self.print_log('py disable next button step {}'.format(new_step))
-            self.next_disabled = True
-            return
-        
-        if (new_step == 2):
-            self.next_disabled = not self.tutorial_state['show_specviewer']
-            return
-        
-        if (new_step == 6):
-            self.next_disabled = self.tutorial_state['subset_created']
-            if not self.next_disabled:
-                def allow_advance(*args):
-                    self.unobserve(allow_advance, 'subset_created')
-                    self.next_disabled = False
-                self.observe(allow_advance, 'subset_created')
-
-    def _on_step_change(self, change):
-        # can use this for sequencing steps, an alternative to doing it in javascript
-        old_step = change['old']
-        new_step = change['new']
-        
-        if self.maxStepCompleted >= new_step:
-            self.next_disabled = False
-            return
-        
-        if (new_step in self.disable_next_button):
-            self.print_log('py disable next button step {}'.format(new_step))
-            self.next_disabled = True
-            return
-        
-        if (new_step == 2):
-            self.next_disabled = not self.tutorial_state['show_specviewer']
-            return
-        
-        if (new_step == 6):
-            self.next_disabled = self.tutorial_state['subset_created']
-            if not self.next_disabled:
-                def allow_advance(*args):
-                    self.unobserve(allow_advance, 'subset_created')
-                    self.next_disabled = False
-                self.observe(allow_advance, 'subset_created')
+        # stubb
+        pass
     
     def reached(self, check, current):
         return self.indices[current] >= self.indices[check]
@@ -641,12 +592,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
     
     # vue callable functions
     
-    def vue_enable_zoom_tool(self, data=None):
-        self.zoom_tool_activated = not self.zoom_tool_activated
-        self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", self.zoom_tool_activated)
-        self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", self.zoom_tool_activated)
-  
-  
+
     def vue_set_x_axis_limits(self, data = None):
         self.dotplot_viewer.state.x_min = data['xmin']
         self.dotplot_viewer.state.x_max = data['xmax']
@@ -685,15 +631,15 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                self.spec_view_second_label
                ]
         marks = [m for m in self.spectrum_viewer.figure.marks if m not in marks_to_remove]
-        self.spectrum_viewer.figure.marks = marks
+        for mark in marks:
+            mark.visible = False
+        # self.spectrum_viewer.figure.marks = marks
         self.spectrum_viewer.line.visible = True
         self.spectrum_viewer.line_label.visible = True
-        self.unobserve(self._on_data_change, ['show_first_measurment', 'show_second_measurment'])
-        self.unobserve(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
-        self.unobserve(self.vue_enable_zoom_tool, 'zoom_tool_enabled')
         try:
             self.spectrum_viewer.remove_event_callback(self._update_selector_tool_sv)
         except:
+            print_log('could not remove _update_selector_tool_sv callback')
             pass
 
 
@@ -707,10 +653,6 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         
     def vue_on_reopen(self):
         self.plot_measurements(self.example_galaxy_table._glue_data)
-        # reconnect the callbacks
-        self.observe(self._on_data_change, ['show_first_measurment', 'show_second_measurment'])
-        self.observe(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
-        self.observe(self.vue_enable_zoom_tool, 'zoom_tool_enabled')
         self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
         
 
