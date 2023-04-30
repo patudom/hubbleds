@@ -269,10 +269,12 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             self.show_first_measurment = True
         
         if new == 'dot_seq1':
-            try:
-                self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_mouse_moved)
-            except:
-                print_log('on_mouse_moved not found')
+            # self.spectrum_viewer.show_line = False
+            # self.spectrum_viewer.show_previous_line = False
+            # try:
+            #     self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_mouse_moved)
+            # except:
+            #     print_log('on_mouse_moved not found')
             try:
                 self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_click) # turns on measuring interaction
             except:
@@ -280,26 +282,29 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             
         if new == 'dot_seq2':
             self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
-            #self.dotplot_viewer.show_previous_line(True, True)
-            #self.dotplot_viewer.show_line(True, True)
             
         
         if new == 'dot_seq5':
-            self.dotplot_viewer.show_line(True,True)
-            self.dotplot_viewer.show_previous_line()
-            self.dotplot_viewer.add_event_callback(self.dotplot_viewer._on_click, events = ['click'])
+            self.show_selector_lines = True
+            for viewer in [self.dotplot_viewer, self.dotplot_viewer_2]:
+                viewer.show_line(True,True)
+                viewer.show_previous_line() # just adds the line, clicking makes it visible
+                viewer.add_event_callback(viewer._on_click, events = ['click'])
+            self.spectrum_viewer.line.visible = True
+            self.spectrum_viewer.line_label.visible = True
+
+            self.spectrum_viewer.toolbar.active_tool = None # make sure it is inactive before adding callback
+            self.spectrum_viewer.add_event_callback(self.spectrum_viewer._on_click, events = ['click'])
+            # self.spectrum_viewer.add_event_callback(self.spectrum_viewer._on_mouse_moved, events = ['mousemove'])
+            
             def activateMeasuringTool(viewer):
                 viewer.show_line(True, True)
-            
+
             def activate_selector(viewer):
                 viewer.show_previous_line(False, False)
                 
             
             def removeMeasuringTool(viewer):
-                try:
-                    viewer.remove_event_callback(viewer._on_click)
-                except:
-                    pass
                 viewer.show_previous_line(False, False)
                 viewer.show_line(False, False)
             
