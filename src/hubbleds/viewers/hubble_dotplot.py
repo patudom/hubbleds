@@ -11,6 +11,11 @@ class HubbleDotPlotViewerState(LineHoverStateMixin,DotPlotViewerState):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+    
+    def reset_limits(self):
+        DotPlotViewerState.reset_limits(self)
+        # LineHoverStateMixin.reset_limits(self)
+    
         
 
 class HubbleDotPlotViewer(LineHoverViewerMixin,BqplotDotPlotView):
