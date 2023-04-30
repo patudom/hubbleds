@@ -28,6 +28,13 @@ class SpectrumViewerState(LineHoverStateMixin, ScatterViewerState):
     def ymax_factor(self):
         return self._YMAX_FACTOR
 
+    def _reset_y_limits(self):
+        with delay_callback(self, 'y_min', 'y_max'):
+            ymin, ymax = self.y_min, self.y_max
+            super()._reset_y_limits()
+            self.y_max = self._YMAX_FACTOR * self.y_max
+            self.resolution_y *= (self.y_max - self.y_min) / (ymax - ymin)
+
     def reset_limits(self):
         with delay_callback(self, 'x_min', 'x_max', 'y_min', 'y_max'):
             xmin, xmax = self.x_min, self.x_max
