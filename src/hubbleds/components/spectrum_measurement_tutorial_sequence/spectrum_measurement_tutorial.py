@@ -632,7 +632,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                self.spec_view_first_label, 
                self.spec_view_second_label
                ]
-        marks = [m for m in self.spectrum_viewer.figure.marks if m not in marks_to_remove]
+        marks = [m for m in self.spectrum_viewer.figure.marks if m in marks_to_remove]
         for mark in marks:
             mark.visible = False
         # self.spectrum_viewer.figure.marks = marks
