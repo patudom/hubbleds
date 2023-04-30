@@ -309,7 +309,7 @@ class StageFive(HubbleStage):
             vel = round(data[VELOCITY_COMPONENT],0)
             dist = round(data[DISTANCE_COMPONENT], 0)
             slope = sum(dist * vel) / sum(dist * dist) # least squares fit w/ no intercept
-            self.stage_state.our_age = AGE_CONSTANT / slope
+            self.stage_state.our_age = round(AGE_CONSTANT / slope, 0)
             
 
     def set_class_age(self):
