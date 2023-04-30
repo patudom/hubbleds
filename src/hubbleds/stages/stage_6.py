@@ -28,6 +28,7 @@ class StageState(CDSState):
 
     hst_age = CallbackProperty(HST_KEY_AGE)
     our_age = CallbackProperty(0)
+    class_age = CallbackProperty(0)
 
     max_prodata_index = CallbackProperty(0)
     
@@ -155,7 +156,9 @@ class StageFive(HubbleStage):
                            filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
                            handler=self._on_class_data_update)
         if self.story_state.has_best_fit_galaxy:
-            self._update_hypgal_info()
+            self.set_our_age()
+        
+        self.set_class_age()
         
     def setup_prodata_viewer(self):
         # load the prodata_viewer
@@ -239,9 +242,11 @@ class StageFive(HubbleStage):
         prodata_viewer.state.reset_limits()
     
     def _on_class_data_update(self, *args):
+        self.set_class_age()
         self.reset_viewer_limits()
     
     def _on_student_data_update(self, *args):
+        self.set_our_age()
         self.reset_viewer_limits()
     
     def _on_marker_update(self, old, new):
@@ -284,10 +289,15 @@ class StageFive(HubbleStage):
                 prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             
             if self.stage_state.marker_reached('pro_dat1'):
+                self.set_class_age()
+                self.set_our_age()
+
     @staticmethod
     def linear_slope(x, y):
         # returns the slope, m,  of y(x) = m*x
         return sum(x * y) / sum(x * x)
+
+    def set_our_age(self):
         data = self.get_data(STUDENT_DATA_LABEL)
         indices = where(data[NAME_COMPONENT] == BEST_FIT_GALAXY_NAME)
         if (indices[0].size > 0):
@@ -302,4 +312,12 @@ class StageFive(HubbleStage):
             self.stage_state.our_age = AGE_CONSTANT / slope
             
 
-     
+    def set_class_age(self):
+        data = self.get_data(CLASS_DATA_LABEL)
+        vel = data[VELOCITY_COMPONENT]
+        dist = data[DISTANCE_COMPONENT]
+        # only accept rows where both velocity and distance exist
+        indices = where((vel != 0) & (vel is not None) & (dist != 0) & (dist is not None))
+        if (indices[0].size > 0):
+            slope = self.linear_slope(dist[indices], vel[indices])
+            self.stage_state.class_age = round(AGE_CONSTANT / slope, 2)
