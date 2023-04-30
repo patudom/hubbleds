@@ -30,6 +30,7 @@ DISTANCE_CONSTANT = round(
 
 AGE_CONSTANT = round( 1.e6 * u.pc.to(u.km)/ (1e9 * u.yr.to(u.s)) / 10  ) * 10 # t = d/v
 
+HST_KEY_AGE = 12.79687910  # (1/H_0) in Gyr
 # Both in angstroms
 H_ALPHA_REST_LAMBDA = 6565  # SDSS calibrates to wavelengths in a vacuum
 MG_REST_LAMBDA = 5172  # The value used by SDSS is actually 5176.7, but that wavelength aligns with an upward bump, so we are adjusting it to 5172 to avoid confusing students. Ziegler & Bender 1997 uses lambda_0 ~ 5170, so our choice is justifiable.

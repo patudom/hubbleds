@@ -13,7 +13,7 @@ from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import (RepeatedTimer, extend_tool, load_template,
                             update_figure_css)
-from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
+from hubbleds.utils import HST_KEY_AGE, IMAGE_BASE_URL, AGE_CONSTANT
 
 from ..data.styles import load_style
 from ..data_management import *
@@ -26,7 +26,7 @@ class StageState(CDSState):
     marker = CallbackProperty("")
     indices = CallbackProperty({})
 
-    hst_age = CallbackProperty(13)
+    hst_age = CallbackProperty(HST_KEY_AGE)
     our_age = CallbackProperty(0)
 
     max_prodata_index = CallbackProperty(0)
