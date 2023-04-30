@@ -249,6 +249,12 @@ class StageFive(HubbleStage):
         self.set_our_age()
         self.reset_viewer_limits()
     
+    def set_layers(self, labels, visible):
+        prodata_viewer = self.get_viewer("prodata_viewer")
+        for label in labels:
+            layer = prodata_viewer.layer_artist_for_data(self.get_data(label))
+            layer.state.visible = visible
+    
     def _on_marker_update(self, old, new):
         
         markers = self.stage_state.markers
@@ -283,7 +289,10 @@ class StageFive(HubbleStage):
                 prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
                 if not prodata_viewer.toolbar.tools["hubble:linefit"].active:
                     prodata_viewer.toolbar.tools["hubble:linefit"].activate()
-            
+                self.set_layers([HUBBLE_1929_DATA_LABEL, STUDENT_DATA_LABEL], visible = False)
+                self.set_layers([HUBBLE_KEY_DATA_LABEL, CLASS_DATA_LABEL], visible = True)
+
+                
             elif new == 'pro_dat8':
                 # show all the ages
                 prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
