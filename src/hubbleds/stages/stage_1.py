@@ -452,13 +452,7 @@ class StageOne(HubbleStage):
         add_callback(self.stage_state, 'completed',
                      self.complete_stage_1)
         
-        def break_this(x):
-            print('changed show_galaxy_table to', x)
-            # if x:
-            #    raise Exception('break this')
-        add_callback(self.stage_state, 'show_galaxy_table',break_this)
-        add_callback(self.stage_state, 'show_example_galaxy_table',lambda x: print_log('changed show_example_galaxy_table to', x))
-        add_callback(self.stage_state, 'show_meas_tutorial', lambda x: print_log('changed show_meas_tutorial to', x))
+
 
         # Callbacks
         def update_count(change):
@@ -654,8 +648,6 @@ class StageOne(HubbleStage):
         
         # activate the dot plot sequence stuff
         if self.stage_state.marker_reached('int_dot1'):
-            print_log(f'int_dot1 reached and random state variable set from {self.stage_state.dot_zoomed} to False')
-            self.stage_state.dot_zoomed = False
             if (not self.spectrum_measurement_tutorial.been_opened) and self.stage_state.marker_before('rem_gal1'):
                 self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
          
