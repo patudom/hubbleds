@@ -65,7 +65,11 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         self.dotplot_viewer_viewer.show_line(True, True)
     
     def vue_removeMeasuringTool(self, _data = None):
-        self.dotplot_viewer_viewer.remove_event_callback( self.dotplot_viewer_viewer._on_click)
+        try:
+            # try to remove callback if it exists
+            self.dotplot_viewer_viewer.remove_event_callback( self.dotplot_viewer_viewer._on_click)
+        except KeyError:
+            pass
         self.dotplot_viewer_viewer.show_previous_line(False, False)
         self.dotplot_viewer_viewer.show_line(False, False)
     
