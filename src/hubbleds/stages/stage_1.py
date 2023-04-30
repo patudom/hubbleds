@@ -318,7 +318,7 @@ class StageOne(HubbleStage):
         dotplot_viewer.toolbar.set_tool_enabled('bqplot:xzoom', False)
         dotplot_viewer_2.toolbar.set_tool_enabled('bqplot:xzoom', False)
         dotplot_viewer_3.toolbar.set_tool_enabled('bqplot:xzoom', False)
-        
+        dotplot_viewer_3.toolbar.set_tool_enabled('bqplot:home', False)
                 
         #     HubbleHistogramView, label="dotplot_viewer")
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
@@ -1065,12 +1065,10 @@ class StageOne(HubbleStage):
         self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
 
     def fill_table(self, table, tool=None):
-        print("in fill_table")
         self.update_data_value(table._glue_data.label, MEASWAVE_COMPONENT, 6830, 0) 
         self.update_data_value(table._glue_data.label, VELOCITY_COMPONENT, 12130, 0)
 
     def vue_fill_table(self, _args):
-        print("in vue_fill_table")
         self.fill_table(self.example_galaxy_table)
     
     

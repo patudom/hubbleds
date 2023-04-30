@@ -35,13 +35,15 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
     def vue_home_add_line(self, _data = None):
         f = partial(self.dotplot_viewer_viewer.add_lines_to_figure, add_line = True, add_previous_line = False)
         extend_tool(self.dotplot_viewer_viewer, "bqplot:home", activate_cb=f, activate_before_tool=False)
+
     def vue_home_add_previous_line(self, _data = None):
         f = partial(self.dotplot_viewer_viewer.add_lines_to_figure, add_line = False, add_previous_line = True)
         extend_tool(self.dotplot_viewer_viewer, "bqplot:home", activate_cb=f, activate_before_tool=False)
     
     def vue_activate_zoom_tool(self, _data = None):
         self.dotplot_viewer_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
-    
+        self.dotplot_viewer_viewer.toolbar.set_tool_enabled("bqplot:home", True)
+
     def vue_activate_selector(self, _data = None):
         self.dotplot_viewer_viewer.show_previous_line(False, False)
         self.dotplot_viewer_viewer.add_event_callback(self.dotplot_viewer_viewer._on_click, events = ['click'])
