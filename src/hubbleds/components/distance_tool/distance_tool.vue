@@ -24,7 +24,7 @@
         Flag galaxy as missing image
       </v-tooltip>
 
-      <v-btn icon>
+      <v-btn v-if="false" icon>
         <v-icon>mdi-information-outline</v-icon>
       </v-btn>
     </v-toolbar>

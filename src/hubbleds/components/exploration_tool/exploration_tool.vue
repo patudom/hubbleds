@@ -37,7 +37,9 @@
               Data Tool and Imagery credits
             </v-card-title>
             <v-card-text>
-              lorem ipsum
+              <p>
+                This WorldWideTelescope tool displays the Digitized Sky Survey which combines all-sky photographic surveys from the Palomar and UK Schmidt telescopes.
+              </p>
             </v-card-text>
             <v-card-actions>
                <v-spacer></v-spacer>
