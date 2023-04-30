@@ -827,6 +827,9 @@ class StageOne(HubbleStage):
         z = galaxy["z"]
         self.story_state.update_data(SPECTRUM_DATA_LABEL, spec_data)
         self.update_spectrum_viewer(name, z,  table )
+        
+        if self.stage_state.marker_reached('cho_row1'):
+            self.stage_state.spec_viewer_reached = True
 
         if self.stage_state.marker == 'cho_row1':
             self.stage_state.spec_viewer_reached = True
