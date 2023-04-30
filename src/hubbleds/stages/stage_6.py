@@ -284,9 +284,10 @@ class StageFive(HubbleStage):
                 prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             
             if self.stage_state.marker_reached('pro_dat1'):
-                self._update_hypgal_info()
-            
-    def _update_hypgal_info(self):
+    @staticmethod
+    def linear_slope(x, y):
+        # returns the slope, m,  of y(x) = m*x
+        return sum(x * y) / sum(x * x)
         data = self.get_data(STUDENT_DATA_LABEL)
         indices = where(data[NAME_COMPONENT] == BEST_FIT_GALAXY_NAME)
         if (indices[0].size > 0):
