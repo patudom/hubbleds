@@ -17,8 +17,23 @@
         >
           State
         </v-btn>
+        <v-btn
+          color="error"
+          class="black--text"
+          @click="() => {
+            stage_state.marker = 'che_mea1';
+            stage_state.spec_viewer_reached = true;
+            fill_table();
+          }"
+        >
+          Jump
+        </v-btn>
         Marker: {{ stage_state.marker }}
       </v-col>
+      <v-col>
+            <py-dotplot-tutorial-slideshow
+             />
+            </v-col>
     </v-row>
 
     <v-row>
@@ -113,6 +128,21 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
+        <guideline-check-measurement
+          v-if="stage_state.marker === 'che_mea1'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-12
+          v-if="stage_state.marker === 'dot_seq12'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-13
+          v-if="stage_state.marker === 'dot_seq13'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
       </v-col>
       <v-col
         cols="12"
@@ -135,14 +165,135 @@
         > 
           <jupyter-widget :widget="widgets.example_galaxy_table"/>
         </v-card>
-        <c-spectrum-measurement-tutorial
-          v-if="stage_state.show_meas_tutorial || (stage_state.indices[stage_state.marker] >= stage_state.indices['smt_tut'])"
-          :state="stage_state"
-          @step="(step) => { stage_state.spectrum_tut_state.step = step; console.log('updating step to',step)}"
-          @close="() => { return; }"
-          />
       </v-col>
     </v-row>
+
+    <v-row>
+      <v-col
+        cols="12"
+        lg="6"
+      >
+      </v-col>
+      <v-col
+        cols="12"
+        lg="4"
+      >     
+        <py-dotplot-tutorial-slideshow
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1']"
+        />
+      </v-col>
+    </v-row>
+
+<!-- Row for First Velocity Dot Plot -->
+    <v-row>
+      <v-col
+        cols="12"
+        lg="4"
+      >
+        <guideline-intro-dotplot
+          v-if="stage_state.marker === 'int_dot1'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-01
+          v-if="stage_state.marker === 'dot_seq1'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-02
+          v-if="stage_state.marker === 'dot_seq2'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-03
+          v-if="stage_state.marker === 'dot_seq3'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-05
+          v-if="stage_state.marker === 'dot_seq5'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-06
+          v-if="stage_state.marker === 'dot_seq6'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-07
+          v-if="stage_state.marker === 'dot_seq7'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-08
+          v-if="stage_state.marker === 'dot_seq8'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+          @ready="stage_state.dot_seq8_q = true"
+        />
+        <guideline-dot-sequence-09
+          v-if="stage_state.marker === 'dot_seq9'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        lg="8"
+      >
+        <v-row
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1'] && stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq13']"
+        >
+          <v-col
+            class="py-0"
+          >
+            <v-card
+              outlined
+            >
+                <jupyter-widget :widget="viewers.dotplot_viewer"
+                />
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+
+
+<!-- Row for 2nd Velocity Dot Plot -->
+    <v-row>
+      <v-col
+        cols="12"
+        lg="4"
+      >
+        <guideline-dot-sequence-14
+          v-if="stage_state.marker === 'dot_seq14'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        lg="8"
+      >
+        <v-row
+          v-if="stage_state.indices[stage_state.marker] == stage_state.indices['dot_seq14']"
+        >
+          <v-col
+            class="py-0"
+          >
+            <v-card
+              outlined
+            >
+                <jupyter-widget :widget="viewers.dotplot_viewer_2"
+                v-if="stage_state.marker == 'dot_seq14'"
+                />
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+
+<!-- Row for Spectrum Viewer -->
     <v-row>
       <v-col
         cols="12"
@@ -165,11 +316,6 @@
         />
         <guideline-obswave-2
           v-if="stage_state.marker === 'obs_wav2'"
-          v-intersect.once="scrollIntoView"
-          :state="stage_state"
-        />
-        <guideline-open-spectrum-measurement-tutorial
-          v-if="stage_state.marker === 'osm_tut' || stage_state.marker === 'smt_tut'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
@@ -198,9 +344,24 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
+        <guideline-dot-sequence-04
+          v-if="stage_state.marker === 'dot_seq4'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-10
+          v-if="stage_state.marker === 'dot_seq10'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-dot-sequence-11
+          v-if="stage_state.marker === 'dot_seq11'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
       </v-col>
       <v-col
-        v-if="stage_state.spec_viewer_reached"
+        v-if="(stage_state.spec_viewer_reached && stage_state.indices[stage_state.marker] < stage_state.indices['int_dot1']) || (stage_state.indices[stage_state.marker] >= stage_state.indices['dot_seq4'] && stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq14']) || (stage_state.indices[stage_state.marker] >= stage_state.indices['rem_gal1'])"
         cols="12"
         lg="8"
       >
@@ -274,6 +435,7 @@
             >
               calculate velocities
             </v-btn>
+          Marker: {{ stage_state.marker }}
           </v-col>
         </v-row>
       </v-col>
