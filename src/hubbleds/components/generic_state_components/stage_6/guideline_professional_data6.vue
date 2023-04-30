@@ -24,9 +24,9 @@
             'Our class got a higher age estimate than HST',
             'Our class got a lower age estimate than HST',
           ]"
-          :feedbacks="feedbacks(parseFloat(state.hst_age) < parseFloat(Math.round(state.our_age).toFixed(0)))"
-          :correct-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.our_age).toFixed(0))) ? [0] : [1]"
-          :neutral-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.our_age).toFixed(0))) ? [1] : [0]"
+          :feedbacks="feedbacks(parseFloat(state.hst_age) < parseFloat(Math.round(state.class_age).toFixed(0)))"
+          :correct-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.class_age).toFixed(0))) ? [0] : [1]"
+          :neutral-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.class_age).toFixed(0))) ? [1] : [0]"
           @select="(status) => { if (status.correct) { allowAdvancing(); } }"
           score-tag="pro-dat6"
         >
@@ -46,10 +46,10 @@ module.exports = {
   props: ['state'],
 
   methods: {
-    feedbacks(hst_age_less_then_our_age) {
+    feedbacks(hst_age_less_then_class_age) {
       // a shallower slope means a higher age
       // so if our slope is shallower than the HST slope, then our age is higher than the HST age
-      if (hst_age_less_then_our_age) {
+      if (hst_age_less_then_class_age) {
         console.log('our slope is shallower than the HST slope')
         return ['Correct! The slope of best fit for our data is shallower than it is for the HST data', 'Try again! Compare the slope of best fit for our data to the slope for the HST data']
       } else {
