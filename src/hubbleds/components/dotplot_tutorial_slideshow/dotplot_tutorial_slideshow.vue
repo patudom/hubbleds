@@ -201,7 +201,7 @@ export default {
   
   watch: {
     step(newStep) {
-      this.maxStepCompleted = Math.max(this.maxStepCompleted, newCompleted);
+      this.maxStepCompleted = newStep;
 
       if (newStep == 1) {
         this.activateMeasuringTool();
