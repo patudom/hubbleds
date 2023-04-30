@@ -908,7 +908,7 @@ class StageOne(HubbleStage):
                 self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
                                     new_value, index)
                 # if we are in the tutorial, update the velocity
-                if self.stage_state.marker == 'smt_tut':
+                if self.stage_state.marker == 'dot_seq13':
                     velocity = velocity_from_wavelengths(new_value,data[RESTWAVE_COMPONENT][index])
                     self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, VELOCITY_COMPONENT,
                                         velocity, index)
