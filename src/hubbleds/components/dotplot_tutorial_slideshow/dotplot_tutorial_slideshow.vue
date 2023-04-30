@@ -71,9 +71,6 @@
                   <p>
                     The vertical axis shows how many measurements were made in a particular velocity bin.
                   </p>
-                  <div style="color:#1DE9B6!important">
-                    Tools off on this slide
-                  </div>
                 </v-container>
               </v-card-text>
             </v-window-item>
@@ -84,9 +81,6 @@
                   <p>
                     As with the spectrum viewer, if you move your mouse left and right within the dot plot, the vertical marker will display the velocity value for the center of each bin.
                   </p>
-                  <div style="color:#1DE9B6!important">
-                    Activate measuring tool
-                  </div>
                 </v-container>
               </v-card-text>
             </v-window-item>
@@ -95,20 +89,17 @@
               <v-card-text>
                 <v-container>
                   <p>
-                    Our data sample includes a very large range of velocity values, but most of the data points are clustered in one or more tall towers of dots around 11,000 to 12,000 km/s. 
+                    Our data sample includes a very large range of velocity values, but most of the data points are clustered in one or more tall towers of dots between 9,000 to 13,000 km/s. 
                   </p>
                   <p>
                     Let's take a closer look at this cluster of measurements. 
                   </p>
                   <p>
-                    Click (magnifying glass icon) in the toolbar to activate the zoom tool.
+                    Click <v-icon>mdi-select-search</v-icon> in the toolbar to activate the zoom tool.
                   </p>                    
                   <p>
                     Then click and drag across the cluster of velocity measurements to zoom in.
                   </p>
-                  <div style="color:#1DE9B6!important">
-                    Turn on zoom in and reset buttons. Measuring tool should be disabled when zoom is enabled. Measuring tool should be re-enabled when zoom is complete.
-                  </div>
                 </v-container>
               </v-card-text>
             </v-window-item>
@@ -117,10 +108,10 @@
               <v-card-text>
                 <v-container>
                   <p>
-                    You should see that the tall towers of dots have split into smaller towers. If not, zoom in closer by clicking and dragging again, or click (reset icon) to reset the view and try again.
+                    You should see that the tall towers of dots have split into smaller towers. If not, zoom in closer by clicking and dragging again, or click <v-icon>mdi-cached</v-icon> to reset the view and try again.
                   </p>
                   <p>
-                    This happens because each tower of dots represents a <strong>range</strong> of velocity values. When you zoomed in, the data were rebinned across smaller velocity ranges. What seemed like a big cluster of velocity values has now broken up into a few smaller clusters.
+                    This happens because each tower of dots represents a <strong>range</strong> of velocity values. When you zoomed in, the data were rebinned across smaller velocity ranges.
                   </p>
                   <p>
                     That's all you need to know about dot plots for now. Click done to continue.  

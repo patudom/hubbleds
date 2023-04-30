@@ -308,7 +308,7 @@ class StageOne(HubbleStage):
         # Add new dotplot viewer with single galaxy seed data
         dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer', viewer_label = 'Example Galaxy Measurement')
         dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2', viewer_label = 'Second Measurement')
-        dotplot_viewer_3 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_3', viewer_label = 'Dot Plot Graph')
+        dotplot_viewer_3 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_3', viewer_label = 'Dot Plot')
 
         ### Disable anything to do with towerselect for now
         # dotplot_viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
