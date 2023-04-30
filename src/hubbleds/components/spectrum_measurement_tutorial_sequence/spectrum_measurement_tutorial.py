@@ -184,7 +184,10 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         extend_tool(self.dotplot_viewer, 'bqplot:home', partial(self.clear_subsets,self.dotplot_viewer))
         extend_tool(self.dotplot_viewer_2, 'bqplot:home', partial(self.clear_subsets,self.dotplot_viewer_2))
         
-        extend_tool(self.dotplot_viewer,'bqplot:home', self.spectrum_viewer.state.reset_limits, activate_before_tool = False)
+        def func(*args, **kwargs):
+            if self.spectrum_viewer.state.y_max is not None:
+                self.spectrum_viewer.state.reset_limits()
+        extend_tool(self.dotplot_viewer,'bqplot:home', func, activate_before_tool = False)
         
         # run through steps to open run necessary setup calls in the vue file
         for i in range(self.maxStepCompleted):
