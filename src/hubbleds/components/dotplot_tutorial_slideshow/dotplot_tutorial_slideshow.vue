@@ -52,32 +52,16 @@
           class="overflow-auto"
         >
         
-        <v-btn
-          class="black--text"
-          color="accent"
-          depressed
-          @click="activate_zoom_tool"
-        >
-          activate zoom tool
-        </v-btn>
-        
-        <v-btn
-          class="black--text"
-          color="accent"
-          depressed
-          @click="activate_selector"
-        >
-          activate tower selection
-        </v-btn>
-
+        <v-row>
+          
+          <v-col
+            cols="12"
+            lg="5"
+            >
+            
         <v-window-item :value="0" class="no-transition">
           <v-card-text>
             <v-container>
-              <v-row>
-                <v-col
-                  cols = "12"
-                  lg = "5"
-                >
                   <p>
                     This <strong>dot plot</strong> displays&#8212;as a dot&#8212;every velocity measurement in our sample.
                   </p>
@@ -93,13 +77,6 @@
                   <div style="color:#1DE9B6!important">
                     Tools off on this slide
                   </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  lg="7">
-                  <jupyter-widget :widget="dotplot_viewer"/>
-                </v-col>
-              </v-row>
             </v-container>
           </v-card-text>
         </v-window-item>
@@ -107,24 +84,12 @@
         <v-window-item :value="1" class="no-transition">
           <v-card-text>
             <v-container>
-              <v-row>
-                <v-col
-                  cols = "12"
-                  lg = "5"
-                >
                   <p>
                     As with the spectrum viewer, if you move your mouse left and right within the dot plot, the vertical marker will display the velocity value for the center of each bin.
                   </p>
                   <div style="color:#1DE9B6!important">
                     Activate measuring tool
                   </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  lg="7">
-                  <jupyter-widget :widget="dotplot_viewer"/>
-                </v-col>
-              </v-row>
             </v-container>
           </v-card-text>
         </v-window-item>
@@ -132,11 +97,6 @@
         <v-window-item :value="2" class="no-transition">
           <v-card-text>
             <v-container>
-              <v-row>
-                <v-col
-                  cols = "12"
-                  lg = "5"
-                >
                   <p>
                     Our data sample includes a very large range of velocity values, but most of the data points are clustered in one or more tall towers of dots around 11,000 to 12,000 km/s. 
                   </p>
@@ -152,13 +112,6 @@
                   <div style="color:#1DE9B6!important">
                     Turn on zoom in and reset buttons. Measuring tool should be disabled when zoom is enabled. Measuring tool should be re-enabled when zoom is complete.
                   </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  lg="7">
-                  <jupyter-widget :widget="dotplot_viewer"/>
-                </v-col>
-              </v-row>
             </v-container>
           </v-card-text>
         </v-window-item>
@@ -166,24 +119,12 @@
         <v-window-item :value="3" class="no-transition">
           <v-card-text>
             <v-container>
-              <v-row>
-                <v-col
-                  cols = "12"
-                  lg = "5"
-                >
                   <p>
                     You should see that the tall towers of dots have split into smaller towers. If not, zoom in closer by clicking and dragging again, or click (reset icon) to reset the view and try again.
                   </p>
                   <p>
                     This happens because each tower of dots represents a <strong>range</strong> of velocity values. When you zoomed in, the data were rebinned across smaller velocity ranges. What seemed like a big cluster of velocity values has now broken up into a few smaller clusters.
                   </p>                    
-                </v-col>
-                <v-col
-                  cols="12"
-                  lg="7">
-                  <jupyter-widget :widget="dotplot_viewer"/>
-                </v-col>
-              </v-row>
             </v-container>
           </v-card-text>
         </v-window-item>
@@ -197,7 +138,15 @@
             </v-container>
           </v-card-text>
         </v-window-item>
+        </v-col>
 
+          <v-col
+          v-if="step < length-1"
+          cols="12"
+          lg="7">
+          <jupyter-widget :widget="dotplot_viewer"/>
+        </v-col>
+      </v-row>
       </v-window>
       
       <v-divider></v-divider>
