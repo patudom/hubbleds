@@ -224,10 +224,12 @@ export default {
 
       if (newStep == 2) {
         this.activate_zoom_tool();
+        this.home_add_line();
       }
 
       if (newStep == 3) {
         this.activate_selector();
+        this.home_add_previous_line()
       }
     },
   },

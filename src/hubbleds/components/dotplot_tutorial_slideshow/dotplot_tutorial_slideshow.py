@@ -5,6 +5,7 @@ from traitlets import Int, Bool, Unicode, List, Instance
 from cosmicds.utils import load_template, extend_tool
 from glue_jupyter.state_traitlets_helpers import GlueState
 from ipywidgets import widget_serialization, DOMWidget
+from functools import partial
 
 
 # theme_colors()
@@ -39,8 +40,7 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         # self.layer_viewer = viewers[1]
         self.dotplot_viewer_viewer.add_lines_to_figure()
         
-        extend_tool(self.dotplot_viewer_viewer, "bqplot:xzoom", activate_cb=self.on_zoom_active, deactivate_cb=self.on_zoom_deactive)
-        
+        extend_tool(self.dotplot_viewer_viewer, "bqplot:xzoom", activate_cb=self.on_zoom_active, deactivate_cb=self.on_zoom_deactive)        
 
         def update_title(change):
             index = change["new"]
@@ -53,6 +53,14 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         self.observe(update_title, names=["step"])
 
         super().__init__(*args, **kwargs)
+        
+    def vue_home_add_line(self, _data = None):
+        f = partial(self.dotplot_viewer_viewer.add_lines_to_figure, add_line = True, add_previous_line = False)
+        extend_tool(self.dotplot_viewer_viewer, "bqplot:home", activate_cb=f, activate_before_tool=False)
+    def vue_home_add_previous_line(self, _data = None):
+        f = partial(self.dotplot_viewer_viewer.add_lines_to_figure, add_line = False, add_previous_line = True)
+        extend_tool(self.dotplot_viewer_viewer, "bqplot:home", activate_cb=f, activate_before_tool=False)
+        
     
     def vue_activate_zoom_tool(self, _data = None):
         self.dotplot_viewer_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
