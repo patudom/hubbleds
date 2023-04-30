@@ -455,13 +455,11 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         if event is not None:
             new_x = event['domain']['x']
             self.dotplot_viewer_2.line.x = [new_x, new_x]
-            self.dotplot_viewer_2.line_label.x = [new_x]
-            self.dotplot_viewer_2.line_label.text = [self.dotplot_viewer_2._label_text(new_x)]
+            self.dotplot_viewer_2._update_x_locations()
             
             w = self.v2w(new_x)
             self.spectrum_viewer.line.x = [w,w]
-            self.spectrum_viewer.line_label.x = [w] 
-            self.spectrum_viewer.line_label.text = [self.spectrum_viewer._label_text(w)]
+            self.spectrum_viewer._update_x_locations()  
     
     def _update_selector_tool_dp2(self, event = None):
         if not self.show_selector_lines:
@@ -469,13 +467,11 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         if event is not None:
             new_x = event['domain']['x']
             self.dotplot_viewer.line.x = [new_x, new_x]
-            self.dotplot_viewer.line_label.x = [new_x]
-            self.dotplot_viewer.line_label.text = [self.dotplot_viewer._label_text(new_x)]
+            self.dotplot_viewer._update_x_locations()
             
             w = self.v2w(new_x)
             self.spectrum_viewer.line.x = [w,w]
-            self.spectrum_viewer.line_label.x = [w]
-            self.spectrum_viewer.line_label.text = [self.spectrum_viewer._label_text(w)]
+            self.spectrum_viewer._update_x_locations()
             
 
     def _update_selector_tool_sv(self, event = None):
@@ -484,12 +480,10 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         if event is not None:
             new_x = self.w2v(event['domain']['x'])
             self.dotplot_viewer.line.x = [new_x, new_x]
-            self.dotplot_viewer_2.line.x = [new_x, new_x]
-            self.dotplot_viewer.line_label.text = [self.dotplot_viewer._label_text(new_x)]
+            self.dotplot_viewer._update_x_locations()
             
             self.dotplot_viewer.line_label.x = [new_x]
-            self.dotplot_viewer_2.line_label.x = [new_x]
-            self.dotplot_viewer_2.line_label.text = [self.dotplot_viewer_2._label_text(new_x)]
+            self.dotplot_viewer_2._update_x_locations()
 
     @staticmethod
     def get_bin(bins, x):
