@@ -57,7 +57,7 @@ class StageState(CDSState):
     gal_selected = CallbackProperty(False)
     spec_viewer_reached = CallbackProperty(False)
     spec_tutorial_opened = CallbackProperty(False)
-    dotplot_tutorial_opened = CallbackProperty(True) # Need to initialize as false later
+    dotplot_tutorial_finished = CallbackProperty(False) 
     dot_zoom_activated = CallbackProperty(True) # Need to initialize as false later
     dot_zoomed = CallbackProperty(True) # Need to initialize as false later
     dot_seq8_q = CallbackProperty(False)
@@ -444,7 +444,7 @@ class StageOne(HubbleStage):
         
         dotplot_slideshow = DotplotTutorialSlideshow([self.viewers["dotplot_viewer_3"]])
         self.add_component(dotplot_slideshow, label='py-dotplot-tutorial-slideshow')
-        # dotplot_slideshow.observe(self._on_slideshow_opened, names=['opened']) # not implemented
+        dotplot_slideshow.observe(self._dotplot_slideshow_tutorial_finished, names=['finished'])
         
         # callback places velocity value in table
         add_callback(self.stage_state, 'student_vel',
@@ -530,6 +530,8 @@ class StageOne(HubbleStage):
             'cho_row1')
         self.stage_state.doppler_calc_reached = self.stage_state.marker_reached(
             'dop_cal2')
+        self.stage_state.dotplot_tutorial_finished = self.stage_state.marker_reached(
+            'dot_seq1')
 
         # Initialize viewers to provide story state
         if self.stage_state.marker_reached('sel_gal1'):
@@ -789,6 +791,9 @@ class StageOne(HubbleStage):
 
     def _spectrum_slideshow_tutorial_opened(self, msg):
         self.stage_state.spec_tutorial_opened = msg['new']
+
+    def _dotplot_slideshow_tutorial_finished(self, msg):
+        self.stage_state.dotplot_tutorial_finished = msg['new']
 
     def _on_doppler_dialog_changed(self, msg):
         self.stage_state.doppler_calc_dialog = msg['new']

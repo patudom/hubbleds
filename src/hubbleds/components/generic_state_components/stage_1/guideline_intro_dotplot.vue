@@ -1,7 +1,7 @@
 <template>
   <scaffold-alert
     title-text="Dot plots"
-    :can-advance="(state) => state.dotplot_tutorial_opened"
+    :can-advance="(state) => state.dotplot_tutorial_finished"
     @back="() => { state.marker_backward = 1; }"
     @next="() => { state.marker_forward = 1; }"
     :state="state"
