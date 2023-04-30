@@ -143,7 +143,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         self.spec_view_first = self.vertical_line_mark(self.spectrum_viewer, x = 0, color = self.first_meas_line.colors[0], label = 'spec_view_first')
         self.spec_view_second = self.vertical_line_mark(self.spectrum_viewer, x = 0, color = self.second_meas_line.colors[0] , label = 'spec_view_second')
         self.spec_view_first_label = Label(
-                        text=["first"],
+                        text=[""],
                         x=[self.spec_view_first.x[0]],
                         y=[self.spec_view_first.y[1]],
                         x_offset=10,
@@ -154,7 +154,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                     )
         
         self.spec_view_second_label = Label(
-                        text=["second"],
+                        text=["#2"],
                         x=[self.spec_view_second.x[0]],
                         y=[self.spec_view_second.y[1]],
                         x_offset=10,
