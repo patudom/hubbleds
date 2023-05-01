@@ -652,6 +652,10 @@ class StageOne(HubbleStage):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
         
+        if advancing and new == "che_mea1":
+            spectrum_viewer = self.get_viewer("spectrum_viewer")
+            spectrum_viewer.state.reset_limits()
+        
         # activate the dot plot sequence stuff
         if self.stage_state.marker_reached('int_dot1'):
             if (not self.spectrum_measurement_tutorial.been_opened) and self.stage_state.marker_before('rem_gal1'):
