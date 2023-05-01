@@ -124,7 +124,7 @@ STATE_TO_SUMM = reverse(SUMM_TO_STATE)
 
 UNITS_TO_STATE = {
     DB_RESTWAVE_UNIT_FIELD: "angstrom",
-    DB_MEASWAVE_FIELD: "angstrom",
+    DB_MEASWAVE_UNIT_FIELD: "angstrom",
     DB_DISTANCE_UNIT_FIELD: "Mpc",
     DB_VELOCITY_UNIT_FIELD: "km / s",
     DB_ANGSIZE_UNIT_FIELD: "arcsecond"
