@@ -115,8 +115,8 @@ class StageState(CDSState):
     spectrum_tut_vars.update({'step': 0, 'length':19, 'maxStepCompleted': 0})
     spectrum_tut_state = DictCallbackProperty(spectrum_tut_vars)
     
-    meas_two_row_selected = CallbackProperty(True) #need to reinitialize to false
-    meas_two_made = CallbackProperty(True) #need to reinitialize to false
+    meas_two_row_selected = CallbackProperty(False) #need to reinitialize to false
+    meas_two_made = CallbackProperty(False) #need to reinitialize to false
     
     marker = CallbackProperty("")
     marker_backward = CallbackProperty()
@@ -855,6 +855,10 @@ class StageOne(HubbleStage):
         self.stage_state.lambda_rest = data[RESTWAVE_COMPONENT][index]
         self.stage_state.lambda_obs = data[MEASWAVE_COMPONENT][index]
         self.stage_state.sel_gal_index = index
+        
+        if table is self.example_galaxy_table:
+            if index == 1:
+                self.stage_state.meas_two_row_selected = True
 
     #@print_function_name
     def add_new_measurement(self, data_label = EXAMPLE_GALAXY_MEASUREMENTS):
@@ -918,7 +922,8 @@ class StageOne(HubbleStage):
                 self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
                                     new_value, index)
                 # if we are in the tutorial, update the velocity
-                if self.stage_state.marker == 'dot_seq13':
+                if self.stage_state.marker_reached('dot_seq13'):
+                    self.stage_state.meas_two_made = True
                     velocity = velocity_from_wavelengths(new_value,data[RESTWAVE_COMPONENT][index])
                     self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, VELOCITY_COMPONENT,
                                         velocity, index)
