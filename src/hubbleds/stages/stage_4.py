@@ -168,6 +168,7 @@ class StageThree(HubbleStage):
         link((self.story_state, 'enough_students_ready'), (self.stage_state, 'stage_ready'))
 
         self.show_team_interface = self.app_state.show_team_interface
+        self._setup_complete = False
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -392,7 +393,10 @@ class StageThree(HubbleStage):
             remove_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
 
     def _deferred_setup(self):
+        if self._setup_complete:
+            return
         self._setup_scatter_layers()
+        self._setup_complete = True
 
     @property
     def all_viewers(self):
