@@ -15,9 +15,6 @@
       <p>
         See if you can identify features in the spectrum viewer that correspond to outliers and other velocity measurements.
       </p>
-      <span style="color:#1DE9B6!important">
-        <strong>The click wasn't working for me, but I think just synchonizing the markers in the 2 viewers would be better.</strong> (no markers were appearing in the spectrum viewer at all other than my measurement)
-      </span>
     </div>
   </scaffold-alert>
 </template>

@@ -57,7 +57,7 @@ class StageState(CDSState):
     gal_selected = CallbackProperty(False)
     spec_viewer_reached = CallbackProperty(False)
     spec_tutorial_opened = CallbackProperty(False)
-    dotplot_tutorial_opened = CallbackProperty(True) # Need to initialize as false later
+    dotplot_tutorial_finished = CallbackProperty(False) 
     dot_zoom_activated = CallbackProperty(True) # Need to initialize as false later
     dot_zoomed = CallbackProperty(True) # Need to initialize as false later
     dot_seq8_q = CallbackProperty(False)
@@ -308,17 +308,17 @@ class StageOne(HubbleStage):
         # Add new dotplot viewer with single galaxy seed data
         dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer', viewer_label = 'Example Galaxy Measurement')
         dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2', viewer_label = 'Second Measurement')
-        dotplot_viewer_3 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_3', viewer_label = 'Dot Plot Graph')
+        dotplot_viewer_3 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_3', viewer_label = 'Dot Plot')
 
         ### Disable anything to do with towerselect for now
         # dotplot_viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
         # dotplot_viewer_2.toolbar.set_tool_enabled('hubble:towerselect', False)
         # dotplot_viewer_3.toolbar.set_tool_enabled('hubble:towerselect', False)
 
-        dotplot_viewer.toolbar.set_tool_enabled('bqplot:xzoom', False)
-        dotplot_viewer_2.toolbar.set_tool_enabled('bqplot:xzoom', False)
-        dotplot_viewer_3.toolbar.set_tool_enabled('bqplot:xzoom', False)
-        
+        dotplot_viewer.toolbar.set_tool_enabled('hubble:wavezoom', False)
+        dotplot_viewer_2.toolbar.set_tool_enabled('hubble:wavezoom', False)
+        dotplot_viewer_3.toolbar.set_tool_enabled('hubble:wavezoom', False)
+        dotplot_viewer_3.toolbar.set_tool_enabled('bqplot:home', False)
                 
         #     HubbleHistogramView, label="dotplot_viewer")
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
@@ -444,7 +444,7 @@ class StageOne(HubbleStage):
         
         dotplot_slideshow = DotplotTutorialSlideshow([self.viewers["dotplot_viewer_3"]])
         self.add_component(dotplot_slideshow, label='py-dotplot-tutorial-slideshow')
-        # dotplot_slideshow.observe(self._on_slideshow_opened, names=['opened']) # not implemented
+        dotplot_slideshow.observe(self._dotplot_slideshow_tutorial_finished, names=['finished'])
         
         # callback places velocity value in table
         add_callback(self.stage_state, 'student_vel',
@@ -452,13 +452,7 @@ class StageOne(HubbleStage):
         add_callback(self.stage_state, 'completed',
                      self.complete_stage_1)
         
-        def break_this(x):
-            print('changed show_galaxy_table to', x)
-            # if x:
-            #    raise Exception('break this')
-        add_callback(self.stage_state, 'show_galaxy_table',break_this)
-        add_callback(self.stage_state, 'show_example_galaxy_table',lambda x: print_log('changed show_example_galaxy_table to', x))
-        add_callback(self.stage_state, 'show_meas_tutorial', lambda x: print_log('changed show_meas_tutorial to', x))
+
 
         # Callbacks
         def update_count(change):
@@ -530,6 +524,8 @@ class StageOne(HubbleStage):
             'cho_row1')
         self.stage_state.doppler_calc_reached = self.stage_state.marker_reached(
             'dop_cal2')
+        self.stage_state.dotplot_tutorial_finished = self.stage_state.marker_reached(
+            'dot_seq1')
 
         # Initialize viewers to provide story state
         if self.stage_state.marker_reached('sel_gal1'):
@@ -652,8 +648,6 @@ class StageOne(HubbleStage):
         
         # activate the dot plot sequence stuff
         if self.stage_state.marker_reached('int_dot1'):
-            print_log(f'int_dot1 reached and random state variable set from {self.stage_state.dot_zoomed} to False')
-            self.stage_state.dot_zoomed = False
             if (not self.spectrum_measurement_tutorial.been_opened) and self.stage_state.marker_before('rem_gal1'):
                 self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
          
@@ -790,6 +784,9 @@ class StageOne(HubbleStage):
     def _spectrum_slideshow_tutorial_opened(self, msg):
         self.stage_state.spec_tutorial_opened = msg['new']
 
+    def _dotplot_slideshow_tutorial_finished(self, msg):
+        self.stage_state.dotplot_tutorial_finished = msg['new']
+
     def _on_doppler_dialog_changed(self, msg):
         self.stage_state.doppler_calc_dialog = msg['new']
 
@@ -822,6 +819,9 @@ class StageOne(HubbleStage):
         z = galaxy["z"]
         self.story_state.update_data(SPECTRUM_DATA_LABEL, spec_data)
         self.update_spectrum_viewer(name, z,  table )
+        
+        if self.stage_state.marker_reached('cho_row1'):
+            self.stage_state.spec_viewer_reached = True
 
         if self.stage_state.marker == 'cho_row1':
             self.stage_state.spec_viewer_reached = True
@@ -1062,12 +1062,10 @@ class StageOne(HubbleStage):
         self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
 
     def fill_table(self, table, tool=None):
-        print("in fill_table")
         self.update_data_value(table._glue_data.label, MEASWAVE_COMPONENT, 6830, 0) 
         self.update_data_value(table._glue_data.label, VELOCITY_COMPONENT, 12130, 0)
 
     def vue_fill_table(self, _args):
-        print("in vue_fill_table")
         self.fill_table(self.example_galaxy_table)
     
     
@@ -1144,7 +1142,7 @@ class StageOne(HubbleStage):
         
     #     self.add_selector_lines() 
     #     self.vue_tracking_lines_off()
-    #     self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom",self.zoom_tool_enabled)
+    #     self.dotplot_viewer.toolbar.set_tool_enabled("hubble:wavezoom",self.zoom_tool_enabled)
         
     #     self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
     #     self.dotplot_viewer.add_event_callback(self._update_selector_tool_dp, events=['mousemove'])

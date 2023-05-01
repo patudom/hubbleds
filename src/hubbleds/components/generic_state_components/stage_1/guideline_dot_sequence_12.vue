@@ -2,11 +2,19 @@
   <scaffold-alert
     @back="() => { state.marker_backward = 1; }"
     @next="() => { state.marker_forward = 1; }"
+    :can-advance="(state) => false"
     :state="state"
   >
+    <template #next-content>
+    </template>
     <div>
-      <span style="color:#1DE9B6!important">Create same choice card and parallel behavior from Stage 3 tutorial to end</span>
-      
+      <p>
+        You can now remeasure the example galaxy using what you've learned and see how your answer changes.
+      </p>
+      <p>
+        Or move on to measure the spectral lines for your 5 galaxies. 
+      </p>
+
       <v-btn 
         block color="accent"
         class="black--text"

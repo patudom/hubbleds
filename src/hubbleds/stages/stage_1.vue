@@ -242,7 +242,7 @@
         lg="8"
       >
         <v-row
-          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1'] && stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq13']"
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1'] && stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq13'] || stage_state.indices[stage_state.marker] == stage_state.indices['dot_seq14']"
         >
           <v-col
             class="py-0"

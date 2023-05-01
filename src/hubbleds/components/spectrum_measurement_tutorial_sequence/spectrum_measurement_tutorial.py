@@ -219,7 +219,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             
             self.add_selector_lines()
             self.vue_tracking_lines_off()
-            self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom",self.zoom_tool_activated)
+            self.dotplot_viewer.toolbar.set_tool_enabled("hubble:wavezoom",self.zoom_tool_activated)
             
             self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
             self.dotplot_viewer.add_event_callback(self._update_selector_tool_dp, events=['mousemove'])
@@ -284,7 +284,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                 print_log('on_click not found')
             
         if new == 'dot_seq2':
-            self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
+            self.dotplot_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             
         
         if new == 'dot_seq5':
@@ -319,18 +319,19 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                 activateMeasuringTool(viewer)
                 activate_selector(viewer)
                 
-            extend_tool(self.dotplot_viewer, "bqplot:xzoom", 
+            extend_tool(self.dotplot_viewer, "hubble:wavezoom", 
                         activate_cb=partial(on_zoom_active, self.dotplot_viewer), 
                         deactivate_cb=partial(on_zoom_deactive, self.dotplot_viewer))
-            extend_tool(self.dotplot_viewer_2, "bqplot:xzoom", 
+            extend_tool(self.dotplot_viewer_2, "hubble:wavezoom", 
                         activate_cb=partial(on_zoom_active, self.dotplot_viewer_2), 
                         deactivate_cb=partial(on_zoom_deactive, self.dotplot_viewer_2))
         
         if new == "dot_seq13":
+            self.show_second_measurment = True
             self.example_galaxy_table.filter_by(None)#lambda item: item['measurement_number'] == 'second')
     
         if new == "dot_seq14":
-            self.dotplot_viewer_2.toolbar.set_tool_enabled("bqplot:xzoom", True)
+            self.dotplot_viewer_2.toolbar.set_tool_enabled("hubble:wavezoom", True)
             link((self.spectrum_viewer.state, 'x_min'), (self.dotplot_viewer_2.state, 'x_min'), self.w2v, self.v2w)
             link((self.spectrum_viewer.state, 'x_max'), (self.dotplot_viewer_2.state, 'x_max'), self.w2v, self.v2w)
             self.show_second_measurment = True
@@ -464,10 +465,12 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             new_x = event['domain']['x']
             self.dotplot_viewer_2.line.x = [new_x, new_x]
             self.dotplot_viewer_2._update_x_locations()
+            self.dotplot_viewer_2.line_label.text = [self.dotplot_viewer_2._label_text(new_x)]
             
             w = self.v2w(new_x)
             self.spectrum_viewer.line.x = [w,w]
             self.spectrum_viewer._update_x_locations()  
+            self.spectrum_viewer.line_label.text = [self.spectrum_viewer._label_text(w)]
     
     def _update_selector_tool_dp2(self, event = None):
         if not self.show_selector_lines:
@@ -476,10 +479,12 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             new_x = event['domain']['x']
             self.dotplot_viewer.line.x = [new_x, new_x]
             self.dotplot_viewer._update_x_locations()
+            self.dotplot_viewer.line_label.text = [self.dotplot_viewer._label_text(new_x)]
             
             w = self.v2w(new_x)
             self.spectrum_viewer.line.x = [w,w]
             self.spectrum_viewer._update_x_locations()
+            self.spectrum_viewer.line_label.text = [self.spectrum_viewer._label_text(w)]
             
 
     def _update_selector_tool_sv(self, event = None):
@@ -489,9 +494,11 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             new_x = self.w2v(event['domain']['x'])
             self.dotplot_viewer.line.x = [new_x, new_x]
             self.dotplot_viewer._update_x_locations()
+            self.dotplot_viewer.line_label.text = [self.dotplot_viewer._label_text(new_x)]
             
             self.dotplot_viewer.line_label.x = [new_x]
             self.dotplot_viewer_2._update_x_locations()
+            self.dotplot_viewer_2.line_label.text = [self.dotplot_viewer_2._label_text(new_x)]
 
     @staticmethod
     def get_bin(bins, x):
@@ -632,7 +639,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                self.spec_view_first_label, 
                self.spec_view_second_label
                ]
-        marks = [m for m in self.spectrum_viewer.figure.marks if m not in marks_to_remove]
+        marks = [m for m in self.spectrum_viewer.figure.marks if m in marks_to_remove]
         for mark in marks:
             mark.visible = False
         # self.spectrum_viewer.figure.marks = marks
