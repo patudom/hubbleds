@@ -327,6 +327,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                         deactivate_cb=partial(on_zoom_deactive, self.dotplot_viewer_2))
         
         if new == "dot_seq13":
+            self.show_second_measurment = True
             self.example_galaxy_table.filter_by(None)#lambda item: item['measurement_number'] == 'second')
     
         if new == "dot_seq14":
