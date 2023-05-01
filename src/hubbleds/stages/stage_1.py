@@ -61,6 +61,7 @@ class StageState(CDSState):
     dot_zoom_activated = CallbackProperty(True) # Need to initialize as false later
     dot_zoomed = CallbackProperty(True) # Need to initialize as false later
     dot_seq8_q = CallbackProperty(False)
+    ref_vel1_q = CallbackProperty(False)
     lambda_used = CallbackProperty(False)
     lambda_on = CallbackProperty(False)
     waveline_set = CallbackProperty(False)
@@ -114,6 +115,8 @@ class StageState(CDSState):
     spectrum_tut_vars.update({'step': 0, 'length':19, 'maxStepCompleted': 0})
     spectrum_tut_state = DictCallbackProperty(spectrum_tut_vars)
     
+    meas_two_row_selected = CallbackProperty(True) #need to reinitialize to false
+    meas_two_made = CallbackProperty(True) #need to reinitialize to false
     
     marker = CallbackProperty("")
     marker_backward = CallbackProperty()
@@ -170,10 +173,13 @@ class StageState(CDSState):
         'dot_seq11',
         'dot_seq12', # go split make second measuremtn or remaining galaxies
         'dot_seq13',
+        'dot_seq13a',
         'dot_seq14',
         'rem_gal1',
         'ref_dat1',
         'dop_cal6',
+        'ref_vel1',
+        'end_sta1'
     ])
 
     step_markers = ListCallbackProperty([

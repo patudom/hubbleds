@@ -21,8 +21,8 @@
           color="error"
           class="black--text"
           @click="() => {
-            stage_state.marker = 'che_mea1';
-            stage_state.spec_viewer_reached = true;
+            stage_state.marker = 'dop_cal6';
+            state.velocities_total === 5
             fill_table();
           }"
         >
@@ -92,6 +92,8 @@
         </v-card>
       </v-col>
     </v-row>
+
+<!-- Table Row -->
     <v-row>
       <v-col
         cols="12"
@@ -123,11 +125,6 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
-        <guideline-doppler-calc-6
-          v-if="stage_state.marker === 'dop_cal6'"
-          v-intersect.once="scrollIntoView"
-          :state="stage_state"
-        />
         <guideline-check-measurement
           v-if="stage_state.marker === 'che_mea1'"
           v-intersect.once="scrollIntoView"
@@ -143,6 +140,27 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
+        <guideline-remaining-gals
+          v-if="stage_state.marker === 'rem_gal1'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-doppler-calc-6
+          v-if="stage_state.marker === 'dop_cal6'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
+        <guideline-reflect-vel-values
+          v-if="stage_state.marker === 'ref_vel1'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+          @ready="stage_state.ref_vel1_q = true"
+        />       
+        <guideline-end-stage1
+          v-if="stage_state.marker === 'end_sta1'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />  
       </v-col>
       <v-col
         cols="12"
@@ -168,7 +186,7 @@
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1'] && (stage_state.indices[stage_state.marker] < stage_state.indices['rem_gal1']) ">
       <v-col
         cols="12"
         lg="6"
@@ -179,7 +197,6 @@
         lg="4"
       >     
         <py-dotplot-tutorial-slideshow
-          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1']"
         />
       </v-col>
     </v-row>
@@ -319,11 +336,6 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
-        <guideline-remaining-gals
-          v-if="stage_state.marker === 'rem_gal1'"
-          v-intersect.once="scrollIntoView"
-          :state="stage_state"
-        />
         <guideline-reflect-on-data
           v-if="stage_state.marker === 'ref_dat1'"
           v-intersect.once="scrollIntoView"
@@ -359,6 +371,11 @@
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
+        <guideline-dot-sequence-13a
+          v-if="stage_state.marker === 'dot_seq13a'"
+          v-intersect.once="scrollIntoView"
+          :state="stage_state"
+        />
       </v-col>
       <v-col
         v-if="(stage_state.spec_viewer_reached && stage_state.indices[stage_state.marker] < stage_state.indices['int_dot1']) || (stage_state.indices[stage_state.marker] >= stage_state.indices['dot_seq4'] && stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq14']) || (stage_state.indices[stage_state.marker] >= stage_state.indices['rem_gal1'])"
@@ -385,6 +402,9 @@
           >
             <!-- LEARN MORE Dialog -->
             <py-spectrum-slideshow />
+            <py-dotplot-tutorial-slideshow 
+              v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['rem_gal1']" 
+            />
           </v-col>
           <v-col
             cols="4"
