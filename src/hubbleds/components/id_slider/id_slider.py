@@ -87,6 +87,8 @@ class IDSlider(VuetifyTemplate):
 
         old_index = change.get("old", None)
         index = change["new"]
+        if len(self.ids) < index + 1 or len(self.values) < index + 1:
+            return
         self.selected_id = int(self.ids[index])
         self.thumb_value = round(self.values[index])
         highlighted = self.selected_id in self.highlight_ids
