@@ -85,7 +85,6 @@ module.exports = {
     },
     
     feedbacks(hst_age, class_age) {
-      hst_age_less_then_class_age = parseFloat(hst_age) < parseFloat(Math.round(class_age).toFixed(0))
       // a shallower slope means a higher age
       // so if our slope is shallower than the HST slope, then our age is higher than the HST age
       if (this.hst_age_less_then_class_age()) {
