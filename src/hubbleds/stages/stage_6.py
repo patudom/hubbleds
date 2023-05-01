@@ -29,6 +29,9 @@ class StageState(CDSState):
     hst_age = CallbackProperty(HST_KEY_AGE)
     our_age = CallbackProperty(0)
     class_age = CallbackProperty(0)
+    
+    ages_within = CallbackProperty(0.15)
+    allow_too_close_correct = CallbackProperty(False)
 
     max_prodata_index = CallbackProperty(0)
     

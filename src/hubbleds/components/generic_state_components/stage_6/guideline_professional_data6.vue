@@ -23,10 +23,11 @@
           :radio-options="[
             'Our class got a higher age estimate than HST',
             'Our class got a lower age estimate than HST',
+            'The lines are too close to tell'
           ]"
-          :feedbacks="feedbacks(parseFloat(state.hst_age) < parseFloat(Math.round(state.class_age).toFixed(0)))"
-          :correct-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.class_age).toFixed(0))) ? [0] : [1]"
-          :neutral-answers="(parseFloat(state.hst_age) < parseFloat(Math.round(state.class_age).toFixed(0))) ? [1] : [0]"
+          :feedbacks="feedbacks(state.hst_age, state.class_age)"
+          :correct-answers="correctAnswers()"
+          :neutral-answers="neutralAnswers()"
           @select="(status) => { if (status.correct) { allowAdvancing(); } }"
           score-tag="pro-dat6"
         >
@@ -46,17 +47,78 @@ module.exports = {
   props: ['state'],
 
   methods: {
-    feedbacks(hst_age_less_then_class_age) {
+
+    hst_age_less_then_class_age() {
+      return parseFloat(this.state.hst_age) < parseFloat(this.state.class_age)
+    },
+
+    too_close() {
+      if (this.state.allow_too_close_correct) {
+        return Math.abs(parseFloat(this.state.hst_age) - parseFloat(this.state.class_age)) < this.state.ages_within
+      } else {
+        // never too close with the zoom tool
+        return false
+      }
+      
+    },
+
+    too_close_feedback() {
+
+      if (!this.state.allow_too_close_correct) {
+        // feedback for it's too close but we don't want to give away the correct answer
+        return "Try again! Use the zoom tool to zoom in on the lines."
+      }
+      
+      if (!this.too_close()) {
+        // feedback for it's not too close, just...look harder
+        return "Try again! You should be able to tell if your line has a shallower or steeper slope than the HST line."
+      }
+      
+      if (this.hst_age_less_then_class_age()) {
+        // feedback for too close but out class age is less than HST age (so class line is shallower)
+        return "Correct! It is not always clear on visual inspection. However if you zoom in, you will notice that our class's line is slightly shallower than the HST line."
+      } else {
+        // feedback for too close but out class age is higher than HST age (so class line is steeper)
+        return "Correct! It is not always clear on visual inspection. However if you zoom in, you will notice that class's line is slightly steeper than the HST line."
+      }
+      
+    },
+    
+    feedbacks(hst_age, class_age) {
+      hst_age_less_then_class_age = parseFloat(hst_age) < parseFloat(Math.round(class_age).toFixed(0))
       // a shallower slope means a higher age
       // so if our slope is shallower than the HST slope, then our age is higher than the HST age
-      if (hst_age_less_then_class_age) {
+      if (this.hst_age_less_then_class_age()) {
         console.log('our slope is shallower than the HST slope')
-        return ['Correct! The slope of best fit for our data is shallower than it is for the HST data', 'Try again! Compare the slope of best fit for our data to the slope for the HST data']
+        return ['Correct! The slope of best fit for our data is shallower than it is for the HST data',
+          'Try again! Compare the slope of best fit for our data to the slope for the HST data',
+          this.too_close_feedback()]
       } else {
         console.log('our slope is steeper than the HST slope')
-        return ['Try again! Compare the slope of best fit for our data to the slope for the HST data', 'Correct! The slope of best fit for our data is steeper than it is for the HST data',]
+        return ['Try again! Compare the slope of best fit for our data to the slope for the HST data',
+          'Correct! The slope of best fit for our data is steeper than it is for the HST data',
+          this.too_close_feedback()]
+      }
+      
+    },
+
+    correctAnswers() {
+      if (this.hst_age_less_then_class_age()) {
+        return this.too_close() ? [0,2] : [0]
+      } else {
+        return this.too_close() [1] ? [1,2] : [1]
       }
     },
+
+    neutralAnswers() {
+      if (this.hst_age_less_then_class_age()) {
+        // return [1]
+        return this.too_close() ? [1] : [1,2]
+      } else {
+        // return [0]
+        return this.too_close() [0] ? [0] : [0,2]
+      }
+    }
   },
 
   
