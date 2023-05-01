@@ -15,6 +15,10 @@ class HubbleDotPlotViewerState(LineHoverStateMixin,DotPlotViewerState):
     def reset_limits(self):
         DotPlotViewerState.reset_limits(self)
         # LineHoverStateMixin.reset_limits(self)
+        
+    def reset_y_limits_for_view(self):
+        # needed if you use hubble:wavezoom tool 
+        pass
     
         
 
