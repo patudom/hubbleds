@@ -1,6 +1,5 @@
 import ipyvuetify as v
 from pathlib import Path
-from sympy import preview
 from traitlets import Int, Bool, Unicode, List, Instance
 from cosmicds.utils import load_template, extend_tool
 from glue_jupyter.state_traitlets_helpers import GlueState
