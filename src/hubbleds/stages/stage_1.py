@@ -315,9 +315,9 @@ class StageOne(HubbleStage):
         # dotplot_viewer_2.toolbar.set_tool_enabled('hubble:towerselect', False)
         # dotplot_viewer_3.toolbar.set_tool_enabled('hubble:towerselect', False)
 
-        dotplot_viewer.toolbar.set_tool_enabled('bqplot:xzoom', False)
-        dotplot_viewer_2.toolbar.set_tool_enabled('bqplot:xzoom', False)
-        dotplot_viewer_3.toolbar.set_tool_enabled('bqplot:xzoom', False)
+        dotplot_viewer.toolbar.set_tool_enabled('hubble:wavezoom', False)
+        dotplot_viewer_2.toolbar.set_tool_enabled('hubble:wavezoom', False)
+        dotplot_viewer_3.toolbar.set_tool_enabled('hubble:wavezoom', False)
         dotplot_viewer_3.toolbar.set_tool_enabled('bqplot:home', False)
                 
         #     HubbleHistogramView, label="dotplot_viewer")
@@ -1140,7 +1140,7 @@ class StageOne(HubbleStage):
         
     #     self.add_selector_lines() 
     #     self.vue_tracking_lines_off()
-    #     self.dotplot_viewer.toolbar.set_tool_enabled("bqplot:xzoom",self.zoom_tool_enabled)
+    #     self.dotplot_viewer.toolbar.set_tool_enabled("hubble:wavezoom",self.zoom_tool_enabled)
         
     #     self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
     #     self.dotplot_viewer.add_event_callback(self._update_selector_tool_dp, events=['mousemove'])

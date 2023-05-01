@@ -28,7 +28,7 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         self.dotplot_viewer_viewer = viewers[0].viewer
         self.dotplot_viewer_viewer.add_lines_to_figure()
         
-        extend_tool(self.dotplot_viewer_viewer, "bqplot:xzoom", activate_cb=self.on_zoom_active, deactivate_cb=self.on_zoom_deactive)        
+        extend_tool(self.dotplot_viewer_viewer, "hubble:wavezoom", activate_cb=self.on_zoom_active, deactivate_cb=self.on_zoom_deactive)        
 
         super().__init__(*args, **kwargs)
         
@@ -41,7 +41,7 @@ class DotplotTutorialSlideshow(v.VuetifyTemplate):
         extend_tool(self.dotplot_viewer_viewer, "bqplot:home", activate_cb=f, activate_before_tool=False)
     
     def vue_activate_zoom_tool(self, _data = None):
-        self.dotplot_viewer_viewer.toolbar.set_tool_enabled("bqplot:xzoom", True)
+        self.dotplot_viewer_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
         self.dotplot_viewer_viewer.toolbar.set_tool_enabled("bqplot:home", True)
 
     def vue_activate_selector(self, _data = None):
