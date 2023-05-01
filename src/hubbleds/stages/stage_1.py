@@ -290,6 +290,10 @@ class StageOne(HubbleStage):
 
         self.show_team_interface = self.app_state.show_team_interface
 
+        # This flag indicates whether we're using one of the convenience "fill" methods
+        # In which case we don't need to do all of the UI manipulation in quite the same way
+        self._filling_data = False
+
         # Set up any Data-based state values
         self._update_state_from_measurements()
         self.hub.subscribe(
@@ -553,10 +557,6 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
-
-        # This flag indicates whether we're using one of the convenience "fill" methods
-        # In which case we don't need to do all of the UI manipulation in quite the same way
-        self._filling_data = False
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()
