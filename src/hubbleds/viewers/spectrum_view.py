@@ -7,6 +7,7 @@ from glue.viewers.common.utils import get_viewer_tools
 from glue.viewers.scatter.state import ScatterViewerState
 from glue_jupyter.bqplot.scatter import BqplotScatterView, \
     BqplotScatterLayerArtist
+import numpy as np
 
 from cosmicds.mixins import LineHoverStateMixin, LineHoverViewerMixin
 from cosmicds.viewers.cds_viewer import cds_viewer
@@ -16,34 +17,30 @@ __all__ = ['SpectrumView', 'SpectrumViewLayerArtist', 'SpectrumViewerState']
 
 
 class SpectrumViewerState(LineHoverStateMixin, ScatterViewerState):
-    _YMAX_FACTOR = 1.5
-
-    resolution_x = CallbackProperty(0)
-    resolution_y = CallbackProperty(0)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @property
-    def ymax_factor(self):
-        return self._YMAX_FACTOR
-
-    def _reset_y_limits(self):
+    def reset_y_limits_for_view(self):
         with delay_callback(self, 'y_min', 'y_max'):
             ymin, ymax = self.y_min, self.y_max
-            super()._reset_y_limits()
-            self.y_max = self._YMAX_FACTOR * self.y_max
+            layers = list(filter(lambda layer: layer.visible, self.layers))
+            if len(layers) == 0:
+                new_ymin, new_ymax = 0, 1
+            else:
+                new_ymin, new_ymax = np.inf, -np.inf
+                for layer in layers: 
+                    x_values = layer.layer[self.x_att]
+                    y_values = layer.layer[self.y_att]
+                    y_values = y_values[np.where((x_values >= self.x_min) & (x_values <= self.x_max))]
+                    new_ymin = min(new_ymin, np.nanmin(y_values))
+                    new_ymax = max(new_ymax, np.nanmax(y_values))
+
+            self.y_min = new_ymin
+            self.y_max = self._YMAX_FACTOR * new_ymax
             self.resolution_y *= (self.y_max - self.y_min) / (ymax - ymin)
 
-    def reset_limits(self):
-        with delay_callback(self, 'x_min', 'x_max', 'y_min', 'y_max'):
-            xmin, xmax = self.x_min, self.x_max
-            ymin, ymax = self.y_min, self.y_max
-            super().reset_limits()
-            self.y_max = self._YMAX_FACTOR * self.y_max
-            self.resolution_x *= (self.x_max - self.x_min) / (xmax - xmin)
-            self.resolution_y *= (self.y_max - self.y_min) / (ymax - ymin)
-
+   
 
 class SpectrumViewLayerArtist(BqplotScatterLayerArtist):
 
