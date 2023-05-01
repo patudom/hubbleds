@@ -860,7 +860,7 @@ class StageOne(HubbleStage):
     def add_new_measurement(self, data_label = EXAMPLE_GALAXY_MEASUREMENTS):
         data = self.data_collection[data_label]
         new_meas = {x.label:data[x][0] for x in data.main_components}
-        new_meas[MEASWAVE_COMPONENT] = 0
+        # new_meas[MEASWAVE_COMPONENT] = 0
         new_meas[MEASUREMENT_NUMBER_COMPONENT] = 'second'
         # new_meas['name'] = new_meas['name'].replace('.fits','')
         self.add_data_values(data_label,new_meas)
