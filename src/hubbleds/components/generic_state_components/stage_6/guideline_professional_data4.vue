@@ -25,9 +25,9 @@
             'Hubble\'s age estimate'
           ]"
           :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
-          :correct-answers="[0,1]"
-          :neutral-answers='[]'
-          @select="(status) => { if (status.correct) { allowAdvancing(); } }"
+          :correct-answers="[]"
+          :neutral-answers='[0,1]'
+          @select="(status) => { if (status.neutral) { allowAdvancing(); } }"
           score-tag="pro-dat4"
         >
         </mc-radiogroup>

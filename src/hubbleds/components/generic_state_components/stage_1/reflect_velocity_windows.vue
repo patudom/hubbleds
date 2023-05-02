@@ -121,12 +121,13 @@
                       'In SOME of my galaxies, the observed wavelengths of the spectral lines are LONGER than the rest wavelengths. In OTHER of my galaxies, the observed wavelengths of the spectral lines are SHORTER than the rest wavelengths.'
                     ]"
                     :feedbacks="[
-                      'Try again. For each galaxy (a row in the table), compare the values for rest wavelength (column 3) and observed wavelength (column 4).',
-                      'That is correct.',
-                      'Try again. For each galaxy (a row in the table), compare the values for rest wavelength (column 3) and observed wavelength (column 4).',
-                      'Try again. For each galaxy (a row in the table), compare the values for rest wavelength (column 3) and observed wavelength (column 4).'
+                      'That is an unexpected result. For each galaxy, compare the values for rest wavelength (column 3) and observed wavelength (column 4). Check with an instructor in case your measurements need adjustment.',
+                      'That is interesting that the observed spectral lines are all longer than the rest wavelengths.',
+                      'That is an unexpected result. For each galaxy, compare the values for rest wavelength (column 3) and observed wavelength (column 4). Check with an instructor in case your measurements need adjustment.',
+                      'That is an unexpected result. For each galaxy, compare the values for rest wavelength (column 3) and observed wavelength (column 4). Check with an instructor in case your measurements need adjustment.'
                     ]"
                     :correct-answers="[1]"
+                    :neutral-answers="[0,2,3]"
                     @select="(state) => { if(state.correct) { max_step_completed = Math.max(max_step_completed, 2); } }"
                     score-tag="wavelength-comparison"
                   >
