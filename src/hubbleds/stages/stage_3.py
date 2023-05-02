@@ -378,7 +378,19 @@ class StageTwo(HubbleStage):
             # hide lines
             dotplot_viewer_dist.remove_lines_from_figure(line=True, previous_line = True)
             dotplot_viewer_ang.remove_lines_from_figure(line=True, previous_line = True)
-
+            
+        if self.stage_state.marker_reached("dot_seq4"):
+            v1 = dotplot_viewer_dist
+            v2 = dotplot_viewer_ang
+            v1.add_event_callback(lambda event:self._on_dotplot_click(v1,event), events=['click'])
+            v2.add_event_callback(lambda event:self._on_dotplot_click(v2,event), events=['click'])
+            show = self.stage_state.marker_before("ang_siz5a")
+            v1.show_previous_line(show = show, show_label = show)
+            v2.show_previous_line(show = show, show_label = show)
+        
+        if self.stage_state.marker_reached("dot_seq6"):
+            self.example_galaxy_distance_table.selected = []
+            self.stage_state.show_dotplot2 = True
 
     def setup_dotplot_viewers(self):
         
@@ -439,21 +451,9 @@ class StageTwo(HubbleStage):
             # previous line shows up when you click on the figure
             v1.show_previous_line(show = True, show_label = True)
             v2.show_previous_line(show = True, show_label = True)
-            def _on_dotplot_click(plot, event):
-                if self.stage_state.marker_reached('ang_siz5a'):
-                    return
-                # it doesn't matter which plot we get the event from
-                # because d = C / \theta and \theta = C / d
-                event['domain']['x'] = round(DISTANCE_CONSTANT / event['domain']['x'], 0)
-                if event is None:
-                    print("No event")
-                    return
-                if plot is v1:
-                    v2._on_click(event)
-                else:
-                    v1._on_click(event)
-            v1.add_event_callback(lambda event:_on_dotplot_click(v1,event), events=['click'])
-            v2.add_event_callback(lambda event:_on_dotplot_click(v2,event), events=['click'])
+            
+            v1.add_event_callback(lambda event:self._on_dotplot_click(v1,event), events=['click'])
+            v2.add_event_callback(lambda event:self._on_dotplot_click(v2,event), events=['click'])
         
         if advancing and (new == "ang_siz5a"):
             # hide lines
@@ -536,6 +536,23 @@ class StageTwo(HubbleStage):
         index = min(index, len(self.stage_state.step_markers) - 1)
         self.stage_state.marker = self.stage_state.step_markers[index]
         self.trigger_marker_update_cb = True
+    
+    def _on_dotplot_click(self,plot, event):
+        if self.stage_state.marker_reached('ang_siz5a'):
+            return
+        # it doesn't matter which plot we get the event from
+        # because d = C / \theta and \theta = C / d
+        event['domain']['x'] = round(DISTANCE_CONSTANT / event['domain']['x'], 0)
+        if event is None:
+            print("No event")
+            return
+        v1 = self.get_viewer('dotplot_viewer_dist')
+        v2 = self.get_viewer('dotplot_viewer_ang')
+        
+        if plot is v1:
+            v2._on_click(event)
+        else:
+            v1._on_click(event)
 
     def _dosdonts_opened(self, msg):
         self.stage_state.dos_donts_opened = msg["new"]
