@@ -552,6 +552,10 @@ class StageOne(HubbleStage):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:restwave", True)
 
         if self.stage_state.marker_reached("obs_wav1"):
+            spectrum_viewer.add_event_callback(spectrum_viewer._on_mouse_moved,
+                                               events=['mousemove'])
+            spectrum_viewer.add_event_callback(spectrum_viewer._on_click,
+                                               events=['click'])
             spectrum_viewer.add_event_callback(self.on_spectrum_click,
                                                events=['click'])
             spectrum_viewer.add_event_callback(self.on_spectrum_click_example_galaxy,
