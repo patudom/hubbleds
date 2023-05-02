@@ -1003,7 +1003,7 @@ class StageOne(HubbleStage):
 
     def _on_stage_complete(self, complete):
         if complete:
-            self.story_state.stage_index = self.story_state.stage_index + 1
+            self.story_state.stage_index = 2
             print("end Stage 1. stage_state.stage_1_complete value after last guideline:", self.stage_state.stage_1_complete)
 
             # We need to do this so that the stage will be moved forward every
