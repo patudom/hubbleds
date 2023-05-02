@@ -30,10 +30,10 @@
         </v-btn>
         Marker: {{ stage_state.marker }}
       </v-col>
-      <v-col>
+      <!-- <v-col v-if="false">
             <py-dotplot-tutorial-slideshow
              />
-            </v-col>
+            </v-col> -->
     </v-row>
 
     <v-row>
@@ -186,7 +186,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1'] && (stage_state.indices[stage_state.marker] < stage_state.indices['rem_gal1']) ">
+    <v-row v-if="show_team_interface || (stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1'] && (stage_state.indices[stage_state.marker] < stage_state.indices['rem_gal1']) )">
       <v-col
         cols="12"
         lg="6"
