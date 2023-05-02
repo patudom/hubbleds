@@ -237,6 +237,8 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        print('at beginning of init', self.stage_state.marker)
+        
         dosdonts_slideshow = DosDontsSlideShow(self.stage_state.image_location_dosdonts)
         self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
         dosdonts_slideshow.observe(self._dosdonts_opened, names=['opened'])
@@ -361,11 +363,10 @@ class StageTwo(HubbleStage):
             self.current_table = self.distance_table
         
         # ang_siz2 -> cho_row1, est_dis3 -> cho_row2
-        for marker in ['ang_siz2', 'est_dis3']:
-            if self.stage_state.marker_reached(marker):
-                marker_index = self.stage_state.markers.index(marker)
-                new_index = marker_index - 1
-                self.stage_state.marker = self.stage_state.marker[new_index]
+        if self.stage_state.marker in ['ang_siz2', 'est_dis3']:
+            marker_index = self.stage_state.markers.index(self.stage_state.marker)
+            new_index = marker_index - 1
+            self.stage_state.marker = self.stage_state.marker[new_index]
         
         # Show_ruler should be true from marker ang_siz3 to est_dis4 (inclusive) and from dot_seq5b forward.
         if  self.stage_state.marker_reached('ang_siz3') and (not self.stage_state.marker_after('est_dis4')):
@@ -392,6 +393,8 @@ class StageTwo(HubbleStage):
         if self.stage_state.marker_reached("dot_seq6"):
             self.example_galaxy_distance_table.selected = []
             self.stage_state.show_dotplot2 = True
+        
+        print('at end of init', self.stage_state.marker)
 
     def setup_dotplot_viewers(self):
         
