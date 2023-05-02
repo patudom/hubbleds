@@ -100,17 +100,12 @@ class StageState(CDSState):
             'opened',
             'been_opened',
             'show_specviewer', 
-            'show_dotplot', 
-            'show_table', 
             'allow_specview_mouse_interaction', 
             'show_first_measurment', 
             'show_second_measurment', 
             'zoom_tool_activated', 
             'show_selector_lines', 
-            'subset_created',
-            'next_disabled',
             ]}
-    spectrum_tut_vars['show_dotplot'] = True
     spectrum_tut_vars['show_selector_lines'] = True
     spectrum_tut_vars.update({'step': 0, 'length':19, 'maxStepCompleted': 0})
     spectrum_tut_state = DictCallbackProperty(spectrum_tut_vars)

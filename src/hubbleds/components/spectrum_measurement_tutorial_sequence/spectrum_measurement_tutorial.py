@@ -60,15 +60,11 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
     dotplot_viewer_2_widget = Instance(DOMWidget).tag(sync=True, **widget_serialization)
     example_galaxy_table = Instance(DOMWidget).tag(sync=True, **widget_serialization)
     show_specviewer = Bool(False).tag(sync=True)
-    show_dotplot = Bool(True).tag(sync=True)
-    show_table = Bool(False).tag(sync=True)
     allow_specview_mouse_interaction = Bool(False).tag(sync=True)
     show_first_measurment = Bool(False).tag(sync=True)
     show_second_measurment = Bool(False).tag(sync=True)
     zoom_tool_activated = Bool(False).tag(sync=True)
     show_selector_lines = Bool(True).tag(sync=True)
-    subset_created = Bool(False).tag(sync=True)
-    next_disabled = Bool(False).tag(sync=True)
     tutorial_state = Dict({}).tag(sync=True)
 
     _titles = [
@@ -87,8 +83,9 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         # so that self.variable stores the correct value and make sure the 
         # value in the tutorial state is updated when the value changes
         for key in self.tutorial_state.keys():
-            setattr(self, key, self.tutorial_state[key])
-            self.observe(self._on_tutorial_state_change, [key])
+            if hasattr(self, key):
+                setattr(self, key, self.tutorial_state[key])
+                self.observe(self._on_tutorial_state_change, [key])
             
         self.marker_index = {v:k for k, v in indices.items()}
         self.tutorial_start_marker = 'che_mea1'
