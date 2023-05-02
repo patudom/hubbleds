@@ -1,6 +1,7 @@
 from functools import partial
 
 from numpy import where
+# from cosmicds.components.layer_toggle import LayerToggle
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
@@ -271,6 +272,12 @@ class StageFour(HubbleStage):
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
         self.trigger_marker_update_cb = True
+
+        # layer_toggle = LayerToggle(layer_viewer, names={
+        #     STUDENT_DATA_LABEL: "My Data",
+        #     CLASS_DATA_LABEL: "Class Data"
+        # })
+        # self.add_component(layer_toggle, label="py-layer-toggle")
             
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
@@ -464,8 +471,6 @@ class StageFour(HubbleStage):
         student_layer.state.visible = False # Don't need to display this in Stage 4.
         class_layer = layer_viewer.layer_artist_for_data(class_meas_data)
         class_layer.state.visible = True
-        toggle_tool = layer_viewer.toolbar.tools['hubble:toggleclass']
-        toggle_tool.set_layer_to_toggle(class_layer)
 
         layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
 
@@ -481,12 +486,7 @@ class StageFour(HubbleStage):
         add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
         
         layer_toolbar = layer_viewer.toolbar
-        # turn this on if we are in this stage
-        if self.story_state.stage_index == self.index: 
-            layer_toolbar.set_tool_enabled("hubble:toggleclass", True)
         
-        toggle_tool = layer_viewer.toolbar.tools['hubble:toggleclass']
-        add_callback(toggle_tool, 'toggled_count', self._on_class_layer_toggled) 
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
         
         student_layer = comparison_viewer.layer_artist_for_data(student_data)
@@ -690,9 +690,6 @@ class StageFour(HubbleStage):
         super()._on_dark_mode_change(dark)
         self._update_viewer_style(dark)
         
-    def _on_class_layer_toggled(self, used):
-        self.stage_state.class_layer_toggled = used 
-
     def age_calc_update_guesses(self, responses):
         key = str(self.index)
         state = self.stage_state.age_calc_state

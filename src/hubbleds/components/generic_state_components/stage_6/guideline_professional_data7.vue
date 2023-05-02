@@ -22,9 +22,9 @@
         <mc-radiogroup
           :radio-options="['Our age estimate', 'Hubble team\'s age estimate']"
           :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
-          :correct-answers="[0,1]"
-          :neutral-answers='[]'
-          @select="(status) => { if (status.correct) { allowAdvancing(); } }"
+          :correct-answers="[]"
+          :neutral-answers='[0,1]'
+          @select="(status) => { if (status.neutral) { allowAdvancing(); } }"
           score-tag="pro-dat7"
         >
         </mc-radiogroup>
