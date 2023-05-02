@@ -1,7 +1,7 @@
 from functools import partial
 
 from numpy import where
-from cosmicds.components.layer_toggle import LayerToggle
+# from cosmicds.components.layer_toggle import LayerToggle
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
@@ -271,11 +271,11 @@ class StageFour(HubbleStage):
                      self._on_marker_update, echo_old=True)
         self.trigger_marker_update_cb = True
 
-        layer_toggle = LayerToggle(layer_viewer, names={
-            STUDENT_DATA_LABEL: "My Data",
-            CLASS_DATA_LABEL: "Class Data"
-        })
-        self.add_component(layer_toggle, label="py-layer-toggle")
+        # layer_toggle = LayerToggle(layer_viewer, names={
+        #     STUDENT_DATA_LABEL: "My Data",
+        #     CLASS_DATA_LABEL: "Class Data"
+        # })
+        # self.add_component(layer_toggle, label="py-layer-toggle")
             
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
