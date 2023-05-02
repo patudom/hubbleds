@@ -11,14 +11,14 @@
     :state="state"
   >
     <template #before-next>
-      Select a galaxy from your table.
+      Select example galaxy from table.
     </template>
 
     <div
       class="mb-4"
     >
       <p>
-        Click on a row to choose a galaxy whose distance we will estimate.
+        Select the example galaxy to estimate its distance.
       </p>
     </div>
   </scaffold-alert>

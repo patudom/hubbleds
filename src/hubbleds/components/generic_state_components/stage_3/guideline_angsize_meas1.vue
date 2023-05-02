@@ -21,7 +21,10 @@
         This is the same sky viewer you used in Stage 1, now with added functionality to measure angular sizes.
       </p>
       <p>
-        The green vertical line on the left tells you the <strong>angular size</strong> of the patch of sky being displayed.
+        The light blue vertical line on the left tells you the <strong>angular size</strong> of the patch of sky being displayed.
+      </p>
+      <p>
+        Like last time, we will all measure the same example galaxy first.
       </p>
     </div>
   </scaffold-alert>

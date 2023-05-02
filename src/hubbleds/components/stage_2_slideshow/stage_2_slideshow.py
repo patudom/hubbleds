@@ -1,6 +1,5 @@
 import ipyvuetify as v
 from cosmicds.utils import load_template
-from glue_jupyter.state_traitlets_helpers import GlueState
 from traitlets import Int, Bool, Unicode, List, Float
 
 from ...utils import DISTANCE_CONSTANT

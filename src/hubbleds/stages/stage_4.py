@@ -11,6 +11,7 @@ from cosmicds.utils import extend_tool, load_template, update_figure_css
 from echo import CallbackProperty, add_callback, remove_callback, DictCallbackProperty
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
+from glue_jupyter.link import link
 from hubbleds.utils import IMAGE_BASE_URL, AGE_CONSTANT
 from traitlets import default, Bool
 from ..data.styles import load_style
@@ -32,6 +33,7 @@ class StageState(CDSState):
     trend_line_drawn = CallbackProperty(False)
     best_fit_clicked = CallbackProperty(False)
     stage_4_complete = CallbackProperty(False)
+    stage_ready = CallbackProperty(False)
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -162,7 +164,11 @@ class StageThree(HubbleStage):
         add_callback(self.stage_state, 'stage_4_complete',
                      self._on_stage_4_complete)
 
+
+        link((self.story_state, 'enough_students_ready'), (self.stage_state, 'stage_ready'))
+
         self.show_team_interface = self.app_state.show_team_interface
+        self._setup_complete = False
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -195,6 +201,13 @@ class StageThree(HubbleStage):
             BEST_FIT_SUBSET_LABEL: "Best Fit Galaxy"
         })
         self.ignore_class_layer = lambda layer_state: layer_state.layer.label == CLASS_DATA_LABEL
+        def advance_on_class_toggled(change):
+            if self.stage_state.marker == 'tre_dat2' and 1 in change["new"]:
+                self.stage_state.class_layer_toggled = 1
+                self.stage_state.marker = 'tre_dat3'
+                layer_toggle.unobserve(self.layer_toggle_advance)
+        self.layer_toggle_advance = advance_on_class_toggled
+        layer_toggle.observe(self.layer_toggle_advance, names=['selected'])
         layer_toggle.add_ignore_condition(self.ignore_class_layer)
         layer_toggle.add_ignore_condition(lambda layer_state: layer_state.layer.label in [fit_table.subset_label, BEST_FIT_SUBSET_LABEL])
         self.add_component(layer_toggle, label="py-layer-toggle")     
@@ -277,8 +290,8 @@ class StageThree(HubbleStage):
         markers = self.stage_state.markers
         advancing = markers.index(new) > markers.index(old)
         if advancing and new == "tre_dat2":
-            layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.set_tool_enabled('hubble:toggleclass', True)
+            layer_toggle = self.get_component("py-layer-toggle")
+            layer_toggle.remove_ignore_condition(self.ignore_class_layer)
         if advancing and new == "tre_lin1":
             layer_viewer = self.get_viewer("layer_viewer")
             class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -287,9 +300,6 @@ class StageThree(HubbleStage):
         if advancing and new == "you_age1":
             layer_viewer = self.get_viewer("layer_viewer")                
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
-        if advancing and new == "tre_lin1":
-            layer_viewer = self.get_viewer("layer_viewer")
-            layer_viewer.toolbar.set_tool_enabled('hubble:toggleclass', False)
         if advancing and new == "tre_lin2":
             layer_viewer = self.get_viewer("layer_viewer")
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
@@ -309,13 +319,6 @@ class StageThree(HubbleStage):
     def _on_slideshow_opened(self, msg):
         self.stage_state.hubble_dialog_opened = msg["new"]
     
-    def _on_class_layer_toggled(self, used):
-        self.stage_state.class_layer_toggled = used
-        if self.stage_state.marker == 'tre_dat2':
-            self.stage_state.marker = 'tre_dat3'
-            layer_toggle = self.get_component("py-layer-toggle")
-            layer_toggle.remove_ignore_condition(self.ignore_class_layer)
-
     def _setup_scatter_layers(self):
         layer_viewer = self.get_viewer("layer_viewer")
         student_data = self.get_data(STUDENT_DATA_LABEL)
@@ -339,10 +342,6 @@ class StageThree(HubbleStage):
         class_layer.state.alpha = 1
         class_layer.state.size = 4
         class_layer.state.visible = False
-        toggle_tool = layer_viewer.toolbar.tools['hubble:toggleclass']
-        toggle_tool.set_layer_to_toggle(class_layer)
-
-        layer_viewer.toolbar.set_tool_enabled('hubble:toggleclass', not self.stage_state.marker_before("tre_dat2"))
 
         # cosmicds PR157 - turn off fit line label for layer_viewer
         layer_viewer.toolbar.tools["hubble:linefit"].show_labels = False
@@ -352,10 +351,7 @@ class StageThree(HubbleStage):
         
         line_fit_tool = layer_viewer.toolbar.tools['hubble:linefit']
         add_callback(line_fit_tool, 'active', self._on_best_fit_line_shown)
-        
-        layer_toolbar = layer_viewer.toolbar
-        layer_toolbar.set_tool_enabled("hubble:toggleclass", self.stage_state.marker_reached("tre_dat2"))
-        add_callback(toggle_tool, 'toggled_count', self._on_class_layer_toggled) 
+
         add_callback(self.story_state, 'has_best_fit_galaxy', self._on_best_fit_galaxy_added)
 
         # Ignore the best-fit-galaxy subset in the layer viewer for line fitting
@@ -397,7 +393,10 @@ class StageThree(HubbleStage):
             remove_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
 
     def _deferred_setup(self):
+        if self._setup_complete:
+            return
         self._setup_scatter_layers()
+        self._setup_complete = True
 
     @property
     def all_viewers(self):

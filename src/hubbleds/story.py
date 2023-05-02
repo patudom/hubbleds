@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
@@ -6,6 +6,7 @@ import requests
 
 import ipyvuetify as v
 import numpy as np
+from numpy.random import Generator, PCG64, SeedSequence
 from astropy.io import fits
 from cosmicds.phases import Story
 from cosmicds.registries import story_registry
@@ -15,6 +16,7 @@ from echo.callback_container import CallbackContainer
 from glue.core import Data
 from glue.core.component import CategoricalComponent, Component
 from glue.core.data_factories.fits import fits_reader
+from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import CategorySubsetState
 
 from .data_management import *
@@ -27,6 +29,7 @@ class HubblesLaw(Story):
     calculations = DictCallbackProperty({})
     validation_failure_counts = DictCallbackProperty({})
     has_best_fit_galaxy = CallbackProperty(False)
+    enough_students_ready = CallbackProperty(False)
 
     name_ext = ".fits"
 
@@ -38,6 +41,10 @@ class HubblesLaw(Story):
         self._on_timer_cbs = CallbackContainer()
 
         self.add_callback('has_best_fit_galaxy', self.update_student_data)
+
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
+                           handler=self._on_class_data_updated)
 
         # Load data needed for Hubble's Law
         data_dir = Path(__file__).parent / "data"
@@ -231,7 +238,19 @@ class HubblesLaw(Story):
         example_galaxy_seed_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements").json()
         example_galaxy_seed_data = {k: np.array([record[k] for record in example_galaxy_seed_data]) for k in example_galaxy_seed_data[0]}
         good = example_galaxy_seed_data[DB_VELOCITY_FIELD] != None
-        example_galaxy_seed_data = {k: np.array(v)[good] for k,v in example_galaxy_seed_data.items()}
+
+        # Uncomment this and comment out next block to get all seed galaxies
+        # example_galaxy_seed_data = {k: np.array(v)[good] for k,v in example_galaxy_seed_data.items()}
+
+        # This block chooses a subset of size N from the seed data
+        seq = SeedSequence(42)
+        gen = Generator(PCG64(seq))
+        indices = np.arange(len(good))
+        indices = indices[1::2]
+        random_subset = gen.choice(indices[good[1::2]], size=40, replace=False)
+        random_subset = np.ravel(np.column_stack((random_subset, random_subset+1)))
+        example_galaxy_seed_data = {k: np.array(v)[random_subset] for k,v in example_galaxy_seed_data.items()}
+
         example_galaxy_seed_data[DB_VELOCITY_FIELD] = np.array(example_galaxy_seed_data[DB_VELOCITY_FIELD], dtype = type(example_galaxy_seed_data[DB_VELOCITY_FIELD][0]))
         example_galaxy_seed_data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **example_galaxy_seed_data)
         
@@ -243,29 +262,32 @@ class HubblesLaw(Story):
                              GALTYPE_COMPONENT, MEASWAVE_COMPONENT, RESTWAVE_COMPONENT,
                              STUDENT_ID_COMPONENT, VELOCITY_COMPONENT, DISTANCE_COMPONENT,
                              ELEMENT_COMPONENT, ANGULAR_SIZE_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
-        # empty_record = {x: np.array([], dtype='float64') for x in single_gal_student_cols}
-        empty_record = {x : ['X'] if x in [SAMPLE_ID_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, NAME_COMPONENT, MEASUREMENT_NUMBER_COMPONENT] else [0] 
-                for x in single_gal_student_cols}
-        for col in [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT]:
-            empty_record[col] = example_galaxy_data[col]
-        empty_record[RESTWAVE_COMPONENT] = [H_ALPHA_REST_LAMBDA] if ('H' in example_galaxy_data[ELEMENT_COMPONENT][0]) else [MG_REST_LAMBDA]
-        empty_record[MEASUREMENT_NUMBER_COMPONENT] = ['first']
-        empty_record[MEASUREMENT_NUMBER_COMPONENT] = np.asarray(empty_record[MEASUREMENT_NUMBER_COMPONENT], dtype = ('<U6'))
-        example_galaxy_measurements = Data(
-            label=EXAMPLE_GALAXY_MEASUREMENTS,
-            **empty_record)
-
         
-        # categorical_cols = ['id', 'element', 'type', 'name', 'measurement_number']
-        # example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
-        # for col in single_gal_student_cols:
-        #     categorical = col in categorical_cols
-        #     ctype = Component
-        #     meas_comp = ctype(example_galaxy_data[col]) if col in ['name', 'element', 'type','ra','decl','z'] else ctype(np.array([]))
-        #     example_galaxy_measurements.add_component(meas_comp, col)
+        categorical_components = [SAMPLE_ID_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, NAME_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
+        transfered_components = [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT]
+        empty_record = {}
+        for col in transfered_components:
+            empty_record[col] = example_galaxy_data[col][0]
         
-        # example_galaxy_measurements.append(empty_record)
-        # self.data_collection.append(example_galaxy_student_data)
+        empty_record[RESTWAVE_COMPONENT] = H_ALPHA_REST_LAMBDA if ('H' in example_galaxy_data[ELEMENT_COMPONENT][0]) else MG_REST_LAMBDA
+        empty_record[MEASUREMENT_NUMBER_COMPONENT] = 'first'
+        
+        example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
+        
+        for col in single_gal_student_cols:
+            categorical = col in categorical_components
+            ctype = CategoricalComponent if categorical else Component
+            meas_comp = ctype(np.array([]))
+            example_galaxy_measurements.add_component(meas_comp, col)
+        
+        # add in the prefilled data
+        main_components = [x.label for x in example_galaxy_measurements.main_components]
+        component_dict = {c : list(example_galaxy_measurements[c]) for c in main_components}
+        for component, vals in component_dict.items():
+            vals.append(empty_record.get(component, None))
+        new_data = Data(label=example_galaxy_measurements.label, **component_dict)
+        example_galaxy_measurements.update_values_from_data(new_data)
+        
         self.data_collection.append(example_galaxy_measurements)
 
         self.app.add_link(example_galaxy_seed_data, DB_STUDENT_ID_FIELD, example_galaxy_measurements, STUDENT_ID_COMPONENT)
@@ -386,12 +408,14 @@ class HubblesLaw(Story):
         res_json = response.json()
         return res_json["measurements"]
 
-    def fetch_measurement_data_and_update(self, url, label, prune_none=False, make_writeable=False, check_update=None, callbacks=None):
+    def fetch_measurement_data_and_update(self, url, label, prune_none=False, make_writeable=False, check_update=None, update_if_empty=True, callbacks=None):
         measurements = self.fetch_measurements(url)
         need_update = check_update is None or check_update(measurements)
         if not need_update:
             return None
         new_data = self.data_from_measurements(measurements)
+        if not update_if_empty and new_data.size == 0:
+            return None
         new_data.label = label
         if prune_none:
             HubblesLaw.prune_none(new_data)
@@ -447,6 +471,14 @@ class HubblesLaw(Story):
     def on_timer(self, cb):
         self._on_timer_cbs.append(cb)
 
+    def _on_class_data_updated(self, _message):
+        if not self.enough_students_ready:
+            class_data = self.data_collection[CLASS_DATA_LABEL]
+            counter = Counter(class_data[STUDENT_ID_COMPONENT])
+            students_ready = len([k for k, v in counter.items() if v >= 5])
+            if students_ready >= 6:
+                self.enough_students_ready = True
+
     def fetch_class_data(self):
         def check_update(measurements):
             last_modified = max([datetime.fromisoformat(x[DB_LAST_MODIFIED_FIELD][:-1]) for x in measurements], default=None)
@@ -455,7 +487,7 @@ class HubblesLaw(Story):
                 self.class_last_modified = last_modified
             return need_update
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
-        updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, check_update=check_update)
+        updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=check_update)
         if updated is not None:
             self.update_summary_data(updated, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)
 

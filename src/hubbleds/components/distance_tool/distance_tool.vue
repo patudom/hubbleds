@@ -24,7 +24,7 @@
         Flag galaxy as missing image
       </v-tooltip>
 
-      <v-btn icon>
+      <v-btn v-if="false" icon>
         <v-icon>mdi-information-outline</v-icon>
       </v-btn>
     </v-toolbar>
@@ -69,20 +69,13 @@
         {{ measuring ? 'Stop measuring' : 'Start measuring' }}
       </v-tooltip>
     </div>
-    <v-expansion-panels 
-          :flat="true"
-          :tile="true">
-        <v-expansion-panel>
-          <v-expansion-panel-header disable-icon-rotate>Adjust Brightness & Contrast</v-expansion-panel-header>
-          <v-expansion-panel-content>
             <contrast-brightness-control 
+                inlineStyle="padding: 0.5em 0;"
                 :enabled=true  
+                :showContrast=false
                 :reset="reset_style"
                 @change_style="new_brightness_contrast => {this.wwtStyle = new_brightness_contrast}"/>
                 <!-- add inline style to control using inline css like inlineStyle="border: 1px solid white" -->
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
   </v-card>
 </template>
 
@@ -141,7 +134,7 @@ export default {
       this.fovCanvas.height = parent.clientHeight;
       this.fovContext = this.fovCanvas.getContext('2d');
       this.fovContext.lineWidth = 3;
-      this.fovContext.strokeStyle = 'lime';
+      this.fovContext.strokeStyle = '#00B0FF';
 
       const leftPadding = 5;
       const verticalPadding = 5;

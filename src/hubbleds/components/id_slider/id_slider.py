@@ -23,6 +23,7 @@ class IDSlider(VuetifyTemplate):
         self.glue_data = data
         self.id_component = id_component
         self.value_component = value_component
+        self.selected_id = None
 
         self.default_color = kwargs.get("default_color", "#FF006E") # From Alt Palette 1
         self.highlight_ids = kwargs.get("highlight_ids", [])
@@ -68,7 +69,7 @@ class IDSlider(VuetifyTemplate):
 
     def on_id_change(self, callback, run=True):
         self._id_change_cbs.append(callback)
-        if run:
+        if self.selected_id is not None and run:
             callback(self.selected_id, self.highlighted)
 
     def remove_on_id_change(self, callback):
@@ -87,6 +88,8 @@ class IDSlider(VuetifyTemplate):
 
         old_index = change.get("old", None)
         index = change["new"]
+        if len(self.ids) < index + 1 or len(self.values) < index + 1:
+            return
         self.selected_id = int(self.ids[index])
         self.thumb_value = round(self.values[index])
         highlighted = self.selected_id in self.highlight_ids

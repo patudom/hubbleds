@@ -14,7 +14,7 @@
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
     >
       <p>
-        Recall, if we assume a galaxy is the same size as our Milky Way galaxy, the distance to the galaxy can be found using:
+        Recall, if we assume a galaxy is the <strong>same size as our Milky Way galaxy</strong>, the distance to the galaxy can be found using:
       </p>
       <v-card
         outlined
@@ -29,7 +29,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta} $$
+                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta \text{ (in arcsec)}} \text{ Mpc} $$
               </div>
             </v-col>
           </v-row>

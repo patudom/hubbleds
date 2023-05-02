@@ -2,9 +2,10 @@ from echo import delay_callback
 from glue.viewers.scatter.state import ScatterViewerState
 from glue_jupyter.bqplot.histogram import BqplotHistogramView
 from glue_jupyter.bqplot.scatter import BqplotScatterView
-from cosmicds.viewers import cds_viewer
+from cosmicds.viewers.cds_viewer import CDSHistogramViewerState, CDSScatterViewerState
+from cosmicds.viewers.cds_viewer import cds_viewer
 from cosmicds.viewers.dotplot.viewer import BqplotDotPlotView
-
+from .hubble_dotplot import HubbleDotPlotView
 
 __all__ = [
     "HubbleScatterViewerState", "HubbleFitViewerState",
@@ -13,7 +14,7 @@ __all__ = [
 ]
 
 
-class HubbleScatterViewerState(ScatterViewerState):
+class HubbleScatterViewerState(CDSScatterViewerState):
 
     def reset_limits(self):
         with delay_callback(self, 'x_min', 'x_max', 'y_min', 'y_max'):
@@ -53,7 +54,6 @@ HubbleFitLayerView = cds_viewer(
         # 'bqplot:rectangle',
         "hubble:linefit",
         "hubble:linedraw",
-        "hubble:toggleclass",
     ],
     label='Layer View',
     state_cls=HubbleFitViewerState
@@ -73,6 +73,7 @@ HubbleScatterView = cds_viewer(
 
 HubbleHistogramView = cds_viewer(
     BqplotHistogramView,
+    state_cls=CDSHistogramViewerState,
     name="HubbleHistogramView",
     viewer_tools=[
         "bqplot:home",
@@ -83,6 +84,7 @@ HubbleHistogramView = cds_viewer(
 
 HubbleClassHistogramView = cds_viewer(
     BqplotHistogramView,
+    state_cls=CDSHistogramViewerState,
     name="HubbleClassHistogramView",
     viewer_tools=[
         "bqplot:home",
@@ -93,12 +95,12 @@ HubbleClassHistogramView = cds_viewer(
 )
 
 
-HubbleDotPlotView = cds_viewer(
-    BqplotDotPlotView,
-    name="HubbleDotPlotView",
-    viewer_tools=[
-        "bqplot:home",
-        "bqplot:xzoom",
-    ],
-    label="Dot Plot"
-)
+# HubbleDotPlotView = cds_viewer(
+#     BqplotDotPlotView,
+#     name="HubbleDotPlotView",
+#     viewer_tools=[
+#         "bqplot:home",
+#         "bqplot:xzoom",
+#     ],
+#     label="Dot Plot"
+# )

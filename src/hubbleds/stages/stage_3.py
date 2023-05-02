@@ -6,8 +6,8 @@ from astropy.coordinates import SkyCoord
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import load_template, API_URL
-from echo import CallbackProperty, add_callback, ignore_callback
+from cosmicds.utils import extend_tool, load_template, API_URL
+from echo import CallbackProperty, add_callback, ignore_callback, callback_property, delay_callback
 from traitlets import default, Bool
 
 from ..components import DistanceSidebar, DistanceTool, DosDontsSlideShow
@@ -15,8 +15,30 @@ from ..data_management import *
 from ..stage import HubbleStage
 from ..utils import DISTANCE_CONSTANT, GALAXY_FOV, HUBBLE_ROUTE_PATH, IMAGE_BASE_URL, distance_from_angular_size, format_fov
 
+from ..viewers import HubbleDotPlotView
+from ..data.styles import load_style
+from cosmicds.utils import  update_figure_css
+from numpy import searchsorted
+
+from bqplot.marks import Scatter
+
+from glue_jupyter.link import link
+from glue.core.message import NumericalDataChangedMessage
+from functools import partial
+
 log = logging.getLogger()
 
+import inspect
+def print_log(*args, **kwargs):
+    if True:
+        print(*args, **kwargs)
+    return
+def print_function_name(func):
+    def wrapper(*args, **kwargs):
+        calling_function_name = inspect.stack()[1][3]
+        print_log(f"Calling  {func.__name__} from {calling_function_name}")
+        return func(*args, **kwargs)
+    return wrapper
 
 class StageState(CDSState):
     intro = CallbackProperty(True)
@@ -38,6 +60,20 @@ class StageState(CDSState):
     show_ruler = CallbackProperty(False)
     meas_theta = CallbackProperty(0)
     distance_calc_count = CallbackProperty(0)
+    ruler_clicked_total = CallbackProperty(0)
+    
+    show_dotplot1 = CallbackProperty(False)
+    show_dotplot2 = CallbackProperty(False)
+    show_dotplot1_ang = CallbackProperty(False)
+    show_dotplot2_ang = CallbackProperty(False)
+    show_exgal_table = CallbackProperty(False)
+    show_galaxy_table = CallbackProperty(False)
+    
+    dot_seq2_q = CallbackProperty(False)
+    dot_seq4a_q = CallbackProperty(False)
+    dot_seq6_q = CallbackProperty(False)
+    exgal_second_row_selected = CallbackProperty(False)
+    exgal_second_measured = CallbackProperty(False) # This should initialize as False and be set to True when the condition is met - will do later.
     
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
@@ -53,16 +89,25 @@ class StageState(CDSState):
         'ang_siz3',
         'ang_siz4',
         'ang_siz5',
-        'ang_siz5a',
-        'ang_siz6',
-        'rep_rem1',
         'est_dis1',
         'est_dis2',
         'cho_row2',
         'est_dis3',
         'est_dis4',
+        'dot_seq1', # show dot plot dist
+        'dot_seq2',
+        'dot_seq3',
+        'dot_seq4', # show dot plot ang size
+        'dot_seq4a',
+        'ang_siz5a', # directs to dos/donts # hide angular size
+        'dot_seq5', 
+        'dot_seq5a',
+        'dot_seq5b',
+        'dot_seq5c',
+        'dot_seq6', # show dot plot dist 2
+        'dot_seq7',
+        'rep_rem1',
         'fil_rem1',
-        'two_com1',
     ])
 
     step_markers = CallbackProperty([
@@ -89,7 +134,26 @@ class StageState(CDSState):
         'est_dis3',
         'est_dis4',
         'fil_rem1',
-        'two_com1',
+    ])
+    
+    distance_tool_shown = CallbackProperty([
+        'ang_siz1',
+        'cho_row1',
+        'ang_siz2',
+        'ang_siz2b',
+        'ang_siz3',
+        'ang_siz4',
+        'ang_siz5',
+        'est_dis1',
+        'est_dis2',
+        'cho_row2',
+        'est_dis3',
+        'est_dis4',
+        'ang_siz5a', 
+        'dot_seq5', 
+        'dot_seq6', 
+        'rep_rem1',
+        'fil_rem1',
     ])
 
     _NONSERIALIZED_PROPERTIES = [
@@ -102,6 +166,31 @@ class StageState(CDSState):
         super().__init__(*args, **kwargs)
         self.marker = self.markers[0]
         self.indices = {marker: idx for idx, marker in enumerate(self.markers)}
+        
+    
+    @callback_property
+    def marker_forward(self):
+        return None
+
+    @callback_property
+    def marker_backward(self):
+        return None
+    
+    @marker_backward.setter
+    def marker_backward(self, value):
+        if value is None:
+            return
+        index = self.indices[self.marker]
+        new_index = min(max(index - value, 0), len(self.markers) - 1)
+        self.marker = self.markers[new_index]
+
+    @marker_forward.setter
+    def marker_forward(self, value):
+        if value is None:
+            return
+        index = self.indices[self.marker]
+        new_index = min(max(index + value, 0), len(self.markers) - 1)
+        self.marker = self.markers[new_index]
 
     def marker_before(self, marker):
         return self.indices[self.marker] < self.indices[marker]
@@ -118,7 +207,7 @@ class StageState(CDSState):
 
     def marker_index(self, marker):
         return self.indices[marker]
-
+    
 
 @register_stage(story="hubbles_law", index=3, steps=[
     "MEASURE SIZE",
@@ -126,7 +215,6 @@ class StageState(CDSState):
 ])
 class StageTwo(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
-    START_COORDINATES = SkyCoord(213 * u.deg, 61 * u.deg, frame='icrs')
 
     _state_cls = StageState
 
@@ -158,7 +246,29 @@ class StageTwo(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
 
         self.add_component(DistanceTool(), label="py-distance-tool")
+        
+        dotplot_viewer_ang = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_ang', viewer_label = 'First Angular Size Measurement')
+        
+        dotplot_viewer_dist = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_dist', viewer_label = 'First Distance Measurement')
+        dotplot_viewer_dist_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_dist_2', viewer_label = 'Second Distance Measurement')
+        
+        dotplot_viewer_ang._label_text = lambda value: f"{value:.0f} arcsec"
+        
+        dotplot_viewer_dist._label_text = lambda value: f"{value:.0f} Mpc"
+        dotplot_viewer_dist_2._label_text = lambda value: f"{value:.0f} Mpc"
+        
 
+        example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
+        first = next((s for s in example_galaxy_data.subsets if s.label=='first measurement'), None)
+        second = next((s for s in example_galaxy_data.subsets if s.label=='second measurement'), None)
+        
+        dotplot_viewer_ang.ignore(lambda layer: layer in [second])
+        dotplot_viewer_dist.ignore(lambda layer: layer in [second])
+        
+        dotplot_viewer_dist_2.ignore(lambda layer: layer in [first])
+        
+        self.setup_dotplot_viewers()
+        
         add_distances_tool = \
             dict(id="update-distances",
                  icon="mdi-tape-measure",
@@ -185,20 +295,30 @@ class StageTwo(HubbleStage):
         distance_table.observe(
             self.distance_table_selected_change, names=["selected"])
         
+        add_distances_tool = \
+            dict(id="update-distances",
+                 icon="mdi-tape-measure",
+                 tooltip="Fill in distances",
+                 disabled=True,
+                 activate=self.update_distances)
         example_galaxy_distance_table = Table(self.session,
                                data=self.get_data(EXAMPLE_GALAXY_MEASUREMENTS),
                                glue_components=[NAME_COMPONENT,
                                                 ANGULAR_SIZE_COMPONENT,
-                                                DISTANCE_COMPONENT],
-                               key_component=NAME_COMPONENT,
+                                                DISTANCE_COMPONENT,
+                                                MEASUREMENT_NUMBER_COMPONENT],
+                               key_component=MEASUREMENT_NUMBER_COMPONENT,
                                names=['Galaxy Name',
                                       '&theta; (arcsec)',
-                                      'Distance (Mpc)'],
+                                      'Distance (Mpc)',
+                                      'Measurement Number'],
                                title='Example Galaxy',
                                selected_color=self.table_selected_color(
                                    self.app_state.dark_mode),
                                use_subset_group=False,
-                               single_select=True)
+                               item_filter= lambda item: item[MEASUREMENT_NUMBER_COMPONENT] == 'first',
+                               single_select=True,
+                               tools=[add_distances_tool])
 
         self.add_widget(example_galaxy_distance_table, label="example_galaxy_distance_table")
         example_galaxy_distance_table.observe(
@@ -235,7 +355,11 @@ class StageTwo(HubbleStage):
         add_callback(self.stage_state, 'distance_calc_count',
                      self.add_student_distance)
         
-       
+        if self.stage_state.marker_before('rep_rem1'):
+            self.current_table = self.example_galaxy_distance_table
+        else:
+            self.current_table = self.distance_table
+        
         # ang_siz2 -> cho_row1, est_dis3 -> cho_row2
         for marker in ['ang_siz2', 'est_dis3']:
             if self.stage_state.marker_reached(marker):
@@ -243,7 +367,65 @@ class StageTwo(HubbleStage):
                 new_index = marker_index - 1
                 self.stage_state.marker = self.stage_state.marker[new_index]
         
+        # Show_ruler should be true from marker ang_siz3 to est_dis4 (inclusive) and from dot_seq5b forward.
+        if  self.stage_state.marker_reached('ang_siz3') and (not self.stage_state.marker_after('est_dis4')):
+            self.stage_state.show_ruler = True
+        elif self.stage_state.marker_reached('dot_seq5b'):
+            self.stage_state.show_ruler = True
+        else:
+            self.stage_state.show_ruler = False
+            
+        if self.stage_state.marker_reached("ang_siz5a"):
+            # hide lines
+            dotplot_viewer_dist.remove_lines_from_figure(line=True, previous_line = True)
+            dotplot_viewer_ang.remove_lines_from_figure(line=True, previous_line = True)
+
+
+    def setup_dotplot_viewers(self):
+        
+        dist_dotplots = [self.get_viewer('dotplot_viewer_dist'), self.get_viewer('dotplot_viewer_dist_2')]
+        ang_dotplots = [self.get_viewer('dotplot_viewer_ang')]
+        
+        data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
+        
+        for viewer in dist_dotplots + ang_dotplots:
+            viewer.add_data(data)
+            viewer.layer_artist_for_data(data).visible = False
+            if viewer in dist_dotplots:
+                viewer.state.x_att = data.id[DB_DISTANCE_FIELD]
+                viewer.figure.axes[0].label = 'Distance (Mpc)'
+            elif viewer in ang_dotplots:
+                viewer.state.x_att = data.id[DB_ANGSIZE_FIELD]
+                viewer.figure.axes[0].label = 'Angular Size (arcseconds))'
+            viewer.state.hist_n_bin = 75
+            viewer.state.alpha = 1
+            viewer.state.reset_limits()
+            viewer.state.viewer_height = 150
+            viewer.layer_artist_for_data(data).state.color = '#787878'
+        
+        def d_a(x):
+            return DISTANCE_CONSTANT / x
+        
+        link((dist_dotplots[0].state, 'x_min'), (ang_dotplots[0].state, 'x_max'), d_a, d_a)
+        link((dist_dotplots[0].state, 'x_max'), (ang_dotplots[0].state, 'x_min'), d_a, d_a)
+        link((dist_dotplots[0].state, 'x_min'), (dist_dotplots[1].state, 'x_min'))
+        link((dist_dotplots[0].state, 'x_max'), (dist_dotplots[1].state, 'x_max'))
+        
+        def set_x_lim(viewer):
+            xmin = min(min(m.x) for m in viewer.figure.marks if len(m.x))
+            xmax = max(max(m.x) for m in viewer.figure.marks if len(m.x))
+            padding = (xmax-xmin) * 0.05
+            with delay_callback(viewer.state, 'x_min', 'x_max'):
+                viewer.state.x_min = xmin - padding
+                viewer.state.x_max = xmax + padding
+        viewers = dist_dotplots + ang_dotplots
+        for i in range(len(viewers)):
+            extend_tool(viewers[i], 'bqplot:home', partial(set_x_lim,viewers[i]), activate_before_tool= False)
+        
+        self._update_viewer_style(dark=self.app_state.dark_mode)
+        
     def _on_marker_update(self, old, new):
+        # print_log(f"Marker update: {old} -> {new}")
         if not self.trigger_marker_update_cb:
             return
         markers = self.stage_state.markers
@@ -259,11 +441,118 @@ class StageTwo(HubbleStage):
                 new)
         if advancing and (new == "cho_row1" or new == "cho_row2"):
             self.distance_table.selected = []
-            self.distance_tool.widget.center_on_coordinates(
-                self.START_COORDINATES, instant=True)
+            self.example_galaxy_distance_table.selected = []
             self.distance_tool.reset_canvas()
-            # need to turn off ruler marker also.
+            # need to turn off ruler marker also.False
             # and start stage 2 at the start coordinates
+        
+        if advancing and (new == 'ang_siz5'):
+            self.distance_tool.reset_canvas()
+
+        if advancing and (new == "dot_seq1"):
+            self.show_dotplot1 = True
+            
+        if advancing and (new == 'dot_seq4'):
+            self.show_dotplot1_ang = True
+            v1 = self.get_viewer('dotplot_viewer_dist')
+            v2 = self.get_viewer('dotplot_viewer_ang')
+            v1.toolbar.tools['bqplot:home'].activate()
+            v2.toolbar.tools['bqplot:home'].activate()
+            # previous line shows up when you click on the figure
+            v1.show_previous_line(show = True, show_label = True)
+            v2.show_previous_line(show = True, show_label = True)
+            def _on_dotplot_click(plot, event):
+                if self.stage_state.marker_reached('ang_siz5a'):
+                    return
+                # it doesn't matter which plot we get the event from
+                # because d = C / \theta and \theta = C / d
+                event['domain']['x'] = round(DISTANCE_CONSTANT / event['domain']['x'], 0)
+                if event is None:
+                    print("No event")
+                    return
+                if plot is v1:
+                    v2._on_click(event)
+                else:
+                    v1._on_click(event)
+            v1.add_event_callback(lambda event:_on_dotplot_click(v1,event), events=['click'])
+            v2.add_event_callback(lambda event:_on_dotplot_click(v2,event), events=['click'])
+        
+        if advancing and (new == "ang_siz5a"):
+            # hide lines
+            v1 = self.get_viewer('dotplot_viewer_dist')
+            v2 = self.get_viewer('dotplot_viewer_ang')
+            v1.remove_lines_from_figure(line=True, previous_line = True)
+            v2.remove_lines_from_figure(line=True, previous_line = True)
+            
+        if advancing and (new == 'dot_seq5a'):
+            self.show_dotplot1 = False
+            self.show_dotplot1_ang = False
+            self.show_dotplot2 = False
+            
+            self.example_galaxy_distance_table.selected = []
+            self.example_galaxy_distance_table.filter_by(None)
+            
+        if advancing and (new == 'dot_seq6'):
+            v3 = self.get_viewer('dotplot_viewer_dist_2')
+            v3.toolbar.tools['bqplot:home'].activate()
+            self.example_galaxy_distance_table.selected = []
+            self.show_dotplot2 = True
+            self.show_dotplot2_ang = True
+            
+        if advancing and (new == 'rep_rem1'):
+            self.show_dotplot1 = False
+            self.show_dotplot2 = False
+            self.show_dotplot1_ang = False
+            self.show_dotplot2_ang = False
+        
+        if advancing and (new == 'fil_rem1'):
+            tool = self.distance_table.get_tool("update-distances")
+            tool["disabled"] = False
+            self.distance_table.update_tool(tool)
+    
+    @staticmethod
+    def add_point(viewer, x, color, label = None): 
+        scales = {'x': viewer.figure.scale_x, 'y': viewer.figure.scale_y}
+        size = viewer.layers[0].bars.default_size 
+        return  Scatter(x=[x], y=[1], 
+                         scales=scales, colors=[color], 
+                         labels=[label], opacities = [1],
+                         default_size = size,marker='circle',)
+
+    @staticmethod
+    def add_mark(viewer, mark, label = None):
+        marks = viewer.figure.marks
+        # function to flatten list of lists
+        def flatten(l):
+            for item in l:
+                if len(item.labels) > 0:
+                    yield item.labels[0]
+                else:
+                    yield 'no label'
+            # return [item for sublist in l for item in (sublist if len(sublist) > 0 else [None])]
+        labels = list(flatten(marks))
+        marks = [m for i, m in enumerate(marks) if label != labels[i]]
+        viewer.figure.marks = marks + [mark]
+
+        
+    @staticmethod  
+    def binned_x(bins, x):
+        # index = searchsorted(bins, x, side='right')
+        # return (bins[index] + bins[index-1]) / 2
+        bin_width = bins[1] - bins[0]
+        index = int((x - bins[0])/bin_width)
+        return bins[0] + bin_width * (index + 1/2)
+    
+    def plot_measurement(self, viewer, index, distance = False, color = 'black', label = None):
+        viewer = self.get_viewer(viewer)
+        x = self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[ANGULAR_SIZE_COMPONENT][index]
+        if distance:
+            x = distance_from_angular_size(x)
+            label = label + ' (distance)'
+        # x needs to be in a bin
+        x_bin = self.binned_x(viewer.state.bins, x)
+        mark = self.add_point(viewer, x_bin, color, label)
+        self.add_mark(viewer, mark, label)
 
     def _on_step_index_update(self, index):
         # If we aren't on this stage, ignore
@@ -280,14 +569,17 @@ class StageTwo(HubbleStage):
 
     def _dosdonts_opened(self, msg):
         self.stage_state.dos_donts_opened = msg["new"]
-
+    
+    #@print_function_name
     def distance_table_selected_change(self, change):
         selected = change["new"]
         if not selected or selected == change["old"]:
             return
-
-        index = self.distance_table.index
-        data = self.distance_table.glue_data
+        
+        table = change["owner"]
+        self.current_table = table
+        index = table.index
+        data = table.glue_data
         galaxy = {x.label: data[x][index] for x in data.main_components}
         self.distance_tool.reset_canvas()
         self.distance_tool.go_to_location(galaxy["ra"], galaxy["decl"],
@@ -303,46 +595,66 @@ class StageTwo(HubbleStage):
         if self.stage_state.marker == 'cho_row1' or self.stage_state.marker == 'cho_row2':
             self.stage_state.move_marker_forward(self.stage_state.marker)
             self.stage_state.galaxy_selected = True
-
+    
+        if self.stage_state.marker == 'dot_seq5a':
+            self.stage_state.exgal_second_row_selected = index == 1
+            if self.stage_state.exgal_second_row_selected == 1:
+                self.stage_state.show_ruler = True
+                self.stage_state.marker = 'dot_seq5b'
+        self._update_viewer_style(dark=self.app_state.dark_mode)
+    
+    #@print_function_name
     def _angular_size_update(self, change):
         new_ang_size = change["new"]
         if new_ang_size != 0 and new_ang_size is not None:
             self._make_measurement()
-
+    
+    #@print_function_name
     def _angular_height_update(self, change):
         self.distance_sidebar.angular_height = format_fov(change["new"])
-
+    
+    #@print_function_name
     def _ruler_click_count_update(self, change):
-        if change["new"] == 1:
+        count = change["new"]
+        self.stage_state.ruler_clicked_total = count
+        if count == 1:
             self.stage_state.marker = 'ang_siz4'  # auto-advance guideline if it's the first ruler click
-
+    
+    #@print_function_name
     def _measurement_count_update(self, change):
-        if change["new"] == 1:
+        count = change["new"]
+        self.stage_state.n_meas = count
+        if count == 1:
             self.stage_state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
 
     def _show_ruler_changed(self, show):
         self.distance_tool.show_ruler = show
-
+    
+    #@print_function_name
     def _on_galaxy_changed(self, galaxy):
         self.distance_tool.galaxy_selected = bool(galaxy)
-
+    
+    #@print_function_name
     def _make_measurement(self):
         galaxy = self.stage_state.galaxy
-        index = self.get_data_indices(STUDENT_MEASUREMENTS_LABEL, NAME_COMPONENT,
+        table = self.current_table
+        data_label = table._glue_data.label
+        index = self.get_data_indices(data_label, NAME_COMPONENT,
                                       lambda x: x == galaxy["name"],
                                       single=True)
+        
         angular_size = self.distance_tool.angular_size
         # ang_size_deg = angular_size.value
         # distance = round(MILKY_WAY_SIZE_MPC * 180 / (ang_size_deg * pi))
         # angular_size_as = round(angular_size.to(u.arcsec).value)
 
-        index = self.distance_table.index
+        index = table.index
         if index is None:
             return
-        data = self.distance_table.glue_data
+        data = table.glue_data
         curr_value = data[ANGULAR_SIZE_COMPONENT][index]
 
-        if curr_value is None:
+        if (curr_value is None) and (data_label == STUDENT_MEASUREMENTS_LABEL):
             self.stage_state.angsizes_total = self.stage_state.angsizes_total + 1
 
         # self.stage_state.galaxy_dist = distance
@@ -350,9 +662,56 @@ class StageTwo(HubbleStage):
         # self.update_data_value(STUDENT_MEASUREMENTS_LABEL, ANGULAR_SIZE_COMPONENT, angular_size_as, index)
 
         self.stage_state.meas_theta = round(angular_size.to(u.arcsec).value)
-        self.update_data_value(STUDENT_MEASUREMENTS_LABEL, ANGULAR_SIZE_COMPONENT,
-                               self.stage_state.meas_theta, index)
-        self.story_state.update_student_data()
+
+        self.update_data_value(data_label, ANGULAR_SIZE_COMPONENT,
+                            self.stage_state.meas_theta, index)
+        if data_label == EXAMPLE_GALAXY_MEASUREMENTS:
+            if (index==0) and self.stage_state.marker_reached('dot_seq1'):
+                return
+            
+            if (index == 1) and self.stage_state.marker == 'dot_seq5b':
+                self.stage_state.exgal_second_measured = True
+                self.stage_state.marker_forward = 1
+
+            colors = ["#FB5607", "#FB5607"]
+            labels = ['First', 'Second']
+            v1 = self.get_viewer('dotplot_viewer_ang')
+            
+            v3 = self.get_viewer('dotplot_viewer_dist')
+            v4 = self.get_viewer('dotplot_viewer_dist_2')
+                
+            
+            if self.stage_state.marker_after('est_dis4'):
+                self.add_student_distance()
+            
+            for val in ['x_min','x_max','layers']:
+                if index == 0:
+                    v1_plot = lambda *args: self.plot_measurement('dotplot_viewer_ang', index, color = colors[index], label = labels[index])
+                    v3_plot = lambda *args: self.plot_measurement('dotplot_viewer_dist', index, distance = True, color = colors[index], label = labels[index])
+                    add_callback(v1.state, val , v1_plot)
+                    add_callback(v3.state, val , v3_plot)
+                    def both_plots(change):
+                        v1_plot()
+                        v3_plot()
+                    self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == EXAMPLE_GALAXY_MEASUREMENTS,
+                           handler=both_plots)
+                    v1.toolbar.tools['bqplot:home'].activate()
+                    v3.toolbar.tools['bqplot:home'].activate()
+                    
+                if index == 1:
+                    v4_plot = lambda *args: self.plot_measurement('dotplot_viewer_dist_2', index, distance = True, color = colors[index], label = labels[index])
+                    add_callback(v4.state, val , v4_plot)
+                    self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == EXAMPLE_GALAXY_MEASUREMENTS,
+                           handler=v4_plot)
+                    v4.toolbar.tools['bqplot:home'].activate()
+            
+
+            
+
+        # if data_label == STUDENT_MEASUREMENTS_LABEL:
+        #     self.story_state.update_student_data()
         with ignore_callback(self.stage_state, 'make_measurement'):
             self.stage_state.make_measurement = False
 
@@ -379,38 +738,56 @@ class StageTwo(HubbleStage):
         galaxy_name = item["name"]
         self.remove_measurement(galaxy_name)
         self.distance_tool.flagged = False
-
+    
+    #@print_function_name
     def add_student_distance(self, _args=None):
-        index = self.distance_table.index
+        table = self.current_table
+        index = table.index
         if index is None:
             return
         distance = distance_from_angular_size(self.stage_state.meas_theta)
-        self.update_data_value(STUDENT_MEASUREMENTS_LABEL, DISTANCE_COMPONENT, distance,
-                               index)
+
+        self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT, distance,
+                            index)
+
         self.story_state.update_student_data()
         if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.
             self.enable_distance_tool(True)
         self.get_distance_count()
-
+    
+    #@print_function_name
     def update_distances(self, table, tool=None):
         data = table.glue_data
         for item in table.items:
             index = table.indices_from_items([item])[0]
             if index is not None and data[DISTANCE_COMPONENT][index] is None:
                 theta = data[ANGULAR_SIZE_COMPONENT][index]
-                if theta is None:
+                if (theta is None) or (theta == 0):
                     continue
-                distance = round(DISTANCE_CONSTANT / theta, 0)
-                self.update_data_value(STUDENT_MEASUREMENTS_LABEL, DISTANCE_COMPONENT,
-                                       distance, index)
+
+                distance = distance_from_angular_size(theta)
+                self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT,
+                                    distance, index)
         self.story_state.update_student_data()
         if tool is not None:
             table.update_tool(tool)
         self.get_distance_count()
+    
+    def fill_table(self, table, tool=None):
+        print("in fill_table")
+        self.update_data_value(table._glue_data.label, ANGULAR_SIZE_COMPONENT, 35, 0)
+        self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT, distance_from_angular_size(35), 0)
 
+    #@print_function_name
     def vue_update_distances(self, _args):
         self.update_distances(self.distance_table)
+        self.update_distances(self.example_galaxy_distance_table)
 
+    def vue_fill_table(self, _args):
+        print("in vue_fill_table")
+        self.fill_table(self.example_galaxy_distance_table)
+    
+    #@print_function_name
     def vue_add_distance_data_point(self, _args=None):
         self.stage_state.make_measurement = True
 
@@ -419,12 +796,29 @@ class StageTwo(HubbleStage):
             tool = self.distance_table.get_tool("update-distances")
             tool["disabled"] = False
             self.distance_table.update_tool(tool)
+            
+            tool = self.example_galaxy_distance_table.get_tool("update-distances")
+            tool["disabled"] = False
+            self.example_galaxy_distance_table.update_tool(tool)
     
     def get_distance_count(self):
         student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         distances = student_measurements[DISTANCE_COMPONENT]
         self.stage_state.distances_total = distances[distances != None].size
-
+    
+    def _update_viewer_style(self, dark):
+        viewers = ['dotplot_viewer_ang','dotplot_viewer_dist','dotplot_viewer_dist_2']
+        viewer_type = ["histogram","histogram","histogram"]
+        theme_name = "dark" if dark else "light"
+        for viewer, vtype in zip(viewers, viewer_type):
+            viewer = self.get_viewer(viewer)
+            style = load_style(f"default_{vtype}_{theme_name}")
+            update_figure_css(viewer, style_dict=style)
+    
+    def _on_dark_mode_change(self, dark):
+        super()._on_dark_mode_change(dark)
+        self._update_viewer_style(dark)
+    
     @property
     def distance_sidebar(self):
         return self.get_component("py-distance-sidebar")
@@ -436,10 +830,18 @@ class StageTwo(HubbleStage):
     @property
     def distance_table(self):
         return self.get_widget("distance_table")
+    
+    @property
+    def example_galaxy_distance_table(self):
+        return self.get_widget("example_galaxy_distance_table")
+    
+    @property
+    def current_table_data_label(self):
+        return self.current_table._glue_data.label
 
     @property
     def last_guideline(self):
-        return self.get_component('guideline-stage-3-complete')
+        return self.get_component('guideline_fill_remaining_galaxies')
 
     def _on_stage_complete(self, complete):
         if complete:
@@ -447,4 +849,4 @@ class StageTwo(HubbleStage):
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
-            self.last_guideline.stage_3_complete = False
+            self.stage_state.stage_3_complete = False

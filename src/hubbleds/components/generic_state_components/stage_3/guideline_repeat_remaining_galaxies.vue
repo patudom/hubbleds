@@ -5,8 +5,8 @@
     max-width="800"
     elevation="6"
     :title-text="state.angsizes_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'"
-    @back="state.marker = 'ang_siz6'"
-    @next="state.marker = 'est_dis1'"
+    @back="state.marker = 'dot_seq5'"
+    @next="state.marker = 'fil_rem1'"
     :can-advance="(state) => state.angsizes_total >= 5"
     :state="state"
   >
@@ -27,10 +27,10 @@
       v-if="state.angsizes_total >= 5"
     >
       <p>
-        You have measured the angular size for all of your galaxies.
+        You have measured angular sizes for all of your galaxies.
       </p>
       <p>
-        You can continue to refine your measurements, or, if you are satisfied with your measurements, you can move on.
+        You can continue to refine your measurements, or, if you are satisfied, you can move on.
       </p>
     </div>
   </scaffold-alert>

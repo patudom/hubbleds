@@ -49,8 +49,8 @@ class HubbleStage(Stage):
         if self.app_state.update_db:
             prepared = self._prepare_measurement(measurement)
             print('submit now')
-            # requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/submit-measurement",
-                        # json=prepared)
+            requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/submit-measurement",
+                        json=prepared)
             
     
     def submit_example_galaxy_measurement(self, measurement):
@@ -74,8 +74,8 @@ class HubbleStage(Stage):
 
     def update_data_value(self, dc_name, comp_name, value, index, block_submit=False):
         super().update_data_value(dc_name, comp_name, value, index)
-
-        if dc_name != STUDENT_MEASUREMENTS_LABEL:
+        print('update data value', dc_name)
+        if dc_name not in [STUDENT_MEASUREMENTS_LABEL, EXAMPLE_GALAXY_MEASUREMENTS]:
             return
 
         # Update dependent values, if the student has already has a value for them
@@ -100,7 +100,11 @@ class HubbleStage(Stage):
                 and not block_submit:
             measurement = {comp.label: data[comp][index] for comp in
                            data.main_components}
-            self.submit_measurement(measurement)
+            if dc_name == STUDENT_MEASUREMENTS_LABEL:
+                self.submit_measurement(measurement)
+            elif dc_name == EXAMPLE_GALAXY_MEASUREMENTS:
+                pass
+                #self.submit_example_galaxy_measurement(measurement)
 
     def add_data_values(self, dc_name, values):
         super().add_data_values(dc_name, values)

@@ -5,10 +5,11 @@
     max-width="800"
     elevation="6"
     header-text="Estimate Distance"
-    @back="state.marker = 'est_dis3'"
+    @back="state.marker_backward = 1"
     @next="() => {
-      state.marker = 'fil_rem1';
+      state.marker_forward = 1;
       state.distance_calc_count += 1;
+      state.show_ruler = false;
     }"
   >
     <div
@@ -23,7 +24,7 @@
         color="info lighten-1"
         elevation="0"
       >
-        $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.meas_theta).toFixed(0) }} } }} $$
+        $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.meas_theta).toFixed(0) }} } } } \text{ Mpc}$$
       </v-card>    
       <p class="mt-4">
         Dividing through gives you the estimated distance to your galaxy:
@@ -47,7 +48,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta} $$
+                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta \text{ (in arcsec)} } \text{ Mpc}$$
               </div>
             </v-col>
           </v-row>
