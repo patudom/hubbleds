@@ -688,10 +688,10 @@ class StageOne(HubbleStage):
         if galaxy:
             self.story_state.load_spectrum_data(galaxy["name"], galaxy["type"])
             if not self._filling_data:
-                if galaxy[NAME_COMPONENT] in self.galaxy_table._glue_data[NAME_COMPONENT]:
-                    self.galaxy_table.selected = [galaxy]
-                elif galaxy[NAME_COMPONENT] in self.example_galaxy_table._glue_data[NAME_COMPONENT]:
+                if galaxy[NAME_COMPONENT] in self.example_galaxy_table._glue_data[NAME_COMPONENT]:
                     self.example_galaxy_table.selected = [galaxy]
+                elif galaxy[NAME_COMPONENT] in self.galaxy_table._glue_data[NAME_COMPONENT]:
+                    self.galaxy_table.selected = [galaxy]
 
     def _on_galaxy_selected(self, galaxy):
         data = self.get_data(STUDENT_MEASUREMENTS_LABEL)
