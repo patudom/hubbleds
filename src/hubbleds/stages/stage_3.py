@@ -452,8 +452,8 @@ class StageTwo(HubbleStage):
             self.show_dotplot1_ang = True
             v1 = self.get_viewer('dotplot_viewer_dist')
             v2 = self.get_viewer('dotplot_viewer_ang')
-            v1.state.reset_limits()
-            v2.state.reset_limits()
+            v1.toolbar.tools['bqplot:home'].activate()
+            v2.toolbar.tools['bqplot:home'].activate()
             # previous line shows up when you click on the figure
             v1.show_previous_line(show = True, show_label = True)
             v2.show_previous_line(show = True, show_label = True)
@@ -490,7 +490,7 @@ class StageTwo(HubbleStage):
             
         if advancing and (new == 'dot_seq6'):
             v3 = self.get_viewer('dotplot_viewer_dist_2')
-            v3.state.reset_limits()
+            v3.toolbar.tools['bqplot:home'].activate()
             self.example_galaxy_distance_table.selected = []
             self.show_dotplot2 = True
             self.show_dotplot2_ang = True
@@ -692,8 +692,8 @@ class StageTwo(HubbleStage):
                     self.hub.subscribe(self, NumericalDataChangedMessage,
                            filter=lambda msg: msg.data.label == EXAMPLE_GALAXY_MEASUREMENTS,
                            handler=both_plots)
-                    v1.state.reset_limits()
-                    v3.state.reset_limits()
+                    v1.toolbar.tools['bqplot:home'].activate()
+                    v3.toolbar.tools['bqplot:home'].activate()
                     
                 if index == 1:
                     v4_plot = lambda *args: self.plot_measurement('dotplot_viewer_dist_2', index, distance = True, color = colors[index], label = labels[index])
@@ -701,7 +701,7 @@ class StageTwo(HubbleStage):
                     self.hub.subscribe(self, NumericalDataChangedMessage,
                            filter=lambda msg: msg.data.label == EXAMPLE_GALAXY_MEASUREMENTS,
                            handler=v4_plot)
-                    v4.state.reset_limits()
+                    v4.toolbar.tools['bqplot:home'].activate()
             
 
             
