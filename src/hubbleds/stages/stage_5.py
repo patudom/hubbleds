@@ -5,7 +5,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty, DictCallbackProperty, add_callback, callback_property
+from echo import CallbackProperty, DictCallbackProperty, add_callback, callback_property, ListCallbackProperty
 from glue.core.message import NumericalDataChangedMessage
 from glue_jupyter.link import link
 from hubbleds.components.id_slider import IDSlider
@@ -108,11 +108,13 @@ class StageState(CDSState):
         
     ])
 
-    step_markers = CallbackProperty([
-        'ran_var1',
-        'tre_lin2c',
-        'two_his1',
-    ])
+    step_markers = ListCallbackProperty([])
+
+    # step_markers = CallbackProperty([
+    #     'ran_var1',
+    #     'tre_lin2c',
+    #     'two_his1',
+    # ])
 
     table_highlights = CallbackProperty([
         'exp_dat1',
@@ -132,7 +134,7 @@ class StageState(CDSState):
 
 
     _NONSERIALIZED_PROPERTIES = [
-        'markers', 'indices', 'step_markers',
+        'markers', 'indices', #'step_markers',
         'marker_forward', 'marker_backward',
         'table_highlights', 'image_location',
         'my_galaxies_plot_highlights', 'all_galaxies_plot_highlights',
@@ -179,9 +181,9 @@ class StageState(CDSState):
         self.marker = self.markers[index]
 
 @register_stage(story="hubbles_law", index=5, steps=[
-    "CLASS AGE",
-    "CLASS DATA",
-    "UNCERTAINTIES"
+    # "CLASS AGE",
+    # "CLASS DATA",
+    # "UNCERTAINTIES"
 ])
 class StageFour(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)

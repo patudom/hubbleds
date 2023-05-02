@@ -182,6 +182,8 @@ class StageState(CDSState):
         'end_sta1'
     ])
 
+    step_markers = ListCallbackProperty([])
+
     # step_markers = ListCallbackProperty([
     #     'mee_gui1',
     #     'mee_spe1',

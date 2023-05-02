@@ -7,7 +7,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import load_template, API_URL
-from echo import CallbackProperty, add_callback, ignore_callback, callback_property
+from echo import CallbackProperty, add_callback, ignore_callback, callback_property, ListCallbackProperty
 from traitlets import default, Bool
 
 from ..components import DistanceSidebar, DistanceTool, DosDontsSlideShow
@@ -106,6 +106,8 @@ class StageState(CDSState):
         'rep_rem1',
         'fil_rem1',
     ])
+
+    step_markers = ListCallbackProperty([])
 
     # step_markers = CallbackProperty([
     #     'ang_siz1',
