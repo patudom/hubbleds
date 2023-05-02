@@ -507,7 +507,7 @@ class StageOne(HubbleStage):
         
         # ADD SPECTRUM MEASUREMENT TUTORIAL
         smts_viewers = [self.viewers["dotplot_viewer"],self.viewers["dotplot_viewer_2"], self.viewers["spectrum_viewer"], self.get_widget("example_galaxy_table")]
-        self.spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state, self.stage_state.indices)
+        self.spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state, self.stage_state.marker, self.stage_state.indices)
         # self.add_component(spectrum_measurement_tutorial, label='c-spectrum-measurement-tutorial')
         def print_dict_diff(dict_old, dict_new):
             for key in dict_new:
@@ -659,7 +659,7 @@ class StageOne(HubbleStage):
         # activate the dot plot sequence stuff
         if self.stage_state.marker_reached('int_dot1'):
             if (not self.spectrum_measurement_tutorial.been_opened) and self.stage_state.marker_before('rem_gal1'):
-                self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
+                self.spectrum_measurement_tutorial._on_dialog_open({'new': True, 'marker': new})
          
         if self.stage_state.marker_reached('int_dot1') and self.stage_state.marker_before('rem_gal1'):
             self.spectrum_measurement_tutorial._on_marker_change(old, new)
@@ -684,8 +684,10 @@ class StageOne(HubbleStage):
         if galaxy:
             self.story_state.load_spectrum_data(galaxy["name"], galaxy["type"])
             if not self._filling_data:
-                self.galaxy_table.selected = [galaxy]
-            # self.example_galaxy_table.selected = [galaxy]
+                if galaxy[NAME_COMPONENT] in self.galaxy_table._glue_data[NAME_COMPONENT]:
+                    self.galaxy_table.selected = [galaxy]
+                elif galaxy[NAME_COMPONENT] in self.example_galaxy_table._glue_data[NAME_COMPONENT]:
+                    self.example_galaxy_table.selected = [galaxy]
 
     def _on_galaxy_selected(self, galaxy):
         data = self.get_data(STUDENT_MEASUREMENTS_LABEL)

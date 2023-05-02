@@ -76,20 +76,23 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
     ]
     _default_title = "Specrum Measurement Tutorial"
 
-    def __init__(self, viewer_layouts, tutorial_state, indices, *args, **kwargs):
+    def __init__(self, viewer_layouts, tutorial_state, marker, indices, *args, **kwargs):
         
         self.currentTitle = self._default_title
         self.tutorial_state = tutorial_state
         # self.saving_state  = tutorial_state
         
         self.indices = indices
-        
         # loop through all the keys in the tutorial state and set the values
         # so that self.variable stores the correct value and make sure the 
         # value in the tutorial state is updated when the value changes
         for key in self.tutorial_state.keys():
             setattr(self, key, self.tutorial_state[key])
             self.observe(self._on_tutorial_state_change, [key])
+            
+        self.marker_index = {v:k for k, v in indices.items()}
+        self.tutorial_start_marker = 'che_mea1'
+        self.init_marker = marker
         
         self.disable_next_button = [1, 9, 17]
         
@@ -211,12 +214,12 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             
             self.example_galaxy_table._glue_data.hub.subscribe(
                 self, NumericalDataChangedMessage,
-                filter = lambda msg: msg.data.label == self.example_galaxy_table._glue_data.label ,
+                filter = lambda msg: msg.data.label == self.table_data.label ,
                 handler=self._on_data_change)
             
             self.example_galaxy_table._glue_data.hub.subscribe(
                 self, SubsetUpdateMessage,
-                # filter = lambda msg: msg.data.label == self.example_galaxy_table._glue_data.label ,
+                # filter = lambda msg: msg.data.label == self.table_data.label ,
                 handler=self._on_data_change)
             
             self.add_selector_lines()
@@ -227,7 +230,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             self.dotplot_viewer.add_event_callback(self._update_selector_tool_dp, events=['mousemove'])
             self.dotplot_viewer_2.add_event_callback(self._update_selector_tool_dp2, events=['mousemove'])
             
-            self.observe(lambda msg: self.plot_measurements(self.example_galaxy_table._glue_data), ['show_first_measurment', 'show_second_measurment'])
+            self.observe(lambda msg: self.plot_measurements(self.table_data), ['show_first_measurment', 'show_second_measurment'])
             self.observe(self.toggle_specview_mouse_interaction, 'allow_specview_mouse_interaction')
             # self.observe(self._on_step_change, ['step'])
             
@@ -259,6 +262,8 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                 self.example_galaxy_table.selected = [galaxy]
                 self.example_galaxy_table.selected = []
             
+            self._on_marker_change(self.tutorial_start_marker, change['marker'])
+            
         elif change['new'] & self.been_opened:
             self.vue_on_reopen()
         else:
@@ -268,15 +273,30 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         # stubb
         pass
     
-    def reached(self, check, current):
-        return self.indices[current] >= self.indices[check]
+    
+    def at_marker(self, new, check):
+        return new == check #self.indices[new] == self.indices[check]
+    
+    def marker_after(self, marker, check):
+        return self.indices[marker] >= self.indices[check]
+    
+    def marker_before(self, marker, check):
+        return self.indices[marker] <= self.indices[check]
     
     def _on_marker_change(self, old, new):
+        if self.marker_before(old, self.tutorial_start_marker):
+            old = self.tutorial_start_marker
+        if (self.indices[new] - self.indices[old])  > 1:
+            self._on_marker_change(old, self.marker_index[self.indices[new]-1])
+            
         self.print_log(f"marker change: {old} -> {new}")
         
         advancing = (self.indices[new] - self.indices[old]) == 1
         
-        if new == 'int_dot1':
+        if not self.been_opened:
+            self._on_dialog_open({'new':True})
+        
+        if self.at_marker(new, 'int_dot1'):
             link((self.spectrum_viewer.state, 'x_min'), (self.dotplot_viewer.state, 'x_min'), self.w2v, self.v2w )
             link((self.spectrum_viewer.state, 'x_max'), (self.dotplot_viewer.state, 'x_max'), self.w2v, self.v2w)
             
@@ -285,23 +305,16 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                         activate_before_tool=False)
             self.show_first_measurment = True
         
-        if new == 'dot_seq1':
-            # self.spectrum_viewer.show_line = False
-            # self.spectrum_viewer.show_previous_line = False
-            # try:
-            #     self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_mouse_moved)
-            # except:
-            #     print_log('on_mouse_moved not found')
+        if self.at_marker(new, 'dot_seq1'):
             try:
                 self.spectrum_viewer.remove_event_callback(self.spectrum_viewer._on_click) # turns on measuring interaction
             except:
                 print_log('on_click not found')
             
-        if new == 'dot_seq2':
+        if self.at_marker(new, 'dot_seq2'):
             self.dotplot_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             
-        
-        if new == 'dot_seq5':
+        if self.at_marker(new, 'dot_seq5'):
             self.show_selector_lines = True
             for viewer in [self.dotplot_viewer, self.dotplot_viewer_2]:
                 viewer.show_line(True,True)
@@ -340,11 +353,11 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                         activate_cb=partial(on_zoom_active, self.dotplot_viewer_2), 
                         deactivate_cb=partial(on_zoom_deactive, self.dotplot_viewer_2))
         
-        if new == "dot_seq13":
+        if self.at_marker(new, 'dot_seq13'):
             self.show_second_measurment = True
             self.example_galaxy_table.filter_by(None)#lambda item: item['measurement_number'] == 'second')
     
-        if new == "dot_seq14":
+        if self.at_marker(new, 'dot_seq14'):
             self.dotplot_viewer_2.toolbar.set_tool_enabled("hubble:wavezoom", True)
             link((self.spectrum_viewer.state, 'x_min'), (self.dotplot_viewer_2.state, 'x_min'), self.w2v, self.v2w)
             link((self.spectrum_viewer.state, 'x_max'), (self.dotplot_viewer_2.state, 'x_max'), self.w2v, self.v2w)
@@ -382,7 +395,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
     
     def _on_data_change(self, message):
         # things that need to be redrawn when dotplots are changed
-        self.plot_measurements(self.example_galaxy_table._glue_data)
+        self.plot_measurements(self.table_data)
         self.add_selector_lines()
     
         
@@ -404,7 +417,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
     def _on_dotplot_change(self, change = None):
         if change is not None:
             self.add_selector_lines()
-        self.plot_measurements(self.example_galaxy_table._glue_data) # plots the measurements again
+        self.plot_measurements(self.table_data) # plots the measurements again
 
         
     
@@ -678,7 +691,7 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         display(Javascript(f'console.log("%c{s}","color:green");'))
         
     def vue_on_reopen(self):
-        self.plot_measurements(self.example_galaxy_table._glue_data)
+        self.plot_measurements(self.table_data)
         self.spectrum_viewer.add_event_callback(self._update_selector_tool_sv, events=['mousemove'])
         
 
