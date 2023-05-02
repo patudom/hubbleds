@@ -375,6 +375,7 @@ class StageTwo(HubbleStage):
             self.stage_state.show_ruler = True
         else:
             self.stage_state.show_ruler = False
+        self._show_ruler_changed(self.stage_state.show_ruler)
             
         if self.stage_state.marker_reached("ang_siz5a"):
             # hide lines
@@ -609,6 +610,7 @@ class StageTwo(HubbleStage):
         
         self.stage_state.galaxy = galaxy
         self.stage_state.galaxy_dist = None
+        print('bool(galaxy)',bool(galaxy))
         self.distance_tool.measuring_allowed = bool(galaxy)
         self.stage_state.meas_theta = data[ANGULAR_SIZE_COMPONENT][index]
 
