@@ -60,7 +60,7 @@
               <v-card-text>
                 <v-container>
                   <p>
-                    This <strong>dot plot</strong> displays&#8212;as a dot&#8212;every velocity measurement in our sample.
+                    This <strong>dot plot</strong> displays&#8212;as a dot&#8212;every velocity measurement in our sample (excluding yours for now).
                   </p>
                   <p>
                     Dots are stacked within velocity <strong>ranges</strong> called <strong>bins</strong>.

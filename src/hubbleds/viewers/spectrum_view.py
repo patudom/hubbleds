@@ -59,7 +59,7 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
     _subset_artist_cls = SpectrumViewLayerArtist
 
     inherit_tools = False
-    tools = ['bqplot:home', 'hubble:wavezoom', 'hubble:restwave','cds:info']
+    tools = ['bqplot:home', 'hubble:wavezoom', 'hubble:restwave'] # remove 'cds:info' for now
     _state_cls = SpectrumViewerState
     LABEL = "Spectrum Viewer"
 

@@ -269,6 +269,10 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         if new == 'int_dot1':
             link((self.spectrum_viewer.state, 'x_min'), (self.dotplot_viewer.state, 'x_min'), self.w2v, self.v2w )
             link((self.spectrum_viewer.state, 'x_max'), (self.dotplot_viewer.state, 'x_max'), self.w2v, self.v2w)
+            
+            extend_tool(self.dotplot_viewer, "hubble:wavezoom", 
+                        activate_cb=self.spectrum_viewer.state.reset_y_limits_for_view, 
+                        activate_before_tool=False)
             self.show_first_measurment = True
         
         if new == 'dot_seq1':
@@ -334,6 +338,9 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             self.dotplot_viewer_2.toolbar.set_tool_enabled("hubble:wavezoom", True)
             link((self.spectrum_viewer.state, 'x_min'), (self.dotplot_viewer_2.state, 'x_min'), self.w2v, self.v2w)
             link((self.spectrum_viewer.state, 'x_max'), (self.dotplot_viewer_2.state, 'x_max'), self.w2v, self.v2w)
+            extend_tool(self.dotplot_viewer_2, "hubble:wavezoom", 
+                        activate_cb=self.spectrum_viewer.state.reset_y_limits_for_view, 
+                        activate_before_tool=False)
             self.show_second_measurment = True
             self.example_galaxy_table.filter_by(None)#lambda item: item['measurement_number'] == 'second')
 
