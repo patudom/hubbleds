@@ -52,7 +52,6 @@
         <guideline-professional-data5
           v-if="stage_state.marker == 'pro_dat5'"
           v-intersect.once="scrollIntoView"
-          @ready="stage_state.prodata_response = true"
           :state="stage_state"/>
         <guideline-professional-data6
           v-if="stage_state.marker == 'pro_dat6'"
