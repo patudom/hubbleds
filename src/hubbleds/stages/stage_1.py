@@ -14,21 +14,21 @@ from echo import add_callback, ignore_callback, CallbackProperty, \
     DictCallbackProperty, ListCallbackProperty, delay_callback, \
     callback_property
 from glue.core import Data
-from glue.core.message import NumericalDataChangedMessage
+from glue.core.message import NumericalDataChangedMessage, SubsetUpdateMessage
 from numpy import isin
 from traitlets import Bool, default, validate
 
-from ..components import SpectrumSlideshow, SelectionTool, SpectrumMeasurementTutorialSequence
+from ..components import SpectrumSlideshow, SelectionTool, SpectrumMeasurementTutorialSequence, DotplotTutorialSlideshow
 from ..data.styles import load_style
 from ..data_management import *
 from ..stage import HubbleStage
 from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, \
-    MG_REST_LAMBDA, velocity_from_wavelengths
+    MG_REST_LAMBDA, SPEED_OF_LIGHT, velocity_from_wavelengths
 from ..viewers import SpectrumView, HubbleDotPlotView
 from ..viewers.viewers import HubbleHistogramView
 from glue.core.data_factories import load_data
 from bqplot.marks import Lines
-
+from glue_jupyter.link import link
 
 log = logging.getLogger()
 
@@ -37,10 +37,10 @@ import inspect
 from IPython.display import Javascript, display
 
 def print_log(*args, color = None, **kwargs):
-    if True:
+    if False:
         # print(*args, **kwargs)
-        s = 'py: ' + ' '.join([str(a) for a in args])
-        color = color or 'grey'
+        s = 'stage 1: ' + ' '.join([str(a) for a in args])
+        color = color or 'red'
         display(Javascript(f'console.log("%c{s}","color:{color}");'))
 
     return
@@ -57,6 +57,11 @@ class StageState(CDSState):
     gal_selected = CallbackProperty(False)
     spec_viewer_reached = CallbackProperty(False)
     spec_tutorial_opened = CallbackProperty(False)
+    dotplot_tutorial_finished = CallbackProperty(False) 
+    dot_zoom_activated = CallbackProperty(True) # Need to initialize as false later
+    dot_zoomed = CallbackProperty(True) # Need to initialize as false later
+    dot_seq8_q = CallbackProperty(False)
+    ref_vel1_q = CallbackProperty(False)
     lambda_used = CallbackProperty(False)
     lambda_on = CallbackProperty(False)
     waveline_set = CallbackProperty(False)
@@ -100,7 +105,7 @@ class StageState(CDSState):
             'allow_specview_mouse_interaction', 
             'show_first_measurment', 
             'show_second_measurment', 
-            'zoom_tool_enabled', 
+            'zoom_tool_activated', 
             'show_selector_lines', 
             'subset_created',
             'next_disabled',
@@ -110,6 +115,8 @@ class StageState(CDSState):
     spectrum_tut_vars.update({'step': 0, 'length':19, 'maxStepCompleted': 0})
     spectrum_tut_state = DictCallbackProperty(spectrum_tut_vars)
     
+    meas_two_row_selected = CallbackProperty(False) #need to reinitialize to false
+    meas_two_made = CallbackProperty(False) #need to reinitialize to false
     
     marker = CallbackProperty("")
     marker_backward = CallbackProperty()
@@ -130,6 +137,9 @@ class StageState(CDSState):
     allow_first_measurement_change = CallbackProperty(True)
     allow_second_measurement_change = CallbackProperty(True)
     
+    random_state_variable = CallbackProperty(True)
+    
+    
     markers = CallbackProperty([
         'mee_gui1',
         'sel_gal1',
@@ -148,11 +158,28 @@ class StageState(CDSState):
         # 'dop_cal3',
         'dop_cal4',
         'dop_cal5',
-        'osm_tut',
-        'smt_tut',
+        'che_mea1',
+        'int_dot1', # add dot plot tutorial (like hubble race)
+        'dot_seq1',
+        'dot_seq2',
+        'dot_seq3',
+        'dot_seq4',
+        'dot_seq5', # show first measurement
+        'dot_seq6',
+        'dot_seq7', # activate and check for zoom tool, auto advance
+        'dot_seq8', # allow next after zoomed (pat: auto advance)
+        'dot_seq9',
+        'dot_seq10',
+        'dot_seq11',
+        'dot_seq12', # go split make second measuremtn or remaining galaxies
+        'dot_seq13',
+        'dot_seq13a',
+        'dot_seq14',
         'rem_gal1',
         'ref_dat1',
         'dop_cal6',
+        'ref_vel1',
+        'end_sta1'
     ])
 
     step_markers = ListCallbackProperty([
@@ -269,6 +296,10 @@ class StageOne(HubbleStage):
 
         self.show_team_interface = self.app_state.show_team_interface
 
+        # This flag indicates whether we're using one of the convenience "fill" methods
+        # In which case we don't need to do all of the UI manipulation in quite the same way
+        self._filling_data = False
+
         # Set up any Data-based state values
         self._update_state_from_measurements()
         self.hub.subscribe(
@@ -287,11 +318,17 @@ class StageOne(HubbleStage):
         # Add new dotplot viewer with single galaxy seed data
         dotplot_viewer = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer', viewer_label = 'Example Galaxy Measurement')
         dotplot_viewer_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_2', viewer_label = 'Second Measurement')
-        dotplot_viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
-        dotplot_viewer_2.toolbar.set_tool_enabled('hubble:towerselect', False)
-        dotplot_viewer.toolbar.set_tool_enabled('bqplot:xzoom', False)
-        dotplot_viewer_2.toolbar.set_tool_enabled('bqplot:xzoom', False)
-        
+        dotplot_viewer_3 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_3', viewer_label = 'Dot Plot')
+
+        ### Disable anything to do with towerselect for now
+        # dotplot_viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
+        # dotplot_viewer_2.toolbar.set_tool_enabled('hubble:towerselect', False)
+        # dotplot_viewer_3.toolbar.set_tool_enabled('hubble:towerselect', False)
+
+        dotplot_viewer.toolbar.set_tool_enabled('hubble:wavezoom', False)
+        dotplot_viewer_2.toolbar.set_tool_enabled('hubble:wavezoom', False)
+        dotplot_viewer_3.toolbar.set_tool_enabled('hubble:wavezoom', False)
+        dotplot_viewer_3.toolbar.set_tool_enabled('bqplot:home', False)
                 
         #     HubbleHistogramView, label="dotplot_viewer")
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
@@ -302,8 +339,9 @@ class StageOne(HubbleStage):
         # which is either the glue Data or Subset object that is being displayed
         dotplot_viewer.ignore(lambda layer: layer in [second])
         dotplot_viewer_2.ignore(lambda layer: layer in [first])
+        dotplot_viewer_3.ignore(lambda layer: layer in [second])
         
-        for i,viewer in enumerate([dotplot_viewer, dotplot_viewer_2]):
+        for i,viewer in enumerate([dotplot_viewer, dotplot_viewer_2,dotplot_viewer_3]):
             viewer.add_data(example_galaxy_data)
             viewer.state.x_att = example_galaxy_data.id['velocity_value']
             viewer.layer_artist_for_data(example_galaxy_data).visible = False
@@ -368,18 +406,14 @@ class StageOne(HubbleStage):
                             RESTWAVE_COMPONENT,
                             MEASWAVE_COMPONENT,
                             VELOCITY_COMPONENT,
-                            ANGULAR_SIZE_COMPONENT,
-                            MEASUREMENT_NUMBER_COMPONENT,
-                            STUDENT_ID_COMPONENT],
+                            MEASUREMENT_NUMBER_COMPONENT],
             key_component=MEASUREMENT_NUMBER_COMPONENT,
             names=['Galaxy Name',
                     'Element',
                     'Rest Wavelength (Å)',
                     'Observed Wavelength (Å)',
                     'Velocity (km/s)',
-                    'Angular Size (arcmin)',
-                    'Measurement Number',
-                    'Student ID'],
+                    'Measurement Number'],
             title='Example Galaxy',
             selected_color=self.table_selected_color(
                 self.app_state.dark_mode),
@@ -418,18 +452,16 @@ class StageOne(HubbleStage):
         spectrum_slideshow.observe(self._spectrum_slideshow_tutorial_opened,
                                    names=['opened'])
         
+        dotplot_slideshow = DotplotTutorialSlideshow([self.viewers["dotplot_viewer_3"]])
+        self.add_component(dotplot_slideshow, label='py-dotplot-tutorial-slideshow')
+        dotplot_slideshow.observe(self._dotplot_slideshow_tutorial_finished, names=['finished'])
+        
         # callback places velocity value in table
         add_callback(self.stage_state, 'student_vel',
                      lambda *args, **kwargs: self.add_student_velocity(example_galaxy_table, *args, **kwargs))
         add_callback(self.stage_state, 'stage_1_complete', self._on_stage_complete)
         
-        def break_this(x):
-            print('changed show_galaxy_table to', x)
-            # if x:
-            #    raise Exception('break this')
-        add_callback(self.stage_state, 'show_galaxy_table',break_this)
-        add_callback(self.stage_state, 'show_example_galaxy_table',lambda x: print_log('changed show_example_galaxy_table to', x))
-        add_callback(self.stage_state, 'show_meas_tutorial', lambda x: print_log('changed show_meas_tutorial to', x))
+
 
         # Callbacks
         def update_count(change):
@@ -474,19 +506,24 @@ class StageOne(HubbleStage):
         
         # ADD SPECTRUM MEASUREMENT TUTORIAL
         smts_viewers = [self.viewers["dotplot_viewer"],self.viewers["dotplot_viewer_2"], self.viewers["spectrum_viewer"], self.get_widget("example_galaxy_table")]
-        spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state)
-        self.add_component(spectrum_measurement_tutorial, label='c-spectrum-measurement-tutorial')
+        self.spectrum_measurement_tutorial = SpectrumMeasurementTutorialSequence(smts_viewers, self.stage_state.spectrum_tut_state, self.stage_state.indices)
+        # self.add_component(spectrum_measurement_tutorial, label='c-spectrum-measurement-tutorial')
+        def print_dict_diff(dict_old, dict_new):
+            for key in dict_new:
+                if dict_old[key] != dict_new[key]:
+                    print_log('changed', key, 'from', dict_old[key], 'to', dict_new[key],color='red')
+        
+
         def _smts_state_update(change):
             print_log('update spectrum tutorial state',color='red')
             # print the changes between the two states
             dict_old = change['old']
             dict_new = change['new']
-            for key in dict_new:
-                if self.stage_state.spectrum_tut_state[key] != dict_new[key]:
-                    print_log('changed', key, 'from', dict_old[key], 'to', dict_new[key],color='red')
-            
+            print_dict_diff(self.stage_state.spectrum_tut_state, dict_new)
             self.stage_state.spectrum_tut_state = change['new']
-        spectrum_measurement_tutorial.observe(_smts_state_update, ['tutorial_state'])
+        self.spectrum_measurement_tutorial.observe(_smts_state_update, ['tutorial_state'])
+        # self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
+        
 
         # INITIALIZE STATE VARIABLES WHEN LOADING A STORED STATE
         # reset the state variables when we load a story state
@@ -496,6 +533,8 @@ class StageOne(HubbleStage):
             'cho_row1')
         self.stage_state.doppler_calc_reached = self.stage_state.marker_reached(
             'dop_cal2')
+        self.stage_state.dotplot_tutorial_finished = self.stage_state.marker_reached(
+            'dot_seq1')
 
         # Initialize viewers to provide story state
         if self.stage_state.marker_reached('sel_gal1'):
@@ -523,10 +562,6 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
-
-        # This flag indicates whether we're using one of the convenience "fill" methods
-        # In which case we don't need to do all of the UI manipulation in quite the same way
-        self._filling_data = False
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()
@@ -566,34 +601,40 @@ class StageOne(HubbleStage):
                 new)
         if advancing and new == "dop_cal6":
             self.stage_state.doppler_calc_complete = True
+            
         if advancing and old == "sel_gal1":
             self.selection_tool.show_galaxies()
             self.selection_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, fov=60 * u.deg, instant=True)
+            
         if advancing and old == "sel_gal3":
             self.galaxy_table.selected = []
             self.example_galaxy_table.selected = []
             self.selection_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, instant=True)
+            
         if advancing and new == 'sel_gal4':
             print_log('commented out: showing example galaxy table')
             # self.stage_state.show_galaxy_table = False
             # self.stage_state.show_example_galaxy_table = True
-        if advancing and new == "osm_tut":
-            print_log("showing osm tutorial")
-            self.stage_state.show_meas_tutorial = True
+            
+            
         if advancing and new == "cho_row1" and self.example_galaxy_table.index is not None:
             self.stage_state.spec_viewer_reached = True
             self.stage_state.marker = "mee_spe1"
+            
         if advancing and old == "dop_cal2" and (self.example_galaxy_table.index is not None) :
             self.stage_state.doppler_calc_reached = True
             self.stage_state.marker = "dop_cal4"
+            
         if advancing and old == "dop_cal2":
             self.selection_tool.widget.center_on_coordinates(
                 self.START_COORDINATES, instant=True)
+            
         if advancing and new == "res_wav1":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:restwave", True)
+            
         if advancing and new == "obs_wav1":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.add_event_callback(spectrum_viewer._on_mouse_moved,
@@ -604,11 +645,27 @@ class StageOne(HubbleStage):
                                                events=['click'])
             spectrum_viewer.add_event_callback(self.on_spectrum_click_example_galaxy,
                                                events=['click'])
+            
         if advancing and new == "obs_wav2":
             spectrum_viewer = self.get_viewer("spectrum_viewer")
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
-
+        
+        if advancing and new == "che_mea1":
+            spectrum_viewer = self.get_viewer("spectrum_viewer")
+            spectrum_viewer.state.reset_limits()
+        
+        # activate the dot plot sequence stuff
+        if self.stage_state.marker_reached('int_dot1'):
+            if (not self.spectrum_measurement_tutorial.been_opened) and self.stage_state.marker_before('rem_gal1'):
+                self.spectrum_measurement_tutorial._on_dialog_open({'new': True})
+         
+        if self.stage_state.marker_reached('int_dot1') and self.stage_state.marker_before('rem_gal1'):
+            self.spectrum_measurement_tutorial._on_marker_change(old, new)
+        
+        if advancing and new == "rem_gal1":
+            self.spectrum_measurement_tutorial.vue_on_close()
+    
     def _on_step_index_update(self, index):
         # If we aren't on this stage, ignore
         if self.story_state.stage_index != self.index:
@@ -732,6 +789,9 @@ class StageOne(HubbleStage):
     def _spectrum_slideshow_tutorial_opened(self, msg):
         self.stage_state.spec_tutorial_opened = msg['new']
 
+    def _dotplot_slideshow_tutorial_finished(self, msg):
+        self.stage_state.dotplot_tutorial_finished = msg['new']
+
     def _on_doppler_dialog_changed(self, msg):
         self.stage_state.doppler_calc_dialog = msg['new']
 
@@ -764,6 +824,9 @@ class StageOne(HubbleStage):
         z = galaxy["z"]
         self.story_state.update_data(SPECTRUM_DATA_LABEL, spec_data)
         self.update_spectrum_viewer(name, z,  table )
+        
+        if self.stage_state.marker_reached('cho_row1'):
+            self.stage_state.spec_viewer_reached = True
 
         if self.stage_state.marker == 'cho_row1':
             self.stage_state.spec_viewer_reached = True
@@ -787,12 +850,17 @@ class StageOne(HubbleStage):
         self.stage_state.lambda_rest = data[RESTWAVE_COMPONENT][index]
         self.stage_state.lambda_obs = data[MEASWAVE_COMPONENT][index]
         self.stage_state.sel_gal_index = index
+        
+        if table is self.example_galaxy_table:
+            if index == 1:
+                self.stage_state.meas_two_row_selected = True
+                self.stage_state.marker_forward = 1
 
     #@print_function_name
     def add_new_measurement(self, data_label = EXAMPLE_GALAXY_MEASUREMENTS):
         data = self.data_collection[data_label]
         new_meas = {x.label:data[x][0] for x in data.main_components}
-        new_meas[MEASWAVE_COMPONENT] = 0
+        # new_meas[MEASWAVE_COMPONENT] = 0
         new_meas[MEASUREMENT_NUMBER_COMPONENT] = 'second'
         # new_meas['name'] = new_meas['name'].replace('.fits','')
         self.add_data_values(data_label,new_meas)
@@ -844,16 +912,19 @@ class StageOne(HubbleStage):
             if index is not None:
                 # if we're on the first example galaxy and we've reached the tutorial, don't allow changes to
                 # the first measurement anymore. when it changes to the second measurement we'll allow it again
-                if (index == 0) & (self.stage_state.marker_reached('osm_tut')):
+                if (index == 0) & (self.stage_state.marker_reached('che_mea1')):
                     # don't allow user to change the first measurement once we begin the tutorial section
                     return
                 self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
                                     new_value, index)
                 # if we are in the tutorial, update the velocity
-                if self.stage_state.marker == 'smt_tut':
+                if self.stage_state.marker_reached('dot_seq13'):
+                    self.stage_state.meas_two_made = True
                     velocity = velocity_from_wavelengths(new_value,data[RESTWAVE_COMPONENT][index])
                     self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, VELOCITY_COMPONENT,
                                         velocity, index)
+                    if self.stage_state.marker == 'dot_seq13a':
+                        self.stage_state.marker_forward = 1
                 # self.story_state.update_student_data()
                 self.stage_state.spectrum_clicked = True
         else:
@@ -875,9 +946,11 @@ class StageOne(HubbleStage):
     def add_student_velocity(self, table, *args, **kwargs):
         index = table.index
         data_label = table._glue_data.label
+        if self.stage_state.student_vel is None:
+            return
         velocity = round(self.stage_state.student_vel)
         self.update_data_value(data_label, VELOCITY_COMPONENT,
-                               velocity, index)
+                            velocity, index)
 
     @property
     def selection_tool(self):
@@ -908,8 +981,8 @@ class StageOne(HubbleStage):
 
 
     def _update_viewer_style(self, dark):
-        viewers = ['dotplot_viewer','dotplot_viewer_2']
-        viewer_type = ["histogram","histogram"]
+        viewers = ['dotplot_viewer','dotplot_viewer_2','dotplot_viewer_3']
+        viewer_type = ["histogram","histogram","histogram"]
         theme_name = "dark" if dark else "light"
         for viewer, vtype in zip(viewers, viewer_type):
             viewer = self.get_viewer(viewer)
@@ -1019,3 +1092,9 @@ class StageOne(HubbleStage):
         print("story state:")
         print(self.story_state)
 
+    def fill_table(self, table, tool=None):
+        self.update_data_value(table._glue_data.label, MEASWAVE_COMPONENT, 6830, 0) 
+        self.update_data_value(table._glue_data.label, VELOCITY_COMPONENT, 12130, 0)
+
+    def vue_fill_table(self, _args):
+        self.fill_table(self.example_galaxy_table)

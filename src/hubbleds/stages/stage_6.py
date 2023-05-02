@@ -1,6 +1,8 @@
 from os.path import join
 from pathlib import Path
 
+from numpy import where, round
+
 from echo import CallbackProperty, add_callback, callback_property
 from glue.core.message import NumericalDataChangedMessage
 from glue.core import Subset
@@ -11,7 +13,7 @@ from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import (RepeatedTimer, extend_tool, load_template,
                             update_figure_css)
-from hubbleds.utils import IMAGE_BASE_URL
+from hubbleds.utils import HST_KEY_AGE, IMAGE_BASE_URL, AGE_CONSTANT
 
 from ..data.styles import load_style
 from ..data_management import *
@@ -24,8 +26,12 @@ class StageState(CDSState):
     marker = CallbackProperty("")
     indices = CallbackProperty({})
 
-    hst_age = CallbackProperty(13)
+    hst_age = CallbackProperty(HST_KEY_AGE)
     our_age = CallbackProperty(0)
+    class_age = CallbackProperty(0)
+    
+    ages_within = CallbackProperty(0.15)
+    allow_too_close_correct = CallbackProperty(False)
 
     max_prodata_index = CallbackProperty(0)
     
@@ -153,7 +159,11 @@ class StageFive(HubbleStage):
         self.hub.subscribe(self, NumericalDataChangedMessage,
                            filter=lambda msg: msg.data.label == CLASS_DATA_LABEL,
                            handler=self._on_class_data_update)
-
+        if self.story_state.has_best_fit_galaxy:
+            self.set_our_age()
+        
+        self.set_class_age()
+        
     def setup_prodata_viewer(self):
         # load the prodata_viewer
         prodata_viewer = self.get_viewer("prodata_viewer")
@@ -197,7 +207,7 @@ class StageFive(HubbleStage):
         student_layer.state.zorder = 5
         student_layer.state.size = 8                    
         student_layer.state.alpha = 1
-        student_layer.state.visible = self.stage_state.marker_reached('pro_dat0')
+        student_layer.state.visible = False
  
         # load hubble 1929 data
         prodata_viewer.add_data(hubble_data)
@@ -236,10 +246,18 @@ class StageFive(HubbleStage):
         prodata_viewer.state.reset_limits()
     
     def _on_class_data_update(self, *args):
+        self.set_class_age()
         self.reset_viewer_limits()
     
     def _on_student_data_update(self, *args):
+        self.set_our_age()
         self.reset_viewer_limits()
+    
+    def set_layers(self, labels, visible):
+        prodata_viewer = self.get_viewer("prodata_viewer")
+        for label in labels:
+            layer = prodata_viewer.layer_artist_for_data(self.get_data(label))
+            layer.state.visible = visible
     
     def _on_marker_update(self, old, new):
         
@@ -275,10 +293,44 @@ class StageFive(HubbleStage):
                 prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
                 if not prodata_viewer.toolbar.tools["hubble:linefit"].active:
                     prodata_viewer.toolbar.tools["hubble:linefit"].activate()
-            
+                self.set_layers([HUBBLE_1929_DATA_LABEL, STUDENT_DATA_LABEL], visible = False)
+                self.set_layers([HUBBLE_KEY_DATA_LABEL, CLASS_DATA_LABEL], visible = True)
+
+                
             elif new == 'pro_dat8':
                 # show all the ages
                 prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = True
             
+            if self.stage_state.marker_reached('pro_dat1'):
+                self.set_class_age()
+                self.set_our_age()
+
+    @staticmethod
+    def linear_slope(x, y):
+        # returns the slope, m,  of y(x) = m*x
+        return sum(x * y) / sum(x * x)
+
+    def set_our_age(self):
+        data = self.get_data(STUDENT_DATA_LABEL)
+        indices = where(data[NAME_COMPONENT] == BEST_FIT_GALAXY_NAME)
+        if (indices[0].size > 0):
+            index = indices[0][0]
+            vel = data[VELOCITY_COMPONENT][index]
+            dist = data[DISTANCE_COMPONENT][index]
+            self.stage_state.our_age = (AGE_CONSTANT * dist/vel)
+        else:
+            vel = round(data[VELOCITY_COMPONENT],0)
+            dist = round(data[DISTANCE_COMPONENT], 0)
+            slope = sum(dist * vel) / sum(dist * dist) # least squares fit w/ no intercept
+            self.stage_state.our_age = round(AGE_CONSTANT / slope, 0)
             
-     
+
+    def set_class_age(self):
+        data = self.get_data(CLASS_DATA_LABEL)
+        vel = data[VELOCITY_COMPONENT]
+        dist = data[DISTANCE_COMPONENT]
+        # only accept rows where both velocity and distance exist
+        indices = where((vel != 0) & (vel is not None) & (dist != 0) & (dist is not None))
+        if (indices[0].size > 0):
+            slope = self.linear_slope(dist[indices], vel[indices])
+            self.stage_state.class_age = round(AGE_CONSTANT / slope, 2)

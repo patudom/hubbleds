@@ -22,6 +22,8 @@ class WavelengthZoom(BqplotXZoom):
             return
         super().update_selection(*args)
 
+        state.reset_y_limits_for_view()
+
         if self.on_zoom is not None:
             xbounds_new = [state.x_min, state.x_max]
             self.on_zoom(xbounds_old, xbounds_new)

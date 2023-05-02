@@ -302,8 +302,8 @@ class StageFour(HubbleStage):
             self.student_slider_subset.style.color = color
             comparison_viewer.state.reset_limits()
         def student_slider_refresh(slider):
-            self.stage_state.stu_low_age = round(min(slider.values))
-            self.stage_state.stu_high_age = round(max(slider.values))
+            self.stage_state.stu_low_age = round(min(slider.values, default=0))
+            self.stage_state.stu_high_age = round(max(slider.values, default=0))
             comparison_viewer.state.reset_limits()
 
         student_slider.on_id_change(student_slider_change)

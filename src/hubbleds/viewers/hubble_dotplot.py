@@ -11,6 +11,11 @@ class HubbleDotPlotViewerState(LineHoverStateMixin,DotPlotViewerState):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+    
+    def reset_limits(self):
+        DotPlotViewerState.reset_limits(self)
+        # LineHoverStateMixin.reset_limits(self)
+    
         
 
 class HubbleDotPlotViewer(LineHoverViewerMixin,BqplotDotPlotView):
@@ -24,27 +29,32 @@ class HubbleDotPlotViewer(LineHoverViewerMixin,BqplotDotPlotView):
     def _label_text(value):
         return f"{value:.0f} km/s"
     
+    def add_marks(self, new_marks):
+        marks = []
+        for new_mark in new_marks:
+            if new_mark not in self.figure.marks:
+                marks += [new_mark]
+        
+        if len(marks) > 0:
+            self.figure.marks = self.figure.marks + marks
+        
     def show_line(self, show = True, show_label = False):
         self.line.visible = show
         self.line_label.visible = show_label
         lines = [self.line, self.line_label]
-        marks = [m for m in self.figure.marks if m not in lines]
-        marks = [self.line] + marks
-        marks = [self.line_label] + marks
-        self.figure.marks = marks
+        self.add_marks(lines)
         
     def show_previous_line(self, show = True, show_label = True):
         self.previous_line.visible = False
         self.previous_line_label.visible = False
         lines = [self.previous_line, self.previous_line_label]
-        marks = [m for m in self.figure.marks if m not in lines]
-        marks = [self.previous_line] + marks
-        marks = [self.previous_line_label] + marks
-        self.figure.marks = marks
+        self.add_marks(lines)
     
-    def add_lines_to_figure(self):
-        self.show_line(show = self.line.visible, show_label = self.line_label.visible)
-        self.show_previous_line(show = self.previous_line.visible, show_label = self.previous_line_label.visible)
+    def add_lines_to_figure(self, add_line = True, add_previous_line = True):
+        if add_line:
+            self.show_line(show = self.line.visible, show_label = self.line_label.visible)
+        if add_previous_line:
+            self.show_previous_line(show = self.previous_line.visible, show_label = self.previous_line_label.visible)
     
     def remove_marks(self, marks):
         # make sure marks is a list
@@ -72,8 +82,8 @@ HubbleDotPlotView = cds_viewer(
     name="HubbleDotPlotView",
     viewer_tools=[
         "bqplot:home",
-        "bqplot:xzoom",
-        'hubble:towerselect'
+        "hubble:wavezoom",
+        #'hubble:towerselect'
     ],
     label="Dot Plot",
     state_cls=HubbleDotPlotViewerState

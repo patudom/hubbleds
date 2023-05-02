@@ -4,7 +4,7 @@
     class="mb-4 mx-auto"
     max-width="800"
     elevation="6"
-    @back="() => { state.marker_backward = 1; }"
+    @back="() => { state.marker = 'dot_seq12'; }"
     @next="() => { state.marker_forward = 1; }"
     :can-advance="(state) => state.obswaves_total >= 5"
     :title-text="state.obswaves_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'

@@ -175,12 +175,16 @@ class StageState(CDSState):
     
     @marker_backward.setter
     def marker_backward(self, value):
+        if value is None:
+            return
         index = self.indices[self.marker]
         new_index = min(max(index - value, 0), len(self.markers) - 1)
         self.marker = self.markers[new_index]
 
     @marker_forward.setter
     def marker_forward(self, value):
+        if value is None:
+            return
         index = self.indices[self.marker]
         new_index = min(max(index + value, 0), len(self.markers) - 1)
         self.marker = self.markers[new_index]
@@ -252,14 +256,9 @@ class StageTwo(HubbleStage):
         dotplot_viewer_dist._label_text = lambda value: f"{value:.1f} Mpc"
         dotplot_viewer_dist_2._label_text = lambda value: f"{value:.1f} Mpc"
         
-        for viewer in [dotplot_viewer_ang, dotplot_viewer_ang_2, dotplot_viewer_dist, dotplot_viewer_dist_2]:
-            viewer.toolbar.set_tool_enabled('hubble:towerselect', False)
-        
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
         first = next((s for s in example_galaxy_data.subsets if s.label=='first measurement'), None)
         second = next((s for s in example_galaxy_data.subsets if s.label=='second measurement'), None)
-        
-        
         
         dotplot_viewer_ang.ignore(lambda layer: layer in [second])
         dotplot_viewer_dist.ignore(lambda layer: layer in [second])

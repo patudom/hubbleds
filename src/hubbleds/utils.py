@@ -29,7 +29,9 @@ DISTANCE_CONSTANT = round(
     MILKY_WAY_SIZE_MPC * 3600 * 180 / pi / 100) * 100  # theta = L/D:  Distance in Mpc = DISTANCE_CONSTANT / theta in arcsec; Round to hundreds to match slideshow notes.
 
 AGE_CONSTANT = round( 1.e6 * u.pc.to(u.km)/ (1e9 * u.yr.to(u.s)) / 10  ) * 10 # t = d/v
+HST_KEY_AGE = 12.79687910  # (1/H_0) in Gyr
 
+SPEED_OF_LIGHT = 3.0 * 10 ** 5 # km/s
 # Both in angstroms
 H_ALPHA_REST_LAMBDA = 6565  # SDSS calibrates to wavelengths in a vacuum
 MG_REST_LAMBDA = 5172  # The value used by SDSS is actually 5176.7, but that wavelength aligns with an upward bump, so we are adjusting it to 5172 to avoid confusing students. Ziegler & Bender 1997 uses lambda_0 ~ 5170, so our choice is justifiable.
