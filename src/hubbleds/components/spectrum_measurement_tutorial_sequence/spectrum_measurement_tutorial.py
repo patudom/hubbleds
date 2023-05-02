@@ -190,8 +190,10 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
         extend_tool(self.dotplot_viewer,'bqplot:home', func, activate_before_tool = False)
         
         # run through steps to open run necessary setup calls in the vue file
-        for i in range(self.maxStepCompleted):
-            self.step = i
+    
+    @property
+    def table_data(self):
+        return self.example_galaxy_table._glue_data
     
     def _on_tutorial_state_change(self, change):
         self.print_log(f'name: {change["name"]}, old: {change["old"]}, new: {change["new"]}')
