@@ -202,7 +202,8 @@
     </v-row>
 
 <!-- Row for First Velocity Dot Plot -->
-    <v-row>
+    <v-row
+      v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1'] && stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq13'] || stage_state.indices[stage_state.marker] == stage_state.indices['dot_seq14']">
       <v-col
         cols="12"
         lg="4"
@@ -257,21 +258,14 @@
       <v-col
         cols="12"
         lg="8"
+        class="py-0"
       >
-        <v-row
-          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['int_dot1'] && stage_state.indices[stage_state.marker] < stage_state.indices['dot_seq13'] || stage_state.indices[stage_state.marker] == stage_state.indices['dot_seq14']"
+        <v-card
+          outlined
         >
-          <v-col
-            class="py-0"
-          >
-            <v-card
-              outlined
-            >
-                <jupyter-widget :widget="viewers.dotplot_viewer"
-                />
-            </v-card>
-          </v-col>
-        </v-row>
+            <jupyter-widget :widget="viewers.dotplot_viewer"
+            />
+        </v-card>
       </v-col>
     </v-row>
 
@@ -302,7 +296,6 @@
               outlined
             >
                 <jupyter-widget :widget="viewers.dotplot_viewer_2"
-                v-if="stage_state.marker == 'dot_seq14'"
                 />
             </v-card>
           </v-col>

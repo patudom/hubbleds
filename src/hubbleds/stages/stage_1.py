@@ -928,7 +928,8 @@ class StageOne(HubbleStage):
                     velocity = velocity_from_wavelengths(new_value,data[RESTWAVE_COMPONENT][index])
                     self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, VELOCITY_COMPONENT,
                                         velocity, index)
-                    self.stage_state.marker_forward = 1
+                    if self.stage_state.marker == 'dot_seq13a':
+                        self.stage_state.marker_forward = 1
                 # self.story_state.update_student_data()
                 self.stage_state.spectrum_clicked = True
         else:
