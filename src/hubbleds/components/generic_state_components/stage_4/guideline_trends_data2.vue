@@ -11,7 +11,7 @@
     :state="state"
   >
     <template #before-next>
-      Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-google-classroom</v-icon></v-btn> in Toolbar.
+      Click Class Data box
     </template>
 
     <div
@@ -24,7 +24,7 @@
         Since everyone in your class also measured 5 galaxies, let's look at a dataset that combines everyone's measurements.
       </p>
       <p>
-        Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-google-classroom</v-icon></v-btn>  to display measurements from your entire class.
+        Click the box next to  <span style="background-color: white; border-radius : 5px; padding: 3px; color:black!important; font-size: 80%"><strong>Class Data</strong></span>  in the legend panel to display measurements from your entire class.
       </p>
     </div>
   </scaffold-alert>
