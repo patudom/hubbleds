@@ -30,20 +30,9 @@
           color="error"
           class="black--text"
           @click="() => {
+            fill_data();
+            stage_state.marker = 'dop_cal6';
             stage_state.reflection_complete = true;
-            stage_state.velocities_total = 5;
-            stage_state.marker = 'dop_cal6';
-          }"
-        >
-          jump
-        </v-btn>
-        <v-btn
-          color="error"
-          class="black--text"
-          @click="() => {
-            stage_state.marker = 'dop_cal6';
-            state.velocities_total === 5
-            fill_table();
           }"
         >
           Jump
