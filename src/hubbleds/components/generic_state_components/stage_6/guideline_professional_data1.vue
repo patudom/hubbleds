@@ -19,7 +19,7 @@
     </p>
 
     <p>
-      Does your class's age estimate agree with Hubble's age estimate? It might help to display the best fit lines.
+      Does your class's age estimate agree with Hubble's age estimate? It might help to show <strong>fit lines to data</strong> (using <v-icon>mdi-chart-timeline-variant</v-icon>).
     </p>
 
     <v-container

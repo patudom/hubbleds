@@ -29,6 +29,7 @@ DISTANCE_CONSTANT = round(
     MILKY_WAY_SIZE_MPC * 3600 * 180 / pi / 100) * 100  # theta = L/D:  Distance in Mpc = DISTANCE_CONSTANT / theta in arcsec; Round to hundreds to match slideshow notes.
 
 AGE_CONSTANT = round( 1.e6 * u.pc.to(u.km)/ (1e9 * u.yr.to(u.s)) / 10  ) * 10 # t = d/v
+HST_KEY_AGE = 12.79687910  # (1/H_0) in Gyr
 
 SPEED_OF_LIGHT = 3.0 * 10 ** 5 # km/s
 # Both in angstroms
