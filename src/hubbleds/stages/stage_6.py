@@ -206,7 +206,7 @@ class StageFive(HubbleStage):
         student_layer.state.zorder = 5
         student_layer.state.size = 8                    
         student_layer.state.alpha = 1
-        student_layer.state.visible = self.stage_state.marker_reached('pro_dat0')
+        student_layer.state.visible = False
  
         # load hubble 1929 data
         prodata_viewer.add_data(hubble_data)
