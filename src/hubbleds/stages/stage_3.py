@@ -248,10 +248,10 @@ class StageTwo(HubbleStage):
         dotplot_viewer_dist = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_dist', viewer_label = 'First Distance Measurement')
         dotplot_viewer_dist_2 = self.add_viewer(HubbleDotPlotView, label='dotplot_viewer_dist_2', viewer_label = 'Second Distance Measurement')
         
-        dotplot_viewer_ang._label_text = lambda value: f"{value:.1f} arcsec"
+        dotplot_viewer_ang._label_text = lambda value: f"{value:.0f} arcsec"
         
-        dotplot_viewer_dist._label_text = lambda value: f"{value:.1f} Mpc"
-        dotplot_viewer_dist_2._label_text = lambda value: f"{value:.1f} Mpc"
+        dotplot_viewer_dist._label_text = lambda value: f"{value:.0f} Mpc"
+        dotplot_viewer_dist_2._label_text = lambda value: f"{value:.0f} Mpc"
         
 
         example_galaxy_data = self.get_data(EXAMPLE_GALAXY_SEED_DATA)
