@@ -126,8 +126,9 @@
                       'That is an unexpected result. For each galaxy, compare the values for rest wavelength (column 3) and observed wavelength (column 4). Check with an instructor in case your measurements need adjustment.',
                       'That is an unexpected result. For each galaxy, compare the values for rest wavelength (column 3) and observed wavelength (column 4). Check with an instructor in case your measurements need adjustment.'
                     ]"
-                    :neutral-answers="[1]"
-                    @select="(state) => { if(state.neutral) { max_step_completed = Math.max(max_step_completed, 2); } }"
+                    :correct-answers="[1]"
+                    :neutral-answers="[0,2,3]"
+                    @select="(state) => { if(state.correct) { max_step_completed = Math.max(max_step_completed, 2); } }"
                     score-tag="wavelength-comparison"
                   >
                   </mc-radiogroup>
