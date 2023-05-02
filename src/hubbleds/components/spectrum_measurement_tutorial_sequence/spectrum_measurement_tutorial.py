@@ -363,6 +363,13 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
                         activate_before_tool=False)
             self.show_second_measurment = True
             self.example_galaxy_table.filter_by(None)#lambda item: item['measurement_number'] == 'second')
+        
+        if self.marker_after(new, 'rem_gal1'):
+            self.show_selector_lines = False
+            self.second_meas_plotted = False
+            self.first_meas_plotted = False
+            self.show_second_measurment = False
+            self.show_first_measurment = False
 
 
     def _on_viewer_focus(self, viewer, event = {'event': None}):
@@ -509,6 +516,8 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             self.dotplot_viewer.line_label.text = [self.dotplot_viewer._label_text(new_x)]
             
             w = self.v2w(new_x)
+            if w is None:
+                return
             self.spectrum_viewer.line.x = [w,w]
             self.spectrum_viewer._update_x_locations()
             self.spectrum_viewer.line_label.text = [self.spectrum_viewer._label_text(w)]
