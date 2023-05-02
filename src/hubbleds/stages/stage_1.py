@@ -296,6 +296,10 @@ class StageOne(HubbleStage):
 
         self.show_team_interface = self.app_state.show_team_interface
 
+        # This flag indicates whether we're using one of the convenience "fill" methods
+        # In which case we don't need to do all of the UI manipulation in quite the same way
+        self._filling_data = False
+
         # Set up any Data-based state values
         self._update_state_from_measurements()
         self.hub.subscribe(
@@ -559,10 +563,6 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
-
-        # This flag indicates whether we're using one of the convenience "fill" methods
-        # In which case we don't need to do all of the UI manipulation in quite the same way
-        self._filling_data = False
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()
@@ -951,9 +951,11 @@ class StageOne(HubbleStage):
     def add_student_velocity(self, table, *args, **kwargs):
         index = table.index
         data_label = table._glue_data.label
+        if self.stage_state.student_vel is None:
+            return
         velocity = round(self.stage_state.student_vel)
         self.update_data_value(data_label, VELOCITY_COMPONENT,
-                               velocity, index)
+                            velocity, index)
 
     @property
     def selection_tool(self):
@@ -1083,5 +1085,3 @@ class StageOne(HubbleStage):
 
     def vue_fill_table(self, _args):
         self.fill_table(self.example_galaxy_table)
-    
-    

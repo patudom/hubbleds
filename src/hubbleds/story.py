@@ -408,12 +408,14 @@ class HubblesLaw(Story):
         res_json = response.json()
         return res_json["measurements"]
 
-    def fetch_measurement_data_and_update(self, url, label, prune_none=False, make_writeable=False, check_update=None, callbacks=None):
+    def fetch_measurement_data_and_update(self, url, label, prune_none=False, make_writeable=False, check_update=None, update_if_empty=True, callbacks=None):
         measurements = self.fetch_measurements(url)
         need_update = check_update is None or check_update(measurements)
         if not need_update:
             return None
         new_data = self.data_from_measurements(measurements)
+        if not update_if_empty and new_data.size == 0:
+            return None
         new_data.label = label
         if prune_none:
             HubblesLaw.prune_none(new_data)
@@ -485,7 +487,7 @@ class HubblesLaw(Story):
                 self.class_last_modified = last_modified
             return need_update
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
-        updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, check_update=check_update)
+        updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=check_update)
         if updated is not None:
             self.update_summary_data(updated, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)
 
