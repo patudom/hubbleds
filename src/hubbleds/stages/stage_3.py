@@ -23,6 +23,7 @@ from numpy import searchsorted
 from bqplot.marks import Scatter
 
 from glue_jupyter.link import link
+from glue.core.message import NumericalDataChangedMessage
 from functools import partial
 
 log = logging.getLogger()
@@ -451,6 +452,8 @@ class StageTwo(HubbleStage):
             self.show_dotplot1_ang = True
             v1 = self.get_viewer('dotplot_viewer_dist')
             v2 = self.get_viewer('dotplot_viewer_ang')
+            v1.state.reset_limits()
+            v2.state.reset_limits()
             # previous line shows up when you click on the figure
             v1.show_previous_line(show = True, show_label = True)
             v2.show_previous_line(show = True, show_label = True)
@@ -486,6 +489,8 @@ class StageTwo(HubbleStage):
             self.example_galaxy_distance_table.filter_by(None)
             
         if advancing and (new == 'dot_seq6'):
+            v3 = self.get_viewer('dotplot_viewer_dist_2')
+            v3.state.reset_limits()
             self.example_galaxy_distance_table.selected = []
             self.show_dotplot2 = True
             self.show_dotplot2_ang = True
@@ -511,19 +516,20 @@ class StageTwo(HubbleStage):
                          default_size = size,marker='circle',)
 
     @staticmethod
-    def add_mark(viewer, mark):
+    def add_mark(viewer, mark, label = None):
         marks = viewer.figure.marks
         # function to flatten list of lists
         def flatten(l):
-            return [item for sublist in l for item in (sublist if len(sublist) > 0 else [None])]
-        labels = flatten([m.labels for m in marks])
-        if mark.labels[0] in labels:
-            old_mark = marks[labels.index(mark.labels[0])]
-            old_mark.x = mark.x
-        else:
-            viewer.figure.marks = marks + [mark]
-        
-        print(viewer,len(viewer.figure.marks))
+            for item in l:
+                if len(item.labels) > 0:
+                    yield item.labels[0]
+                else:
+                    yield 'no label'
+            # return [item for sublist in l for item in (sublist if len(sublist) > 0 else [None])]
+        labels = list(flatten(marks))
+        marks = [m for i, m in enumerate(marks) if label != labels[i]]
+        viewer.figure.marks = marks + [mark]
+
         
     @staticmethod  
     def binned_x(bins, x):
@@ -533,11 +539,16 @@ class StageTwo(HubbleStage):
         index = int((x - bins[0])/bin_width)
         return bins[0] + bin_width * (index + 1/2)
     
-    def plot_measurement(self, viewer, x, color, label = None):
+    def plot_measurement(self, viewer, index, distance = False, color = 'black', label = None):
+        viewer = self.get_viewer(viewer)
+        x = self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[ANGULAR_SIZE_COMPONENT][index]
+        if distance:
+            x = distance_from_angular_size(x)
+            label = label + ' (distance)'
         # x needs to be in a bin
         x_bin = self.binned_x(viewer.state.bins, x)
         mark = self.add_point(viewer, x_bin, color, label)
-        self.add_mark(viewer, mark)
+        self.add_mark(viewer, mark, label)
 
     def _on_step_index_update(self, index):
         # If we aren't on this stage, ignore
@@ -555,7 +566,7 @@ class StageTwo(HubbleStage):
     def _dosdonts_opened(self, msg):
         self.stage_state.dos_donts_opened = msg["new"]
     
-    @print_function_name
+    #@print_function_name
     def distance_table_selected_change(self, change):
         selected = change["new"]
         if not selected or selected == change["old"]:
@@ -588,24 +599,24 @@ class StageTwo(HubbleStage):
                 self.stage_state.marker = 'dot_seq5b'
         self._update_viewer_style(dark=self.app_state.dark_mode)
     
-    @print_function_name
+    #@print_function_name
     def _angular_size_update(self, change):
         new_ang_size = change["new"]
         if new_ang_size != 0 and new_ang_size is not None:
             self._make_measurement()
     
-    @print_function_name
+    #@print_function_name
     def _angular_height_update(self, change):
         self.distance_sidebar.angular_height = format_fov(change["new"])
     
-    @print_function_name
+    #@print_function_name
     def _ruler_click_count_update(self, change):
         count = change["new"]
         self.stage_state.ruler_clicked_total = count
         if count == 1:
             self.stage_state.marker = 'ang_siz4'  # auto-advance guideline if it's the first ruler click
     
-    @print_function_name
+    #@print_function_name
     def _measurement_count_update(self, change):
         count = change["new"]
         self.stage_state.n_meas = count
@@ -615,11 +626,11 @@ class StageTwo(HubbleStage):
     def _show_ruler_changed(self, show):
         self.distance_tool.show_ruler = show
     
-    @print_function_name
+    #@print_function_name
     def _on_galaxy_changed(self, galaxy):
         self.distance_tool.galaxy_selected = bool(galaxy)
     
-    @print_function_name
+    #@print_function_name
     def _make_measurement(self):
         galaxy = self.stage_state.galaxy
         table = self.current_table
@@ -664,26 +675,35 @@ class StageTwo(HubbleStage):
             
             v3 = self.get_viewer('dotplot_viewer_dist')
             v4 = self.get_viewer('dotplot_viewer_dist_2')
-            
-
-            if index == 0:
-                self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index])
-                self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
-                v1.toolbar.tools['bqplot:home'].activate()
-                v3.toolbar.tools['bqplot:home'].activate()
-            if index == 1:
-                self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index])
-                v4.toolbar.tools['bqplot:home'].activate()
+                
             
             if self.stage_state.marker_after('est_dis4'):
                 self.add_student_distance()
             
             for val in ['x_min','x_max','layers']:
                 if index == 0:
-                    add_callback(v1.state, val , lambda x: self.plot_measurement(v1, self.stage_state.meas_theta, color = colors[index], label = labels[index]))
-                    add_callback(v3.state, val , lambda x: self.plot_measurement(v3, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
+                    v1_plot = lambda *args: self.plot_measurement('dotplot_viewer_ang', index, color = colors[index], label = labels[index])
+                    v3_plot = lambda *args: self.plot_measurement('dotplot_viewer_dist', index, distance = True, color = colors[index], label = labels[index])
+                    add_callback(v1.state, val , v1_plot)
+                    add_callback(v3.state, val , v3_plot)
+                    def both_plots(change):
+                        v1_plot()
+                        v3_plot()
+                    self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == EXAMPLE_GALAXY_MEASUREMENTS,
+                           handler=both_plots)
+                    v1.state.reset_limits()
+                    v3.state.reset_limits()
+                    
                 if index == 1:
-                    add_callback(v4.state, val , lambda x: self.plot_measurement(v4, distance_from_angular_size(self.stage_state.meas_theta), color = colors[index], label = labels[index]))
+                    v4_plot = lambda *args: self.plot_measurement('dotplot_viewer_dist_2', index, distance = True, color = colors[index], label = labels[index])
+                    add_callback(v4.state, val , v4_plot)
+                    self.hub.subscribe(self, NumericalDataChangedMessage,
+                           filter=lambda msg: msg.data.label == EXAMPLE_GALAXY_MEASUREMENTS,
+                           handler=v4_plot)
+                    v4.state.reset_limits()
+            
+
             
 
         # if data_label == STUDENT_MEASUREMENTS_LABEL:
@@ -715,7 +735,7 @@ class StageTwo(HubbleStage):
         self.remove_measurement(galaxy_name)
         self.distance_tool.flagged = False
     
-    @print_function_name
+    #@print_function_name
     def add_student_distance(self, _args=None):
         table = self.current_table
         index = table.index
@@ -731,7 +751,7 @@ class StageTwo(HubbleStage):
             self.enable_distance_tool(True)
         self.get_distance_count()
     
-    @print_function_name
+    #@print_function_name
     def update_distances(self, table, tool=None):
         data = table.glue_data
         for item in table.items:
@@ -740,7 +760,7 @@ class StageTwo(HubbleStage):
                 theta = data[ANGULAR_SIZE_COMPONENT][index]
                 if (theta is None) or (theta == 0):
                     continue
-                print(theta)
+
                 distance = distance_from_angular_size(theta)
                 self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT,
                                     distance, index)
@@ -754,7 +774,7 @@ class StageTwo(HubbleStage):
         self.update_data_value(table._glue_data.label, ANGULAR_SIZE_COMPONENT, 35, 0)
         self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT, distance_from_angular_size(35), 0)
 
-    @print_function_name
+    #@print_function_name
     def vue_update_distances(self, _args):
         self.update_distances(self.distance_table)
         self.update_distances(self.example_galaxy_distance_table)
@@ -763,7 +783,7 @@ class StageTwo(HubbleStage):
         print("in vue_fill_table")
         self.fill_table(self.example_galaxy_distance_table)
     
-    @print_function_name
+    #@print_function_name
     def vue_add_distance_data_point(self, _args=None):
         self.stage_state.make_measurement = True
 
