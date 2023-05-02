@@ -57,8 +57,7 @@ class HubbleStage(Stage):
         if self.app_state.update_db:
             print('SUBMITTING EXAMPLE GALAXY MEASUREMENT')
             prepared = self._prepare_sample_measurement(measurement)
-            print(prepared)
-            requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements",
+            req = requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurement",
                         json=prepared)
 
 
