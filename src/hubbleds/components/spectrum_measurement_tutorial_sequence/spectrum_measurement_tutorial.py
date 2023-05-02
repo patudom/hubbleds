@@ -251,6 +251,14 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
             self.spectrum_viewer.add_event_callback(
                 callback = lambda event:self._activate_gray_markers(self.spectrum_viewer, event), 
                 events=['click'])
+            
+            if len(self.example_galaxy_table.selected) == 0:
+                if self.marker_before(change['marker'], 'dot_seq13'):
+                    index = 0
+                galaxy = {c.label:self.table_data[c][index] for c in self.table_data.components}
+                self.example_galaxy_table.selected = [galaxy]
+                self.example_galaxy_table.selected = []
+            
         elif change['new'] & self.been_opened:
             self.vue_on_reopen()
         else:
