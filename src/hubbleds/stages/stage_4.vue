@@ -4,7 +4,7 @@
     <stage-4-waiting-screen/>
   </v-container>
   <v-container v-else>
-    <v-row v-if="stage_state.show_team_interface">
+    <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
           color="error"
