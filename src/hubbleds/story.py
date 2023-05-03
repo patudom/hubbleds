@@ -469,6 +469,11 @@ class HubblesLaw(Story):
         student_meas_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/measurements/{self.student_user['id']}"
         self.fetch_measurement_data_and_update(student_meas_url, STUDENT_MEASUREMENTS_LABEL, make_writeable=True)
         self.update_student_data()
+        
+    def fetch_example_galaxy_data(self):
+        example_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements/{self.student_user['id']}"
+        self.fetch_measurement_data_and_update(example_data_url, EXAMPLE_GALAXY_MEASUREMENTS, make_writeable=True)
+        # self.update_example_galaxy_data() # not implemented
 
     def on_timer(self, cb):
         self._on_timer_cbs.append(cb)
