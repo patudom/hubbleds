@@ -211,11 +211,11 @@
           <v-col
             class="py-0"
           >
-            <v-card class="dotplot" v-if="stage_state.show_dotplot1 || ((stage_state.indices['dot_seq1'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))">
+            <v-card class="dotplot" v-if="stage_state.show_dotplot1 || ((stage_state.indices['dot_seq1'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] <= stage_state.indices['dot_seq5'])) || (stage_state.marker == 'dot_seq6')">
             <jupyter-widget :widget="viewers.dotplot_viewer_dist"/>
             </v-card>
 
-            <v-card class="dotplot" v-if="stage_state.show_dotplot2 || ((stage_state.indices['dot_seq6'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))">
+            <v-card class="dotplot" v-if="stage_state.show_dotplot2 || ((stage_state.indices['dot_seq5c'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))">
               <jupyter-widget :widget="viewers.dotplot_viewer_dist_2"/>
             </v-card>
           </v-col>

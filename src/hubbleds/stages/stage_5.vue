@@ -368,6 +368,20 @@
   fill: #000!important;
 }
 
+StudentResponse.StudentResponses {
+  font-weight: bold;
+  padding: 1px 6px;
+  background-color: #FFA3;
+  border-radius: 5px;
+}
+
+p.StudentResponses {
+  font-weight: bold;
+  padding: 10px 15px;
+  background-color: #8882;
+  border-radius: 10px;
+}
+
 </style>
 
 

@@ -7,7 +7,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, API_URL
-from echo import CallbackProperty, add_callback, ignore_callback, callback_property, delay_callback
+from echo import CallbackProperty, add_callback, ignore_callback, callback_property, delay_callback, ListCallbackProperty
 from traitlets import default, Bool
 
 from ..components import DistanceSidebar, DistanceTool, DosDontsSlideShow
@@ -110,10 +110,12 @@ class StageState(CDSState):
         'fil_rem1',
     ])
 
-    step_markers = CallbackProperty([
-        'ang_siz1',
-        'est_dis1'
-    ])
+    step_markers = ListCallbackProperty([])
+
+    # step_markers = CallbackProperty([
+    #     'ang_siz1',
+    #     'est_dis1'
+    # ])
 
     csv_highlights = CallbackProperty([
         'ang_siz1',
@@ -157,7 +159,7 @@ class StageState(CDSState):
     ])
 
     _NONSERIALIZED_PROPERTIES = [
-        'markers', 'indices', 'step_markers',
+        'markers', 'indices', #'step_markers',
         'csv_highlights', 'table_highlights',
         'distances_total', 'image_location'
     ]
@@ -210,8 +212,8 @@ class StageState(CDSState):
     
 
 @register_stage(story="hubbles_law", index=3, steps=[
-    "MEASURE SIZE",
-    "ESTIMATE DISTANCE"
+    # "MEASURE SIZE",
+    # "ESTIMATE DISTANCE"
 ])
 class StageTwo(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
@@ -236,6 +238,8 @@ class StageTwo(HubbleStage):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        print('at beginning of init', self.stage_state.marker)
         
         dosdonts_slideshow = DosDontsSlideShow(self.stage_state.image_location_dosdonts)
         self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
@@ -282,7 +286,7 @@ class StageTwo(HubbleStage):
                                                 DISTANCE_COMPONENT],
                                key_component=NAME_COMPONENT,
                                names=['Galaxy Name',
-                                      'θ (arcsec)',
+                                      '&theta; (arcsec)',
                                       'Distance (Mpc)'],
                                title='My Galaxies',
                                selected_color=self.table_selected_color(
@@ -309,7 +313,7 @@ class StageTwo(HubbleStage):
                                                 MEASUREMENT_NUMBER_COMPONENT],
                                key_component=MEASUREMENT_NUMBER_COMPONENT,
                                names=['Galaxy Name',
-                                      'θ (arcsec)',
+                                      '&theta; (arcsec)',
                                       'Distance (Mpc)',
                                       'Measurement Number'],
                                title='Example Galaxy',
@@ -346,8 +350,8 @@ class StageTwo(HubbleStage):
         # Callbacks
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
-        add_callback(self.story_state, 'step_index',
-                     self._on_step_index_update)
+        # add_callback(self.story_state, 'step_index',
+        #              self._on_step_index_update)
         self.trigger_marker_update_cb = True
 
         add_callback(self.stage_state, 'make_measurement',
@@ -361,11 +365,10 @@ class StageTwo(HubbleStage):
             self.current_table = self.distance_table
         
         # ang_siz2 -> cho_row1, est_dis3 -> cho_row2
-        for marker in ['ang_siz2', 'est_dis3']:
-            if self.stage_state.marker_reached(marker):
-                marker_index = self.stage_state.markers.index(marker)
-                new_index = marker_index - 1
-                self.stage_state.marker = self.stage_state.marker[new_index]
+        if self.stage_state.marker in ['ang_siz2', 'est_dis3']:
+            marker_index = self.stage_state.markers.index(self.stage_state.marker)
+            new_index = marker_index - 1
+            self.stage_state.marker = self.stage_state.marker[new_index]
         
         # Show_ruler should be true from marker ang_siz3 to est_dis4 (inclusive) and from dot_seq5b forward.
         if  self.stage_state.marker_reached('ang_siz3') and (not self.stage_state.marker_after('est_dis4')):
@@ -374,12 +377,27 @@ class StageTwo(HubbleStage):
             self.stage_state.show_ruler = True
         else:
             self.stage_state.show_ruler = False
+        self._show_ruler_changed(self.stage_state.show_ruler)
             
         if self.stage_state.marker_reached("ang_siz5a"):
             # hide lines
             dotplot_viewer_dist.remove_lines_from_figure(line=True, previous_line = True)
             dotplot_viewer_ang.remove_lines_from_figure(line=True, previous_line = True)
-
+            
+        if self.stage_state.marker_reached("dot_seq4"):
+            v1 = dotplot_viewer_dist
+            v2 = dotplot_viewer_ang
+            v1.add_event_callback(lambda event:self._on_dotplot_click(v1,event), events=['click'])
+            v2.add_event_callback(lambda event:self._on_dotplot_click(v2,event), events=['click'])
+            show = self.stage_state.marker_before("ang_siz5a")
+            v1.show_previous_line(show = show, show_label = show)
+            v2.show_previous_line(show = show, show_label = show)
+        
+        if self.stage_state.marker_reached("dot_seq6"):
+            self.example_galaxy_distance_table.selected = []
+            self.stage_state.show_dotplot2 = True
+        
+        print('at end of init', self.stage_state.marker)
 
     def setup_dotplot_viewers(self):
         
@@ -430,15 +448,16 @@ class StageTwo(HubbleStage):
             return
         markers = self.stage_state.markers
         if new not in markers:
+            print_log(f"Marker {new} not found, defaulting to {markers[0]}")
             new = markers[0]
             self.stage_state.marker = new
         if old not in markers:
             old = markers[0]
         advancing = markers.index(new) > markers.index(old)
-        if new in self.stage_state.step_markers and advancing:
-            self.story_state.step_complete = True
-            self.story_state.step_index = self.stage_state.step_markers.index(
-                new)
+        # if new in self.stage_state.step_markers and advancing:
+        #     self.story_state.step_complete = True
+        #     self.story_state.step_index = self.stage_state.step_markers.index(
+        #         new)
         if advancing and (new == "cho_row1" or new == "cho_row2"):
             self.distance_table.selected = []
             self.example_galaxy_distance_table.selected = []
@@ -461,21 +480,9 @@ class StageTwo(HubbleStage):
             # previous line shows up when you click on the figure
             v1.show_previous_line(show = True, show_label = True)
             v2.show_previous_line(show = True, show_label = True)
-            def _on_dotplot_click(plot, event):
-                if self.stage_state.marker_reached('ang_siz5a'):
-                    return
-                # it doesn't matter which plot we get the event from
-                # because d = C / \theta and \theta = C / d
-                event['domain']['x'] = round(DISTANCE_CONSTANT / event['domain']['x'], 0)
-                if event is None:
-                    print("No event")
-                    return
-                if plot is v1:
-                    v2._on_click(event)
-                else:
-                    v1._on_click(event)
-            v1.add_event_callback(lambda event:_on_dotplot_click(v1,event), events=['click'])
-            v2.add_event_callback(lambda event:_on_dotplot_click(v2,event), events=['click'])
+            
+            v1.add_event_callback(lambda event:self._on_dotplot_click(v1,event), events=['click'])
+            v2.add_event_callback(lambda event:self._on_dotplot_click(v2,event), events=['click'])
         
         if advancing and (new == "ang_siz5a"):
             # hide lines
@@ -554,18 +561,35 @@ class StageTwo(HubbleStage):
         mark = self.add_point(viewer, x_bin, color, label)
         self.add_mark(viewer, mark, label)
 
-    def _on_step_index_update(self, index):
-        # If we aren't on this stage, ignore
-        if self.story_state.stage_index != self.index:
-            return
+    # def _on_step_index_update(self, index):
+    #     # If we aren't on this stage, ignore
+    #     if self.story_state.stage_index != self.index:
+    #         return
 
-        # Change the marker without firing the associated stage callback
-        # We can't just use ignore_callback, since other stuff (i.e. the frontend)
-        # may depend on marker callbacks
-        self.trigger_marker_update_cb = False
-        index = min(index, len(self.stage_state.step_markers) - 1)
-        self.stage_state.marker = self.stage_state.step_markers[index]
-        self.trigger_marker_update_cb = True
+    #     # Change the marker without firing the associated stage callback
+    #     # We can't just use ignore_callback, since other stuff (i.e. the frontend)
+    #     # may depend on marker callbacks
+    #     self.trigger_marker_update_cb = False
+    #     index = min(index, len(self.stage_state.step_markers) - 1)
+    #     self.stage_state.marker = self.stage_state.step_markers[index]
+    #     self.trigger_marker_update_cb = True
+    
+    def _on_dotplot_click(self,plot, event):
+        if self.stage_state.marker_reached('ang_siz5a'):
+            return
+        # it doesn't matter which plot we get the event from
+        # because d = C / \theta and \theta = C / d
+        event['domain']['x'] = round(DISTANCE_CONSTANT / event['domain']['x'], 0)
+        if event is None:
+            print("No event")
+            return
+        v1 = self.get_viewer('dotplot_viewer_dist')
+        v2 = self.get_viewer('dotplot_viewer_ang')
+        
+        if plot is v1:
+            v2._on_click(event)
+        else:
+            v1._on_click(event)
 
     def _dosdonts_opened(self, msg):
         self.stage_state.dos_donts_opened = msg["new"]
@@ -589,6 +613,7 @@ class StageTwo(HubbleStage):
         
         self.stage_state.galaxy = galaxy
         self.stage_state.galaxy_dist = None
+        print('bool(galaxy)',bool(galaxy))
         self.distance_tool.measuring_allowed = bool(galaxy)
         self.stage_state.meas_theta = data[ANGULAR_SIZE_COMPONENT][index]
 
@@ -617,14 +642,14 @@ class StageTwo(HubbleStage):
     def _ruler_click_count_update(self, change):
         count = change["new"]
         self.stage_state.ruler_clicked_total = count
-        if count == 1:
+        if (count == 1) and self.stage_state.marker_before('ang_siz4'):
             self.stage_state.marker = 'ang_siz4'  # auto-advance guideline if it's the first ruler click
     
     #@print_function_name
     def _measurement_count_update(self, change):
         count = change["new"]
         self.stage_state.n_meas = count
-        if count == 1:
+        if (count == 1) and self.stage_state.marker_before('ang_siz5'):
             self.stage_state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
 
     def _show_ruler_changed(self, show):
@@ -838,10 +863,6 @@ class StageTwo(HubbleStage):
     @property
     def current_table_data_label(self):
         return self.current_table._glue_data.label
-
-    @property
-    def last_guideline(self):
-        return self.get_component('guideline_fill_remaining_galaxies')
 
     def _on_stage_complete(self, complete):
         if complete:

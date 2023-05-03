@@ -9,7 +9,7 @@
       class="mb-4"
     >
       <p>
-        Earlier, your best guess for the age of the universe was: <StudentResponse class="pa-1 StudentResponses">{{ state.age_calc_state.best_guess }}</StudentResponse> Gyr, with a likely range from <StudentResponse class="pa-1 StudentResponses">{{ state.age_calc_state.low_guess }}</StudentResponse> to <StudentResponse class="pa-1 StudentResponses">{{ state.age_calc_state.high_guess }}</StudentResponse> Gyr.
+        Earlier, your best guess for the age of the universe was: <StudentResponse class="StudentResponses">{{ state.age_calc_state.best_guess }}</StudentResponse>&nbsp;Gyr, with a likely range from <StudentResponse class="StudentResponses">{{ state.age_calc_state.low_guess }}</StudentResponse>&nbsp;to <StudentResponse class="StudentResponses">{{ state.age_calc_state.high_guess }}</StudentResponse>&nbsp;Gyr.
       </p>
       <p>
         After exploring data from all the other classes, you might consider updating your values.

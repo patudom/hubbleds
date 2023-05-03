@@ -246,8 +246,8 @@ class HubblesLaw(Story):
         seq = SeedSequence(42)
         gen = Generator(PCG64(seq))
         indices = np.arange(len(good))
-        print('number of indices', len(indices[1::2]))
         indices = indices[1::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
+        indices = indices[1::2][:85]
         random_subset = gen.choice(indices[good[1::2]], size=40, replace=False)
         random_subset = np.ravel(np.column_stack((random_subset, random_subset+1)))
         example_galaxy_seed_data = {k: np.array(v)[random_subset] for k,v in example_galaxy_seed_data.items()}
@@ -291,6 +291,7 @@ class HubblesLaw(Story):
         example_galaxy_measurements.update_values_from_data(new_data)
         
         self.data_collection.append(example_galaxy_measurements)
+        self.add_new_row(data = example_galaxy_measurements, changes = {MEASUREMENT_NUMBER_COMPONENT : 'second'})
 
         self.app.add_link(example_galaxy_seed_data, DB_STUDENT_ID_FIELD, example_galaxy_measurements, STUDENT_ID_COMPONENT)
         self.app.add_link(example_galaxy_seed_data, DB_DISTANCE_FIELD, example_galaxy_measurements, DISTANCE_COMPONENT)
@@ -299,6 +300,42 @@ class HubblesLaw(Story):
         self.app.add_link(example_galaxy_seed_data, DB_ANGSIZE_FIELD, example_galaxy_measurements, ANGULAR_SIZE_COMPONENT)
         
         return example_galaxy_measurements
+    
+    def add_new_row(self, dc_name = None, data = None, changes ={}):
+        """
+        add_new_row _summary_
+
+        Parameters
+        ----------
+        dc_name : str, optional
+            label of existing Data in data collection, by default None
+        data : Data, optional
+            Data object which exists in data collection, by default None
+        changes : dict, optional
+            new values, defaults to duplicating 1st row, by default {}
+        """
+        if dc_name is None:
+            if data is None:
+                return
+        else:
+            data = self.data_collection[dc_name]
+            return
+        new_meas = {x.label:data[x][0] for x in data.main_components}
+        for k,v in changes.items():
+            new_meas[k] = v
+
+        self.add_data_values(data,new_meas)
+        
+    def add_data_values(self, data = None, values = {}):
+        if data is None:
+            return
+        main_components = [x.label for x in data.main_components]
+        component_dict = {c : list(data[c]) for c in main_components}
+        for component, vals in component_dict.items():
+            vals.append(values.get(component, None))
+        new_data = Data(label=data.label, **component_dict)
+        self.make_data_writeable(new_data)
+        data.update_values_from_data(new_data)
 
 
     def update_data(self, label, new_data):

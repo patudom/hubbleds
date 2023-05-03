@@ -21,7 +21,7 @@ class IntroSlideshow(v.VuetifyTemplate):
     intro_complete = Bool(False).tag(sync=True)
     show_team_interface = Bool(False).tag(sync=True)
     target = Unicode("").tag(sync=True)
-    timer_duration = Int(5000).tag(sync=True)  # in ms
+    timer_duration = Int(120000).tag(sync=True)  # 2 minutes in ms 
     timer_done = Dict({}).tag(sync=True)
     timer_started = Dict({}).tag(sync=True)
 

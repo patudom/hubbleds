@@ -13,7 +13,7 @@ class StageState(CDSState):
 
 
 @register_stage(story="hubbles_law", index=0, steps=[
-    "WELCOME"
+    # "WELCOME"
 ])
 class StageIntro(Stage):
 
