@@ -7,7 +7,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, API_URL
-from echo import CallbackProperty, add_callback, ignore_callback, callback_property, delay_callback
+from echo import CallbackProperty, add_callback, ignore_callback, callback_property, delay_callback, ListCallbackProperty
 from traitlets import default, Bool
 
 from ..components import DistanceSidebar, DistanceTool, DosDontsSlideShow
@@ -110,10 +110,12 @@ class StageState(CDSState):
         'fil_rem1',
     ])
 
-    step_markers = CallbackProperty([
-        'ang_siz1',
-        'est_dis1'
-    ])
+    step_markers = ListCallbackProperty([])
+
+    # step_markers = CallbackProperty([
+    #     'ang_siz1',
+    #     'est_dis1'
+    # ])
 
     csv_highlights = CallbackProperty([
         'ang_siz1',
@@ -157,7 +159,7 @@ class StageState(CDSState):
     ])
 
     _NONSERIALIZED_PROPERTIES = [
-        'markers', 'indices', 'step_markers',
+        'markers', 'indices', #'step_markers',
         'csv_highlights', 'table_highlights',
         'distances_total', 'image_location'
     ]
@@ -210,8 +212,8 @@ class StageState(CDSState):
     
 
 @register_stage(story="hubbles_law", index=3, steps=[
-    "MEASURE SIZE",
-    "ESTIMATE DISTANCE"
+    # "MEASURE SIZE",
+    # "ESTIMATE DISTANCE"
 ])
 class StageTwo(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
@@ -346,8 +348,8 @@ class StageTwo(HubbleStage):
         # Callbacks
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
-        add_callback(self.story_state, 'step_index',
-                     self._on_step_index_update)
+        # add_callback(self.story_state, 'step_index',
+        #              self._on_step_index_update)
         self.trigger_marker_update_cb = True
 
         add_callback(self.stage_state, 'make_measurement',
@@ -435,10 +437,10 @@ class StageTwo(HubbleStage):
         if old not in markers:
             old = markers[0]
         advancing = markers.index(new) > markers.index(old)
-        if new in self.stage_state.step_markers and advancing:
-            self.story_state.step_complete = True
-            self.story_state.step_index = self.stage_state.step_markers.index(
-                new)
+        # if new in self.stage_state.step_markers and advancing:
+        #     self.story_state.step_complete = True
+        #     self.story_state.step_index = self.stage_state.step_markers.index(
+        #         new)
         if advancing and (new == "cho_row1" or new == "cho_row2"):
             self.distance_table.selected = []
             self.example_galaxy_distance_table.selected = []
@@ -554,18 +556,18 @@ class StageTwo(HubbleStage):
         mark = self.add_point(viewer, x_bin, color, label)
         self.add_mark(viewer, mark, label)
 
-    def _on_step_index_update(self, index):
-        # If we aren't on this stage, ignore
-        if self.story_state.stage_index != self.index:
-            return
+    # def _on_step_index_update(self, index):
+    #     # If we aren't on this stage, ignore
+    #     if self.story_state.stage_index != self.index:
+    #         return
 
-        # Change the marker without firing the associated stage callback
-        # We can't just use ignore_callback, since other stuff (i.e. the frontend)
-        # may depend on marker callbacks
-        self.trigger_marker_update_cb = False
-        index = min(index, len(self.stage_state.step_markers) - 1)
-        self.stage_state.marker = self.stage_state.step_markers[index]
-        self.trigger_marker_update_cb = True
+    #     # Change the marker without firing the associated stage callback
+    #     # We can't just use ignore_callback, since other stuff (i.e. the frontend)
+    #     # may depend on marker callbacks
+    #     self.trigger_marker_update_cb = False
+    #     index = min(index, len(self.stage_state.step_markers) - 1)
+    #     self.stage_state.marker = self.stage_state.step_markers[index]
+    #     self.trigger_marker_update_cb = True
 
     def _dosdonts_opened(self, msg):
         self.stage_state.dos_donts_opened = msg["new"]
@@ -838,10 +840,6 @@ class StageTwo(HubbleStage):
     @property
     def current_table_data_label(self):
         return self.current_table._glue_data.label
-
-    @property
-    def last_guideline(self):
-        return self.get_component('guideline_fill_remaining_galaxies')
 
     def _on_stage_complete(self, complete):
         if complete:

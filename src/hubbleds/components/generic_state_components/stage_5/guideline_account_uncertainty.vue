@@ -2,6 +2,7 @@
 <template>
   <scaffold-alert
     title-text="Accounting for Uncertainty"
+    next-text="stage 6"
     @back="state.marker_backward = 1"
     @next="state.stage_5_complete = true"
   >

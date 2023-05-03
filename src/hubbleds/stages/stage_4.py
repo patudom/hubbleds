@@ -8,7 +8,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty, add_callback, remove_callback, DictCallbackProperty
+from echo import CallbackProperty, add_callback, remove_callback, DictCallbackProperty, ListCallbackProperty
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
 from glue_jupyter.link import link
@@ -76,9 +76,11 @@ class StageState(CDSState):
         'sho_est2', # last marker now
     ])
 
-    step_markers = CallbackProperty([
-        'exp_dat1',
-    ])
+    step_markers = ListCallbackProperty([])
+
+    # step_markers = CallbackProperty([
+    #     'exp_dat1',
+    # ])
 
     table_highlights = CallbackProperty([
         'exp_dat1',
@@ -103,7 +105,7 @@ class StageState(CDSState):
     ])
 
     _NONSERIALIZED_PROPERTIES = [
-        'markers', 'indices', 'step_markers',
+        'markers', 'indices', # 'step_markers',
         'table_highlights', 'image_location',
         'my_galaxies_plot_highlights', 'all_galaxies_plot_highlights',
     ]
@@ -127,7 +129,9 @@ class StageState(CDSState):
         index = min(self.markers.index(marker_text) + 1, len(self.markers) - 1)
         self.marker = self.markers[index]
 
-@register_stage(story="hubbles_law", index=4, steps=["MY DATA"])
+@register_stage(story="hubbles_law", index=4, steps=[
+    # "MY DATA"
+    ])
 class StageThree(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
 
@@ -162,8 +166,7 @@ class StageThree(HubbleStage):
         super().__init__(*args, **kwargs)
         
         add_callback(self.stage_state, 'stage_4_complete',
-                     self._on_stage_4_complete)
-
+                     self._on_stage_complete)
 
         link((self.story_state, 'enough_students_ready'), (self.stage_state, 'stage_ready'))
 
@@ -467,9 +470,9 @@ class StageThree(HubbleStage):
         if value and not linefit_tool.active:
             linefit_tool.activate()
     
-    def _on_stage_4_complete(self, change):
-        if change:
-            self.story_state.stage_index =  self.story_state.stage_index + 1
+    def _on_stage_complete(self, complete):
+        if complete:
+            self.story_state.stage_index =  5
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first

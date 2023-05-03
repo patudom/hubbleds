@@ -61,11 +61,11 @@ class StageTwoIntro(Stage):
             self.slideshow.stage_2_complete = False
 
     # this function is no longer called anywhere
-    def _on_step_index_update(self, index):
-        # Change the marker without firing the associated stage callback
-        # We can't just use ignore_callback, since other stuff (i.e. the frontend)
-        # may depend on marker callbacks
-        self.trigger_marker_update_cb = False
-        index = min(index, len(self.stage_state.step_markers) - 1)
-        self.stage_state.marker = self.stage_state.step_markers[index]
-        self.trigger_marker_update_cb = True
+    # def _on_step_index_update(self, index):
+    #     # Change the marker without firing the associated stage callback
+    #     # We can't just use ignore_callback, since other stuff (i.e. the frontend)
+    #     # may depend on marker callbacks
+    #     self.trigger_marker_update_cb = False
+    #     index = min(index, len(self.stage_state.step_markers) - 1)
+    #     self.stage_state.marker = self.stage_state.step_markers[index]
+    #     self.trigger_marker_update_cb = True
