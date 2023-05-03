@@ -423,7 +423,6 @@ class StageOne(HubbleStage):
         example_galaxy_table.observe(
             self.table_selected_change, names=["selected"])
         # add the row for the second measurement
-        self.add_new_measurement(EXAMPLE_GALAXY_MEASUREMENTS)
         self.initialize_spectrum_data(EXAMPLE_GALAXY_MEASUREMENTS)
         
         # Set up components
@@ -862,14 +861,6 @@ class StageOne(HubbleStage):
                 self.stage_state.meas_two_row_selected = True
                 self.stage_state.marker_forward = 1
 
-    #@print_function_name
-    def add_new_measurement(self, data_label = EXAMPLE_GALAXY_MEASUREMENTS):
-        data = self.data_collection[data_label]
-        new_meas = {x.label:data[x][0] for x in data.main_components}
-        # new_meas[MEASWAVE_COMPONENT] = 0
-        new_meas[MEASUREMENT_NUMBER_COMPONENT] = 'second'
-        # new_meas['name'] = new_meas['name'].replace('.fits','')
-        self.add_data_values(data_label,new_meas)
 
     def _on_selection_viewer_reset(self) -> None:
         """ clear selection from galaxy table"""
