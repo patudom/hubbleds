@@ -446,6 +446,7 @@ class StageTwo(HubbleStage):
             return
         markers = self.stage_state.markers
         if new not in markers:
+            print_log(f"Marker {new} not found, defaulting to {markers[0]}")
             new = markers[0]
             self.stage_state.marker = new
         if old not in markers:
