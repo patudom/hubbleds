@@ -391,7 +391,7 @@ class StageOne(HubbleStage):
             id="update-velocities",
             icon="mdi-run-fast",
             tooltip="Fill in velocities",
-            disabled=False,
+            disabled=~self.show_team_interface,
             activate=self.update_velocities)
         example_galaxy_table = Table(
             self.session,
@@ -740,7 +740,8 @@ class StageOne(HubbleStage):
         self.galaxy_table.selected = []
         self.selection_tool.widget.center_on_coordinates(
             self.START_COORDINATES, instant=True)
-        self.stage_state.marker = "sel_gal3"
+        if self.stage_state.marker_before("sel_gal3"):
+            self.stage_state.marker = "sel_gal3"
         self._filling_data = False
 
     def vue_select_galaxies(self, _args=None):
@@ -749,7 +750,8 @@ class StageOne(HubbleStage):
         self.galaxy_table.selected = []
         self.selection_tool.widget.center_on_coordinates(
             self.START_COORDINATES, instant=True)
-        self.stage_state.marker = "sel_gal3"
+        if self.stage_state.marker_before("sel_gal3"):
+            self.stage_state.marker = "sel_gal3"
         self._filling_data = False
 
     #@print_function_name
