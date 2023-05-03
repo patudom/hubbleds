@@ -640,14 +640,14 @@ class StageTwo(HubbleStage):
     def _ruler_click_count_update(self, change):
         count = change["new"]
         self.stage_state.ruler_clicked_total = count
-        if count == 1:
+        if (count == 1) and self.stage_state.marker_before('ang_siz4'):
             self.stage_state.marker = 'ang_siz4'  # auto-advance guideline if it's the first ruler click
     
     #@print_function_name
     def _measurement_count_update(self, change):
         count = change["new"]
         self.stage_state.n_meas = count
-        if count == 1:
+        if (count == 1) and self.stage_state.marker_before('ang_siz5'):
             self.stage_state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
 
     def _show_ruler_changed(self, show):
