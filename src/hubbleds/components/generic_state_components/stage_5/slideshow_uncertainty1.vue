@@ -68,6 +68,7 @@
                     contain
                     src="https://picsum.photos/600/600"
                   ></v-img>
+                  <cite class="text-center mt-2 grey--text">Vesto Slipher's spectrum of the Andromeda Galaxy  from Lowell Observatory <span style="display: none">https://ui.adsabs.harvard.edu/abs/2009JAHH...12...72B/abstract</span></cite>
                 </div>
                 </v-col>
                 
