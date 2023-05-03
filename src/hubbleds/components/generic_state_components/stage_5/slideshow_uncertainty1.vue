@@ -54,18 +54,28 @@
             <v-container>
               <v-row>
                 <v-col>
+                  <div>
                   <p>
                     There is only one universe that we live in, so our universe only has one age. Our job as scientists is to figure out if the <strong>true age</strong> of the universe is included within the ranges shown within these histograms, and if so, which value within the range is the true age.
                   </p>
                   <p>
                     First, let’s think about <strong>why</strong> we found a range of values in the first place (rather than all getting the same value).
                   </p>
+                </div>
+                <div>
+                  <v-img
+                  class="mb-4 mx-a mt-n3"
+                    contain
+                    src="https://picsum.photos/600/600"
+                  ></v-img>
+                </div>
                 </v-col>
+                
               </v-row>
             </v-container>
           </v-card-text>
         </v-window-item>
-
+        <!-- :src="`${state.image_location}/universecake.png`" -->
         <v-window-item :value="1" class="no-transition">
           <v-card-text>
             <v-container>
@@ -163,12 +173,7 @@
                   lg="7"
                 >
                   This is a placeholder to remind ourselves that we need real images for this slideshow dialog.
-                  <v-img
-                    id="runners"
-                    class="mb-4 mx-a mt-n3"
-                    contain
-                    :src="`${state.image_location}/runners_km.png`"
-                  ></v-img>
+                 
                 </v-col>
               </v-row>
             </v-container>
@@ -252,6 +257,17 @@
                   <p>
                     Some uncertainties are <strong>systematic</strong>. These are problems with our methods or assumptions that lead to all measurements, on average, being <strong>incorrect in the same direction</strong>, which biases our final result.
                   </p>
+                  <p>
+                    For example, imagine using a wrinkled tape measure to determine lengths. All your measurements would read larger than they should.
+                  </p>
+                  <v-img
+                    id="runners"
+                    class="mb-4 mx-a mt-n3"
+                    height="90%"
+                    contain
+                    src="https://picsum.photos/1000/600"
+                  ></v-img>
+                  <!-- :src="`${state.image_location}/rulers.png`" -->
                   <p>
                     Can you think of any problems in our methods that could bias everyone’s results in the same direction?
                   </p>
