@@ -584,6 +584,13 @@ class StageFour(HubbleStage):
         style = load_style(style_name)
         update_figure_css(all_distr_viewer_student, style_dict=style)
         update_figure_css(all_distr_viewer_class, style_dict=style)
+        
+        class_distr_viewer.state.show_measuring_line()
+        all_distr_viewer_student.state.show_measuring_line()
+        all_distr_viewer_class.state.show_measuring_line()
+        # class_distr_viewer.state.hide_measuring_line()
+        # all_distr_viewer_student.state.hide_measuring_line()
+        # all_distr_viewer_class.state.hide_measuring_line()
 
     def _deferred_setup(self):
         if self._setup_complete:
