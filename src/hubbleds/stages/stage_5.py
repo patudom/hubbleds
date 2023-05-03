@@ -328,11 +328,9 @@ class StageFour(HubbleStage):
             self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
             color = class_slider.highlight_color if highlighted else class_slider.default_color
             self.class_slider_subset.style.color = color
-            all_viewer.state.reset_limits()
         def class_slider_refresh(slider):
             self.stage_state.cla_low_age = round(min(slider.values))
             self.stage_state.cla_high_age = round(max(slider.values))
-            all_viewer.state.reset_limits()
 
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
