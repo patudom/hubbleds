@@ -239,6 +239,8 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        print('at beginning of init', self.stage_state.marker)
+        
         dosdonts_slideshow = DosDontsSlideShow(self.stage_state.image_location_dosdonts)
         self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
         dosdonts_slideshow.observe(self._dosdonts_opened, names=['opened'])
@@ -363,11 +365,10 @@ class StageTwo(HubbleStage):
             self.current_table = self.distance_table
         
         # ang_siz2 -> cho_row1, est_dis3 -> cho_row2
-        for marker in ['ang_siz2', 'est_dis3']:
-            if self.stage_state.marker_reached(marker):
-                marker_index = self.stage_state.markers.index(marker)
-                new_index = marker_index - 1
-                self.stage_state.marker = self.stage_state.marker[new_index]
+        if self.stage_state.marker in ['ang_siz2', 'est_dis3']:
+            marker_index = self.stage_state.markers.index(self.stage_state.marker)
+            new_index = marker_index - 1
+            self.stage_state.marker = self.stage_state.marker[new_index]
         
         # Show_ruler should be true from marker ang_siz3 to est_dis4 (inclusive) and from dot_seq5b forward.
         if  self.stage_state.marker_reached('ang_siz3') and (not self.stage_state.marker_after('est_dis4')):
@@ -376,12 +377,27 @@ class StageTwo(HubbleStage):
             self.stage_state.show_ruler = True
         else:
             self.stage_state.show_ruler = False
+        self._show_ruler_changed(self.stage_state.show_ruler)
             
         if self.stage_state.marker_reached("ang_siz5a"):
             # hide lines
             dotplot_viewer_dist.remove_lines_from_figure(line=True, previous_line = True)
             dotplot_viewer_ang.remove_lines_from_figure(line=True, previous_line = True)
-
+            
+        if self.stage_state.marker_reached("dot_seq4"):
+            v1 = dotplot_viewer_dist
+            v2 = dotplot_viewer_ang
+            v1.add_event_callback(lambda event:self._on_dotplot_click(v1,event), events=['click'])
+            v2.add_event_callback(lambda event:self._on_dotplot_click(v2,event), events=['click'])
+            show = self.stage_state.marker_before("ang_siz5a")
+            v1.show_previous_line(show = show, show_label = show)
+            v2.show_previous_line(show = show, show_label = show)
+        
+        if self.stage_state.marker_reached("dot_seq6"):
+            self.example_galaxy_distance_table.selected = []
+            self.stage_state.show_dotplot2 = True
+        
+        print('at end of init', self.stage_state.marker)
 
     def setup_dotplot_viewers(self):
         
@@ -432,6 +448,7 @@ class StageTwo(HubbleStage):
             return
         markers = self.stage_state.markers
         if new not in markers:
+            print_log(f"Marker {new} not found, defaulting to {markers[0]}")
             new = markers[0]
             self.stage_state.marker = new
         if old not in markers:
@@ -463,21 +480,9 @@ class StageTwo(HubbleStage):
             # previous line shows up when you click on the figure
             v1.show_previous_line(show = True, show_label = True)
             v2.show_previous_line(show = True, show_label = True)
-            def _on_dotplot_click(plot, event):
-                if self.stage_state.marker_reached('ang_siz5a'):
-                    return
-                # it doesn't matter which plot we get the event from
-                # because d = C / \theta and \theta = C / d
-                event['domain']['x'] = round(DISTANCE_CONSTANT / event['domain']['x'], 0)
-                if event is None:
-                    print("No event")
-                    return
-                if plot is v1:
-                    v2._on_click(event)
-                else:
-                    v1._on_click(event)
-            v1.add_event_callback(lambda event:_on_dotplot_click(v1,event), events=['click'])
-            v2.add_event_callback(lambda event:_on_dotplot_click(v2,event), events=['click'])
+            
+            v1.add_event_callback(lambda event:self._on_dotplot_click(v1,event), events=['click'])
+            v2.add_event_callback(lambda event:self._on_dotplot_click(v2,event), events=['click'])
         
         if advancing and (new == "ang_siz5a"):
             # hide lines
@@ -568,6 +573,23 @@ class StageTwo(HubbleStage):
     #     index = min(index, len(self.stage_state.step_markers) - 1)
     #     self.stage_state.marker = self.stage_state.step_markers[index]
     #     self.trigger_marker_update_cb = True
+    
+    def _on_dotplot_click(self,plot, event):
+        if self.stage_state.marker_reached('ang_siz5a'):
+            return
+        # it doesn't matter which plot we get the event from
+        # because d = C / \theta and \theta = C / d
+        event['domain']['x'] = round(DISTANCE_CONSTANT / event['domain']['x'], 0)
+        if event is None:
+            print("No event")
+            return
+        v1 = self.get_viewer('dotplot_viewer_dist')
+        v2 = self.get_viewer('dotplot_viewer_ang')
+        
+        if plot is v1:
+            v2._on_click(event)
+        else:
+            v1._on_click(event)
 
     def _dosdonts_opened(self, msg):
         self.stage_state.dos_donts_opened = msg["new"]
@@ -591,6 +613,7 @@ class StageTwo(HubbleStage):
         
         self.stage_state.galaxy = galaxy
         self.stage_state.galaxy_dist = None
+        print('bool(galaxy)',bool(galaxy))
         self.distance_tool.measuring_allowed = bool(galaxy)
         self.stage_state.meas_theta = data[ANGULAR_SIZE_COMPONENT][index]
 
@@ -619,14 +642,14 @@ class StageTwo(HubbleStage):
     def _ruler_click_count_update(self, change):
         count = change["new"]
         self.stage_state.ruler_clicked_total = count
-        if count == 1:
+        if (count == 1) and self.stage_state.marker_before('ang_siz4'):
             self.stage_state.marker = 'ang_siz4'  # auto-advance guideline if it's the first ruler click
     
     #@print_function_name
     def _measurement_count_update(self, change):
         count = change["new"]
         self.stage_state.n_meas = count
-        if count == 1:
+        if (count == 1) and self.stage_state.marker_before('ang_siz5'):
             self.stage_state.marker = 'ang_siz5'  # auto-advance guideline if it's the first measurement made
 
     def _show_ruler_changed(self, show):
