@@ -80,7 +80,7 @@
                     Shortcoming #1:
                   </p>
                   <p 
-                    class = "pa-2 StudentResponses">
+                    class = "StudentResponses">
 
                     {{ state.age_calc_state.short_one }}
                   </p>
@@ -90,7 +90,7 @@
                     Shortcoming #2:
                   </p>
                   <p
-                    class = "pa-2 StudentResponses">
+                    class = "StudentResponses">
 
                     {{ state.age_calc_state.short_two }}
                   </p>
@@ -100,7 +100,7 @@
                     Other shortcomings:
                   </p>
                   <p
-                    class = "pa-2 StudentResponses">
+                    class = "StudentResponses">
 
                     {{ state.age_calc_state.short_other }}
                   </p>
@@ -377,14 +377,6 @@
     </v-card>
   </v-dialog>
 </template>
-
-<style>
-  .StudentResponses {
-    color: black !important;
-    background-color: #FFAB91;
-    width: 80%;
-  }
-</style>
 
 
 <script>

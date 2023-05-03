@@ -15,15 +15,24 @@
             console.log('story state:', story_state);
           }"
         >
-          State
+          console.log State
         </v-btn>
         <v-btn
           color="error"
           class="black--text"
           @click="() => {
+            print_state();
+          }"
+        >
+          Print Python State
+        </v-btn>
+        <v-btn
+          color="error"
+          class="black--text"
+          @click="() => {
+            fill_data();
             stage_state.marker = 'dop_cal6';
-            state.velocities_total === 5
-            fill_table();
+            stage_state.reflection_complete = true;
           }"
         >
           Jump

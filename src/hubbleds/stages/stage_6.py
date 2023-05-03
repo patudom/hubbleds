@@ -3,7 +3,7 @@ from pathlib import Path
 
 from numpy import where, round
 
-from echo import CallbackProperty, add_callback, callback_property
+from echo import CallbackProperty, add_callback, callback_property, ListCallbackProperty
 from glue.core.message import NumericalDataChangedMessage
 from glue.core import Subset
 from traitlets import Bool, default
@@ -47,15 +47,19 @@ class StageState(CDSState):
         'pro_dat8',
         'pro_dat9',
         'sto_fin1',
+        'sto_fin2',
         ]
         
-    step_markers = CallbackProperty([
-        'pro_dat0',
-        'pro_dat6',
-    ])
+    step_markers = ListCallbackProperty([])
+
+    # step_markers = CallbackProperty([
+    #     'pro_dat0',
+    #     'pro_dat6',
+    # ])
     
     _NONSERIALIZED_PROPERTIES = [
-        'markers', 'indices', 'step_markers', 'image_location',
+        'markers', 'indices', #'step_markers', 
+        'image_location',
         'marker_forward', 'marker_backward',
     ]
     
@@ -99,7 +103,9 @@ class StageState(CDSState):
         self.marker = self.markers[index]
 
 
-@register_stage(story="hubbles_law", index=6, steps=["Edwin Hubble", "Hubble Telescope"])
+@register_stage(story="hubbles_law", index=6, steps=[
+    #"Edwin Hubble", "Hubble Telescope"
+    ])
 class StageFive(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
     _state_cls = StageState

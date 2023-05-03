@@ -26,7 +26,7 @@
       <p
         v-if="!state.lambda_used"
       >
-        The known <strong>rest wavelength</strong> for the line is recorded in your table.
+        The known <strong>rest wavelength</strong> (&lambda;<sub>rest</sub>) for the line is recorded in your table.
       </p>
       <p
         v-if="!state.lambda_on"

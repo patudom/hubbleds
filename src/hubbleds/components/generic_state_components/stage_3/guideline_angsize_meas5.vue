@@ -12,7 +12,7 @@
       class="mb-4"
     >
       <p>
-        Notice your galaxy’s angular size is now displayed in the table.
+        Notice your galaxy’s angular size, &theta; is now displayed in the table.
       </p>
     </div>
   </scaffold-alert>
