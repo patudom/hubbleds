@@ -229,7 +229,7 @@
               multi-line
               elevation="24"
             >
-              Be sure to move on to the next slide after you've had a chance to explore.
+              There is a lot more to explore, so don't linger here for too long!
               <v-btn
                 color="accent"
                 class="mx-4 black--text"
@@ -443,7 +443,7 @@
               multi-line
               elevation="24"
             >
-              Be sure to move on to the next slide after you've had a chance to explore.
+              There is a lot more to explore, so don't linger here for too long!
               <v-btn
                 color="accent"
                 class="mx-4 black--text"
@@ -619,7 +619,7 @@
               multi-line
               elevation="24"
             >
-              Be sure to move on to the next slide after you've had a chance to explore.
+              There is a lot more to explore, so don't linger here for too long!
               <v-btn
                 color="accent"
                 class="mx-4 black--text"
