@@ -1,6 +1,7 @@
 from collections import defaultdict, Counter
 from datetime import datetime
 from io import BytesIO
+from math import floor
 from pathlib import Path
 import requests
 
@@ -11,6 +12,7 @@ from astropy.io import fits
 from cosmicds.phases import Story
 from cosmicds.registries import story_registry
 from cosmicds.utils import API_URL, RepeatedTimer
+from dateutil.parser import isoparse
 from echo import DictCallbackProperty, CallbackProperty
 from echo.callback_container import CallbackContainer
 from glue.core import Data
@@ -142,7 +144,7 @@ class HubblesLaw(Story):
             HubblesLaw.make_data_writeable(data)
 
         self.class_last_modified = None
-        self.class_data_timer = RepeatedTimer(5, self._on_timer)
+        self.class_data_timer = RepeatedTimer(30, self._on_timer)
         self.class_data_timer.start()
 
     def _on_timer(self):
@@ -246,7 +248,7 @@ class HubblesLaw(Story):
         seq = SeedSequence(42)
         gen = Generator(PCG64(seq))
         indices = np.arange(len(good))
-        indices = indices[1::2][:85]
+        indices = indices[1::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
         random_subset = gen.choice(indices[good[1::2][:85]], size=40, replace=False)
         random_subset = np.ravel(np.column_stack((random_subset, random_subset+1)))
         example_galaxy_seed_data = {k: np.array(v)[random_subset] for k,v in example_galaxy_seed_data.items()}
@@ -261,7 +263,7 @@ class HubblesLaw(Story):
         single_gal_student_cols = [SAMPLE_ID_COMPONENT, NAME_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT,
                              GALTYPE_COMPONENT, MEASWAVE_COMPONENT, RESTWAVE_COMPONENT,
                              STUDENT_ID_COMPONENT, VELOCITY_COMPONENT, DISTANCE_COMPONENT,
-                             ELEMENT_COMPONENT, ANGULAR_SIZE_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
+                             ELEMENT_COMPONENT, ANGULAR_SIZE_COMPONENT, MEASUREMENT_NUMBER_COMPONENT, BRIGHTNESS_COMPONENT]
         
         categorical_components = [SAMPLE_ID_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, NAME_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
         transfered_components = [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT]
@@ -271,6 +273,7 @@ class HubblesLaw(Story):
         
         empty_record[RESTWAVE_COMPONENT] = H_ALPHA_REST_LAMBDA if ('H' in example_galaxy_data[ELEMENT_COMPONENT][0]) else MG_REST_LAMBDA
         empty_record[MEASUREMENT_NUMBER_COMPONENT] = 'first'
+        empty_record[BRIGHTNESS_COMPONENT] = 1
         
         example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
         
@@ -518,12 +521,15 @@ class HubblesLaw(Story):
 
     def fetch_class_data(self):
         def check_update(measurements):
-            last_modified = max([datetime.fromisoformat(x[DB_LAST_MODIFIED_FIELD][:-1]) for x in measurements], default=None)
+            last_modified = max([isoparse(m[DB_LAST_MODIFIED_FIELD]) for m in measurements], default=None)
             need_update = self.class_last_modified is None or last_modified is None or last_modified > self.class_last_modified
-            if need_update:
+            if need_update and last_modified is not None:
                 self.class_last_modified = last_modified
             return need_update
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
+        if self.class_last_modified is not None:
+            timestamp = floor(self.class_last_modified.timestamp() * 1000)
+            class_data_url = f"{class_data_url}?last_checked={timestamp}"
         updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=check_update)
         if updated is not None:
             self.update_summary_data(updated, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)

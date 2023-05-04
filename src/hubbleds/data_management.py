@@ -34,6 +34,7 @@ RA_COMPONENT = "ra"
 DEC_COMPONENT = "decl"
 Z_COMPONENT = "z"
 GALTYPE_COMPONENT = "type"
+BRIGHTNESS_COMPONENT = "brightness"
 
 # Sample measurements
 SAMPLE_ID_COMPONENT = "id"
@@ -61,6 +62,7 @@ DB_GALTYPE_FIELD = "type"
 DB_ELEMENT_FIELD = "element"
 DB_STUDENT_ID_FIELD = "student_id"
 DB_LAST_MODIFIED_FIELD = "last_modified"
+DB_BRIGHT_FIELD = "brightness"
 
 DB_MEASNUM_FIELD = "measurement_number"
 
