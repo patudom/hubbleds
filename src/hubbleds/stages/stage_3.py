@@ -370,7 +370,7 @@ class StageTwo(HubbleStage):
             new_index = marker_index - 1
             self.stage_state.marker = self.stage_state.marker[new_index]
         
-        if self.stage_state.marker_reached('est_dist4'):
+        if self.stage_state.marker_reached('est_dis4'):
             self.enable_distance_tool(True)
         
         # Show_ruler should be true from marker ang_siz3 to est_dis4 (inclusive) and from dot_seq5b forward.
