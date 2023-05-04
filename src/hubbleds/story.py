@@ -247,7 +247,6 @@ class HubblesLaw(Story):
         gen = Generator(PCG64(seq))
         indices = np.arange(len(good))
         indices = indices[1::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
-        indices = indices[1::2][:85]
         random_subset = gen.choice(indices[good[1::2]], size=40, replace=False)
         random_subset = np.ravel(np.column_stack((random_subset, random_subset+1)))
         example_galaxy_seed_data = {k: np.array(v)[random_subset] for k,v in example_galaxy_seed_data.items()}
