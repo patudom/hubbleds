@@ -312,6 +312,7 @@ class StageFour(HubbleStage):
         def student_slider_refresh(slider):
             self.stage_state.stu_low_age = round(min(slider.values, default=0))
             self.stage_state.stu_high_age = round(max(slider.values, default=0))
+            comparison_viewer.state.reset_limits(visible_only=False)
 
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
@@ -331,6 +332,7 @@ class StageFour(HubbleStage):
         def class_slider_refresh(slider):
             self.stage_state.cla_low_age = round(min(slider.values))
             self.stage_state.cla_high_age = round(max(slider.values))
+            all_viewer.state.reset_limits(visible_only=False)
 
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
