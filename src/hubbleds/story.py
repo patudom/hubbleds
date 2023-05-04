@@ -144,7 +144,7 @@ class HubblesLaw(Story):
             HubblesLaw.make_data_writeable(data)
 
         self.class_last_modified = None
-        self.class_data_timer = RepeatedTimer(5, self._on_timer)
+        self.class_data_timer = RepeatedTimer(30, self._on_timer)
         self.class_data_timer.start()
 
     def _on_timer(self):
