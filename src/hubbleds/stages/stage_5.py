@@ -36,13 +36,12 @@ class StageState(CDSState):
     uncertainty_dialog_complete = CallbackProperty(False)
     uncertainty_state = DictCallbackProperty({
         'step': 0,
-        'length': 10,
+        'length': 9,
         'titles': [
-            'What is the "true age" of the universe?',
+            'What is the true age of the universe?',
             "Shortcomings in our measurements",
             "Shortcomings in our measurements",
             "Messiness in our distance measurements",
-            "Imperfect humans and imperfect measuring tools",
             "Uncertainty",            
             "Random Uncertainty (Noise)",
             "Systematic Uncertainty (Bias)",

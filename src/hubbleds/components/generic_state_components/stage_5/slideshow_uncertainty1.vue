@@ -52,32 +52,37 @@
         <v-window-item :value="0" class="no-transition">
           <v-card-text>
             <v-container>
-              <v-row>
-                <v-col>
-                  <div>
-                  <p>
-                    There is only one universe that we live in, so our universe only has one age. Our job as scientists is to figure out if the <strong>true age</strong> of the universe is included within the ranges shown within these histograms, and if so, which value within the range is the true age.
-                  </p>
-                  <p>
-                    First, let’s think about <strong>why</strong> we found a range of values in the first place (rather than all getting the same value).
-                  </p>
-                </div>
-                <div>
-                  <v-img
-                  class="mb-4 mx-a mt-n3"
-                    contain
-                    src="https://picsum.photos/600/600"
-                  ></v-img>
-                  <cite class="text-center mt-2 grey--text">
-                    Vesto Slipher's spectrum of the Andromeda Galaxy  from Lowell Observatory 
-                    <span style="display: none">
-                      <!-- credit url https://ui.adsabs.harvard.edu/abs/2009JAHH...12...72B/abstract -->
-                      Source: Modified from <a href="https://ui.adsabs.harvard.edu/abs/2009JAHH...12...72B/abstract">Br&eacture;mond, Journal of Astronomical History and Heritage, 2009</a>
-                    </span>
-                  </cite>
-                </div>
+              <v-row
+              >
+                <v-col 
+                  cols="6"
+                  style="align-content:center!important; justify-content:center!important" 
+                >
+                  <div class="ma-4">
+                    <p>
+                      There is only one universe that we live in, so our universe only has one age. Our job as scientists is to figure out if the <strong>true age</strong> of the universe is included within the ranges given by our measurements, and if so, which value within the range is the true age.
+                    </p>
+                    <p>
+                      First, let’s think about <strong>why</strong> we found a range of values in the first place (rather than all getting the same value).
+                    </p>
+                  </div>
                 </v-col>
-                
+                <v-col
+                  cols="6"
+                >
+                  <div>
+                    <v-img
+                      class="mb-4 mx-a mt-n3 image-fit"
+                      alt="Cartoon image of the Universe and a birthday cake with a question mark candle."
+                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_five/universecake.png"
+                    ></v-img>
+                    <div>
+                      <cite class="text-center mt-2 grey--text">
+                        Students, classes, (and scientists) have measured different ages for our universe. How do we know which is the <strong>true</strong> age? Credit: Anna Nolin 
+                      </cite>
+                    </div>
+                  </div>
+                </v-col>
               </v-row>
             </v-container>
           </v-card-text>
@@ -163,7 +168,6 @@
               <v-row>
                 <v-col
                   cols = "12"
-                  lg = "5"
                 >
                   <p>
                     Given the messiness of our velocity vs. distance graphs, it is clear that we did not use an optimal method for making these measurements.
@@ -174,13 +178,6 @@
                   <p>
                     To make our measurements, we assumed that all galaxies are the same size as our own galaxy, the Milky Way. This is not a correct assumption, as galaxies have a large amount of natural variability in their sizes. This is likely the biggest source of “messiness” in our results.
                   </p>
-                </v-col>
-                <v-col
-                  cols="12"
-                  lg="7"
-                >
-                  This is a placeholder to remind ourselves that we need real images for this slideshow dialog.
-                 
                 </v-col>
               </v-row>
             </v-container>
@@ -193,7 +190,6 @@
               <v-row>
                 <v-col
                   cols="12"
-                  lg="5"
                   >
                   <p>
                     Human error contributes to imperfect measurements too. Some people are more meticulous than others.
@@ -201,10 +197,9 @@
                   <p>
                     Sometimes our tools limit our measurements. For example, did you feel confident that you were able to measure the edges of your galaxies correctly?
                   </p>
-                </v-col>
-                <v-col
-                  cols="12"
-                  lg="7">
+                  <p>
+                    Given the imperfect nature of our measurements and assumptions, there is a chance that our results are different than the true age of the universe. We refer to these differences as <strong>uncertainties</strong> in our result.
+                  </p>
                 </v-col>
               </v-row>
             </v-container>
@@ -217,15 +212,13 @@
               <v-row>
                 <v-col
                   cols="12"
-                  lg="5"
                   >
                   <p>
-                    Given the imperfect nature of our measurements and assumptions, there is a chance that our results are different than the true age of the universe. We refer to these differences as <strong>uncertainties</strong> in our result.
+                    Some uncertainties are <strong>random</strong>. For example, if some galaxies in your sample are larger or smaller than the Milky Way, your resulting distances may be too close or too far, and then your resulting age may be too young or too old.
                   </p>
-                </v-col>
-                <v-col
-                  cols="12"
-                  lg="7">
+                  <p>
+                    With <strong>random</strong> uncertainties, your measurements are as likely to be too high or too low, and with enough data, those variations would likely average out.
+                  </p>
                 </v-col>
               </v-row>
             </v-container>
@@ -237,29 +230,7 @@
             <v-container>
               <v-row>
                 <v-col
-                  cols="12"
-                  lg="5"
-                  >
-                  <p>
-                    Some uncertainties are <strong>random</strong>. For example, if some galaxies in your sample are larger or smaller than the Milky Way, your resulting distances may be too close or too far, and then your resulting age may be too young or too old.
-                  </p>
-                </v-col>
-                <v-col
-                  cols="12"
-                  lg="7">
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card-text>
-        </v-window-item>
-
-        <v-window-item :value="7" class="no-transition">
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col
-                  cols="12"
-                  lg="5"
+                  cols="7"
                   >
                   <p>
                     Some uncertainties are <strong>systematic</strong>. These are problems with our methods or assumptions that lead to all measurements, on average, being <strong>incorrect in the same direction</strong>, which biases our final result.
@@ -267,14 +238,6 @@
                   <p>
                     For example, imagine using a wrinkled tape measure to determine lengths. All your measurements would read larger than they should.
                   </p>
-                  <v-img
-                    id="runners"
-                    class="mb-4 mx-a mt-n3"
-                    height="90%"
-                    contain
-                    src="https://picsum.photos/1000/600"
-                  ></v-img>
-                  <!-- :src="`${state.image_location}/rulers.png`" -->
                   <p>
                     Can you think of any problems in our methods that could bias everyone’s results in the same direction?
                   </p>
@@ -288,15 +251,27 @@
                   ></free-response>
                 </v-col>
                 <v-col
-                  cols="12"
-                  lg="7">
+                  cols="5"
+                >
+                  <div>
+                    <v-img
+                      class="mb-4 mx-a mt-n3 image-fit"
+                      alt="Two measuring tapes are side by side. One lies straight. The other is curled up and wrinkled."
+                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_five/rulers.png"
+                    ></v-img>
+                    <div>
+                      <cite class="text-center mt-2 grey--text">
+                        Systematic errors can result from using flawed measuring tools or using tools incorrectly. Lengths measured with the wrinkled measuring tape will all be too long. Credit: Anna Nolin 
+                      </cite>
+                    </div>
+                  </div>
                 </v-col>
               </v-row>
             </v-container>
           </v-card-text>
         </v-window-item>
 
-        <v-window-item :value="8" class="no-transition">
+        <v-window-item :value="7" class="no-transition">
           <v-card-text>
             <v-container>
               <v-row>
@@ -305,14 +280,20 @@
                   <p>
                     Here are possible sources of systematic uncertainty:
                   </p>
+                  <ul>
+                    <li>
+                      If we all miss measuring the faint outer edges of all our galaxies, our angular size measurements will all be a little bit too small, and everyone’s distance measurements will be a little bit too far, leading to ages that are a little bit too old.
+                    </li>
+                    <li>
+                      We know that there is natural variation in the sizes of galaxies. If our Milky Way happens to be an “average” galaxy (somewhere in the middle of the actual distribution of galaxy sizes), our result would not have a bias. If the “average” size of a galaxy is different than the size of the Milky Way, that could lead to a bias in our age measurements.
+                    </li>
+                  </ul>
+                  <br>
                   <p>
-                    If we all miss measuring the faint outer edges of all our galaxies, our angular size measurements will all be a little bit too small, and everyone’s distance measurements will be a little bit too far, leading to ages that are a little bit too old.
+                    Sometimes sources of systematic uncertainty bias our results in different directions, effectively cancelling each other out in a lucky coincidence.
                   </p>
                   <p>
-                    We know that there is natural variation in the sizes of galaxies. If our Milky Way happens to be an “average” galaxy (somewhere in the middle of the actual distribution of galaxy sizes), our result would not have a bias. If the “average” size of a galaxy is different than the size of the Milky Way, that could lead to a bias in our age measurements.
-                  </p>
-                  <p>
-                    Sometimes sources of systematic uncertainty bias our results in different directions, effectively cancelling each other out.
+                    Scientists try to eliminate as many sources of systematic bias as possible when designing an experiment.
                   </p>
                 </v-col>
               </v-row>
@@ -320,7 +301,7 @@
           </v-card-text>
         </v-window-item>
 
-        <v-window-item :value="9" class="no-transition">
+        <v-window-item :value="8" class="no-transition">
           <v-card-text>
             <v-container>
               <v-row>
