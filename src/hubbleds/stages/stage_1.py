@@ -563,6 +563,10 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
+        
+        if self.stage_state.doppler_calc_reached:
+            self.enable_velocity_tool(True)
+
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()
