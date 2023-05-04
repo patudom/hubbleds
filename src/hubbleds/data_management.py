@@ -62,6 +62,7 @@ DB_GALTYPE_FIELD = "type"
 DB_ELEMENT_FIELD = "element"
 DB_STUDENT_ID_FIELD = "student_id"
 DB_LAST_MODIFIED_FIELD = "last_modified"
+DB_BRIGHT_FIELD = "brightness"
 
 DB_MEASNUM_FIELD = "measurement_number"
 
