@@ -39,6 +39,7 @@ class HubbleStage(Stage):
                     MEAS_TO_STATE.keys()}
         prepared.update(UNITS_TO_STATE)
         prepared[DB_STUDENT_ID_FIELD] = self.app_state.student["id"]
+        prepared[DB_MEASNUM_FIELD] = measurement[MEASUREMENT_NUMBER_COMPONENT]
         if not prepared[DB_GALNAME_FIELD].endswith(SPECTRUM_EXTENSION):
             prepared[DB_GALNAME_FIELD] += SPECTRUM_EXTENSION
         prepared = json.loads(json.dumps(prepared, cls=CDSJSONEncoder))
@@ -57,8 +58,9 @@ class HubbleStage(Stage):
         if self.app_state.update_db:
             print('SUBMITTING EXAMPLE GALAXY MEASUREMENT')
             prepared = self._prepare_sample_measurement(measurement)
-            req = requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurement",
-                        json=prepared)
+            endpoint = f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurement/"
+            req = requests.put(endpoint, json=prepared)
+            print(req.__dict__)
 
 
     def remove_measurement(self, galaxy_name):
