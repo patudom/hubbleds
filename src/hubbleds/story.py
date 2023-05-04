@@ -248,7 +248,7 @@ class HubblesLaw(Story):
         seq = SeedSequence(42)
         gen = Generator(PCG64(seq))
         indices = np.arange(len(good))
-        indices = indices[1::2][:85]
+        indices = indices[1::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
         random_subset = gen.choice(indices[good[1::2]], size=40, replace=False)
         random_subset = np.ravel(np.column_stack((random_subset, random_subset+1)))
         example_galaxy_seed_data = {k: np.array(v)[random_subset] for k,v in example_galaxy_seed_data.items()}
@@ -263,7 +263,7 @@ class HubblesLaw(Story):
         single_gal_student_cols = [SAMPLE_ID_COMPONENT, NAME_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT,
                              GALTYPE_COMPONENT, MEASWAVE_COMPONENT, RESTWAVE_COMPONENT,
                              STUDENT_ID_COMPONENT, VELOCITY_COMPONENT, DISTANCE_COMPONENT,
-                             ELEMENT_COMPONENT, ANGULAR_SIZE_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
+                             ELEMENT_COMPONENT, ANGULAR_SIZE_COMPONENT, MEASUREMENT_NUMBER_COMPONENT, BRIGHTNESS_COMPONENT]
         
         categorical_components = [SAMPLE_ID_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, NAME_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
         transfered_components = [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT]
@@ -273,6 +273,7 @@ class HubblesLaw(Story):
         
         empty_record[RESTWAVE_COMPONENT] = H_ALPHA_REST_LAMBDA if ('H' in example_galaxy_data[ELEMENT_COMPONENT][0]) else MG_REST_LAMBDA
         empty_record[MEASUREMENT_NUMBER_COMPONENT] = 'first'
+        empty_record[BRIGHTNESS_COMPONENT] = 1
         
         example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
         
