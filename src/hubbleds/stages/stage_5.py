@@ -323,11 +323,11 @@ class StageFour(HubbleStage):
         # Create the class slider
         class_slider_subset_label = "class_slider_subset"
         self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
-        class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT)
+        class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.classroom["id"]])
         self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
             self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
-            color = class_slider.highlight_color if highlighted else class_slider.default_color
+            color = "#3A86FF" if highlighted else "#FF006E"
             self.class_slider_subset.style.color = color
             all_viewer.state.reset_limits()
         def class_slider_refresh(slider):
