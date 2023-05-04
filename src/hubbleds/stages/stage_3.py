@@ -75,6 +75,8 @@ class StageState(CDSState):
     exgal_second_row_selected = CallbackProperty(False)
     exgal_second_measured = CallbackProperty(False) # This should initialize as False and be set to True when the condition is met - will do later.
     
+    brightness = CallbackProperty(1.0)
+
     # distance calc component variables
     distance_const = CallbackProperty(DISTANCE_CONSTANT)
     
@@ -346,6 +348,7 @@ class StageTwo(HubbleStage):
 
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_changed)
         add_callback(self.stage_state, 'show_ruler', self._show_ruler_changed)
+        add_callback(self.stage_state, 'brightness', self._update_brightness)
 
         # Callbacks
         add_callback(self.stage_state, 'marker',
@@ -658,6 +661,15 @@ class StageTwo(HubbleStage):
     #@print_function_name
     def _on_galaxy_changed(self, galaxy):
         self.distance_tool.galaxy_selected = bool(galaxy)
+    
+    def _update_brightness(self, val):
+         table = self.current_table
+         data_label = table._glue_data.label
+         # currently only example galaxy has brightness value defined
+         if data_label != EXAMPLE_GALAXY_MEASUREMENTS:
+             return
+         index = table.index
+         self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, BRIGHTNESS_COMPONENT, val, index)
     
     #@print_function_name
     def _make_measurement(self):
