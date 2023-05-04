@@ -327,7 +327,7 @@ class StageFour(HubbleStage):
         self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
             self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
-            color = class_slider.highlight_color if highlighted else class_slider.default_color
+            color = "#3A86FF" if highlighted else "#FF006E"
             self.class_slider_subset.style.color = color
             all_viewer.state.reset_limits()
         def class_slider_refresh(slider):
