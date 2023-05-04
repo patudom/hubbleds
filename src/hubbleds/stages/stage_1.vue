@@ -169,6 +169,7 @@
           v-if="stage_state.marker === 'end_sta1'"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
+          @stage_complete="() => {stage_one_complete(); console.log('emit: stage one complete');}"
         />  
       </v-col>
       <v-col
