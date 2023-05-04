@@ -1,6 +1,7 @@
 from collections import defaultdict, Counter
 from datetime import datetime
 from io import BytesIO
+from math import floor
 from pathlib import Path
 import requests
 
@@ -11,6 +12,7 @@ from astropy.io import fits
 from cosmicds.phases import Story
 from cosmicds.registries import story_registry
 from cosmicds.utils import API_URL, RepeatedTimer
+from dateutil.parser import isoparse
 from echo import DictCallbackProperty, CallbackProperty
 from echo.callback_container import CallbackContainer
 from glue.core import Data
@@ -481,12 +483,15 @@ class HubblesLaw(Story):
 
     def fetch_class_data(self):
         def check_update(measurements):
-            last_modified = max([datetime.fromisoformat(x[DB_LAST_MODIFIED_FIELD][:-1]) for x in measurements], default=None)
+            last_modified = max([isoparse(m[DB_LAST_MODIFIED_FIELD]) for m in measurements], default=None)
             need_update = self.class_last_modified is None or last_modified is None or last_modified > self.class_last_modified
-            if need_update:
+            if need_update and last_modified is not None:
                 self.class_last_modified = last_modified
             return need_update
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
+        if self.class_last_modified is not None:
+            timestamp = floor(self.class_last_modified.timestamp() * 1000)
+            class_data_url = f"{class_data_url}?last_checked={timestamp}"
         updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=check_update)
         if updated is not None:
             self.update_summary_data(updated, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)
