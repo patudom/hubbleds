@@ -239,7 +239,6 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        print('at beginning of init', self.stage_state.marker)
         
         dosdonts_slideshow = DosDontsSlideShow(self.stage_state.image_location_dosdonts)
         self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
@@ -447,9 +446,16 @@ class StageTwo(HubbleStage):
             extend_tool(viewers[i], 'bqplot:home', partial(set_x_lim,viewers[i]), activate_before_tool= False)
         
         self._update_viewer_style(dark=self.app_state.dark_mode)
+    
+     #@print_function_name
+    def _update_state_from_measurements(self):
+        student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
+        angsizes = student_measurements[ANGULAR_SIZE_COMPONENT]
+        self.stage_state.angsizes_total = angsizes[angsizes != None].size
+
         
     def _on_marker_update(self, old, new):
-        # print_log(f"Marker update: {old} -> {new}")
+        print_log(f"Marker update: {old} -> {new}")
         if not self.trigger_marker_update_cb:
             return
         markers = self.stage_state.markers
@@ -522,6 +528,10 @@ class StageTwo(HubbleStage):
             tool = self.distance_table.get_tool("update-distances")
             tool["disabled"] = False
             self.distance_table.update_tool(tool)
+            
+        if advancing and (new in ['rep_rem1', 'fil_rem']) and self.show_team_interface and (self.stage_state.angsizes_total < 5):
+            # this condition occurs if we use fill values in stage 1
+            self._update_state_from_measurements()
     
     @staticmethod
     def add_point(viewer, x, color, label = None): 
