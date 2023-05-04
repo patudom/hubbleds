@@ -324,6 +324,9 @@ class StageTwo(HubbleStage):
                                single_select=True,
                                tools=[add_distances_tool])
 
+        if self.stage_state.marker_reached('dot_seq12'):
+            self.example_galaxy_distance_table.filter_by(None)
+        
         self.add_widget(example_galaxy_distance_table, label="example_galaxy_distance_table")
         example_galaxy_distance_table.observe(
             self.distance_table_selected_change, names=["selected"])
