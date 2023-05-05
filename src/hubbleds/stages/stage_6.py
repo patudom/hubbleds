@@ -140,7 +140,7 @@ class StageFive(HubbleStage):
         
         prodata_viewer = self.add_viewer(HubbleScatterView, "prodata_viewer",
                                          "Professional Data")
-        prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", False)
+        prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("pro_dat1"))
         prodata_viewer.figure.axes[1].label_offset = "5em"
 
         layer_toggle = LayerToggle(prodata_viewer, names={
@@ -167,7 +167,9 @@ class StageFive(HubbleStage):
         if self.story_state.has_best_fit_galaxy:
             self.set_our_age()
         
-        self.set_class_age()
+        if self.stage_state.marker_reached('pro_dat1'):
+                self.set_class_age()
+
         
     def setup_prodata_viewer(self):
         # load the prodata_viewer
