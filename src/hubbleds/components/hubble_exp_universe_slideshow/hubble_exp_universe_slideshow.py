@@ -38,7 +38,7 @@ class HubbleExpUniverseSlideshow(v.VuetifyTemplate):
 
         def update_title(change):
             index = change["new"]
-            print("step:", index)
+           #print("step:", index)
             if index in range(len(self._titles)):
                 self.currentTitle = self._titles[index]
             else:

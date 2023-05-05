@@ -71,10 +71,10 @@ class HubbleHistogramViewer(LineHoverViewerMixin, BqplotHistogramView):
     
     def _update_visibility(self, val):
         if val:
-            print("Adding measuring line")
+           #print("Adding measuring line")
             self.add_measuring_line()
         else:
-            print("Removing measuring line")
+           #print("Removing measuring line")
             self.remove_measuring_line()
     
     def add_measuring_line(self):
