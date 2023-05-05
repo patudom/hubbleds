@@ -86,10 +86,31 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col>
+                <v-col
+                  cols="7"
+                >
                   <p>
                     Recall that you are looking at the same kind of observations Vesto Slipher made in the 1910s-1920s. We’ll ask you some questions about your data that astronomers in 1920 might have asked about Slipher’s data.
                   </p>
+                </v-col>
+                <v-col
+                  cols="5"
+                >
+                  <div>
+                    <v-img
+                      class="mb-4 mx-a mt-n3 image-fit"
+                      alt="A black and white image of the Andromeda galaxy's light spectrum"
+                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_one_spectrum/vesto_slipher.png"
+                    ></v-img>
+                    <div>
+                      <cite class="text-center mt-2 grey--text">
+                        Vesto Slipher's spectrum of the Andromeda Galaxy  from Lowell Observatory 
+                        <span style="display: none">
+                          Source: Modified from <a href="https://ui.adsabs.harvard.edu/abs/2009JAHH...12...72B/abstract">Br&eacture;mond, Journal of Astronomical History and Heritage, 2009</a>
+                        </span>
+                      </cite>
+                    </div>
+                  </div>
                 </v-col>
               </v-row>
             </v-container>

@@ -36,13 +36,12 @@ class StageState(CDSState):
     uncertainty_dialog_complete = CallbackProperty(False)
     uncertainty_state = DictCallbackProperty({
         'step': 0,
-        'length': 10,
+        'length': 9,
         'titles': [
-            'What is the "true age" of the universe?',
+            'What is the true age of the universe?',
             "Shortcomings in our measurements",
             "Shortcomings in our measurements",
             "Messiness in our distance measurements",
-            "Imperfect humans and imperfect measuring tools",
             "Uncertainty",            
             "Random Uncertainty (Noise)",
             "Systematic Uncertainty (Bias)",
@@ -324,11 +323,11 @@ class StageFour(HubbleStage):
         # Create the class slider
         class_slider_subset_label = "class_slider_subset"
         self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
-        class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT)
+        class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.classroom["id"]])
         self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
             self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
-            color = class_slider.highlight_color if highlighted else class_slider.default_color
+            color = "#3A86FF" if highlighted else "#FF006E"
             self.class_slider_subset.style.color = color
             all_viewer.state.reset_limits()
         def class_slider_refresh(slider):
@@ -584,6 +583,13 @@ class StageFour(HubbleStage):
         style = load_style(style_name)
         update_figure_css(all_distr_viewer_student, style_dict=style)
         update_figure_css(all_distr_viewer_class, style_dict=style)
+        
+        class_distr_viewer.state.show_measuring_line()
+        all_distr_viewer_student.state.show_measuring_line()
+        all_distr_viewer_class.state.show_measuring_line()
+        # class_distr_viewer.state.hide_measuring_line()
+        # all_distr_viewer_student.state.hide_measuring_line()
+        # all_distr_viewer_class.state.hide_measuring_line()
 
     def _deferred_setup(self):
         if self._setup_complete:
