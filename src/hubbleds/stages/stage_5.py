@@ -299,7 +299,7 @@ class StageFour(HubbleStage):
                                                     modify_subset_label=histogram_modify_label)
 
         # Create the student slider
-        student_slider_subset_label = "student_slider_subset"
+        student_slider_subset_label = STUDENT_SLIDER_SUBSET_LABEL
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
         self.student_slider_subset.style.alpha = 1
         student_slider = IDSlider(class_summ_data, STUDENT_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.student_user["id"]])
