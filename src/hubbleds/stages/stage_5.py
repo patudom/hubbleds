@@ -497,7 +497,7 @@ class StageFour(HubbleStage):
         # comparison_viewer.add_subset(self.student_slider_subset)
         comparison_viewer.state.x_att = class_meas_data.id[DISTANCE_COMPONENT]
         comparison_viewer.state.y_att = class_meas_data.id[VELOCITY_COMPONENT]
-        comparison_viewer.state.reset_limits()
+        comparison_viewer.state.reset_limits(visible_only=False)
 
         comparison_viewer.toolbar.tools["hubble:linefit"].activate() 
 
@@ -517,6 +517,7 @@ class StageFour(HubbleStage):
         all_layer.state.visible = False
         all_viewer.state.x_att = all_data.id[DISTANCE_COMPONENT]
         all_viewer.state.y_att = all_data.id[VELOCITY_COMPONENT]
+        all_viewer.state.reset_limits(visible_only=False)
 
         # Set up all viewer tools
         all_fit_tool = all_viewer.toolbar.tools["hubble:linefit"]
@@ -712,6 +713,7 @@ class StageFour(HubbleStage):
 
         if index == self.index:
             self.reset_viewer_limits()
+            self.get_component("py-student-slider").refresh()
 
             if self.stage_state.marker == 'ran_var1':
                 layer_viewer = self.get_viewer("layer_viewer")
