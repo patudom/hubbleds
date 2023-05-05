@@ -641,11 +641,11 @@ class StageFour(HubbleStage):
         self.stage_state.image_location = prepend + "data/images/stage_three"
 
     def _on_trend_line_drawn(self, is_drawn):
-        print("Trend line drawn: ", is_drawn)
+       #print("Trend line drawn: ", is_drawn)
         self.stage_state.class_trend_line_drawn = is_drawn
         
     def _on_best_fit_line_shown(self, is_active):
-        print("Best fit line shown: ", is_active)
+       #print("Best fit line shown: ", is_active)
         if not self.stage_state.class_best_fit_clicked:
             self.stage_state.class_best_fit_clicked = is_active
 
@@ -714,7 +714,7 @@ class StageFour(HubbleStage):
             state['short_other'] = r.get('other-shortcomings', "")
     
     def _on_stage_index_changed(self, index):
-        print("Stage Index: ",self.story_state.stage_index)
+       #print("Stage Index: ",self.story_state.stage_index)
         if index >= self.index:
             self._deferred_setup()
 

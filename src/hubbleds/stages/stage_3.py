@@ -30,8 +30,8 @@ log = logging.getLogger()
 
 import inspect
 def print_log(*args, **kwargs):
-    if True:
-        print(*args, **kwargs)
+    if False:
+       print(*args, **kwargs)
     return
 def print_function_name(func):
     def wrapper(*args, **kwargs):
@@ -239,7 +239,7 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        print('at beginning of init', self.stage_state.marker)
+       #print('at beginning of init', self.stage_state.marker)
         
         dosdonts_slideshow = DosDontsSlideShow(self.stage_state.image_location_dosdonts)
         self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
@@ -397,7 +397,7 @@ class StageTwo(HubbleStage):
             self.example_galaxy_distance_table.selected = []
             self.stage_state.show_dotplot2 = True
         
-        print('at end of init', self.stage_state.marker)
+       #print('at end of init', self.stage_state.marker)
 
     def setup_dotplot_viewers(self):
         
@@ -581,7 +581,7 @@ class StageTwo(HubbleStage):
         # because d = C / \theta and \theta = C / d
         event['domain']['x'] = round(DISTANCE_CONSTANT / event['domain']['x'], 0)
         if event is None:
-            print("No event")
+           #print("No event")
             return
         v1 = self.get_viewer('dotplot_viewer_dist')
         v2 = self.get_viewer('dotplot_viewer_ang')
@@ -613,7 +613,7 @@ class StageTwo(HubbleStage):
         
         self.stage_state.galaxy = galaxy
         self.stage_state.galaxy_dist = None
-        print('bool(galaxy)',bool(galaxy))
+       #print('bool(galaxy)',bool(galaxy))
         self.distance_tool.measuring_allowed = bool(galaxy)
         self.stage_state.meas_theta = data[ANGULAR_SIZE_COMPONENT][index]
 
@@ -799,7 +799,7 @@ class StageTwo(HubbleStage):
         self.get_distance_count()
     
     def fill_table(self, table, tool=None):
-        print("in fill_table")
+       #print("in fill_table")
         self.update_data_value(table._glue_data.label, ANGULAR_SIZE_COMPONENT, 35, 0)
         self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT, distance_from_angular_size(35), 0)
 
@@ -809,7 +809,7 @@ class StageTwo(HubbleStage):
         self.update_distances(self.example_galaxy_distance_table)
 
     def vue_fill_table(self, _args):
-        print("in vue_fill_table")
+       #print("in vue_fill_table")
         self.fill_table(self.example_galaxy_distance_table)
     
     #@print_function_name

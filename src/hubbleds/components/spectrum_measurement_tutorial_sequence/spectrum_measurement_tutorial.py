@@ -32,8 +32,8 @@ import inspect
 from IPython.display import Javascript, display
 
 def print_log(*args, color = None, **kwargs):
-    if True:
-        # print(*args, **kwargs)
+    if False:
+        ##print(*args, **kwargs)
         s = 'spe tut: ' + ' '.join([str(a) for a in args])
         color = color or 'green'
         display(Javascript(f'console.log("%c{s}","color:{color}");'))
