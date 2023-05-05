@@ -50,18 +50,18 @@ class HubbleStage(Stage):
     def submit_measurement(self, measurement):
         if self.app_state.update_db:
             prepared = self._prepare_measurement(measurement)
-            print('submit now')
+            #print('submit now')
             requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/submit-measurement",
                         json=prepared)
             
     
     def submit_example_galaxy_measurement(self, measurement):
         if self.app_state.update_db:
-            print('SUBMITTING EXAMPLE GALAXY MEASUREMENT')
+            #print('SUBMITTING EXAMPLE GALAXY MEASUREMENT')
             prepared = self._prepare_sample_measurement(measurement)
             endpoint = f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurement/"
             req = requests.put(endpoint, json=prepared)
-            print(req.__dict__)
+            #print(req.__dict__)
 
 
     def remove_measurement(self, galaxy_name):
@@ -78,7 +78,7 @@ class HubbleStage(Stage):
 
     def update_data_value(self, dc_name, comp_name, value, index, block_submit=False):
         super().update_data_value(dc_name, comp_name, value, index)
-        print('update data value', dc_name)
+        #print('update data value', dc_name)
         if dc_name not in [STUDENT_MEASUREMENTS_LABEL, EXAMPLE_GALAXY_MEASUREMENTS]:
             return
 

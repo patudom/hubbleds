@@ -38,7 +38,7 @@ from IPython.display import Javascript, display
 
 def print_log(*args, color = None, **kwargs):
     if False:
-        # print(*args, **kwargs)
+        print(*args, **kwargs)
         s = 'stage 1: ' + ' '.join([str(a) for a in args])
         color = color or 'red'
         display(Javascript(f'console.log("%c{s}","color:{color}");'))
@@ -903,7 +903,7 @@ class StageOne(HubbleStage):
         new_value = round(event["domain"]["x"], 0)
         # table = self.get_widget("example_galaxy_table")
         index = self.example_galaxy_table.index
-        print(index, f"index is none: {index is None}")
+       #print(index, f"index is none: {index is None}")
         data = self.example_galaxy_table.glue_data
         if data[NAME_COMPONENT][index] in self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[NAME_COMPONENT]:
             
@@ -1079,13 +1079,11 @@ class StageOne(HubbleStage):
         return 
         if complete:
             self.story_state.stage_index = 2
-            print("end Stage 1. stage_state.stage_1_complete value after last guideline:", self.stage_state.stage_1_complete)
+           #print("end Stage 1. stage_state.stage_1_complete value after last guideline:", self.stage_state.stage_1_complete)
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.stage_state.stage_1_complete = False
-
-            print("end Stage 1. stage_state.stage_1_complete value after reinitializing to false:", self.stage_state.stage_1_complete)
     
     def vue_stage_one_complete(self, *args):
         print('vue_stage_one_complete')
@@ -1093,11 +1091,12 @@ class StageOne(HubbleStage):
         self.stage_state.stage_1_complete = False
 
     def vue_print_state(self, _args=None):
-        print("stage state:")
-        print(self.stage_state)
-        print("   ")
-        print("story state:")
-        print(self.story_state)
+        pass
+       #print("stage state:")
+       #print(self.stage_state)
+       #print("   ")
+       #print("story state:")
+       #print(self.story_state)
 
     def fill_table(self, table, tool=None):
         self.update_data_value(table._glue_data.label, MEASWAVE_COMPONENT, 6830, 0) 

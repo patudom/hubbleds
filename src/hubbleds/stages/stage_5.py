@@ -308,11 +308,10 @@ class StageFour(HubbleStage):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
             color = student_slider.highlight_color if highlighted else student_slider.default_color
             self.student_slider_subset.style.color = color
-            comparison_viewer.state.reset_limits()
         def student_slider_refresh(slider):
             self.stage_state.stu_low_age = round(min(slider.values, default=0))
             self.stage_state.stu_high_age = round(max(slider.values, default=0))
-            comparison_viewer.state.reset_limits()
+            comparison_viewer.state.reset_limits(visible_only=False)
 
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
@@ -329,11 +328,10 @@ class StageFour(HubbleStage):
             self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
             color = "#3A86FF" if highlighted else "#FF006E"
             self.class_slider_subset.style.color = color
-            all_viewer.state.reset_limits()
         def class_slider_refresh(slider):
             self.stage_state.cla_low_age = round(min(slider.values))
             self.stage_state.cla_high_age = round(max(slider.values))
-            all_viewer.state.reset_limits()
+            all_viewer.state.reset_limits(visible_only=False)
 
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
@@ -432,6 +430,9 @@ class StageFour(HubbleStage):
             student_layer.state.visible = True
             class_layer.state.visible = False
 
+        if new == 'cla_res1':
+            self.get_component("py-student-slider").refresh()
+
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
@@ -498,7 +499,7 @@ class StageFour(HubbleStage):
         # comparison_viewer.add_subset(self.student_slider_subset)
         comparison_viewer.state.x_att = class_meas_data.id[DISTANCE_COMPONENT]
         comparison_viewer.state.y_att = class_meas_data.id[VELOCITY_COMPONENT]
-        comparison_viewer.state.reset_limits()
+        comparison_viewer.state.reset_limits(visible_only=False)
 
         comparison_viewer.toolbar.tools["hubble:linefit"].activate() 
 
@@ -518,6 +519,7 @@ class StageFour(HubbleStage):
         all_layer.state.visible = False
         all_viewer.state.x_att = all_data.id[DISTANCE_COMPONENT]
         all_viewer.state.y_att = all_data.id[VELOCITY_COMPONENT]
+        all_viewer.state.reset_limits(visible_only=False)
 
         # Set up all viewer tools
         all_fit_tool = all_viewer.toolbar.tools["hubble:linefit"]
@@ -641,11 +643,11 @@ class StageFour(HubbleStage):
         self.stage_state.image_location = prepend + "data/images/stage_three"
 
     def _on_trend_line_drawn(self, is_drawn):
-        print("Trend line drawn: ", is_drawn)
+       #print("Trend line drawn: ", is_drawn)
         self.stage_state.class_trend_line_drawn = is_drawn
         
     def _on_best_fit_line_shown(self, is_active):
-        print("Best fit line shown: ", is_active)
+       #print("Best fit line shown: ", is_active)
         if not self.stage_state.class_best_fit_clicked:
             self.stage_state.class_best_fit_clicked = is_active
 
@@ -714,12 +716,13 @@ class StageFour(HubbleStage):
             state['short_other'] = r.get('other-shortcomings', "")
     
     def _on_stage_index_changed(self, index):
-        print("Stage Index: ",self.story_state.stage_index)
+       #print("Stage Index: ",self.story_state.stage_index)
         if index >= self.index:
             self._deferred_setup()
 
         if index == self.index:
             self.reset_viewer_limits()
+            self.get_component("py-student-slider").refresh()
 
             if self.stage_state.marker == 'ran_var1':
                 layer_viewer = self.get_viewer("layer_viewer")

@@ -32,8 +32,8 @@ import inspect
 from IPython.display import Javascript, display
 
 def print_log(*args, color = None, **kwargs):
-    if True:
-        # print(*args, **kwargs)
+    if False:
+        ##print(*args, **kwargs)
         s = 'spe tut: ' + ' '.join([str(a) for a in args])
         color = color or 'green'
         display(Javascript(f'console.log("%c{s}","color:{color}");'))
@@ -689,12 +689,13 @@ class SpectrumMeasurementTutorialSequence(v.VuetifyTemplate, HubListener):
 
 
     def print_log(self, *args, **kwargs):
-        # combine all args into a single string
-        s = ' '.join([str(a) for a in args])
-        s = 'py: ' + s
-        # print this to the javascript console
-        # create needed imports
-        display(Javascript(f'console.log("%c{s}","color:green");'))
+        if False:
+            # combine all args into a single string
+            s = ' '.join([str(a) for a in args])
+            s = 'py: ' + s
+            # print this to the javascript console
+            # create needed imports
+            display(Javascript(f'console.log("%c{s}","color:green");'))
         
     def vue_on_reopen(self):
         self.plot_measurements(self.table_data)
