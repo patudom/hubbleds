@@ -431,6 +431,9 @@ class StageFour(HubbleStage):
             student_layer.state.visible = True
             class_layer.state.visible = False
 
+        if new == 'cla_res1':
+            self.get_component("py-student-slider").refresh()
+
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
