@@ -423,6 +423,8 @@ class StageFour(HubbleStage):
         advancing = markers.index(new) > markers.index(old)
 
         layer_viewer = self.get_viewer("layer_viewer")
+        comparison_viewer = self.get_viewer("comparison_viewer")
+        all_viewer = self.get_viewer("all_viewer")
 
         if new == 'ran_var1':
             student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
@@ -432,7 +434,13 @@ class StageFour(HubbleStage):
 
         if new == 'cla_res1':
             self.get_component("py-student-slider").refresh()
+            if not comparison_viewer.toolbar.tools["hubble:linefit"].active: # if off
+                comparison_viewer.toolbar.tools["hubble:linefit"].activate() # toggle on
 
+        if new == 'cla_res1c':
+            if not all_viewer.toolbar.tools["hubble:linefit"].active: # if off
+                all_viewer.toolbar.tools["hubble:linefit"].activate() # toggle on
+                    
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
