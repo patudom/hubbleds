@@ -80,7 +80,9 @@ class HubblesLaw(Story):
         all_json = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/all-data").json()
         all_measurements = all_json["measurements"]
         for measurement in all_measurements:
-            measurement.update(measurement["galaxy"])
+            measurement.update({"galaxy_id": measurement["galaxy"]["id"]})
+            measurement.pop("galaxy")
+            measurement.pop("student")
         all_student_summaries = all_json["studentData"]
         all_class_summaries = all_json["classData"]
         all_data = Data(
@@ -452,10 +454,10 @@ class HubblesLaw(Story):
         measurements = self.fetch_measurements(url)
         need_update = check_update is None or check_update(measurements)
         if not need_update:
-            return None
+            return None, None
         new_data = self.data_from_measurements(measurements)
         if not update_if_empty and new_data.size == 0:
-            return None
+            return None, None
         new_data.label = label
         if prune_none:
             HubblesLaw.prune_none(new_data)
@@ -468,7 +470,7 @@ class HubblesLaw(Story):
             for cb in callbacks:
                 cb()
 
-        return new_data
+        return measurements, new_data
 
     def update_summary_data(self, measurements, summ_label, id_field):
         dists = defaultdict(list)
@@ -530,9 +532,21 @@ class HubblesLaw(Story):
         if self.class_last_modified is not None:
             timestamp = floor(self.class_last_modified.timestamp() * 1000)
             class_data_url = f"{class_data_url}?last_checked={timestamp}"
-        updated = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=check_update)
-        if updated is not None:
-            self.update_summary_data(updated, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)
+        updated_meas, updated_data = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=check_update)
+        
+        if updated_data is not None:
+            all_data = self.data_collection[ALL_DATA_LABEL]
+            self.update_summary_data(updated_data, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)
+            indices = all_data[CLASS_ID_COMPONENT] != self.classroom["id"]
+            all_dict = { k.label : all_data[k][indices] for k in all_data.main_components }
+            all_dict[CLASS_ID_COMPONENT] = np.concatenate(all_dict[CLASS_ID_COMPONENT], [self.classroom["id"] for _ in range(len(updated_meas))])
+            for k in all_dict:
+                if k == CLASS_ID_COMPONENT:
+                    continue
+                all_dict[k] = np.concatenate(all_dict[k], [m[MEAS_TO_STATE.get(k, k)] for m in updated_meas])
+            new_all = Data(label=all_data.label, **all_dict)
+            all_data.update_values_from_data(new_all)
+
 
     def setup_for_student(self, app_state):
         super().setup_for_student(app_state)
