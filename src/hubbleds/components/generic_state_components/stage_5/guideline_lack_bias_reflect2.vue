@@ -12,28 +12,30 @@
         Again, assuming no systematic bias, let’s consider two scenarios:
       </p>
       <p>
-        If a <strong>student</strong> could only make one measurement, how far away from the true value would you expect their measurement to be?
+        If a <strong>student</strong> only makes one measurement, what do you think are the chances their measured value will be within 2-3 Gyr of the actual age of the universe?
       </p>
       <free-response
         outlined
         auto-grow
         rows="2"
-        label="How far away"
-        tag="student-distance-from-true"
+        label="What are the chances"
+        tag="student-chances"
+        hint="Estimate how many measurement counts are within 2-3 Gyr of the central value and divide by the total number of measurements."
       ></free-response>
     </div>
     <div
       class="mb-4"
     >
       <p>
-        If a <strong>class</strong> could only make one measurement, how far away from the true value would you expect their measurement to be?
+        If a <strong>class</strong> only makes one measurement, what do you think are the chances their measured value will be within 2-3 Gyr of the actual age of the universe?
       </p>
       <free-response
         outlined
         auto-grow
         rows="2"
-        label="How far away"
-        tag="class-distance-from-true"
+        label="What are the chances"
+        tag="class-chances"
+        hint="Estimate how many measurement counts are within 2-3 Gyr of the central value and divide by the total number of measurements."
       ></free-response>
     </div>
   </scaffold-alert>
