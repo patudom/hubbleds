@@ -313,6 +313,9 @@ class StageFour(HubbleStage):
             self.stage_state.stu_low_age = round(min(slider.values, default=0))
             self.stage_state.stu_high_age = round(max(slider.values, default=0))
             comparison_viewer.state.reset_limits(visible_only=False)
+        
+        extend_tool(comparison_viewer, 'bqplot:home', lambda *args: comparison_viewer.state.reset_limits(visible_only=False), activate_before_tool=False)
+        extend_tool(all_viewer, 'bqplot:home', lambda *args: all_viewer.state.reset_limits(visible_only=False), activate_before_tool=False)
 
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
