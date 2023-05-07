@@ -373,7 +373,7 @@ class StageTwo(HubbleStage):
             new_index = marker_index - 1
             self.stage_state.marker = self.stage_state.marker[new_index]
         
-        if self.stage_state.marker_reached('est_dis4'):
+        if self.stage_state.marker_reached('fil_rem1'):
             self.enable_distance_tool(True)
         
         # Show_ruler should be true from marker ang_siz3 to est_dis4 (inclusive) and from dot_seq5b forward.
@@ -793,7 +793,7 @@ class StageTwo(HubbleStage):
                             index)
 
         self.story_state.update_student_data()
-        if self.stage_state.distance_calc_count == 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.
+        if self.stage_state.distance_calc_count >= 1:  # as long as at least one thing has been measured, tool is enabled. But if students want to loop through calculation by hand they can.
             self.enable_distance_tool(True)
         self.get_distance_count()
     
