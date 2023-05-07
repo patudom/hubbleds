@@ -535,17 +535,24 @@ class HubblesLaw(Story):
         updated_meas, updated_data = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=check_update)
         
         if updated_data is not None:
-            all_data = self.data_collection[ALL_DATA_LABEL]
             self.update_summary_data(updated_data, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)
+            print("Updating class data")
+            all_data = self.data_collection[ALL_DATA_LABEL]
             indices = all_data[CLASS_ID_COMPONENT] != self.classroom["id"]
             all_dict = { k.label : all_data[k][indices] for k in all_data.main_components }
-            all_dict[CLASS_ID_COMPONENT] = np.concatenate(all_dict[CLASS_ID_COMPONENT], [self.classroom["id"] for _ in range(len(updated_meas))])
+            all_dict[CLASS_ID_COMPONENT] = np.concatenate([all_dict[CLASS_ID_COMPONENT], [self.classroom["id"]] * len(updated_meas)]) 
             for k in all_dict:
                 if k == CLASS_ID_COMPONENT:
                     continue
-                all_dict[k] = np.concatenate(all_dict[k], [m[MEAS_TO_STATE.get(k, k)] for m in updated_meas])
+                all_dict[k] = np.concatenate([all_dict[k], [m[MEAS_TO_STATE.get(k, k)] for m in updated_meas]])
             new_all = Data(label=all_data.label, **all_dict)
+            for k in all_data.main_components:
+                print(k, type(all_data.get_component(k)))
+            for k in new_all.main_components:
+                print(k, type(new_all.get_component(k)))
+                print(k, new_all[k])
             all_data.update_values_from_data(new_all)
+            HubblesLaw.prune_none(all_data)
 
 
     def setup_for_student(self, app_state):
