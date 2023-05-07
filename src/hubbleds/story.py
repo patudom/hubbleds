@@ -564,7 +564,9 @@ class HubblesLaw(Story):
             vels = updated_data[VELOCITY_COMPONENT]
             h0, age = self.create_single_summary(dists, vels)
             all_summ_data = self.data_collection[ALL_CLASS_SUMMARIES_LABEL]
-            index = next((i for i in range(all_summ_data.size) if all_summ_data[CLASS_ID_COMPONENT][i] == class_id))
+            index = next((i for i in range(all_summ_data.size) if all_summ_data[CLASS_ID_COMPONENT][i] == class_id), None)
+            if index is None:
+                return
             h0s = all_summ_data[H0_COMPONENT]
             ages = all_summ_data[AGE_COMPONENT]
             h0s[index]= h0
