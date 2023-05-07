@@ -8,7 +8,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty, add_callback, remove_callback, DictCallbackProperty
+from echo import CallbackProperty, add_callback, remove_callback, DictCallbackProperty, ListCallbackProperty
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.data import Data
 from glue_jupyter.link import link
@@ -76,9 +76,11 @@ class StageState(CDSState):
         'sho_est2', # last marker now
     ])
 
-    step_markers = CallbackProperty([
-        'exp_dat1',
-    ])
+    step_markers = ListCallbackProperty([])
+
+    # step_markers = CallbackProperty([
+    #     'exp_dat1',
+    # ])
 
     table_highlights = CallbackProperty([
         'exp_dat1',
@@ -103,7 +105,7 @@ class StageState(CDSState):
     ])
 
     _NONSERIALIZED_PROPERTIES = [
-        'markers', 'indices', 'step_markers',
+        'markers', 'indices', # 'step_markers',
         'table_highlights', 'image_location',
         'my_galaxies_plot_highlights', 'all_galaxies_plot_highlights',
     ]
@@ -127,7 +129,9 @@ class StageState(CDSState):
         index = min(self.markers.index(marker_text) + 1, len(self.markers) - 1)
         self.marker = self.markers[index]
 
-@register_stage(story="hubbles_law", index=4, steps=["MY DATA"])
+@register_stage(story="hubbles_law", index=4, steps=[
+    # "MY DATA"
+    ])
 class StageThree(HubbleStage):
     show_team_interface = Bool(False).tag(sync=True)
 
@@ -162,8 +166,7 @@ class StageThree(HubbleStage):
         super().__init__(*args, **kwargs)
         
         add_callback(self.stage_state, 'stage_4_complete',
-                     self._on_stage_4_complete)
-
+                     self._on_stage_complete)
 
         link((self.story_state, 'enough_students_ready'), (self.stage_state, 'stage_ready'))
 
@@ -251,7 +254,7 @@ class StageThree(HubbleStage):
         
         # layers from the table selection have the same label, but we only want student_data selected
         layer_viewer.ignore(lambda layer: layer.label == fit_table.subset_label and layer.data != student_data)
-
+        layer_viewer.ignore(lambda layer: layer.label == STUDENT_SLIDER_SUBSET_LABEL)
         # load all the initial styles
         self._update_viewer_style(dark=self.app_state.dark_mode)
 
@@ -385,7 +388,7 @@ class StageThree(HubbleStage):
         race_viewer.state.y_max = 1.1 * race_viewer.state.y_max 
 
     def _on_stage_index_changed(self, index):
-        print("Stage Index: ",self.story_state.stage_index)
+       #print("Stage Index: ",self.story_state.stage_index)
         if index > 0:
             self._deferred_setup()
 
@@ -453,11 +456,11 @@ class StageThree(HubbleStage):
         self.stage_state.image_location = prepend + "data/images/stage_three"
 
     def _on_trend_line_drawn(self, is_drawn):
-        print("Trend line drawn: ", is_drawn)
+       #print("Trend line drawn: ", is_drawn)
         self.stage_state.trend_line_drawn = is_drawn
         
     def _on_best_fit_line_shown(self, is_active):
-        print("Best fit line shown: ", is_active)
+       #print("Best fit line shown: ", is_active)
         if not self.stage_state.best_fit_clicked:
             self.stage_state.best_fit_clicked = is_active
 
@@ -467,9 +470,9 @@ class StageThree(HubbleStage):
         if value and not linefit_tool.active:
             linefit_tool.activate()
     
-    def _on_stage_4_complete(self, change):
-        if change:
-            self.story_state.stage_index =  self.story_state.stage_index + 1
+    def _on_stage_complete(self, complete):
+        if complete:
+            self.story_state.stage_index =  5
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first

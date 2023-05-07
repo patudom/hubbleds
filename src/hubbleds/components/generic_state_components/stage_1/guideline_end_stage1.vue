@@ -1,7 +1,7 @@
 <template>
   <scaffold-alert
     @back="() => { state.marker_backward = 1; }"
-    @next="() => { state.completed = true; }"
+    @next="() => { state.stage_1_complete = true; }"
     next-text="stage 2"
     :state="state"
   >

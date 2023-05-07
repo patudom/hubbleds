@@ -18,6 +18,7 @@ EXAMPLE_GALAXY_DATA = "example_galaxy"
 EXAMPLE_GALAXY_MEASUREMENTS = "example_galaxy_data"
 EXAMPLE_GALAXY_STUDENT_DATA = "example_galaxy_student_data"
 
+STUDENT_SLIDER_SUBSET_LABEL = "student_slider_subset"
 
 ### Data Components
 
@@ -62,6 +63,7 @@ DB_GALTYPE_FIELD = "type"
 DB_ELEMENT_FIELD = "element"
 DB_STUDENT_ID_FIELD = "student_id"
 DB_LAST_MODIFIED_FIELD = "last_modified"
+DB_BRIGHT_FIELD = "brightness"
 
 DB_MEASNUM_FIELD = "measurement_number"
 

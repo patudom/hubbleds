@@ -47,7 +47,7 @@ class ExplorationTool(v.VueTemplate):
 
     def _update_zooming(self, zooming):
         if not zooming and self._zooming:
-            print("Updating zoom count")
+           #print("Updating zoom count")
             self.zoom_count += 1
         self._zooming = zooming
 

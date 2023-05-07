@@ -1,6 +1,7 @@
 <template>
   <scaffold-alert
     title-text="Shortcomings in Your Estimate"
+    next-text="stage 5"
     @back="
       state.marker = 'sho_est1';
     "
