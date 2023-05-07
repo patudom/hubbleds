@@ -14,6 +14,9 @@
         Let’s look at the data, class by class. Some class measured the lowest age value for the universe. Some class measured the highest age.
       </p>
       <p>
+        Your class's graph is highlighted in blue.
+      </p>
+      <p>
         Use the slider to scan through the age estimates that each participating class measured. 
       </p>
       <p>
