@@ -267,6 +267,7 @@ class StageFour(HubbleStage):
                                            'all_distr_viewer_student', "All Students") # really just All students, but need the title bar
         all_distr_viewer_class = self.add_viewer(HubbleHistogramView,
                                            'all_distr_viewer_class', "All Classes")
+        all_distr_viewer_class.toolbar.tools['bqplot:home'].old_activate = all_distr_viewer_class.toolbar.tools['bqplot:home'].activate
 
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
@@ -312,6 +313,9 @@ class StageFour(HubbleStage):
             self.stage_state.stu_low_age = round(min(slider.values, default=0))
             self.stage_state.stu_high_age = round(max(slider.values, default=0))
             comparison_viewer.state.reset_limits(visible_only=False)
+        
+        extend_tool(comparison_viewer, 'bqplot:home', lambda *args: comparison_viewer.state.reset_limits(visible_only=False), activate_before_tool=False)
+        extend_tool(all_viewer, 'bqplot:home', lambda *args: all_viewer.state.reset_limits(visible_only=False), activate_before_tool=False)
 
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
@@ -410,11 +414,25 @@ class StageFour(HubbleStage):
         # but I'm not familiar with it, so in the interest of time, let's do this
         for prop in ['x_min', 'x_max']: 
             link((all_distr_viewer_student.state, prop), (all_distr_viewer_class.state, prop))
+            
+        # def match_axes():
+        #     if self.stage_state.marker_reached('two_his1'):
+        #         all_distr_viewer_student.state.reset_limits()
+        #     return
+        
+        # extend_tool(all_distr_viewer_class, 'bqplot:home', activate_cb = match_axes, activate_before_tool=False)
+        
+        self.match_student_class_hist_axes(self.stage_state.marker_reached('two_his1'))
+        
+        # we want to always reset using the range of the student
 
         # If possible, we defer some of the setup for later, to make loading faster
         add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
         if self.story_state.stage_index == self.index:
             self._deferred_setup()
+        
+        if self.stage_state.marker == 'age_dis1c':
+            all_distr_viewer_class.state.reset_limits()
             
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -455,7 +473,41 @@ class StageFour(HubbleStage):
                 linefit_tool.activate()
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)     
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+        
+        if advancing and new == 'age_dis1c':
+            self.get_viewer("all_distr_viewer_class").state.reset_limits()
+        
+        if advancing and new == 'two_his1':
+            self.get_viewer("all_distr_viewer_student").state.reset_limits()
+            self.match_student_class_hist_axes(True)
+            
+        
+        if not advancing and self.stage_state.marker_before('two_his1'):
+            self.match_student_class_hist_axes(False)
+            
 
+    def match_student_class_hist_axes(self, match = True):        
+        student_tool = self.get_viewer("all_distr_viewer_student").toolbar.tools['bqplot:home']
+        class_tool = self.get_viewer("all_distr_viewer_class").toolbar.tools['bqplot:home']
+        
+        if match:
+            if class_tool.activate == student_tool.activate:
+                # already matchced
+                return
+            else:
+                # save old method and replace with student method
+                class_tool.old_activate = class_tool.activate # save old method
+                class_tool.activate = student_tool.activate # replace with student method
+                return
+        else:
+            if class_tool.activate == class_tool.old_activate:
+                # already restored/unmatched
+                return
+            else:
+                # restore old method
+                class_tool.activate = class_tool.old_activate
+                return
+    
     def _setup_scatter_layers(self):
         layer_viewer = self.get_viewer("layer_viewer")
         comparison_viewer = self.get_viewer("comparison_viewer")
