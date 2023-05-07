@@ -685,7 +685,7 @@ class StageFour(HubbleStage):
                 self.get_component("py-student-slider").refresh()
             elif label == ALL_CLASS_SUMMARIES_LABEL:
                 class_slider = self.get_component("py-class-slider")
-                class_slider.update_data(self, msg.data)
+                class_slider.update_data(msg.data)
             self._reset_limits_for_data(label)
 
     def _on_class_data_update(self, *args):
