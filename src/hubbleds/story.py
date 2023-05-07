@@ -91,6 +91,7 @@ class HubblesLaw(Story):
         )
         HubblesLaw.prune_none(all_data)
         self.data_collection.append(all_data)
+        self.base_all_dict = None
 
         all_student_summ_data = self.data_from_summaries(all_student_summaries, label=ALL_STUDENT_SUMMARIES_LABEL, id_key=STUDENT_ID_COMPONENT)
         all_class_summ_data = self.data_from_summaries(all_class_summaries, label=ALL_CLASS_SUMMARIES_LABEL, id_key=CLASS_ID_COMPONENT)
@@ -472,6 +473,12 @@ class HubblesLaw(Story):
 
         return measurements, new_data
 
+    def create_single_summary(self, distances, velocities):
+        line = fit_line(distances, velocities)
+        h0 = line.slope.value
+        age = age_in_gyr_simple(h0)
+        return h0, age
+
     def update_summary_data(self, measurements, summ_label, id_field):
         dists = defaultdict(list)
         vels = defaultdict(list)
@@ -488,12 +495,9 @@ class HubblesLaw(Story):
         hubbles = []
         ages = []
         for id_num in ids:
-            d = dists[id_num]
-            v = vels[id_num]
-            line = fit_line(d, v)
-            h0 = line.slope.value
+            h0, age = self.create_single_summary(dists[id_num], vels[id_num])
             hubbles.append(h0)
-            ages.append(age_in_gyr_simple(h0))
+            ages.append(age)
 
         components = {
             H0_COMPONENT: hubbles,
@@ -535,12 +539,18 @@ class HubblesLaw(Story):
         updated_meas, updated_data = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=check_update)
         
         if updated_data is not None:
+            class_id = self.classroom["id"]
             self.update_summary_data(updated_data, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)
-            print("Updating class data")
             all_data = self.data_collection[ALL_DATA_LABEL]
-            indices = all_data[CLASS_ID_COMPONENT] != self.classroom["id"]
-            all_dict = { k.label : all_data[k][indices] for k in all_data.main_components }
-            all_dict[CLASS_ID_COMPONENT] = np.concatenate([all_dict[CLASS_ID_COMPONENT], [self.classroom["id"]] * len(updated_meas)]) 
+
+            # We can't do this when all_data is created
+            # because it seems that the classroom info hasn't been populated
+            if self.base_all_dict is None:
+                indices = all_data[CLASS_ID_COMPONENT] != self.classroom["id"]
+                self.base_all_dict = { k.label : all_data[k][indices] for k in all_data.main_components }
+
+            all_dict = self.base_all_dict.copy()
+            all_dict[CLASS_ID_COMPONENT] = np.concatenate([all_dict[CLASS_ID_COMPONENT], [class_id] * len(updated_meas)]) 
             for k in all_dict:
                 if k == CLASS_ID_COMPONENT:
                     continue
@@ -548,6 +558,21 @@ class HubblesLaw(Story):
             new_all = Data(label=all_data.label, **all_dict)
             all_data.update_values_from_data(new_all)
             HubblesLaw.prune_none(all_data)
+
+            # We also need to update the all class summary data
+            dists = updated_data[DISTANCE_COMPONENT]
+            vels = updated_data[VELOCITY_COMPONENT]
+            h0, age = self.create_single_summary(dists, vels)
+            all_summ_data = self.data_collection[ALL_CLASS_SUMMARIES_LABEL]
+            index = next((i for i in range(all_summ_data.size) if all_summ_data[CLASS_ID_COMPONENT][i] == class_id))
+            h0s = all_summ_data[H0_COMPONENT]
+            ages = all_summ_data[AGE_COMPONENT]
+            h0s[index]= h0
+            ages[index]= age
+            all_summ_data.update_components({
+                all_summ_data.id[H0_COMPONENT]: h0s,
+                all_summ_data.id[AGE_COMPONENT]: ages
+            })
 
 
     def setup_for_student(self, app_state):
