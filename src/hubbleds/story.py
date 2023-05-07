@@ -546,11 +546,6 @@ class HubblesLaw(Story):
                     continue
                 all_dict[k] = np.concatenate([all_dict[k], [m[MEAS_TO_STATE.get(k, k)] for m in updated_meas]])
             new_all = Data(label=all_data.label, **all_dict)
-            for k in all_data.main_components:
-                print(k, type(all_data.get_component(k)))
-            for k in new_all.main_components:
-                print(k, type(new_all.get_component(k)))
-                print(k, new_all[k])
             all_data.update_values_from_data(new_all)
             HubblesLaw.prune_none(all_data)
 
