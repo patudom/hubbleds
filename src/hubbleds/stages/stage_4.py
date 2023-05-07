@@ -254,7 +254,7 @@ class StageThree(HubbleStage):
         
         # layers from the table selection have the same label, but we only want student_data selected
         layer_viewer.ignore(lambda layer: layer.label == fit_table.subset_label and layer.data != student_data)
-
+        layer_viewer.ignore(lambda layer: layer.label == STUDENT_SLIDER_SUBSET_LABEL)
         # load all the initial styles
         self._update_viewer_style(dark=self.app_state.dark_mode)
 
