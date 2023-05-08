@@ -165,6 +165,7 @@ class StageThree(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        
         add_callback(self.stage_state, 'stage_4_complete',
                      self._on_stage_complete)
 
@@ -172,6 +173,9 @@ class StageThree(HubbleStage):
 
         self.show_team_interface = self.app_state.show_team_interface
         self._setup_complete = False
+        
+        if self.stage_state.marker in ['tre_lin2', 'bes_fit1']:
+            self.stage_state.marker = 'tre_lin1'
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -318,7 +322,8 @@ class StageThree(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
         if advancing and new =="age_rac1":
             self._update_hypgal_info()
-
+        
+        
     def _on_slideshow_opened(self, msg):
         self.stage_state.hubble_dialog_opened = msg["new"]
     
