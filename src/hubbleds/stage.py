@@ -109,6 +109,18 @@ class HubbleStage(Stage):
             elif dc_name == EXAMPLE_GALAXY_MEASUREMENTS:
                 pass
                 self.submit_example_galaxy_measurement(measurement)
+    
+    def upload_example_galaxy_table(self):
+        data = self.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+        df = data.to_dataframe()
+        # Submit a measurement, if necessary
+        if self.app_state.update_db:
+            for index in range(len(df)):
+                measurement = {comp.label: data[comp][index] for comp in
+                            data.main_components}
+                print(measurement)
+                # self.submit_example_galaxy_measurement(measurement)
+        
 
     def add_data_values(self, dc_name, values):
         super().add_data_values(dc_name, values)

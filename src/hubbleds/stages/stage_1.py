@@ -420,6 +420,7 @@ class StageOne(HubbleStage):
             single_select=True,
            tools=[add_velocities_tool2])
         
+        # self.upload_example_galaxy_table()
         
         self.add_widget(example_galaxy_table, label="example_galaxy_table")
         example_galaxy_table.row_click_callback = lambda item, _data=None: self.on_table_row_click(item, _data, table=example_galaxy_table)

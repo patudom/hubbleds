@@ -401,7 +401,44 @@ class HubblesLaw(Story):
                                                  color="blue",
                                                  alpha=1,
                                                  markersize=10)
+    
+    def update_example_galaxy_data(self, *args):
+        print('update_example_galaxy_data')
+        dc = self.data_collection
+        meas_data = dc[EXAMPLE_GALAXY_MEASUREMENTS]
+        df = meas_data.to_dataframe()
+
+        df = df[df[DISTANCE_COMPONENT].notna() & \
+                df[VELOCITY_COMPONENT].notna() & \
+                df[ANGULAR_SIZE_COMPONENT].notna()]
+        df[NAME_COMPONENT] = df[NAME_COMPONENT].astype(np.dtype(str))
+        main_components = [x.label for x in meas_data.main_components]
+        components = { col: list(df[col]) for col in main_components }
+
+        if not all(len(v) > 0 for v in components.values()):
+            return
+        
+        nrows = [len(v) for v in components.values()][0]
+        
+        new_data = {} #Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
+        for col, data in components.items():
+            categorical = col in self.categorical_cols
+            ctype = CategoricalComponent if categorical else Component
+            comp = ctype(np.array(data))
+            new_data.update({comp: np.array(data)})
+        
+        example_galaxy_data = dc[EXAMPLE_GALAXY_MEASUREMENTS]
+        example_galaxy_data.update_values_from_data(new_data)
+        HubblesLaw.make_data_writeable(example_galaxy_data)
                 
+    def update_data_values(self, dc_name, values, index):
+        data = self.data_collection[dc_name]
+        comp_dict = {}
+        for comp, value in values.items():
+            vals = data[comp]
+            vals[index] = value
+            comp_dict[data.id[comp]] = vals
+        data.update_components(comp_dict)
 
     @staticmethod
     def prune_none(data):
@@ -460,12 +497,24 @@ class HubblesLaw(Story):
         need_update = check_update is None or check_update(measurements)
         if not need_update:
             return None, None
-        new_data = self.data_from_measurements(measurements)
+        new_data = self.data_from_measurements(measurements, include_measurement_number = (label == EXAMPLE_GALAXY_MEASUREMENTS))
         if not update_if_empty and new_data.size == 0:
             return None, None
         new_data.label = label
         if prune_none:
             HubblesLaw.prune_none(new_data)
+        
+        if label == EXAMPLE_GALAXY_MEASUREMENTS:
+            # if student has only made one measurement, add an empty row to what 
+            # you get from the database
+            if new_data.size == 1:
+                # add empty row
+                empty_row = self.empty_example_galaxy_record
+                empty_row[DB_MEASNUM_FIELD] = 'second' if new_data[DB_MEASNUM_FIELD][0] == 'first' else 'first'
+                empty_row.update({k: None for k in [MEASWAVE_COMPONENT, VELOCITY_COMPONENT, DISTANCE_COMPONENT, ANGULAR_SIZE_COMPONENT]})
+                print(empty_row)
+                self.add_new_row(data = new_data, changes = empty_row)
+        
         data = self.data_collection[label]
         data.update_values_from_data(new_data)
         if make_writeable:
@@ -593,3 +642,4 @@ class HubblesLaw(Story):
             app_state.update_db = False
         self.fetch_student_data()
         self.fetch_class_data()
+        self.fetch_example_galaxy_data()
