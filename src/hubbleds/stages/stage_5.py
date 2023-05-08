@@ -101,7 +101,7 @@ class StageState(CDSState):
         'lea_unc1',
         'two_his2',
         'lac_bia1',
-        'lac_bia2',
+        #'lac_bia2',
         'lac_bia3',
         'mor_dat1',
         'acc_unc1',

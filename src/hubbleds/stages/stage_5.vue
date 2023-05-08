@@ -270,10 +270,10 @@
           :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.lack_bias_response = true"/>
-        <guideline-lack-bias-reflect2
+        <!-- <guideline-lack-bias-reflect2
           v-if="stage_state.marker == 'lac_bia2'"
           :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
+          v-intersect.once="scrollIntoView"/> -->
         <guideline-lack-bias-reflect3
           v-if="stage_state.marker == 'lac_bia3'"
           :state="stage_state"
