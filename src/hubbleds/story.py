@@ -430,15 +430,7 @@ class HubblesLaw(Story):
         example_galaxy_data = dc[EXAMPLE_GALAXY_MEASUREMENTS]
         example_galaxy_data.update_values_from_data(new_data)
         HubblesLaw.make_data_writeable(example_galaxy_data)
-                
-    def update_data_values(self, dc_name, values, index):
-        data = self.data_collection[dc_name]
-        comp_dict = {}
-        for comp, value in values.items():
-            vals = data[comp]
-            vals[index] = value
-            comp_dict[data.id[comp]] = vals
-        data.update_components(comp_dict)
+
 
     @staticmethod
     def prune_none(data):
