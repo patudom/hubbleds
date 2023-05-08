@@ -1087,7 +1087,7 @@ class StageOne(HubbleStage):
             self.stage_state.stage_1_complete = False
     
     def vue_stage_one_complete(self, *args):
-        print('vue_stage_one_complete')
+        # print('vue_stage_one_complete')
         self.story_state.stage_index = 2
         self.stage_state.stage_1_complete = False
 
