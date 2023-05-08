@@ -69,9 +69,6 @@
                     Measuring the galaxy angular sizes can be tricky. In this slideshow, we will walk you through DOs and DON’Ts for some different situations you may encounter. 
                   </p>
                   <p>
-                    If you are having difficulty identifying the edges of fainter galaxies, it may help to adjust the contrast on your monitor.
-                  </p>
-                  <p>
                     These are just guidelines. Use your judgment and do the best you can.
                   </p>
                 </v-col>
@@ -87,7 +84,7 @@
                 <v-col>
                   <h3 class="mb-4">Wait for Galaxies to Fully Load</h3>
                   <p>
-                    Depending on your internet connection, it might take a few moments for a galaxy to load at its full resolution. (Once in a while, the image gets stuck at a partial load. If this happens, click the flag button in the tool bar to remove the galaxy. You will have to return to Stage 1 to select another galaxy and re-measure its spectral line and velocity.)
+                    It might take a few moments for a galaxy to load at its full resolution.
                   </p>
                 </v-col>
               </v-row>
@@ -122,6 +119,47 @@
         </v-window-item>
 
         <v-window-item :value="2" class="no-transition">
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col>
+                  <h3 class="mb-4"> Adjust brightness </h3>
+                  <p>
+                    Adjust the brightness when the edges of the galaxy are faint. 
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="6"
+                >
+                  <v-img
+                    class="mb-4 mx-a"
+                    contain
+                    :src="`${image_location}/adjust_brightnes_do.png`" 
+                  ></v-img>
+                  <h4>DO:</h4> 
+                  <p>
+                    Use the brightness slider to make galaxy edges easier to see
+                  </p>
+                </v-col>
+                <v-col cols="6">
+                  <v-img
+                    class="mb-4 mx-a"
+                    contain
+                    :src="`${image_location}/adjust_brigness_dont.png`"
+                  ></v-img>
+                  <h4>DON’T: </h4> 
+                  <p>
+                    Measure across a dim galaxy
+                  </p>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+        </v-window-item>
+
+        <v-window-item :value="3" class="no-transition">
           <v-card-text>
             <v-container>
               <v-row>
@@ -256,7 +294,7 @@
         </v-window-item>
 -->
         
-        <v-window-item :value="3" class="no-transition">
+        <v-window-item :value="4" class="no-transition">
           <v-card-text>
             <v-container>
               <v-row>
@@ -357,7 +395,7 @@
         </v-window-item>
 -->
 
-        <v-window-item :value="4" class="no-transition">
+        <v-window-item :value="5" class="no-transition">
           <v-card-text>
             <v-container>
               <v-row>
@@ -398,7 +436,7 @@
           </v-card-text>
         </v-window-item>
 
-        <v-window-item :value="5" class="no-transition">
+        <v-window-item :value="6" class="no-transition">
           <v-card-text>
             <v-container>
               <v-row>
@@ -499,7 +537,7 @@
         </v-window-item> 
 -->
 
-        <v-window-item :value="6" class="no-transition">
+        <v-window-item :value="7" class="no-transition">
             <v-card-text>
               <v-container>
                 <v-row>
@@ -542,7 +580,7 @@
             v-slot="{ active, toggle }"
           >
             <v-btn
-              :disabled="n > max_step_completed + 7"
+              :disabled="n > max_step_completed + length"
               :input-value="active"
               icon
               @click="toggle"
@@ -553,7 +591,7 @@
         </v-item-group>
         <v-spacer></v-spacer>
           <v-btn
-          :disabled="step > max_step_completed + 7"
+          :disabled="step > max_step_completed + length"
           v-if="step < length-1"
           class="black--text"
           color="accent"

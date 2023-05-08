@@ -74,7 +74,11 @@
                 :enabled=true  
                 :showContrast=false
                 :reset="reset_style"
-                @change_style="new_brightness_contrast => {this.wwtStyle = new_brightness_contrast}"/>
+                @change_style="new_brightness_contrast => {this.wwtStyle = new_brightness_contrast}"
+                @change_brightness="(new_brightness) => { $emit('brightness', new_brightness)}"
+                @change_contrast="(new_contrast) => { $emit('contrast', new_contrast)}"
+                />
+                
                 <!-- add inline style to control using inline css like inlineStyle="border: 1px solid white" -->
   </v-card>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <scaffold-alert
     @back="state.marker = 'sto_fin1'"
-    :can-advance="(_state) => false"
+    @next="state.marker_forward = 1"
   >
     <div
       class="mb-4"

@@ -44,7 +44,6 @@
         auto-grow
         rows="2"
         label="Age from HST Key Project"
-        hint="(if you can think of any more)"
         tag="prodata-reflect-8c"
       ></free-response>
       </v-container>

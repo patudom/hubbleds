@@ -32,7 +32,10 @@
             'No',
             'I\'m not sure',
           ]"
-          :feedbacks="['Remember, the slope of the line is related to the age measurement from this data. Are the slopes the same?','Correct. The best fit lines for our data and Edwin Hubble\'s data have very different slopes.','The slope of the line is related to the age measurement from this data. Are the slopes the same?']"
+          :feedbacks="[
+            'Remember, the slope of the line is related to the age measurement from this data. Are the slopes the same?',
+            'Correct. The best fit lines for our data and Edwin Hubble\'s data have very different slopes, so they have different ages.',
+            'The slope of the line is related to the age measurement from this data. Are the slopes the same?']"
           :incorrect-answers="[0]"
           :correct-answers="[1]"
           :neutral-answers="[2]"
