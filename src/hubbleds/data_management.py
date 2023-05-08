@@ -18,6 +18,7 @@ EXAMPLE_GALAXY_DATA = "example_galaxy"
 EXAMPLE_GALAXY_MEASUREMENTS = "example_galaxy_data"
 EXAMPLE_GALAXY_STUDENT_DATA = "example_galaxy_student_data"
 
+STUDENT_SLIDER_SUBSET_LABEL = "student_slider_subset"
 
 ### Data Components
 

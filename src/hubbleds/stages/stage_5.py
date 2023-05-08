@@ -267,6 +267,7 @@ class StageFour(HubbleStage):
                                            'all_distr_viewer_student', "All Students") # really just All students, but need the title bar
         all_distr_viewer_class = self.add_viewer(HubbleHistogramView,
                                            'all_distr_viewer_class', "All Classes")
+        all_distr_viewer_class.toolbar.tools['bqplot:home'].old_activate = all_distr_viewer_class.toolbar.tools['bqplot:home'].activate
 
         add_callback(self.stage_state, 'marker',
                      self._on_marker_update, echo_old=True)
@@ -299,7 +300,7 @@ class StageFour(HubbleStage):
                                                     modify_subset_label=histogram_modify_label)
 
         # Create the student slider
-        student_slider_subset_label = "student_slider_subset"
+        student_slider_subset_label = STUDENT_SLIDER_SUBSET_LABEL
         self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
         self.student_slider_subset.style.alpha = 1
         student_slider = IDSlider(class_summ_data, STUDENT_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.student_user["id"]])
@@ -308,11 +309,13 @@ class StageFour(HubbleStage):
             self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
             color = student_slider.highlight_color if highlighted else student_slider.default_color
             self.student_slider_subset.style.color = color
-            comparison_viewer.state.reset_limits()
         def student_slider_refresh(slider):
             self.stage_state.stu_low_age = round(min(slider.values, default=0))
             self.stage_state.stu_high_age = round(max(slider.values, default=0))
-            comparison_viewer.state.reset_limits()
+            comparison_viewer.state.reset_limits(visible_only=False)
+        
+        extend_tool(comparison_viewer, 'bqplot:home', lambda *args: comparison_viewer.state.reset_limits(visible_only=False), activate_before_tool=False)
+        extend_tool(all_viewer, 'bqplot:home', lambda *args: all_viewer.state.reset_limits(visible_only=False), activate_before_tool=False)
 
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
@@ -329,11 +332,10 @@ class StageFour(HubbleStage):
             self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
             color = "#3A86FF" if highlighted else "#FF006E"
             self.class_slider_subset.style.color = color
-            all_viewer.state.reset_limits()
         def class_slider_refresh(slider):
             self.stage_state.cla_low_age = round(min(slider.values))
             self.stage_state.cla_high_age = round(max(slider.values))
-            all_viewer.state.reset_limits()
+            all_viewer.state.reset_limits(visible_only=False)
 
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
@@ -412,11 +414,25 @@ class StageFour(HubbleStage):
         # but I'm not familiar with it, so in the interest of time, let's do this
         for prop in ['x_min', 'x_max']: 
             link((all_distr_viewer_student.state, prop), (all_distr_viewer_class.state, prop))
+            
+        # def match_axes():
+        #     if self.stage_state.marker_reached('two_his1'):
+        #         all_distr_viewer_student.state.reset_limits()
+        #     return
+        
+        # extend_tool(all_distr_viewer_class, 'bqplot:home', activate_cb = match_axes, activate_before_tool=False)
+        
+        self.match_student_class_hist_axes(self.stage_state.marker_reached('two_his1'))
+        
+        # we want to always reset using the range of the student
 
         # If possible, we defer some of the setup for later, to make loading faster
         add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
         if self.story_state.stage_index == self.index:
             self._deferred_setup()
+        
+        if self.stage_state.marker == 'age_dis1c':
+            all_distr_viewer_class.state.reset_limits()
             
     def _on_marker_update(self, old, new):
         if not self.trigger_marker_update_cb:
@@ -431,6 +447,9 @@ class StageFour(HubbleStage):
             class_layer = layer_viewer.layer_artist_for_data(self.get_data(CLASS_DATA_LABEL))
             student_layer.state.visible = True
             class_layer.state.visible = False
+
+        if new == 'cla_res1':
+            self.get_component("py-student-slider").refresh()
 
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
@@ -454,7 +473,41 @@ class StageFour(HubbleStage):
                 linefit_tool.activate()
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", True)     
             layer_viewer.toolbar.tools["hubble:linefit"].show_labels = True
+        
+        if advancing and new == 'age_dis1c':
+            self.get_viewer("all_distr_viewer_class").state.reset_limits()
+        
+        if advancing and new == 'two_his1':
+            self.get_viewer("all_distr_viewer_student").state.reset_limits()
+            self.match_student_class_hist_axes(True)
+            
+        
+        if not advancing and self.stage_state.marker_before('two_his1'):
+            self.match_student_class_hist_axes(False)
+            
 
+    def match_student_class_hist_axes(self, match = True):        
+        student_tool = self.get_viewer("all_distr_viewer_student").toolbar.tools['bqplot:home']
+        class_tool = self.get_viewer("all_distr_viewer_class").toolbar.tools['bqplot:home']
+        
+        if match:
+            if class_tool.activate == student_tool.activate:
+                # already matchced
+                return
+            else:
+                # save old method and replace with student method
+                class_tool.old_activate = class_tool.activate # save old method
+                class_tool.activate = student_tool.activate # replace with student method
+                return
+        else:
+            if class_tool.activate == class_tool.old_activate:
+                # already restored/unmatched
+                return
+            else:
+                # restore old method
+                class_tool.activate = class_tool.old_activate
+                return
+    
     def _setup_scatter_layers(self):
         layer_viewer = self.get_viewer("layer_viewer")
         comparison_viewer = self.get_viewer("comparison_viewer")
@@ -498,7 +551,7 @@ class StageFour(HubbleStage):
         # comparison_viewer.add_subset(self.student_slider_subset)
         comparison_viewer.state.x_att = class_meas_data.id[DISTANCE_COMPONENT]
         comparison_viewer.state.y_att = class_meas_data.id[VELOCITY_COMPONENT]
-        comparison_viewer.state.reset_limits()
+        comparison_viewer.state.reset_limits(visible_only=False)
 
         comparison_viewer.toolbar.tools["hubble:linefit"].activate() 
 
@@ -518,6 +571,7 @@ class StageFour(HubbleStage):
         all_layer.state.visible = False
         all_viewer.state.x_att = all_data.id[DISTANCE_COMPONENT]
         all_viewer.state.y_att = all_data.id[VELOCITY_COMPONENT]
+        all_viewer.state.reset_limits(visible_only=False)
 
         # Set up all viewer tools
         all_fit_tool = all_viewer.toolbar.tools["hubble:linefit"]
@@ -641,11 +695,11 @@ class StageFour(HubbleStage):
         self.stage_state.image_location = prepend + "data/images/stage_three"
 
     def _on_trend_line_drawn(self, is_drawn):
-        print("Trend line drawn: ", is_drawn)
+       #print("Trend line drawn: ", is_drawn)
         self.stage_state.class_trend_line_drawn = is_drawn
         
     def _on_best_fit_line_shown(self, is_active):
-        print("Best fit line shown: ", is_active)
+       #print("Best fit line shown: ", is_active)
         if not self.stage_state.class_best_fit_clicked:
             self.stage_state.class_best_fit_clicked = is_active
 
@@ -683,7 +737,7 @@ class StageFour(HubbleStage):
                 self.get_component("py-student-slider").refresh()
             elif label == ALL_CLASS_SUMMARIES_LABEL:
                 class_slider = self.get_component("py-class-slider")
-                class_slider.update_data(self, msg.data)
+                class_slider.update_data(msg.data)
             self._reset_limits_for_data(label)
 
     def _on_class_data_update(self, *args):
@@ -714,12 +768,13 @@ class StageFour(HubbleStage):
             state['short_other'] = r.get('other-shortcomings', "")
     
     def _on_stage_index_changed(self, index):
-        print("Stage Index: ",self.story_state.stage_index)
+       #print("Stage Index: ",self.story_state.stage_index)
         if index >= self.index:
             self._deferred_setup()
 
         if index == self.index:
             self.reset_viewer_limits()
+            self.get_component("py-student-slider").refresh()
 
             if self.stage_state.marker == 'ran_var1':
                 layer_viewer = self.get_viewer("layer_viewer")

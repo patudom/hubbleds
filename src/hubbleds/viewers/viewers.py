@@ -18,18 +18,18 @@ __all__ = [
 
 class HubbleScatterViewerState(CDSScatterViewerState):
 
-    def reset_limits(self):
+    def reset_limits(self, visible_only=True):
         with delay_callback(self, 'x_min', 'x_max', 'y_min', 'y_max'):
-            super().reset_limits()
-            self.x_min = min(self.x_min, 0)
-            self.y_min = min(self.y_min, 0)
+            super().reset_limits(visible_only=visible_only)
+            self.x_min = min(self.x_min, 0) if self.x_min is not None else 0
+            self.y_min = min(self.y_min, 0) if self.y_min is not None else 0
 
 
 class HubbleFitViewerState(HubbleScatterViewerState):
     
-    def reset_limits(self):
+    def reset_limits(self, visible_only=True):
         with delay_callback(self, 'x_min', 'x_max', 'y_min', 'y_max'):
-            super().reset_limits()
+            super().reset_limits(visible_only=visible_only)
             self.x_max = 1.1 * self.x_max
             self.y_max = 1.1 * self.y_max
 
@@ -71,10 +71,10 @@ class HubbleHistogramViewer(LineHoverViewerMixin, BqplotHistogramView):
     
     def _update_visibility(self, val):
         if val:
-            print("Adding measuring line")
+           #print("Adding measuring line")
             self.add_measuring_line()
         else:
-            print("Removing measuring line")
+           #print("Removing measuring line")
             self.remove_measuring_line()
     
     def add_measuring_line(self):
