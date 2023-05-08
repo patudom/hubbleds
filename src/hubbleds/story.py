@@ -424,10 +424,13 @@ class HubblesLaw(Story):
         components = [x for x in sdss.main_components if x.label != 'id']
         return { sdss['id'][index]: { comp.label: sdss[comp][index] for comp in components } for index in indices }
 
-    def data_from_measurements(self, measurements):
+    def data_from_measurements(self, measurements, include_measurement_number = False):
         for measurement in measurements:
             measurement.update(measurement.get("galaxy", {}))
         components = { STATE_TO_MEAS.get(k, k) : [measurement.get(k, None) for measurement in measurements] for k in DB_MEASUREMENT_FIELDS }
+        if include_measurement_number:
+            meas_comp = { DB_MEASNUM_FIELD : [measurement.get(k, None) for measurement in measurements] for k in [DB_MEASNUM_FIELD] }
+            components.update(meas_comp)
 
         for i, name in enumerate(components[NAME_COMPONENT]):
             if name.endswith(self.name_ext):
