@@ -747,8 +747,8 @@ class StageTwo(HubbleStage):
 
             
 
-        # if data_label == STUDENT_MEASUREMENTS_LABEL:
-        #     self.story_state.update_student_data()
+        if data_label == STUDENT_MEASUREMENTS_LABEL:
+            self.story_state.update_student_data()
         with ignore_callback(self.stage_state, 'make_measurement'):
             self.stage_state.make_measurement = False
 
