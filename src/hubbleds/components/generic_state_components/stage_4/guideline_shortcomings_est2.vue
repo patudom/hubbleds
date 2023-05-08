@@ -5,7 +5,7 @@
     @back="
       state.marker = 'sho_est1';
     "
-    @next="state.stage_4_complete = true;"
+    @next="() => { $emit('stage_complete'); }"
           
   >
   <!-- state.marker = 'ran_var1'; -->

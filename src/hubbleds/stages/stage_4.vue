@@ -151,7 +151,9 @@
         <guideline-shortcomings-est2
           v-if="stage_state.marker == 'sho_est2'"
           :state="stage_state"
-          v-intersect.once="scrollIntoView" />
+          v-intersect.once="scrollIntoView"
+          @stage_complete="() => {stage_four_complete(); console.log('emit: stage four complete');}"
+           />
       </v-col>
       <v-col
         cols="12"

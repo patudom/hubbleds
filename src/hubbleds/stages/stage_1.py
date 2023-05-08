@@ -563,6 +563,11 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("obs_wav2"):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
+        
+        if self.stage_state.marker_reached("dop_cal6"):
+            # if self.stage_state.doppler_calc_reached:
+            self.enable_velocity_tool(True)
+
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()
@@ -1072,6 +1077,7 @@ class StageOne(HubbleStage):
         self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
 
     def _on_stage_complete(self, complete):
+        return 
         if complete:
             self.story_state.stage_index = 2
            #print("end Stage 1. stage_state.stage_1_complete value after last guideline:", self.stage_state.stage_1_complete)
@@ -1079,8 +1085,11 @@ class StageOne(HubbleStage):
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.stage_state.stage_1_complete = False
-
-           #print("end Stage 1. stage_state.stage_1_complete value after reinitializing to false:", self.stage_state.stage_1_complete)
+    
+    def vue_stage_one_complete(self, *args):
+        # print('vue_stage_one_complete')
+        self.story_state.stage_index = 2
+        self.stage_state.stage_1_complete = False
 
     def vue_print_state(self, _args=None):
         pass
