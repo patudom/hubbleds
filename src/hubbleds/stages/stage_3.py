@@ -460,7 +460,7 @@ class StageTwo(HubbleStage):
 
         
     def _on_marker_update(self, old, new):
-        print_log(f"Marker update: {old} -> {new}")
+        #print_log(f"Marker update: {old} -> {new}")
         if not self.trigger_marker_update_cb:
             return
         markers = self.stage_state.markers
