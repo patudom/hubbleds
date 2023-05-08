@@ -564,7 +564,8 @@ class StageOne(HubbleStage):
             spectrum_viewer.toolbar.set_tool_enabled("hubble:wavezoom", True)
             spectrum_viewer.toolbar.set_tool_enabled("bqplot:home", True)
         
-        if self.stage_state.doppler_calc_reached:
+        if self.stage_state.marker_reached("dop_cal6"):
+            # if self.stage_state.doppler_calc_reached:
             self.enable_velocity_tool(True)
 
 
