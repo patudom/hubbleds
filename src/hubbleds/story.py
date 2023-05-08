@@ -394,16 +394,15 @@ class HubblesLaw(Story):
         all_students_summ_data = self.data_collection[ALL_STUDENT_SUMMARIES_LABEL]
         student_id = self.student_user["id"]
         index = next((i for i in range(all_students_summ_data.size) if all_students_summ_data[STUDENT_ID_COMPONENT][i] == student_id), None)
-        if index is None:
-            return
-        h0s = all_students_summ_data[H0_COMPONENT]
-        ages = all_students_summ_data[AGE_COMPONENT]
-        h0s[index] = h0
-        ages[index] = age
-        all_students_summ_data.update_components({
-            all_students_summ_data.id[H0_COMPONENT]: h0s,
-            all_students_summ_data.id[AGE_COMPONENT]: ages
-        })
+        if index is not None:
+            h0s = all_students_summ_data[H0_COMPONENT]
+            ages = all_students_summ_data[AGE_COMPONENT]
+            h0s[index] = h0
+            ages[index] = age
+            all_students_summ_data.update_components({
+                all_students_summ_data.id[H0_COMPONENT]: h0s,
+                all_students_summ_data.id[AGE_COMPONENT]: ages
+            })
 
         # Make sure that the best-fit galaxy subset is correct
         if self.has_best_fit_galaxy:
