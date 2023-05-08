@@ -7,7 +7,7 @@
       class="mb-4"
     >
     <p>
-      Please complete this survey.
+      Thanks so much for pilot testing the Hubble Data Story. Please complete this final survey.
     </p>
             <v-btn
               block
