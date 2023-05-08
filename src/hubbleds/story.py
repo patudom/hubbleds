@@ -276,7 +276,7 @@ class HubblesLaw(Story):
         
         empty_record[RESTWAVE_COMPONENT] = H_ALPHA_REST_LAMBDA if ('H' in example_galaxy_data[ELEMENT_COMPONENT][0]) else MG_REST_LAMBDA
         empty_record[MEASUREMENT_NUMBER_COMPONENT] = 'first'
-        empty_record[BRIGHTNESS_COMPONENT] = 1
+        empty_record[BRIGHTNESS_COMPONENT] = 1.0
         
         example_galaxy_measurements = Data(label=EXAMPLE_GALAXY_MEASUREMENTS)
         

@@ -11,7 +11,10 @@
         color="secondary"
         elevation="2"
         id="uncertainty-button"
-        @click.stop="() => { state.uncertainty_dialog = true; state.uncertainty_dialog_opened = true }"
+        @click.stop="() => { 
+          state.uncertainty_dialog = true; 
+          state.uncertainty_dialog_opened = true
+          }"
       >
         Uncertainty Tutorial
       </v-btn>
@@ -37,7 +40,10 @@
           />
         <v-btn
           icon
-          @click="state.uncertainty_dialog = false"
+          @click="() => { 
+          state.uncertainty_dialog = false;
+          state.uncertainty_dialog_complete = (state.uncertainty_state.step == (state.uncertainty_state.length-1) );
+          }"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>

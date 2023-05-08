@@ -85,7 +85,9 @@
               :class="stage_state.csv_highlights.includes(stage_state.marker) ? 'pa-1 my-n1' : 'pa-0'"
               outlined
             >
-              <py-distance-tool />
+              <py-distance-tool 
+              @brightness="(value) => {stage_state.brightness = (value/100); console.log('brightness', Math.round(value)/100);}"
+              />
             </v-card>
           </v-col>
         </v-row>

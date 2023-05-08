@@ -101,7 +101,7 @@ class StageState(CDSState):
         'lea_unc1',
         'two_his2',
         'lac_bia1',
-        'lac_bia2',
+        #'lac_bia2',
         'lac_bia3',
         'mor_dat1',
         'acc_unc1',
@@ -326,7 +326,7 @@ class StageFour(HubbleStage):
         # Create the class slider
         class_slider_subset_label = "class_slider_subset"
         self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
-        class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.classroom["id"]])
+        class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.classroom["id"]], default_color = "#FF006E", highlight_color = "#3A86FF")
         self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
             self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
@@ -441,6 +441,8 @@ class StageFour(HubbleStage):
         advancing = markers.index(new) > markers.index(old)
 
         layer_viewer = self.get_viewer("layer_viewer")
+        comparison_viewer = self.get_viewer("comparison_viewer")
+        all_viewer = self.get_viewer("all_viewer")
 
         if new == 'ran_var1':
             student_layer = layer_viewer.layer_artist_for_data(self.get_data(STUDENT_DATA_LABEL))
@@ -450,7 +452,13 @@ class StageFour(HubbleStage):
 
         if new == 'cla_res1':
             self.get_component("py-student-slider").refresh()
+            if not comparison_viewer.toolbar.tools["hubble:linefit"].active: # if off
+                comparison_viewer.toolbar.tools["hubble:linefit"].activate() # toggle on
 
+        if new == 'cla_res1c':
+            if not all_viewer.toolbar.tools["hubble:linefit"].active: # if off
+                all_viewer.toolbar.tools["hubble:linefit"].activate() # toggle on
+                    
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)

@@ -48,6 +48,7 @@ class StageState(CDSState):
         'pro_dat9',
         'sto_fin1',
         'sto_fin2',
+        'sto_fin3'
         ]
         
     step_markers = ListCallbackProperty([])
