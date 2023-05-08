@@ -158,7 +158,9 @@
         <guideline-fill-remaining-galaxies
           v-if="stage_state.marker == 'fil_rem1'" 
           :state="stage_state"
-          v-intersect.once="scrollIntoView" />
+          v-intersect.once="scrollIntoView" 
+          @stage_complete="() => {stage_three_complete(); console.log('emit: stage three complete');}"
+          />
       </v-col>
       <v-col
         cols="12"

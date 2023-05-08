@@ -285,7 +285,9 @@
         <guideline-account-uncertainty
           v-if="stage_state.marker == 'acc_unc1'"
           :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
+          v-intersect.once="scrollIntoView"
+          @stage_complete="() => {stage_five_complete(); console.log('emit: stage five complete');}"
+          />
       </v-col>
       <v-col
         cols="12"

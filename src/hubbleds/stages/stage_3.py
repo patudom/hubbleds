@@ -882,9 +882,15 @@ class StageTwo(HubbleStage):
         return self.current_table._glue_data.label
 
     def _on_stage_complete(self, complete):
+        return
         if complete:
             self.story_state.stage_index = 4
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.stage_state.stage_3_complete = False
+    
+    def vue_stage_three_complete(self, *args):
+        print('vue_stage_three_complete')
+        self.story_state.stage_index = 4
+        self.stage_state.stage_3_complete = False

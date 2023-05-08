@@ -3,7 +3,7 @@
     title-text="Estimate Distance"
     next-text="stage 4"
     @back="state.marker = 'rep_rem1'"
-    @next="state.stage_3_complete = true;"
+    @next="() => { $emit('stage_complete'); }"
     :can-advance="(state) => state.distances_total === 5"
     :state="state"
   >

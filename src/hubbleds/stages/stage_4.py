@@ -471,9 +471,15 @@ class StageThree(HubbleStage):
             linefit_tool.activate()
     
     def _on_stage_complete(self, complete):
+        return
         if complete:
             self.story_state.stage_index =  5
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.stage_state.stage_4_complete = False
+    
+    def vue_stage_four_complete(self, *args):
+        print('vue_stage_four_complete')
+        self.story_state.stage_index = 5
+        self.stage_state.stage_4_complete = False
