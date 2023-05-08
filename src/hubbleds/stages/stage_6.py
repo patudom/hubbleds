@@ -141,6 +141,7 @@ class StageFive(HubbleStage):
         
         prodata_viewer = self.add_viewer(HubbleScatterView, "prodata_viewer",
                                          "Professional Data")
+        prodata_viewer.toolbar.tools["hubble:linefit"].show_labels = False
         prodata_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("pro_dat1"))
         prodata_viewer.figure.axes[1].label_offset = "5em"
 
