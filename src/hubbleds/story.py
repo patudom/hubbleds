@@ -527,7 +527,7 @@ class HubblesLaw(Story):
         new_data = Data(label=summ_label, **components)
 
         data = self.data_collection[summ_label]
-        data.update_values_from_data(new_CLASS_ID_COMPONENidata)
+        data.update_values_from_data(new_data)
 
     def fetch_student_data(self):
         student_meas_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/measurements/{self.student_user['id']}"
