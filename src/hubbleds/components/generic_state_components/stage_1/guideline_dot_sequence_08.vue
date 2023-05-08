@@ -11,7 +11,7 @@
     </template>
     <div>
       <p>
-        Based on this graph do you think there is <it>concensus</it> on the velocity of this galaxy?
+        Based on this graph do you think there is <strong>consensus</strong> on the velocity of this galaxy?
       </p>
       <mc-radiogroup 
           :radio-options="[
@@ -27,7 +27,7 @@
           :correct-answers="[1]"
           :neutral-answers="[2]"
           @select="(opt) => { if (opt.correct) { console.log('correct'); $emit('ready'); } }"
-          score-tag="vel_meas_concensus">
+          score-tag="vel_meas_consensus">
             >
           </mc-radiogroup>
     </div>

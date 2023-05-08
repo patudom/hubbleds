@@ -18,7 +18,7 @@
         In the lower graph, we show the distribution of second distance measurements. Yours are again marked in red-orange.
       </p>
       <p>
-        Based on these two histograms, which set of measurements shows better concensus on the distance to the galaxy?
+        Based on these two histograms, which set of measurements shows better consensus on the distance to the galaxy?
       </p>
       <mc-radiogroup
         :radio-options="[
@@ -35,7 +35,7 @@
         :wrong-answers="[0]"
         :neutral-answers="[2]"
         @select="(opt) => { if (opt.correct) { console.log('correct'); $emit('ready') } }"
-        score-tag="ange_meas_concensus_2">
+        score-tag="ange_meas_consensus_2">
       </mc-radiogroup>
     </div>
   </scaffold-alert>
