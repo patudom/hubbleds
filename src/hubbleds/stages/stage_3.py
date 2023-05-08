@@ -241,7 +241,8 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        if self.stage_state.marker in ['fil_rem1']:
+        # What we really want is for enable_distance_tool to be true if initialized at fil_rem1, but that isn't working, so this is our hacky fix for now. (And really, they shouldn't have to re-click the measuring tape if their distances are already there. It should just be 'next')
+        if self.stage_state.marker in ['fil_rem1']: 
             self.stage_state.marker_backward = 1
         
         dosdonts_slideshow = DosDontsSlideShow(self.stage_state.image_location_dosdonts)

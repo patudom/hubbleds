@@ -174,6 +174,7 @@ class StageThree(HubbleStage):
         self.show_team_interface = self.app_state.show_team_interface
         self._setup_complete = False
         
+        # This is a hacky fix because these are not initializing correctly on a reload, so we are backing them up 1 or 2 guidelines, and when they go forward again they will be correct.
         if self.stage_state.marker in ['tre_lin2', 'bes_fit1']:
             self.stage_state.marker = 'tre_lin1'
 
