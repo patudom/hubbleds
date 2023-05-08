@@ -119,7 +119,7 @@ class HubbleStage(Stage):
                 measurement = {comp.label: data[comp][index] for comp in
                             data.main_components}
                 print(measurement)
-                # self.submit_example_galaxy_measurement(measurement)
+                self.submit_example_galaxy_measurement(measurement)
         
 
     def add_data_values(self, dc_name, values):
