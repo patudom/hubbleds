@@ -633,14 +633,25 @@ class StageFour(HubbleStage):
                 # viewer.state.normalize = True
                 # viewer.state.y_min = 0
                 # viewer.state.y_max = 1
-                viewer.state.hist_n_bin = 6
+                # viewer.state.hist_n_bin = 6
             viewer.figure.axes[1].label = label
             viewer.figure.axes[1].tick_format = '0'
             # viewer.figure.axes[1].num_ticks = 5
+            
+        
+            
 
         class_distr_viewer.state.x_att = class_summ_data.id[AGE_COMPONENT]
         all_distr_viewer_class.state.x_att = classes_summary_data.id[AGE_COMPONENT]
         all_distr_viewer_student.state.x_att = students_summary_data.id[AGE_COMPONENT]
+        
+        for hist in histogram_viewers:
+            layer = hist.layers[0] # only works cuz there is only one layer
+            xmin = int(layer.layer.data[AGE_COMPONENT].min())
+            xmax = int(layer.layer.data[AGE_COMPONENT].max()) + 1 
+            hist.state.hist_n_bin = xmax - xmin
+            hist.state.hist_x_min = xmin
+            hist.state.hist_x_max = xmax
 
         theme = "dark" if self.app_state.dark_mode else "light"
         style_name = f"default_histogram_{theme}"
@@ -651,6 +662,10 @@ class StageFour(HubbleStage):
         class_distr_viewer.state.show_measuring_line()
         all_distr_viewer_student.state.show_measuring_line()
         all_distr_viewer_class.state.show_measuring_line()
+        
+        
+        for hist in histogram_viewers:
+            hist._label_text = lambda x: f"{int(x):d}"
         # class_distr_viewer.state.hide_measuring_line()
         # all_distr_viewer_student.state.hide_measuring_line()
         # all_distr_viewer_class.state.hide_measuring_line()
