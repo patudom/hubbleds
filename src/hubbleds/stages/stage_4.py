@@ -165,6 +165,7 @@ class StageThree(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        
         add_callback(self.stage_state, 'stage_4_complete',
                      self._on_stage_complete)
 
@@ -172,6 +173,10 @@ class StageThree(HubbleStage):
 
         self.show_team_interface = self.app_state.show_team_interface
         self._setup_complete = False
+        
+        # This is a hacky fix because these are not initializing correctly on a reload, so we are backing them up 1 or 2 guidelines, and when they go forward again they will be correct.
+        if self.stage_state.marker in ['tre_lin2', 'bes_fit1']:
+            self.stage_state.marker = 'tre_lin1'
 
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
@@ -318,7 +323,8 @@ class StageThree(HubbleStage):
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line()
         if advancing and new =="age_rac1":
             self._update_hypgal_info()
-
+        
+        
     def _on_slideshow_opened(self, msg):
         self.stage_state.hubble_dialog_opened = msg["new"]
     
@@ -471,9 +477,15 @@ class StageThree(HubbleStage):
             linefit_tool.activate()
     
     def _on_stage_complete(self, complete):
+        return
         if complete:
             self.story_state.stage_index =  5
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.stage_state.stage_4_complete = False
+    
+    def vue_stage_four_complete(self, *args):
+        # print('vue_stage_four_complete')
+        self.story_state.stage_index = 5
+        self.stage_state.stage_4_complete = False

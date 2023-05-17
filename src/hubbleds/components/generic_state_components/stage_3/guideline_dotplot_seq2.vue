@@ -13,7 +13,7 @@
       class="mb-4"
     >
       <p>
-        Based on this graph do you think there is <it>concensus</it> on the distance to this galaxy?
+        Based on this graph do you think there is <strong>consensus</strong> on the distance to this galaxy?
       </p>
       <mc-radiogroup 
           :radio-options="[
@@ -23,14 +23,14 @@
             ]"
             :feedbacks="[
             'Not quite. Consider whether the measurements cluster around a single common value.',
-            'Correct! The measurements cluster around more than one common value, so there is no concensus.',
+            'Correct! The measurements cluster around more than one common value, so there is no consensus.',
             'If the measurements cluster around a single common value, there is consensus. If they cluster around more than one value, there is not consensus.'
             ]" 
           :correct-answers="[1]"
           :wrong-answers="[0]"
           :neutral-answers="[2]"
           @select="(opt) => { if (opt.correct) { console.log('correct'); $emit('ready'); } }"
-          score-tag="ange_meas_concensus">
+          score-tag="ange_meas_consensus">
             >
           </mc-radiogroup>
           
@@ -38,14 +38,14 @@
           block
           color="deep-orange darken-2"
           @click="
-            define_concensus = !define_concensus
+            define_consensus = !define_consensus
           "
         >
-          What is <it>concensus</it>?
+          What is consensus?
         </v-btn>
         <v-alert
           class="mt-4 trend-alert"
-          v-if="define_concensus"
+          v-if="define_consensus"
           dense
           color="info darken-1"
         >
@@ -61,7 +61,7 @@ module.exports = {
   props: ['state'],
 
   data: () => ({
-      define_concensus: false,
+      define_consensus: false,
   })
 }
 </script>

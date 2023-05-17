@@ -21,8 +21,10 @@ from glue.core.data_factories.fits import fits_reader
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import CategorySubsetState
 
+from hubbleds.data.hubble_simulation.simulate import H0
+
 from .data_management import *
-from .utils import H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line, MG_REST_LAMBDA
+from .utils import AGE_CONSTANT, H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line, MG_REST_LAMBDA
 
 @story_registry(name="hubbles_law")
 class HubblesLaw(Story):
@@ -386,6 +388,32 @@ class HubblesLaw(Story):
         student_data.update_values_from_data(new_data)
         HubblesLaw.make_data_writeable(student_data)
 
+        # We also need to update the all students summary data
+        dists = new_data[DISTANCE_COMPONENT]
+        vels = new_data[VELOCITY_COMPONENT]
+        h0, age = self.create_single_summary(dists, vels)
+        all_students_summ_data = self.data_collection[ALL_STUDENT_SUMMARIES_LABEL]
+        student_id = self.student_user["id"]
+        index = next((i for i in range(all_students_summ_data.size) if all_students_summ_data[STUDENT_ID_COMPONENT][i] == student_id), None)
+        if index is None:
+            self.add_data_values(
+                data=all_students_summ_data,
+                values={
+                    H0_COMPONENT: h0,
+                    AGE_COMPONENT: age,
+                    STUDENT_ID_COMPONENT: student_id
+                }
+            )
+        else:
+            h0s = all_students_summ_data[H0_COMPONENT]
+            ages = all_students_summ_data[AGE_COMPONENT]
+            h0s[index] = h0
+            ages[index] = age
+            all_students_summ_data.update_components({
+                all_students_summ_data.id[H0_COMPONENT]: h0s,
+                all_students_summ_data.id[AGE_COMPONENT]: ages
+            })
+
         # Make sure that the best-fit galaxy subset is correct
         if self.has_best_fit_galaxy:
             c = student_data.get_component(NAME_COMPONENT)
@@ -616,15 +644,23 @@ class HubblesLaw(Story):
             all_summ_data = self.data_collection[ALL_CLASS_SUMMARIES_LABEL]
             index = next((i for i in range(all_summ_data.size) if all_summ_data[CLASS_ID_COMPONENT][i] == class_id), None)
             if index is None:
-                return
-            h0s = all_summ_data[H0_COMPONENT]
-            ages = all_summ_data[AGE_COMPONENT]
-            h0s[index]= h0
-            ages[index]= age
-            all_summ_data.update_components({
-                all_summ_data.id[H0_COMPONENT]: h0s,
-                all_summ_data.id[AGE_COMPONENT]: ages
-            })
+                self.add_data_values(
+                    data=all_summ_data,
+                    values={
+                        H0_COMPONENT: h0,
+                        AGE_COMPONENT: age,
+                        CLASS_ID_COMPONENT: class_id
+                    }
+                )
+            else:
+                h0s = all_summ_data[H0_COMPONENT]
+                ages = all_summ_data[AGE_COMPONENT]
+                h0s[index]= h0
+                ages[index]= age
+                all_summ_data.update_components({
+                    all_summ_data.id[H0_COMPONENT]: h0s,
+                    all_summ_data.id[AGE_COMPONENT]: ages
+                })
 
 
     def setup_for_student(self, app_state):

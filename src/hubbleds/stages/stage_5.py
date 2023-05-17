@@ -534,10 +534,12 @@ class StageFour(HubbleStage):
 
         layer_viewer.toolbar.tools["hubble:linefit"].deactivate() 
 
-        if(self.story_state.has_best_fit_galaxy):
-            best_fit_subset = self.get_data(STUDENT_DATA_LABEL).subsets[0]
-            best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
-            best_fit_layer.state.visible = False
+        if self.story_state.has_best_fit_galaxy:
+            subsets = self.get_data(STUDENT_DATA_LABEL).subsets
+            if len(subsets) > 0:
+                best_fit_subset = subsets[0]
+                best_fit_layer = layer_viewer.layer_artist_for_data(best_fit_subset)
+                best_fit_layer.state.visible = False
 
         draw_tool = layer_viewer.toolbar.tools['hubble:linedraw'] 
         add_callback(draw_tool, 'line_drawn', self._on_trend_line_drawn)
@@ -718,12 +720,18 @@ class StageFour(HubbleStage):
             linefit_tool.activate()
     
     def _on_stage_complete(self, complete):
+        return
         if complete:
             self.story_state.stage_index = 6
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.stage_state.stage_5_complete = False
+    
+    def vue_stage_five_complete(self, *args):
+        # print('vue_stage_five_complete')
+        self.story_state.stage_index = 6
+        self.stage_state.stage_5_complete = False
     
     def _reset_limits_for_data(self, label):
         viewer_id = self.viewer_ids_for_data.get(label, [])

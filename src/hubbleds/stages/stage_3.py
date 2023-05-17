@@ -241,7 +241,9 @@ class StageTwo(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-       #print('at beginning of init', self.stage_state.marker)
+        # What we really want is for enable_distance_tool to be true if initialized at fil_rem1, but that isn't working, so this is our hacky fix for now. (And really, they shouldn't have to re-click the measuring tape if their distances are already there. It should just be 'next')
+        if self.stage_state.marker in ['fil_rem1']: 
+            self.stage_state.marker_backward = 1
         
         dosdonts_slideshow = DosDontsSlideShow(self.stage_state.image_location_dosdonts)
         self.add_component(dosdonts_slideshow, label='py-dosdonts-slideshow')
@@ -326,6 +328,9 @@ class StageTwo(HubbleStage):
                                single_select=True,
                                tools=[add_distances_tool])
 
+        if self.stage_state.marker_reached('dot_seq5a'):
+            example_galaxy_distance_table.filter_by(None)
+        
         self.add_widget(example_galaxy_distance_table, label="example_galaxy_distance_table")
         example_galaxy_distance_table.observe(
             self.distance_table_selected_change, names=["selected"])
@@ -372,6 +377,9 @@ class StageTwo(HubbleStage):
             marker_index = self.stage_state.markers.index(self.stage_state.marker)
             new_index = marker_index - 1
             self.stage_state.marker = self.stage_state.marker[new_index]
+        
+        if self.stage_state.marker_reached('fil_rem1'):
+            self.enable_distance_tool(True)
         
         # Show_ruler should be true from marker ang_siz3 to est_dis4 (inclusive) and from dot_seq5b forward.
         if  self.stage_state.marker_reached('ang_siz3') and (not self.stage_state.marker_after('est_dis4')):
@@ -444,9 +452,16 @@ class StageTwo(HubbleStage):
             extend_tool(viewers[i], 'bqplot:home', partial(set_x_lim,viewers[i]), activate_before_tool= False)
         
         self._update_viewer_style(dark=self.app_state.dark_mode)
+    
+     #@print_function_name
+    def _update_state_from_measurements(self):
+        student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
+        angsizes = student_measurements[ANGULAR_SIZE_COMPONENT]
+        self.stage_state.angsizes_total = angsizes[angsizes != None].size
+
         
     def _on_marker_update(self, old, new):
-        # print_log(f"Marker update: {old} -> {new}")
+        #print_log(f"Marker update: {old} -> {new}")
         if not self.trigger_marker_update_cb:
             return
         markers = self.stage_state.markers
@@ -519,6 +534,10 @@ class StageTwo(HubbleStage):
             tool = self.distance_table.get_tool("update-distances")
             tool["disabled"] = False
             self.distance_table.update_tool(tool)
+            
+        if advancing and (new in ['rep_rem1', 'fil_rem']) and self.show_team_interface and (self.stage_state.angsizes_total < 5):
+            # this condition occurs if we use fill values in stage 1
+            self._update_state_from_measurements()
     
     @staticmethod
     def add_point(viewer, x, color, label = None): 
@@ -747,8 +766,8 @@ class StageTwo(HubbleStage):
 
             
 
-        # if data_label == STUDENT_MEASUREMENTS_LABEL:
-        #     self.story_state.update_student_data()
+        if data_label == STUDENT_MEASUREMENTS_LABEL:
+            self.story_state.update_student_data()
         with ignore_callback(self.stage_state, 'make_measurement'):
             self.stage_state.make_measurement = False
 
@@ -875,9 +894,15 @@ class StageTwo(HubbleStage):
         return self.current_table._glue_data.label
 
     def _on_stage_complete(self, complete):
+        return
         if complete:
             self.story_state.stage_index = 4
 
             # We need to do this so that the stage will be moved forward every
             # time the button is clicked, not just the first
             self.stage_state.stage_3_complete = False
+    
+    def vue_stage_three_complete(self, *args):
+        # print('vue_stage_three_complete')
+        self.story_state.stage_index = 4
+        self.stage_state.stage_3_complete = False
