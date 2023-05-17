@@ -532,7 +532,6 @@ class HubblesLaw(Story):
                 empty_row = self.empty_example_galaxy_record
                 empty_row[DB_MEASNUM_FIELD] = 'second' if new_data[DB_MEASNUM_FIELD][0] == 'first' else 'first'
                 empty_row.update({k: None for k in [MEASWAVE_COMPONENT, VELOCITY_COMPONENT, DISTANCE_COMPONENT, ANGULAR_SIZE_COMPONENT]})
-                print(empty_row)
                 self.add_new_row(data = new_data, changes = empty_row)
         
         data = self.data_collection[label]
