@@ -133,6 +133,8 @@ class StageState(CDSState):
     allow_second_measurement_change = CallbackProperty(True)
     
     random_state_variable = CallbackProperty(True)
+    velocity_tolerance = CallbackProperty(0.5)
+    has_bad_velocities = CallbackProperty(False)
     
     
     markers = CallbackProperty([
@@ -219,7 +221,8 @@ class StageState(CDSState):
         'csv_highlights',
         'table_highlights', 'spec_highlights',
         # 'gals_total', 'obswaves_total',
-        'velocities_total', 'image_location'
+        'velocities_total', 'image_location',
+        'velocity_tolerance'
     ]
 
     def __init__(self, *args, **kwargs):
@@ -582,7 +585,7 @@ class StageOne(HubbleStage):
         student_measurements = self.get_data(STUDENT_MEASUREMENTS_LABEL)
         self.stage_state.gals_total = int(student_measurements.size)
         measwaves = student_measurements[MEASWAVE_COMPONENT]
-        self.stage_state.obswaves_total = measwaves[measwaves != None].size
+        self.stage_state.obswaves_total = measwaves[measwaves != None].size - self.num_bad_student_velocities()
         velocities = student_measurements[VELOCITY_COMPONENT]
         self.stage_state.velocities_total = velocities[velocities != None].size
         
@@ -894,6 +897,7 @@ class StageOne(HubbleStage):
                                    new_value, index)
             self.story_state.update_student_data()
             self.stage_state.spectrum_clicked = True
+    
     #@print_function_name
     def on_spectrum_click_example_galaxy(self, event):
         specview = self.get_viewer("spectrum_viewer")
@@ -974,6 +978,30 @@ class StageOne(HubbleStage):
     @property
     def example_galaxy_table(self):
         return self.get_widget("example_galaxy_table")
+    
+    
+    def velocity_gaurd(self):
+        """
+        Returns boolean area where True indicates a bad velocity measurement
+        """
+        data = self.get_data(STUDENT_MEASUREMENTS_LABEL)
+        wavelength = data[MEASWAVE_COMPONENT]
+        if len(wavelength) == 0:
+            return [True]
+        rest_wavelength = data[RESTWAVE_COMPONENT]
+        # calculate velocity from wavelength
+        velocity = SPEED_OF_LIGHT * (wavelength - rest_wavelength) / rest_wavelength
+        
+        true_velocities = data[Z_COMPONENT] * SPEED_OF_LIGHT
+        
+        fractional_difference = (((velocity - true_velocities) / true_velocities)** 2)**0.5 #absolute value w/o numpy
+        
+        return fractional_difference > self.stage_state.velocity_tolerance
+    
+    def num_bad_student_velocities(self):
+        num = sum(self.velocity_gaurd())
+        self.stage_state.has_bad_velocities = num > 0
+        return num
 
     def update_spectrum_style(self, dark):
         spectrum_viewer = self.get_viewer("spectrum_viewer")
