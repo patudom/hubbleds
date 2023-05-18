@@ -12,6 +12,9 @@
     :state="state"
   >
     <template #before-next>
+      <span v-if="state.has_bad_velocities">
+        <strong>Remeasure your velocity.</strong>
+        </span><br />
       Measure wavelength<span v-if="state.obswaves_total < 4">s</span> for {{ 5 - state.obswaves_total }} more <span v-if="state.obswaves_total < 4">galaxies</span><span v-if="state.obswaves_total == 4">galaxy</span>.
     </template>
 
@@ -26,6 +29,15 @@
         Click on each galaxy in your table and repeat the spectral line wavelength measurement for each of them.
       </p>
     </div>
+    
+    <v-card
+      v-if="state.has_bad_velocities"
+      color="warning"
+      >
+      <v-card-text>
+        <strong>Tip:</strong> If you are having trouble measuring the spectral line wavelength, try zooming in on the spectral line.
+      </v-card-text>
+    </v-card>
     <div
       class="mb-4"
       v-if="state.obswaves_total >= 5"
