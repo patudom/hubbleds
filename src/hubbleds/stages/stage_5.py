@@ -644,14 +644,22 @@ class StageFour(HubbleStage):
         class_distr_viewer.state.x_att = class_summ_data.id[AGE_COMPONENT]
         all_distr_viewer_class.state.x_att = classes_summary_data.id[AGE_COMPONENT]
         all_distr_viewer_student.state.x_att = students_summary_data.id[AGE_COMPONENT]
+
         
-        for hist in histogram_viewers:
-            layer = hist.layers[0] # only works cuz there is only one layer
-            xmin = int(layer.layer.data[AGE_COMPONENT].min())
-            xmax = int(layer.layer.data[AGE_COMPONENT].max()) + 1 
-            hist.state.hist_n_bin = xmax - xmin
-            hist.state.hist_x_min = xmin
-            hist.state.hist_x_max = xmax
+        def _update_bins(*args):
+            for hist in histogram_viewers:
+                layer = hist.layers[0] # only works cuz there is only one layer
+                xmin = int(layer.layer.data[AGE_COMPONENT].min() // 1)
+                xmax = int(layer.layer.data[AGE_COMPONENT].max() // 1) + 1 
+                hist.state.hist_n_bin = xmax - xmin
+                hist.state.hist_x_min = xmin
+                hist.state.hist_x_max = xmax
+        
+        _update_bins()
+        
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           handler=_update_bins)
+
 
         theme = "dark" if self.app_state.dark_mode else "light"
         style_name = f"default_histogram_{theme}"
