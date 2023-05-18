@@ -43,6 +43,9 @@ class HubbleHistogramViewerState(LineHoverStateMixin, CDSHistogramViewerState):
     def reset_limits(self):
         with delay_callback(self, 'x_min', 'x_max', 'y_min', 'y_max'):
             CDSHistogramViewerState.reset_limits(self)
+            # check that histogram bin edges are included
+            self.x_min = min(self.x_min, self.hist_x_min)
+            self.x_max = max(self.x_max, self.hist_x_max)
     
     def show_measuring_line(self):
         self.show_line = True
