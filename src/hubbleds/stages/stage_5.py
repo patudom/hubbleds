@@ -6,7 +6,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty, DictCallbackProperty, add_callback, callback_property, ListCallbackProperty
+from echo import CallbackProperty, DictCallbackProperty, add_callback, callback_property, ListCallbackProperty, delay_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue_jupyter.link import link
 from hubbleds.components.id_slider import IDSlider
@@ -648,12 +648,14 @@ class StageFour(HubbleStage):
         
         def _update_bins(*args):
             for hist in histogram_viewers:
-                layer = hist.layers[0] # only works cuz there is only one layer
-                xmin = int(layer.layer.data[AGE_COMPONENT].min() // 1)
-                xmax = int(layer.layer.data[AGE_COMPONENT].max() // 1) + 1 
-                hist.state.hist_n_bin = xmax - xmin
-                hist.state.hist_x_min = xmin
-                hist.state.hist_x_max = xmax
+                props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
+                with delay_callback(hist.state, *props):
+                    layer = hist.layers[0] # only works cuz there is only one layer                    
+                    xmin = round(layer.layer.data[AGE_COMPONENT].min(),0) - 0.5
+                    xmax = round(layer.layer.data[AGE_COMPONENT].max(),0) + 0.5
+                    hist.state.hist_n_bin = int(xmax - xmin)
+                    hist.state.hist_x_min = xmin
+                    hist.state.hist_x_max = xmax
         
         _update_bins()
         
@@ -673,7 +675,7 @@ class StageFour(HubbleStage):
         
         
         for hist in histogram_viewers:
-            hist._label_text = lambda x: f"{int(x):d}"
+            hist._label_text = lambda x: f"{round(x,0):.0f}"
         # class_distr_viewer.state.hide_measuring_line()
         # all_distr_viewer_student.state.hide_measuring_line()
         # all_distr_viewer_class.state.hide_measuring_line()
