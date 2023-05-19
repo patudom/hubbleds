@@ -222,7 +222,7 @@ class StageState(CDSState):
         'table_highlights', 'spec_highlights',
         # 'gals_total', 'obswaves_total',
         'velocities_total', 'image_location',
-        'velocity_tolerance'
+        'velocity_tolerance', 'has_bad_velocities',
     ]
 
     def __init__(self, *args, **kwargs):
