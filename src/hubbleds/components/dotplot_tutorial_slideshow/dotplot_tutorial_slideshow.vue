@@ -231,7 +231,7 @@ export default {
 
 .row {
   width: 100%;
-  margin-left: 0;
-  margin-right: 0;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 </style>
