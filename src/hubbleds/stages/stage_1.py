@@ -15,7 +15,7 @@ from echo import add_callback, ignore_callback, CallbackProperty, \
     callback_property
 from glue.core import Data
 from glue.core.message import NumericalDataChangedMessage, SubsetUpdateMessage
-from numpy import isin
+from numpy import isin, zeros
 from traitlets import Bool, default, validate
 
 from ..components import SpectrumSlideshow, SelectionTool, SpectrumMeasurementTutorialSequence, DotplotTutorialSlideshow
@@ -135,6 +135,7 @@ class StageState(CDSState):
     random_state_variable = CallbackProperty(True)
     velocity_tolerance = CallbackProperty(0.5)
     has_bad_velocities = CallbackProperty(False)
+    bad_vel_index = ListCallbackProperty()
     
     
     markers = CallbackProperty([
@@ -222,7 +223,8 @@ class StageState(CDSState):
         'table_highlights', 'spec_highlights',
         # 'gals_total', 'obswaves_total',
         'velocities_total', 'image_location',
-        'velocity_tolerance', 'has_bad_velocities',
+        'velocity_tolerance', 
+        'bad_vel_index'
     ]
 
     def __init__(self, *args, **kwargs):
@@ -392,6 +394,12 @@ class StageOne(HubbleStage):
         galaxy_table.row_click_callback = lambda item, _data=None: self.on_table_row_click(item, _data, table=galaxy_table)
         galaxy_table.observe(
             self.table_selected_change, names=["selected"])
+        self.galaxy_table.allow_row_click = not self.stage_state.has_bad_velocities
+        
+        def _on_has_bad_velocities(*args):
+            self.galaxy_table.allow_row_click = not self.stage_state.has_bad_velocities
+        
+        add_callback(self.stage_state, 'has_bad_velocities', _on_has_bad_velocities)
         
         add_velocities_tool2 = dict(
             id="update-velocities",
@@ -579,6 +587,8 @@ class StageOne(HubbleStage):
     #@print_function_name
     def _on_measurements_changed(self, msg):
         self._update_state_from_measurements_debounced()
+        self.num_bad_student_velocities()
+        
     
     #@print_function_name
     def _update_state_from_measurements(self):
@@ -985,21 +995,28 @@ class StageOne(HubbleStage):
         Returns boolean area where True indicates a bad velocity measurement
         """
         data = self.get_data(STUDENT_MEASUREMENTS_LABEL)
-        wavelength = data[MEASWAVE_COMPONENT]
+        wavelength = data[MEASWAVE_COMPONENT][:]
+        good = wavelength != None
+        wavelength = wavelength[good]
         if len(wavelength) == 0:
-            return [True]
-        rest_wavelength = data[RESTWAVE_COMPONENT]
+            return []
+        rest_wavelength = data[RESTWAVE_COMPONENT][good]
         # calculate velocity from wavelength
         velocity = SPEED_OF_LIGHT * (wavelength - rest_wavelength) / rest_wavelength
         
-        true_velocities = data[Z_COMPONENT] * SPEED_OF_LIGHT
+        true_velocities = data[Z_COMPONENT][good] * SPEED_OF_LIGHT
         
         fractional_difference = (((velocity - true_velocities) / true_velocities)** 2)**0.5 #absolute value w/o numpy
         
-        return fractional_difference > self.stage_state.velocity_tolerance
+        bad_velocities = zeros(len(data[MEASWAVE_COMPONENT]))
+        bad_velocities[good] = fractional_difference > self.stage_state.velocity_tolerance
+        return bad_velocities
     
     def num_bad_student_velocities(self):
-        num = sum(self.velocity_gaurd())
+        velocity_gaurd = self.velocity_gaurd()
+        num = sum(velocity_gaurd)
+        
+        self.stage_state.bad_vel_index = [i for i, x in enumerate(velocity_gaurd) if x]
         self.stage_state.has_bad_velocities = num > 0
         return num
 
