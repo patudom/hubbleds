@@ -12,7 +12,7 @@
     :state="state"
   >
     <template #before-next>
-      <span v-if="state.has_bad_velocities">
+      <span v-if="state.has_bad_velocities || state.has_multiple_bad_velocities">
         <strong>Remeasure your velocity.</strong>
         </span><br />
       Measure wavelength<span v-if="state.obswaves_total < 4">s</span> for {{ 5 - state.obswaves_total }} more <span v-if="state.obswaves_total < 4">galaxies</span><span v-if="state.obswaves_total == 4">galaxy</span>.
@@ -31,7 +31,7 @@
     </div>
     
     <v-card
-      v-if="state.has_bad_velocities"
+      v-if="state.has_bad_velocities || state.has_multiple_bad_velocities"
       color="warning"
       >
       <v-card-text>

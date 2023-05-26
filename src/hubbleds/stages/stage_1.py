@@ -135,7 +135,9 @@ class StageState(CDSState):
     random_state_variable = CallbackProperty(True)
     velocity_tolerance = CallbackProperty(0.5)
     has_bad_velocities = CallbackProperty(False)
-    bad_velocity_index = ListCallbackProperty()
+    bad_velocity_index = ListCallbackProperty([])
+    has_multiple_bad_velocities = CallbackProperty(False)
+    
     
     
     markers = CallbackProperty([
@@ -224,7 +226,7 @@ class StageState(CDSState):
         # 'gals_total', 'obswaves_total',
         'velocities_total', 'image_location',
         'velocity_tolerance', 'has_bad_velocities',
-        'bad_velocity_index'
+        'bad_velocity_index', 'has_multiple_bad_velocities'
     ]
 
     def __init__(self, *args, **kwargs):
@@ -398,8 +400,11 @@ class StageOne(HubbleStage):
         
         def _on_has_bad_velocities(*args):
             self.galaxy_table.allow_row_click = not self.stage_state.has_bad_velocities
+            if self.stage_state.has_bad_velocities or self.stage_state.has_multiple_bad_velocities:
+                self.select_bad_measurement_row()
         
         add_callback(self.stage_state, 'has_bad_velocities', _on_has_bad_velocities)
+        add_callback(self.stage_state, 'has_multiple_bad_velocities', _on_has_bad_velocities)
         
         
         add_velocities_tool2 = dict(
@@ -581,11 +586,7 @@ class StageOne(HubbleStage):
             self.enable_velocity_tool(True)
         
         if self.stage_state.marker_reached("rem_gal1"):
-            if self.stage_state.has_bad_velocities:
-                if len(self.stage_state.bad_velocity_index) > 0:
-                    print('bad velocity index', self.stage_state.bad_velocity_index[0])
-                    self.galaxy_table.selected = [self.galaxy_table.items[self.stage_state.bad_velocity_index[0]]]
-                    print(self.galaxy_table.selected[0])
+            self.select_bad_measurement_row()
 
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
@@ -909,7 +910,15 @@ class StageOne(HubbleStage):
 
         self.stage_state.waveline_set = True
         self.stage_state.lambda_obs = new_value
+        
+        bad_meas = self.outside_bad_velocity_limit(new_value,
+                                                        data[RESTWAVE_COMPONENT][index], 
+                                                        data[Z_COMPONENT][index])
 
+        skip = self.stage_state.has_multiple_bad_velocities \
+                and index not in self.stage_state.bad_velocity_index
+        if  skip:
+            return
         if index is not None:
             self.update_data_value(STUDENT_MEASUREMENTS_LABEL, MEASWAVE_COMPONENT,
                                    new_value, index)
@@ -997,6 +1006,14 @@ class StageOne(HubbleStage):
     def example_galaxy_table(self):
         return self.get_widget("example_galaxy_table")
     
+    def outside_bad_velocity_limit(self, measwave,  restwave, z):
+        """
+        Returns boolean area where True indicates a bad velocity measurement
+        """
+        z_meas =  (measwave - restwave) / restwave
+        fractional_difference = (((z_meas - z) / z)** 2)**0.5
+        return fractional_difference > self.stage_state.velocity_tolerance
+        
     
     def velocity_gaurd(self):
         """
@@ -1009,15 +1026,10 @@ class StageOne(HubbleStage):
         if len(wavelength) == 0:
             return []
         rest_wavelength = data[RESTWAVE_COMPONENT][good]
-        # calculate velocity from wavelength
-        velocity = SPEED_OF_LIGHT * (wavelength - rest_wavelength) / rest_wavelength
-        
-        true_velocities = data[Z_COMPONENT][good] * SPEED_OF_LIGHT
-        
-        fractional_difference = (((velocity - true_velocities) / true_velocities)** 2)**0.5 #absolute value w/o numpy
-        
+        # calculate velocity from wavelength        
+        outside_tol = self.outside_bad_velocity_limit(wavelength, rest_wavelength,  data[Z_COMPONENT][good])
         bad_velocities = zeros(len(data[MEASWAVE_COMPONENT]))
-        bad_velocities[good] = fractional_difference > self.stage_state.velocity_tolerance
+        bad_velocities[good] = outside_tol
         return bad_velocities
     
     def num_bad_student_velocities(self):
@@ -1025,8 +1037,16 @@ class StageOne(HubbleStage):
         num = sum(velocity_gaurd)
         
         self.stage_state.bad_velocity_index = [i for i, x in enumerate(velocity_gaurd) if x]
-        self.stage_state.has_bad_velocities = num > 0
+        self.stage_state.has_multiple_bad_velocities = num > 1
+        self.stage_state.has_bad_velocities = num == 1
         return num
+    
+    def select_bad_measurement_row(self):
+        if self.stage_state.has_bad_velocities:
+                if len(self.stage_state.bad_velocity_index) > 0:
+                    index = self.stage_state.bad_velocity_index[0]
+                    galaxy = self.galaxy_table.items[index]
+                    self.galaxy_table.selected = [galaxy]
 
     def update_spectrum_style(self, dark):
         spectrum_viewer = self.get_viewer("spectrum_viewer")
