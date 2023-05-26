@@ -135,7 +135,7 @@ class StageState(CDSState):
     random_state_variable = CallbackProperty(True)
     velocity_tolerance = CallbackProperty(0.5)
     has_bad_velocities = CallbackProperty(False)
-    bad_vel_index = ListCallbackProperty()
+    bad_velocity_index = ListCallbackProperty()
     
     
     markers = CallbackProperty([
@@ -223,8 +223,8 @@ class StageState(CDSState):
         'table_highlights', 'spec_highlights',
         # 'gals_total', 'obswaves_total',
         'velocities_total', 'image_location',
-        'velocity_tolerance', 
-        'bad_vel_index'
+        'velocity_tolerance', 'has_bad_velocities',
+        'bad_velocity_index'
     ]
 
     def __init__(self, *args, **kwargs):
@@ -400,6 +400,7 @@ class StageOne(HubbleStage):
             self.galaxy_table.allow_row_click = not self.stage_state.has_bad_velocities
         
         add_callback(self.stage_state, 'has_bad_velocities', _on_has_bad_velocities)
+        
         
         add_velocities_tool2 = dict(
             id="update-velocities",
@@ -578,6 +579,13 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("dop_cal6"):
             # if self.stage_state.doppler_calc_reached:
             self.enable_velocity_tool(True)
+        
+        if self.stage_state.marker_reached("rem_gal1"):
+            if self.stage_state.has_bad_velocities:
+                if len(self.stage_state.bad_velocity_index) > 0:
+                    print('bad velocity index', self.stage_state.bad_velocity_index[0])
+                    self.galaxy_table.selected = [self.galaxy_table.items[self.stage_state.bad_velocity_index[0]]]
+                    print(self.galaxy_table.selected[0])
 
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
@@ -1016,7 +1024,7 @@ class StageOne(HubbleStage):
         velocity_gaurd = self.velocity_gaurd()
         num = sum(velocity_gaurd)
         
-        self.stage_state.bad_vel_index = [i for i, x in enumerate(velocity_gaurd) if x]
+        self.stage_state.bad_velocity_index = [i for i, x in enumerate(velocity_gaurd) if x]
         self.stage_state.has_bad_velocities = num > 0
         return num
 
