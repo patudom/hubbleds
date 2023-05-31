@@ -58,7 +58,7 @@
           :state="stage_state"
         />
         <guideline-select-galaxies-2
-          v-if="stage_state.marker === 'sel_gal2' & stage_state.gals_total === 0"
+          v-if="stage_state.marker === 'sel_gal2' && stage_state.gals_total === 0"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
@@ -106,7 +106,7 @@
         :style="$vuetify.breakpoint.lg ? 'max-height: 400px' : 'max-height: 2500px'"
       >
         <guideline-notice-galaxy-table 
-          v-if="stage_state.marker === 'sel_gal2' & stage_state.gals_total === 1"
+          v-if="stage_state.marker === 'sel_gal2' && stage_state.gals_total === 1"
           v-intersect.once="scrollIntoView"
           :state="stage_state"
         />
