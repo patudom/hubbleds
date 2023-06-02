@@ -910,10 +910,6 @@ class StageOne(HubbleStage):
 
         self.stage_state.waveline_set = True
         self.stage_state.lambda_obs = new_value
-        
-        bad_meas = self.outside_bad_velocity_limit(new_value,
-                                                        data[RESTWAVE_COMPONENT][index], 
-                                                        data[Z_COMPONENT][index])
 
         skip = self.stage_state.has_multiple_bad_velocities \
                 and index not in self.stage_state.bad_velocity_index
@@ -1015,7 +1011,7 @@ class StageOne(HubbleStage):
         return fractional_difference > self.stage_state.velocity_tolerance
         
     
-    def velocity_gaurd(self):
+    def velocity_guard(self):
         """
         Returns boolean area where True indicates a bad velocity measurement
         """
@@ -1033,10 +1029,10 @@ class StageOne(HubbleStage):
         return bad_velocities
     
     def num_bad_student_velocities(self):
-        velocity_gaurd = self.velocity_gaurd()
-        num = sum(velocity_gaurd)
+        velocity_guard = self.velocity_guard()
+        num = sum(velocity_guard)
         
-        self.stage_state.bad_velocity_index = [i for i, x in enumerate(velocity_gaurd) if x]
+        self.stage_state.bad_velocity_index = [i for i, x in enumerate(velocity_guard) if x]
         self.stage_state.has_multiple_bad_velocities = num > 1
         self.stage_state.has_bad_velocities = num == 1
         return num
@@ -1165,12 +1161,12 @@ class StageOne(HubbleStage):
         self.stage_state.stage_1_complete = False
 
     def vue_print_state(self, _args=None):
-        pass
-       #print("stage state:")
-       #print(self.stage_state)
-       #print("   ")
-       #print("story state:")
-       #print(self.story_state)
+       # pass
+       print("stage state:")
+       print(self.stage_state)
+       print("   ")
+       print("story state:")
+       print(self.story_state)
 
     def fill_table(self, table, tool=None):
         self.update_data_value(table._glue_data.label, MEASWAVE_COMPONENT, 6830, 0) 
