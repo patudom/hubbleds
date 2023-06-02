@@ -147,7 +147,7 @@ class SpecView(LineHoverViewerMixin, BqplotScatterView):
             self.previous_label_background.x = self._x_background_coordinates(
                 previous)
         self.element_label.x = [self.shifted, self.shifted]
-        self.element_label.text = [element]
+        self.element_label.text = [f"{element} (observed)"]
         self.element_tick.x = [self.shifted, self.shifted]
         self._update_locations()
         self._resolution_dirty = True
