@@ -550,7 +550,7 @@ class HubblesLaw(Story):
             class_data = self.data_collection[CLASS_DATA_LABEL]
             counter = Counter(class_data[STUDENT_ID_COMPONENT])
             students_ready = len([k for k, v in counter.items() if v >= 5])
-            if students_ready >= 6:
+            if students_ready >= 10:
                 self.enough_students_ready = True
 
     def fetch_class_data(self):
