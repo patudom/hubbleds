@@ -153,7 +153,8 @@ class HubblesLaw(Story):
         self.class_data_timer.start()
 
     def _on_timer(self):
-        self.fetch_class_data()
+        if self.max_stage_index < 5:
+            self.fetch_class_data()
         for cb in self._on_timer_cbs:
             cb()
 
@@ -560,6 +561,7 @@ class HubblesLaw(Story):
             if need_update and last_modified is not None:
                 self.class_last_modified = last_modified
             return need_update
+
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
         if self.class_last_modified is not None:
             timestamp = floor(self.class_last_modified.timestamp() * 1000)
