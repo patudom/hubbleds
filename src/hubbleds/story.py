@@ -429,7 +429,6 @@ class HubblesLaw(Story):
                                                  markersize=10)
     
     def update_example_galaxy_data(self, *args):
-        print('update_example_galaxy_data')
         dc = self.data_collection
         meas_data = dc[EXAMPLE_GALAXY_MEASUREMENTS]
         df = meas_data.to_dataframe()
@@ -588,7 +587,7 @@ class HubblesLaw(Story):
         
     def fetch_example_galaxy_data(self):
         example_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements/{self.student_user['id']}"
-        self.fetch_measurement_data_and_update(example_data_url, EXAMPLE_GALAXY_MEASUREMENTS, make_writeable=True)
+        self.fetch_measurement_data_and_update(example_data_url, EXAMPLE_GALAXY_MEASUREMENTS, make_writeable=True, update_if_empty=False)
         # self.update_example_galaxy_data() # not implemented
 
     def on_timer(self, cb):
@@ -670,3 +669,4 @@ class HubblesLaw(Story):
         self.fetch_student_data()
         self.fetch_class_data()
         self.fetch_example_galaxy_data()
+

@@ -418,7 +418,7 @@ class StageOne(HubbleStage):
             item_filter= lambda item: item[MEASUREMENT_NUMBER_COMPONENT] == 'first',
             use_subset_group=False,
             single_select=True,
-           tools=[add_velocities_tool2])
+            tools=[add_velocities_tool2])
         
         # self.upload_example_galaxy_table()
         
@@ -509,11 +509,11 @@ class StageOne(HubbleStage):
         def print_dict_diff(dict_old, dict_new):
             for key in dict_new:
                 if dict_old[key] != dict_new[key]:
-                    print_log('changed', key, 'from', dict_old[key], 'to', dict_new[key],color='red')
+                    print_log('changed', key, 'from', dict_old[key], 'to', dict_new[key], color='red')
         
 
         def _smts_state_update(change):
-            print_log('update spectrum tutorial state',color='red')
+            print_log('update spectrum tutorial state', color='red')
             # print the changes between the two states
             dict_old = change['old']
             dict_new = change['new']
@@ -568,7 +568,6 @@ class StageOne(HubbleStage):
         if self.stage_state.marker_reached("dop_cal6"):
             # if self.stage_state.doppler_calc_reached:
             self.enable_velocity_tool(True)
-
 
         # Uncomment this to pre-fill galaxy data for convenience when testing later stages
         # self.vue_fill_data()
@@ -907,15 +906,11 @@ class StageOne(HubbleStage):
         index = self.example_galaxy_table.index
         #print(index, f"index is none: {index is None}")
         data = self.example_galaxy_table.glue_data
-        print(data[NAME_COMPONENT][index])
-        print(self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[NAME_COMPONENT])
-        print(data[NAME_COMPONENT][index] in self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[NAME_COMPONENT])
         if data[NAME_COMPONENT][index] in self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[NAME_COMPONENT]:
             
             self.stage_state.waveline_set = True
             self.stage_state.lambda_obs = new_value
 
-            print(index)
             if index is None:
                 return
 
@@ -927,7 +922,6 @@ class StageOne(HubbleStage):
             self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
                                new_value, index)
             # if we are in the tutorial, update the velocity
-            print(self.stage_state.marker_reached('dot_seq13'))
             if self.stage_state.marker_reached('dot_seq13'):
                 self.stage_state.meas_two_made = True
                 velocity = velocity_from_wavelengths(new_value,data[RESTWAVE_COMPONENT][index])
