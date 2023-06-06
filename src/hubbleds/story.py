@@ -663,8 +663,13 @@ class HubblesLaw(Story):
 
     def setup_for_student(self, app_state):
         super().setup_for_student(app_state)
-        if self.student_user["id"] in range(2989, 3018):
-            #print("Warning! You are using the ID of a beta test student.")
+        ranges = [
+            range(2989, 3018),
+            range(3760, 3785),
+            range(3890, 3917),
+            range(3973, 3998)
+        ]
+        if any(self.student_user["id"] in r for r in ranges):
             app_state.update_db = False
         self.fetch_student_data()
         self.fetch_class_data()
