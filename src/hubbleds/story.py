@@ -236,7 +236,7 @@ class HubblesLaw(Story):
         # Load in the galaxy data
         example_galaxy_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-galaxy").json()
         example_galaxy_data = { k : [example_galaxy_data[k]] for k in example_galaxy_data }
-        example_galaxy_data['galaxy_id'] = [name.replace('.fits','') for name in example_galaxy_data['name']]
+        example_galaxy_data['name'] = [name.replace('.fits','') for name in example_galaxy_data['name']]
         self.data_collection.append(Data(label=EXAMPLE_GALAXY_DATA, **example_galaxy_data))
         
         # load the seed data for the example galaxy to populate
@@ -271,9 +271,9 @@ class HubblesLaw(Story):
                              ELEMENT_COMPONENT, ANGULAR_SIZE_COMPONENT, MEASUREMENT_NUMBER_COMPONENT, BRIGHTNESS_COMPONENT]
         
         categorical_components = [SAMPLE_ID_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, NAME_COMPONENT, MEASUREMENT_NUMBER_COMPONENT]
-        transfered_components = [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT]
+        transferred_components = [NAME_COMPONENT, ELEMENT_COMPONENT, GALTYPE_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT]
         empty_record = {}
-        for col in transfered_components:
+        for col in transferred_components:
             empty_record[col] = example_galaxy_data[col][0]
         
         empty_record[RESTWAVE_COMPONENT] = H_ALPHA_REST_LAMBDA if ('H' in example_galaxy_data[ELEMENT_COMPONENT][0]) else MG_REST_LAMBDA
@@ -298,7 +298,7 @@ class HubblesLaw(Story):
         example_galaxy_measurements.update_values_from_data(new_data)
         
         self.data_collection.append(example_galaxy_measurements)
-        self.add_new_row(data = example_galaxy_measurements, changes = {MEASUREMENT_NUMBER_COMPONENT : 'second'})
+        self.add_new_row(data=example_galaxy_measurements, changes={MEASUREMENT_NUMBER_COMPONENT : 'second'})
 
         self.app.add_link(example_galaxy_seed_data, DB_STUDENT_ID_FIELD, example_galaxy_measurements, STUDENT_ID_COMPONENT)
         self.app.add_link(example_galaxy_seed_data, DB_DISTANCE_FIELD, example_galaxy_measurements, DISTANCE_COMPONENT)
@@ -308,7 +308,7 @@ class HubblesLaw(Story):
         
         return example_galaxy_measurements
     
-    def add_new_row(self, dc_name = None, data = None, changes ={}):
+    def add_new_row(self, dc_name=None, data=None, changes={}):
         """
         add_new_row _summary_
 
@@ -328,12 +328,11 @@ class HubblesLaw(Story):
             data = self.data_collection[dc_name]
             return
         new_meas = {x.label:data[x][0] for x in data.main_components}
-        for k,v in changes.items():
-            new_meas[k] = v
+        new_meas.update(changes)
 
-        self.add_data_values(data,new_meas)
+        self.add_data_values(data, new_meas)
         
-    def add_data_values(self, data = None, values = {}):
+    def add_data_values(self, data=None, values={}):
         if data is None:
             return
         main_components = [x.label for x in data.main_components]
@@ -343,7 +342,6 @@ class HubblesLaw(Story):
         new_data = Data(label=data.label, **component_dict)
         self.make_data_writeable(new_data)
         data.update_values_from_data(new_data)
-
 
     def update_data(self, label, new_data):
         dc = self.data_collection
@@ -482,13 +480,13 @@ class HubblesLaw(Story):
         components = [x for x in sdss.main_components if x.label != 'id']
         return { sdss['id'][index]: { comp.label: sdss[comp][index] for comp in components } for index in indices }
 
-    def data_from_measurements(self, measurements, include_measurement_number = False):
+    def data_from_measurements(self, measurements, sample_measurements=False):
         for measurement in measurements:
             measurement.update(measurement.get("galaxy", {}))
         components = { STATE_TO_MEAS.get(k, k) : [measurement.get(k, None) for measurement in measurements] for k in DB_MEASUREMENT_FIELDS }
-        if include_measurement_number:
-            meas_comp = { DB_MEASNUM_FIELD : [measurement.get(k, None) for measurement in measurements] for k in [DB_MEASNUM_FIELD] }
-            components.update(meas_comp)
+        if sample_measurements:
+            sample_components = { STATE_TO_MEAS.get(k, k): [measurement.get(k, None) for measurement in measurements] for k in DB_SAMPLE_MEASUREMENT_FIELDS }
+            components.update(sample_components)
 
         for i, name in enumerate(components[NAME_COMPONENT]):
             if name.endswith(self.name_ext):
@@ -517,7 +515,9 @@ class HubblesLaw(Story):
         need_update = check_update is None or check_update(measurements)
         if not need_update:
             return None, None
-        new_data = self.data_from_measurements(measurements, include_measurement_number = (label == EXAMPLE_GALAXY_MEASUREMENTS))
+
+        sample_measurements = label == EXAMPLE_GALAXY_MEASUREMENTS
+        new_data = self.data_from_measurements(measurements, sample_measurements=sample_measurements)
         if not update_if_empty and new_data.size == 0:
             return None, None
         new_data.label = label
@@ -532,7 +532,7 @@ class HubblesLaw(Story):
                 empty_row = self.empty_example_galaxy_record
                 empty_row[DB_MEASNUM_FIELD] = 'second' if new_data[DB_MEASNUM_FIELD][0] == 'first' else 'first'
                 empty_row.update({k: None for k in [MEASWAVE_COMPONENT, VELOCITY_COMPONENT, DISTANCE_COMPONENT, ANGULAR_SIZE_COMPONENT]})
-                self.add_new_row(data = new_data, changes = empty_row)
+                self.add_new_row(data=new_data, changes=empty_row)
         
         data = self.data_collection[label]
         data.update_values_from_data(new_data)

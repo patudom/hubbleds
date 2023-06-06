@@ -873,7 +873,6 @@ class StageOne(HubbleStage):
         self.galaxy_table.selected = []
         self.stage_state.sel_gal_index = None
 
-    #@print_function_name
     def on_spectrum_click(self, event):
         specview = self.get_viewer("spectrum_viewer")
         if event["event"] != "click" or not specview.line_visible:
@@ -884,54 +883,60 @@ class StageOne(HubbleStage):
         if data.size == 0:
             return 
         index = self.galaxy_table.index
+        if index is None:
+            return
+
         if not (data['name'][index] in self.get_data(STUDENT_MEASUREMENTS_LABEL)['name']):
             return None
 
         self.stage_state.waveline_set = True
         self.stage_state.lambda_obs = new_value
 
-        if index is not None:
-            self.update_data_value(STUDENT_MEASUREMENTS_LABEL, MEASWAVE_COMPONENT,
-                                   new_value, index)
-            self.story_state.update_student_data()
-            self.stage_state.spectrum_clicked = True
-    #@print_function_name
+        self.update_data_value(STUDENT_MEASUREMENTS_LABEL, MEASWAVE_COMPONENT,
+                               new_value, index)
+        self.story_state.update_student_data()
+        self.stage_state.spectrum_clicked = True
+
     def on_spectrum_click_example_galaxy(self, event):
         specview = self.get_viewer("spectrum_viewer")
         if event["event"] != "click" or not specview.line_visible:
             return
 
-
         new_value = round(event["domain"]["x"], 0)
         # table = self.get_widget("example_galaxy_table")
         index = self.example_galaxy_table.index
-       #print(index, f"index is none: {index is None}")
+        #print(index, f"index is none: {index is None}")
         data = self.example_galaxy_table.glue_data
+        print(data[NAME_COMPONENT][index])
+        print(self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[NAME_COMPONENT])
+        print(data[NAME_COMPONENT][index] in self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[NAME_COMPONENT])
         if data[NAME_COMPONENT][index] in self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[NAME_COMPONENT]:
             
             self.stage_state.waveline_set = True
             self.stage_state.lambda_obs = new_value
 
-            if index is not None:
-                # if we're on the first example galaxy and we've reached the tutorial, don't allow changes to
-                # the first measurement anymore. when it changes to the second measurement we'll allow it again
-                if (index == 0) & (self.stage_state.marker_reached('che_mea1')):
-                    # don't allow user to change the first measurement once we begin the tutorial section
-                    return
-                self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
-                                    new_value, index)
-                # if we are in the tutorial, update the velocity
-                if self.stage_state.marker_reached('dot_seq13'):
-                    self.stage_state.meas_two_made = True
-                    velocity = velocity_from_wavelengths(new_value,data[RESTWAVE_COMPONENT][index])
-                    self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, VELOCITY_COMPONENT,
-                                        velocity, index)
-                    if self.stage_state.marker == 'dot_seq13a':
-                        self.stage_state.marker_forward = 1
-                # self.story_state.update_student_data()
-                self.stage_state.spectrum_clicked = True
-        else:
-            pass
+            print(index)
+            if index is None:
+                return
+
+           # if we're on the first example galaxy and we've reached the tutorial, don't allow changes to
+           # the first measurement anymore. when it changes to the second measurement we'll allow it again
+            if (index == 0) and (self.stage_state.marker_reached('che_mea1')):
+               # don't allow user to change the first measurement once we begin the tutorial section
+               return
+            self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, MEASWAVE_COMPONENT,
+                               new_value, index)
+            # if we are in the tutorial, update the velocity
+            print(self.stage_state.marker_reached('dot_seq13'))
+            if self.stage_state.marker_reached('dot_seq13'):
+                self.stage_state.meas_two_made = True
+                velocity = velocity_from_wavelengths(new_value,data[RESTWAVE_COMPONENT][index])
+                self.update_data_value(EXAMPLE_GALAXY_MEASUREMENTS, VELOCITY_COMPONENT,
+                                       velocity, index)
+                if self.stage_state.marker == 'dot_seq13a':
+                    self.stage_state.marker_forward = 1
+            # self.story_state.update_student_data()
+            self.stage_state.spectrum_clicked = True
     
     #@print_function_name
     def vue_add_current_velocity(self, _args=None):
@@ -1071,11 +1076,12 @@ class StageOne(HubbleStage):
     #@print_function_name
     def initialize_spectrum_data(self, label):
         data = self.get_data(label)
-        name = data[data.id['name']][0]
-        spectype = data[data.id['type']][0]
-        self.story_state.load_spectrum_data(name, spectype)
-        data = self.get_data(name.split(".")[0])
-        self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
+        if data.size > 0:
+            name = data[data.id['name']][0]
+            spectype = data[data.id['type']][0]
+            self.story_state.load_spectrum_data(name, spectype)
+            data = self.get_data(name.split(".")[0])
+            self.story_state.update_data(SPECTRUM_DATA_LABEL, data)
 
     def _on_stage_complete(self, complete):
         return 
