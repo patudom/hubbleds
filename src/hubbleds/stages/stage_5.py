@@ -650,9 +650,10 @@ class StageFour(HubbleStage):
             for hist in histogram_viewers:
                 props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
                 with delay_callback(hist.state, *props):
-                    layer = hist.layers[0] # only works cuz there is only one layer                    
-                    xmin = round(layer.layer.data[AGE_COMPONENT].min(),0) - 0.5
-                    xmax = round(layer.layer.data[AGE_COMPONENT].max(),0) + 0.5
+                    layer = hist.layers[0] # only works cuz there is only one layer 
+                    component = hist.state.x_att                   
+                    xmin = round(layer.layer.data[component].min(),0) - 0.5
+                    xmax = round(layer.layer.data[component].max(),0) + 0.5
                     hist.state.hist_n_bin = int(xmax - xmin)
                     hist.state.hist_x_min = xmin
                     hist.state.hist_x_max = xmax
