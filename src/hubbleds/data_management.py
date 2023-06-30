@@ -91,6 +91,11 @@ DB_MEASUREMENT_FIELDS = [
     DB_LAST_MODIFIED_FIELD
 ]
 
+DB_SAMPLE_MEASUREMENT_FIELDS = [
+    DB_MEASNUM_FIELD,
+    DB_BRIGHT_FIELD
+]
+
 # Summaries
 DB_H0_FIELD = "hubble_fit_value"
 DB_AGE_FIELD = "age_value"
