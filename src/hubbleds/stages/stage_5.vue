@@ -243,9 +243,23 @@
         </v-row>
       </v-col>
     </v-row>
+
     <v-row
       class="d-flex align-stretch"
-      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c'])"
+      v-if="state_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <py-percentage-selector />
+        <py-statistics-selector />
+      </v-col>
+    </v-row>
+
+    <v-row
+      class="d-flex align-stretch"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
     >
       <v-col
         cols="12"

@@ -2,7 +2,7 @@ from functools import partial
 
 from numpy import where
 # from cosmicds.components.layer_toggle import LayerToggle
-from cosmicds.components.table import Table
+from cosmicds.components import PercentageSelector, StatisticsSelector, Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
