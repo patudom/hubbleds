@@ -2,7 +2,7 @@ from functools import partial
 
 from numpy import where
 # from cosmicds.components.layer_toggle import LayerToggle
-from cosmicds.components import PercentageSelector, StatisticsSelector, Table, statistics_selector
+from cosmicds.components import PercentageSelector, StatisticsSelector, Table 
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
@@ -361,11 +361,15 @@ class StageFour(HubbleStage):
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
 
-        percentage_selector = PercentageSelector(class_summ_data, class_summ_data.id[AGE_COMPONENT])
+        percentage_subset_label = "percentage_subset"
+        percentage_selector = PercentageSelector(all_distr_viewer_class,
+                                                class_summ_data,
+                                                 class_summ_data.id[AGE_COMPONENT],
+                                                 subset_label=percentage_subset_label)
         self.add_component(percentage_selector, "py-percentage-selector")
 
         statistics_selector = StatisticsSelector(all_distr_viewer_class, class_summ_data,
-                                                 class_summ_data.id[AGE_COMPONENT], all_distr_viewer_class.layers[0])
+                                                 class_summ_data.id[AGE_COMPONENT], all_distr_viewer_class)
         self.add_component(statistics_selector, "py-statistics-selector")
 
         not_ignore = {
@@ -373,6 +377,7 @@ class StageFour(HubbleStage):
             histogram_source_label: [class_distr_viewer],
             histogram_modify_label: [comparison_viewer],
             student_slider_subset_label: [comparison_viewer],
+            percentage_subset_label: [all_distr_viewer_class],
             BEST_FIT_SUBSET_LABEL: [layer_viewer]
         }
 
