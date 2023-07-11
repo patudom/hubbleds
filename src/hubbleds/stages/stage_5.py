@@ -2,7 +2,7 @@ from functools import partial
 
 from numpy import where
 # from cosmicds.components.layer_toggle import LayerToggle
-from cosmicds.components import PercentageSelector, StatisticsSelector, Table
+from cosmicds.components import PercentageSelector, StatisticsSelector, Table, statistics_selector
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
@@ -360,6 +360,13 @@ class StageFour(HubbleStage):
 
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
+
+        percentage_selector = PercentageSelector(class_summ_data, class_summ_data.id[AGE_COMPONENT])
+        self.add_component(percentage_selector, "py-percentage-selector")
+
+        statistics_selector = StatisticsSelector(all_distr_viewer_class, class_summ_data,
+                                                 class_summ_data.id[AGE_COMPONENT], all_distr_viewer_class.layers[0])
+        self.add_component(statistics_selector, "py-statistics-selector")
 
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
