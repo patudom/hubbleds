@@ -102,7 +102,7 @@ def format_measured_angle(angle):
     return angle.to_string(unit=u.arcsec, precision=0)[:-6] + " arcseconds"
 
 
-def line_mark(layer, start_x, start_y, end_x, end_y, color, label=None):
+def line_mark(layer, start_x, start_y, end_x, end_y, color, label=None, label_visibility=None):
     """
     Creates a Lines mark between the given start and end points
     using the scales of the given layer.
@@ -140,10 +140,10 @@ def line_mark(layer, start_x, start_y, end_x, end_y, color, label=None):
                  colors=[color],
                  labels=[label] if label is not None else [],
                  display_legend=label is not None,
-                 labels_visibility='label')
+                 labels_visibility=label_visibility or 'label')
 
 
-def vertical_line_mark(layer, x, color, label=None):
+def vertical_line_mark(layer, x, color, label=None, label_visibility=None):
     """
     A specialization of `line_mark` specifically for vertical lines.
 
@@ -158,7 +158,7 @@ def vertical_line_mark(layer, x, color, label=None):
     """
     viewer_state = layer.state.viewer_state
     return line_mark(layer, x, viewer_state.y_min, x, viewer_state.y_max,
-                     color, label)
+                     color, label=label, label_visibility=label_visibility)
 
 def velocity_from_wavelengths(lamb_meas, lamb_rest):
     return round((3 * (10 ** 5) * (lamb_meas / lamb_rest - 1)), 0)
