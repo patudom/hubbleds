@@ -6,7 +6,7 @@ from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
-from echo import CallbackProperty, DictCallbackProperty, add_callback, callback_property, ListCallbackProperty
+from echo import CallbackProperty, DictCallbackProperty, add_callback, callback_property, ListCallbackProperty, delay_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue_jupyter.link import link
 from hubbleds.components.id_slider import IDSlider
@@ -654,14 +654,36 @@ class StageFour(HubbleStage):
                 # viewer.state.normalize = True
                 # viewer.state.y_min = 0
                 # viewer.state.y_max = 1
-                viewer.state.hist_n_bin = 6
+                # viewer.state.hist_n_bin = 6
             viewer.figure.axes[1].label = label
             viewer.figure.axes[1].tick_format = '0'
             # viewer.figure.axes[1].num_ticks = 5
+            
+        
+            
 
         class_distr_viewer.state.x_att = class_summ_data.id[AGE_COMPONENT]
         all_distr_viewer_class.state.x_att = classes_summary_data.id[AGE_COMPONENT]
         all_distr_viewer_student.state.x_att = students_summary_data.id[AGE_COMPONENT]
+
+        
+        def _update_bins(*args):
+            for hist in histogram_viewers:
+                props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
+                with delay_callback(hist.state, *props):
+                    layer = hist.layers[0] # only works cuz there is only one layer 
+                    component = hist.state.x_att                   
+                    xmin = round(layer.layer.data[component].min(),0) - 0.5
+                    xmax = round(layer.layer.data[component].max(),0) + 0.5
+                    hist.state.hist_n_bin = int(xmax - xmin)
+                    hist.state.hist_x_min = xmin
+                    hist.state.hist_x_max = xmax
+        
+        _update_bins()
+        
+        self.hub.subscribe(self, NumericalDataChangedMessage,
+                           handler=_update_bins)
+
 
         theme = "dark" if self.app_state.dark_mode else "light"
         style_name = f"default_histogram_{theme}"
@@ -672,6 +694,10 @@ class StageFour(HubbleStage):
         class_distr_viewer.state.show_measuring_line()
         all_distr_viewer_student.state.show_measuring_line()
         all_distr_viewer_class.state.show_measuring_line()
+        
+        
+        for hist in histogram_viewers:
+            hist._label_text = lambda x: f"{round(x,0):.0f}"
         # class_distr_viewer.state.hide_measuring_line()
         # all_distr_viewer_student.state.hide_measuring_line()
         # all_distr_viewer_class.state.hide_measuring_line()
