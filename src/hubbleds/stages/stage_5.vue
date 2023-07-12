@@ -236,6 +236,9 @@
             <slideshow-uncertainty1
               :state="stage_state"
             />  
+            <slideshow-mmm
+              :state="stage_state"
+            />
           </v-col>
         </v-row>
       </v-col>
@@ -256,6 +259,34 @@
           v-if="stage_state.marker == 'two_his1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
+        <guideline-new1
+          v-if="stage_state.marker == 'new1'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-new2
+          v-if="stage_state.marker == 'new2'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-new3
+          v-if="stage_state.marker == 'new3'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-new4
+          v-if="stage_state.marker == 'new4'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-new5
+          v-if="stage_state.marker == 'new5'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-new6
+          v-if="stage_state.marker == 'new6'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-new7
+          v-if="stage_state.marker == 'new7'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
         <guideline-learn-uncertainty1
           v-if="stage_state.marker == 'lea_unc1'"
           :state="stage_state"

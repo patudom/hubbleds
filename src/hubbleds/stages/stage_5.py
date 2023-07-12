@@ -49,6 +49,20 @@ class StageState(CDSState):
             "Finished Uncertainty Tutorial",
         ]
     })
+    
+    
+    mmm_dialog = CallbackProperty(False)
+    mmm_dialog_opened = CallbackProperty(False)
+    mmm_dialog_complete = CallbackProperty(False)
+    mmm_state = DictCallbackProperty({
+        'step': 0,
+        'length': 3,
+        'titles': [
+            'Mean',
+            "Median",
+            "Mode"
+        ]
+    })
 
     marker = CallbackProperty("")
     indices = CallbackProperty({})
@@ -98,6 +112,13 @@ class StageState(CDSState):
         'con_int2c',
         
         'two_his1',
+        'new1',
+        'new2',
+        'new3',
+        'new4',
+        'new5',
+        'new6',
+        'new7',
         'lea_unc1',
         'two_his2',
         'lac_bia1',
