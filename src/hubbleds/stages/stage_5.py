@@ -1,4 +1,5 @@
 from functools import partial
+from math import ceil, floor
 
 from numpy import where
 # from cosmicds.components.layer_toggle import LayerToggle
@@ -365,13 +366,13 @@ class StageFour(HubbleStage):
         percentage_selector = PercentageSelector(all_distr_viewer_class,
                                                  classes_summary_data,
                                                  classes_summary_data.id[AGE_COMPONENT],
+                                                 transform=round,
                                                  subset_label=percentage_subset_label)
         self.add_component(percentage_selector, "py-percentage-selector")
 
         statistics_selector = StatisticsSelector(all_distr_viewer_class,
                                                  classes_summary_data,
                                                  classes_summary_data.id[AGE_COMPONENT],
-                                                 all_distr_viewer_class,
                                                  transform=round)
         self.add_component(statistics_selector, "py-statistics-selector")
 
