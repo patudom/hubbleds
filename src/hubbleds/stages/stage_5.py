@@ -366,6 +366,7 @@ class StageFour(HubbleStage):
         percentage_selector = PercentageSelector(all_distr_viewer_class,
                                                  classes_summary_data,
                                                  classes_summary_data.id[AGE_COMPONENT],
+                                                 unit="Gyr",
                                                  transform=round,
                                                  subset_label=percentage_subset_label)
         self.add_component(percentage_selector, "py-percentage-selector")
@@ -373,6 +374,7 @@ class StageFour(HubbleStage):
         statistics_selector = StatisticsSelector(all_distr_viewer_class,
                                                  classes_summary_data,
                                                  classes_summary_data.id[AGE_COMPONENT],
+                                                 unit="Gyr",
                                                  transform=round)
         self.add_component(statistics_selector, "py-statistics-selector")
 
