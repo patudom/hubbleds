@@ -192,6 +192,18 @@
         cols="12"
         lg="5"
       >
+        <py-myclass-percentage-selector />
+        <py-myclass-statistics-selector />
+      </v-col>
+    </v-row>    
+    <v-row
+      class="d-flex align-stretch"
+      v-if="stage_state.marker == 'age_dis1' || stage_state.marker == 'con_int2'" 
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
         <guideline-class-age-distribution
           v-if="stage_state.marker == 'age_dis1'"
           :state="stage_state"
@@ -243,7 +255,18 @@
         </v-row>
       </v-col>
     </v-row>
-
+    <v-row
+      class="d-flex align-stretch"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <py-allstudents-percentage-selector />
+        <py-allstudents-statistics-selector />
+      </v-col>
+    </v-row> 
     <v-row
       class="d-flex align-stretch"
       v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
@@ -352,8 +375,8 @@
         cols="12"
         lg="5"
       >
-        <py-percentage-selector />
-        <py-statistics-selector />
+        <py-allclasses-percentage-selector />
+        <py-allclasses-statistics-selector />
       </v-col>
     </v-row>
 

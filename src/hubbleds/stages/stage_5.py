@@ -304,6 +304,7 @@ class StageFour(HubbleStage):
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
+        students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
 
         # Set up the listener to sync the histogram <--> scatter viewers
 
@@ -362,28 +363,62 @@ class StageFour(HubbleStage):
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
 
-        percentage_subset_label = "percentage_subset"
-        percentage_selector = PercentageSelector(all_distr_viewer_class,
+        allclasses_percentage_subset_label = "allclasses_percentage_subset"
+        allclasses_percentage_selector = PercentageSelector(all_distr_viewer_class,
                                                  classes_summary_data,
                                                  classes_summary_data.id[AGE_COMPONENT],
                                                  unit="Gyr",
                                                  transform=round,
-                                                 subset_label=percentage_subset_label)
-        self.add_component(percentage_selector, "py-percentage-selector")
+                                                 subset_label=allclasses_percentage_subset_label)
+        self.add_component(allclasses_percentage_selector, "py-allclasses-percentage-selector")
 
-        statistics_selector = StatisticsSelector(all_distr_viewer_class,
+        allclasses_statistics_selector = StatisticsSelector(all_distr_viewer_class,
                                                  classes_summary_data,
                                                  classes_summary_data.id[AGE_COMPONENT],
                                                  unit="Gyr",
                                                  transform=round)
-        self.add_component(statistics_selector, "py-statistics-selector")
+        self.add_component(allclasses_statistics_selector, "py-allclasses-statistics-selector")
+
+        myclass_percentage_subset_label = "myclass_percentage_subset"
+        myclass_percentage_selector = PercentageSelector(class_distr_viewer,
+                                                 class_summ_data,
+                                                 class_summ_data.id[AGE_COMPONENT],
+                                                 unit="Gyr",
+                                                 transform=round,
+                                                 subset_label=myclass_percentage_subset_label)
+        self.add_component(myclass_percentage_selector, "py-myclass-percentage-selector")
+
+        myclass_statistics_selector = StatisticsSelector(class_distr_viewer,
+                                                 class_summ_data,
+                                                 class_summ_data.id[AGE_COMPONENT],
+                                                 unit="Gyr",
+                                                 transform=round)
+        self.add_component(myclass_statistics_selector, "py-myclass-statistics-selector")
+
+        allstudents_percentage_subset_label = "allstudents_percentage_subset"
+        allstudents_percentage_selector = PercentageSelector(all_distr_viewer_student,
+                                                 students_summary_data,
+                                                 students_summary_data.id[AGE_COMPONENT],
+                                                 unit="Gyr",
+                                                 transform=round,
+                                                 subset_label=allstudents_percentage_subset_label)
+        self.add_component(allstudents_percentage_selector, "py-allstudents-percentage-selector")
+
+        allstudents_statistics_selector = StatisticsSelector(all_distr_viewer_student,
+                                                 students_summary_data,
+                                                 students_summary_data.id[AGE_COMPONENT],
+                                                 unit="Gyr",
+                                                 transform=round)
+        self.add_component(allstudents_statistics_selector, "py-allstudents-statistics-selector")
 
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
             histogram_source_label: [class_distr_viewer],
             histogram_modify_label: [comparison_viewer],
             student_slider_subset_label: [comparison_viewer],
-            percentage_subset_label: [all_distr_viewer_class],
+            allclasses_percentage_subset_label: [all_distr_viewer_class],
+            myclass_percentage_subset_label: [class_distr_viewer],
+            allstudents_percentage_subset_label: [all_distr_viewer_student],
             BEST_FIT_SUBSET_LABEL: [layer_viewer]
         }
 
