@@ -69,7 +69,7 @@ class StageState(CDSState):
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
-    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three") #this needs to be updated if we have real Stage 4 images
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/mode_median_mean") #this needs to be updated if we have real Stage 4 images
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
@@ -366,6 +366,27 @@ class StageFour(HubbleStage):
         allclasses_percentage_subset_label = "allclasses_percentage_subset"
         myclass_percentage_subset_label = "myclass_percentage_subset"
         allstudents_percentage_subset_label = "allstudents_percentage_subset"
+        
+        mmm_text = {
+            'median': """The median is the middle of the dataset. 
+                        Fifty percent of the data is above the median and fifty percent is less than or equal to the median.
+                        In this example, the median the distribution is 15
+                        """, 
+            'mean':"""The mean is the average of all values in the dataset. The 
+                      average is calculated by adding all the values together and dividing by the number of values.
+                      In this example, the mean of the distribution is 14.
+                      """, 
+            'mode':"""The mode is the most commonly measured value or range 
+                        of values in a set of data and appears as the tallest bar in a histogram. 
+                        In this example, the mode of the distribution is 16.
+                        """
+            }
+        mmm_urls = {
+            'median': f"{IMAGE_BASE_URL}/mode_median_mean/median.png",  #'https://picsum.photos/900/600', #
+            'mean':   f"{IMAGE_BASE_URL}/mode_median_mean/mean.png",     #'https://picsum.photos/900/600', #
+            'mode':   f"{IMAGE_BASE_URL}/mode_median_mean/mode.png"      #'https://picsum.photos/900/600'  # 
+        }
+        
         all_percentage_selector = PercentageSelector([all_distr_viewer_class, all_distr_viewer_student],
                                                  [classes_summary_data, students_summary_data],
                                                  units=["Gyr"] * 2,
@@ -378,6 +399,8 @@ class StageFour(HubbleStage):
                                                  [classes_summary_data, students_summary_data],
                                                  units=["Gyr"] * 2,
                                                  transform=round)
+        all_statistics_selector.help_text = mmm_text
+        all_statistics_selector.help_images = mmm_urls
         self.add_component(all_statistics_selector, "py-all-statistics-selector")
 
         myclass_percentage_selector = PercentageSelector([class_distr_viewer],
@@ -391,7 +414,12 @@ class StageFour(HubbleStage):
                                                  [class_summ_data],
                                                  units=["Gyr"],
                                                  transform=round)
+        myclass_statistics_selector.help_text = mmm_text
+        myclass_statistics_selector.help_images = mmm_urls
         self.add_component(myclass_statistics_selector, "py-myclass-statistics-selector")
+        
+        
+        
 
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
