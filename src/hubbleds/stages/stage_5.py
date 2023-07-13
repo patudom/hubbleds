@@ -366,11 +366,11 @@ class StageFour(HubbleStage):
         allclasses_percentage_subset_label = "allclasses_percentage_subset"
         allclasses_percentage_selector = PercentageSelector(all_distr_viewer_class,
                                                  classes_summary_data,
-                                                 classes_summary_data.id[AGE_COMPONENT],
                                                  unit="Gyr",
-                                                 transform=round,
+                                                 lower_transform=ceil,
+                                                 upper_transform=floor,
                                                  subset_label=allclasses_percentage_subset_label)
-        self.add_component(allclasses_percentage_selector, "py-allclasses-percentage-selector")
+        self.add_component(allclasses_percentage_selector, "py-percentage-selector")
 
         allclasses_statistics_selector = StatisticsSelector(all_distr_viewer_class,
                                                  classes_summary_data,
