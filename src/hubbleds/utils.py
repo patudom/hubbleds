@@ -77,7 +77,7 @@ def age_in_gyr_simple(H0):
     inv = 1 / H0
     mpc_to_km = u.Mpc.to(u.km)
     s_to_gyr = u.s.to(u.Gyr)
-    return round(inv * mpc_to_km * s_to_gyr, 1)
+    return round(inv * mpc_to_km * s_to_gyr, 3)
 
 
 def fit_line(x, y):
