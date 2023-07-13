@@ -263,8 +263,8 @@
         cols="12"
         lg="5"
       >
-        <py-allstudents-percentage-selector />
-        <py-allstudents-statistics-selector />
+        <py-all-percentage-selector />
+        <py-all-statistics-selector />
       </v-col>
     </v-row> 
     <v-row
@@ -364,19 +364,6 @@
             <jupyter-widget :widget="viewers.all_distr_viewer_class"/>
           </v-lazy>
         </v-card>
-      </v-col>
-    </v-row>
-    
-    <v-row
-      class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
-    >
-      <v-col
-        cols="12"
-        lg="5"
-      >
-        <py-allclasses-percentage-selector />
-        <py-allclasses-statistics-selector />
       </v-col>
     </v-row>
 
