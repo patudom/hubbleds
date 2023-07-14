@@ -113,8 +113,6 @@ class StageState(CDSState):
         'con_int2c',
         
         'two_his1',
-        'new1',
-        'new2',
         'new3',
         'new4',
         'new5',

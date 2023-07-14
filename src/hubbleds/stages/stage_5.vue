@@ -283,14 +283,6 @@
           v-if="stage_state.marker == 'two_his1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
-        <guideline-new1
-          v-if="stage_state.marker == 'new1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-new2
-          v-if="stage_state.marker == 'new2'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
         <guideline-new3
           v-if="stage_state.marker == 'new3'"
           :state="stage_state"
