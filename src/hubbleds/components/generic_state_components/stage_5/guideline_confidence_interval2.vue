@@ -11,7 +11,7 @@
       Some possibilities are the range that encompass the inner 50%, 68%, or 95% of all measurements.
     </p>
     <p>
-      Click the radio buttons to display each percentage range in the histogram. 
+      Click the radio buttons to display each percentage range in the histogram. The range will be appear as shaded bins. 
     </p>
     <p>
       Click <v-icon>mdi-help-circle-outline</v-icon> to learn more about how the percentage ranges are determined.
