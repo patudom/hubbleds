@@ -120,6 +120,10 @@
           v-if="stage_state.marker == 'cla_age4'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
+        <guideline-learn-uncertainty1
+          v-if="stage_state.marker == 'lea_unc1'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView"/>
         <guideline-most-likely-value1
           v-if="stage_state.marker == 'mos_lik1'"
           :state="stage_state"
@@ -145,6 +149,30 @@
             />
         </v-card>
         <py-hubble-slideshow/>  
+      </v-col>
+    </v-row>
+    <v-row
+      v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['lea_unc1'] && stage_state.indices[stage_state.marker] <= stage_state.indices['you_age1c']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-row>
+          <v-col
+            cols="10"
+            offset="1"
+          >
+            <slideshow-uncertainty1
+              :state="stage_state"
+            />  
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
 
@@ -180,6 +208,31 @@
             class="slider_card"
             />
         </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row
+      v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['cla_res1c']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+      </v-col>
+      <v-col
+        cols="12"
+        lg="7"
+      >
+        <v-row>
+          <v-col
+            cols="10"
+            offset="1"
+          >
+            <slideshow-uncertainty1
+              :state="stage_state"
+            />  
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
 
@@ -250,33 +303,6 @@
     <!-- cla_age1c -->
   
     <v-row
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['two_his1']"
-    >
-      <v-col
-        cols="12"
-        lg="5"
-      >
-      </v-col>
-      <v-col
-        cols="12"
-        lg="7"
-      >
-        <v-row>
-          <v-col
-            cols="10"
-            offset="1"
-          >
-            <slideshow-uncertainty1
-              :state="stage_state"
-            />  
-            <slideshow-mmm
-              :state="stage_state"
-            />
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-row
       class="d-flex align-stretch"
       v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
     >
@@ -299,13 +325,9 @@
         <guideline-class-age-distribution-c
           v-if="stage_state.marker == 'age_dis1c'"
           :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
+          v-intersect.once="scrollIntoView"/>       
         <guideline-two-histograms1
           v-if="stage_state.marker == 'two_his1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-learn-uncertainty1
-          v-if="stage_state.marker == 'lea_unc1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
         <guideline-two-histograms-mc2
@@ -313,6 +335,20 @@
           :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.two_hist_response = true"/>
+        <guideline-two-histograms-mc3
+          v-if="stage_state.marker == 'two_his3'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.two_hist3_response = true"/>
+        <guideline-two-histograms-mc4
+          v-if="stage_state.marker == 'two_his4'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.two_hist4_response = true"/>
+        <guideline-two-histograms-reflect5
+          v-if="stage_state.marker == 'two_his5'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView"/>               
         <guideline-lack-bias-mc1
           v-if="stage_state.marker == 'lac_bia1'"
           :state="stage_state"

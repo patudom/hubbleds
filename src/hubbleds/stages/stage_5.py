@@ -27,7 +27,10 @@ from ..viewers.viewers import \
 class StageState(CDSState):
     relage_response = CallbackProperty(False)
     two_hist_response = CallbackProperty(False)
+    two_hist3_response = CallbackProperty(False)
+    two_hist4_response = CallbackProperty(False)
     lack_bias_response = CallbackProperty(False)
+    uncertainty_hint_dialog = CallbackProperty(False)
     class_trend_line_drawn = CallbackProperty(False)
     class_best_fit_clicked = CallbackProperty(False)
     
@@ -101,6 +104,7 @@ class StageState(CDSState):
         'cla_age2',
         'cla_age3',
         'cla_age4',
+        'lea_unc1',
         'mos_lik1', 
         'age_dis1',
         'mos_lik2',
@@ -119,11 +123,13 @@ class StageState(CDSState):
         'con_int2c',
         
         'two_his1',
-        'lea_unc1',
         'two_his2',
-        'lac_bia1',
+        'two_his3',
+        'two_his4',
+        'two_his5',
+        #'lac_bia1',
         #'lac_bia2',
-        'lac_bia3',
+        #'lac_bia3',
         'mor_dat1',
         'acc_unc1',
         
