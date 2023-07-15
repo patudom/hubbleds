@@ -153,7 +153,8 @@ class HubblesLaw(Story):
         self.class_data_timer.start()
 
     def _on_timer(self):
-        self.fetch_class_data()
+        if self.max_stage_index < 5:
+            self.fetch_class_data()
         for cb in self._on_timer_cbs:
             cb()
 
@@ -598,7 +599,7 @@ class HubblesLaw(Story):
             class_data = self.data_collection[CLASS_DATA_LABEL]
             counter = Counter(class_data[STUDENT_ID_COMPONENT])
             students_ready = len([k for k, v in counter.items() if v >= 5])
-            if students_ready >= 6:
+            if students_ready >= min(10, self.classroom["size"]):
                 self.enough_students_ready = True
 
     def fetch_class_data(self):
@@ -608,6 +609,7 @@ class HubblesLaw(Story):
             if need_update and last_modified is not None:
                 self.class_last_modified = last_modified
             return need_update
+
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
         if self.class_last_modified is not None:
             timestamp = floor(self.class_last_modified.timestamp() * 1000)
