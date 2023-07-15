@@ -198,7 +198,7 @@
                   cols="12"
                   >
                   <p>
-                    Human error contributes to imperfect measurements too. Some people are more meticulous than others.
+                    Human error also contributes to imperfect measurements. Some people are more meticulous than others.
                   </p>
                   <p>
                     Sometimes our tools limit our measurements. For example, did you feel confident that you were able to measure the edges of your galaxies correctly?
