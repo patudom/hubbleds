@@ -18,40 +18,15 @@
       class="mb-4"
     >
       <p>
-        Based on these results from your class, what do you think is the most likely value of the age of the universe and what is a likely range of possible values?
+        After comparing different percentage ranges for your class's age measurements in the histogram, enter your responses below.
       </p>
-      <v-row>
-        <v-col
-          cols="12"
-          lg="9">      
-          1. My best guess for the age of the universe based on my entire class’s data set: 
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col
-          cols="12"
-          lg="3"
-        >
-          <free-response
-            outlined
-            rows="1"
-            label="Best Guess Age"
-            tag="best-guess-age"
-          ></free-response>
-        </v-col>
-        <v-col>
-          Gyr
-        </v-col>
-      </v-row>
-
       <v-row
-        v-if="revealIter >= 0"
       >
         <v-col
           cols="12"
           lg="9"
         >
-          2. My best guess for the likely range of ages of the universe based on my entire class’s data set: 
+          3. The range of age values for the universe that I am most confident in based on my class’s data set: 
         </v-col>
         <v-col>
           <v-btn
@@ -95,8 +70,7 @@
                     The range you pick will have a tradeoff between how likely it is that the “true” value actually lies within the range you choose vs. having a narrow enough range that your measurement is actually useful. A very large range is more likely to include the "true" value, but may be so nonspecific that it is not useful. A narrow range has more specificity but may not include the "true" value.
                   </p>
                   <p>
-                    Different people will feel more or less comfortable with the different sides of this tradeoff, and there isn’t really a right or wrong answer as long as you justify why you
-                    chose what you did.
+                    Different people will feel more or less comfortable with the different sides of this tradeoff, and there isn’t really a right or wrong answer as long as you justify why you chose what you did.
                   </p>
                   <p>
                     If you are feeling really stuck, feel free to discuss this with a classmate or your instructor.
@@ -144,7 +118,7 @@
         v-if="revealIter >= 1"
       >
         <v-col>
-          3. Explain why you chose your values using information from the scatterplot and/or the histogram:
+          4. Explain why you chose your values using information from the histogram or other viewers:
         </v-col>
       </v-row>
       <v-row
@@ -156,7 +130,7 @@
             auto-grow
             rows="2"
             label="My Reasoning"
-            tag="my-reasoning"
+            tag="my-reasoning-2"
           ></free-response>
         </v-col>
       </v-row>
