@@ -70,7 +70,7 @@ class StageState(CDSState):
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
-    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/mode_median_mean") #this needs to be updated if we have real Stage 4 images
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/mean_median_mode") 
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
@@ -367,23 +367,23 @@ class StageFour(HubbleStage):
         allstudents_percentage_subset_label = "allstudents_percentage_subset"
         
         mmm_text = {
-            'median': """The median is the middle of the dataset. 
-                        Fifty percent of the data is above the median and fifty percent is less than or equal to the median.
-                        In this example, the median the distribution is 15
-                        """, 
             'mean':"""The mean is the average of all values in the dataset. The 
                       average is calculated by adding all the values together and dividing by the number of values.
                       In this example, the mean of the distribution is 14.
                       """, 
+            'median': """The median is the middle of the dataset. 
+                        Fifty percent of the data is above the median and fifty percent is less than or equal to the median.
+                        In this example, the median the distribution is 15
+                        """, 
             'mode':"""The mode is the most commonly measured value or range 
                         of values in a set of data and appears as the tallest bar in a histogram. 
                         In this example, the mode of the distribution is 16.
                         """
             }
         mmm_urls = {
-            'median': f"{IMAGE_BASE_URL}/mode_median_mean/median.png",  #'https://picsum.photos/900/600', #
-            'mean':   f"{IMAGE_BASE_URL}/mode_median_mean/mean.png",     #'https://picsum.photos/900/600', #
-            'mode':   f"{IMAGE_BASE_URL}/mode_median_mean/mode.png"      #'https://picsum.photos/900/600'  # 
+            'median': f"{self.stage_state.image_location}/median.png",  #'https://picsum.photos/900/600', #
+            'mean':   f"{self.stage_state.image_location}/mean.png",     #'https://picsum.photos/900/600', #
+            'mode':   f"{self.stage_state.image_location}/mode.png"      #'https://picsum.photos/900/600'  # 
         }
         
         all_percentage_selector = PercentageSelector([all_distr_viewer_class, all_distr_viewer_student],
@@ -808,6 +808,7 @@ class StageFour(HubbleStage):
             self.stage_state.hypgal_distance = data[DISTANCE_COMPONENT][index]
             self.stage_state.our_age = (AGE_CONSTANT * self.stage_state.hypgal_distance/self.stage_state.hypgal_velocity)
 
+    # Can we remove this? This looks very old as it is referencing "stage_three" 
     def _update_image_location(self, using_voila):
         prepend = "voila/files/" if using_voila else ""
         self.stage_state.image_location = prepend + "data/images/stage_three"
