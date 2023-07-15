@@ -18,15 +18,13 @@
       class="mb-4"
     >
       <p>
-        Based on these results from your class, 
-        what do you think is the most likely value of the age of the 
-        universe and what is a likely range of possible values?
+        After comparing the mean, median, and mode(s) of your class's age measurements within the histogram, enter your responses below.
       </p>
       <v-row>
         <v-col
           cols="12"
           lg="9">      
-          1. My best guess for the age of the universe based on my entire class’s data set: 
+          1. The <strong>most likely</strong> age of the universe based on my class’s data set: 
         </v-col>
         <v-col>
           <v-btn
@@ -67,8 +65,10 @@
                 </v-toolbar>
                 <div class="pa-6">
                   <p>
-                    The mean, median, and mode may be different values. 
-                    Which one do you think is the best value to use for the age of the universe?
+                    Sometimes, the mean, median, and mode of a distribution all have the same value. That value would be a strong candidate for being the most likely value based on the distribution.
+                  </p>
+                  <p>
+                    When the values do not agree, you can choose any of the mean, median or mode, or even something different, as long as you justify why you chose it. You can review what each quantity represents and when scientists might use it by clicking the <v-icon>mdi-help-circle-outline</v-icon> next to it.
                   </p>
                 </div>
               </v-card>
@@ -84,8 +84,8 @@
           <free-response
             outlined
             rows="1"
-            label="Best Guess Age"
-            tag="best-guess-age"
+            label="Most Likely Age"
+            tag="most-likely-age"
           ></free-response>
         </v-col>
         <v-col>
@@ -98,12 +98,11 @@
         v-if="revealIter >= 1"
       >
         <v-col>
-          2. Explain why you picked that value and whether whether you based it on your understanding of the mean, median, or mode
-
+          2. Explain why you picked that value and how your choice is connected to your understanding of the mean, median, or mode.
         </v-col>
       </v-row>
       <v-row
-        v-if="revealIter >= 2"
+        v-if="revealIter >= 1"
       >
         <v-col>
           <free-response
@@ -115,7 +114,6 @@
           ></free-response>
         </v-col>
       </v-row>
-
     </div>
   </scaffold-alert>
 </template>
