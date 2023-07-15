@@ -1,4 +1,5 @@
 from functools import partial
+from glue.core.subset import RangeSubsetState
 
 from numpy import where
 # from cosmicds.components.layer_toggle import LayerToggle
@@ -327,7 +328,7 @@ class StageFour(HubbleStage):
         student_slider = IDSlider(class_summ_data, STUDENT_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "py-student-slider")
         def student_slider_change(id, highlighted):
-            self.student_slider_subset.subset_state = class_meas_data['student_id'] == id
+            self.student_slider_subset.subset_state = RangeSubsetState(id, id, class_meas_data.id[STUDENT_ID_COMPONENT])
             color = student_slider.highlight_color if highlighted else student_slider.default_color
             self.student_slider_subset.style.color = color
         def student_slider_refresh(slider):
@@ -350,7 +351,7 @@ class StageFour(HubbleStage):
         class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.classroom["id"]], default_color = "#FF006E", highlight_color = "#3A86FF")
         self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
-            self.class_slider_subset.subset_state = all_data[CLASS_ID_COMPONENT] == id
+            self.class_slider_subset.subset_state = RangeSubsetState(id, id, all_data.id[CLASS_ID_COMPONENT])
             color = "#3A86FF" if highlighted else "#FF006E"
             self.class_slider_subset.style.color = color
         def class_slider_refresh(slider):
