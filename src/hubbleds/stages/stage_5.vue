@@ -284,8 +284,8 @@
         cols="12"
         lg="5"
       >
-        <py-all-percentage-selector />
         <py-all-statistics-selector />
+        <py-all-percentage-selector />
       </v-col>
     </v-row> 
     <v-row
