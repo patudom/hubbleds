@@ -368,8 +368,7 @@ class StageFour(HubbleStage):
         all_percentage_selector = PercentageSelector([all_distr_viewer_class, all_distr_viewer_student],
                                                  [classes_summary_data, students_summary_data],
                                                  units=["Gyr"] * 2,
-                                                 lower_transform=ceil,
-                                                 upper_transform=floor,
+                                                 resolution=0,
                                                  subset_labels=[allclasses_percentage_subset_label, allstudents_percentage_subset_label])
         self.add_component(all_percentage_selector, "py-all-percentage-selector")
 
@@ -382,7 +381,7 @@ class StageFour(HubbleStage):
         myclass_percentage_selector = PercentageSelector([class_distr_viewer],
                                                  [class_summ_data],
                                                  units=["Gyr"],
-                                                 transform=round,
+                                                 resolution=0,
                                                  subset_labels=[myclass_percentage_subset_label])
         self.add_component(myclass_percentage_selector, "py-myclass-percentage-selector")
 
@@ -668,13 +667,13 @@ class StageFour(HubbleStage):
             if viewer not in all_distr:
                 viewer.add_data(class_summ_data)
                 layer = viewer.layer_artist_for_data(class_summ_data)
-                layer.state.color = '#8338EC'
-                layer.state.alpha = 0.7 # purple from alt palette #1
+                layer.state.color = '#8338EC' # purple from alt palette #1
+                layer.state.alpha = 1
             if viewer != class_distr_viewer and viewer != all_distr_viewer_class:
                 viewer.add_data(students_summary_data)
                 layer = viewer.layer_artist_for_data(students_summary_data)
                 layer.state.color = '#FFBE0B' # yellow from alt palette #1
-                layer.state.alpha = 0.7
+                layer.state.alpha = 1
                 if viewer == all_distr_viewer_class:
                     layer.state.visible = False
                 viewer.state.hist_n_bin = 20
@@ -682,7 +681,7 @@ class StageFour(HubbleStage):
                 viewer.add_data(classes_summary_data)
                 layer = viewer.layer_artist_for_data(classes_summary_data)
                 layer.state.color = '#619EFF' # light blue from alt palette #1
-                layer.state.alpha = 0.7
+                layer.state.alpha = 1
                 if viewer == all_distr_viewer_student:
                     layer.state.visible = False
                 # viewer.state.normalize = True
