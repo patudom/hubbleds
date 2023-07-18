@@ -426,7 +426,11 @@ class StageFour(HubbleStage):
         self.add_component(myclass_statistics_selector, "py-myclass-statistics-selector")
         
         
-        
+        self.selectors = {
+            'all': [all_percentage_selector, all_statistics_selector, myclass_percentage_selector, myclass_statistics_selector],
+            'myclass': {'percentage': myclass_percentage_selector, 'statistics':myclass_statistics_selector},
+            'allclass': {'percentage': all_percentage_selector, 'statistics':all_statistics_selector}
+        }
 
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
@@ -579,6 +583,10 @@ class StageFour(HubbleStage):
         if advancing and new == 'two_his1':
             self.get_viewer("all_distr_viewer_student").state.reset_limits()
             self.match_student_class_hist_axes(True)
+            # reset the selectors going to a new view
+            for selector in self.selectors['all']:
+                selector.selected = None
+            
             
         
         if not advancing and self.stage_state.marker_before('two_his1'):
