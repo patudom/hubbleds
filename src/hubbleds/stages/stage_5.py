@@ -76,6 +76,7 @@ class StageState(CDSState):
     advance_marker = CallbackProperty(True)
 
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/mean_median_mode") 
+    class_data_size = CallbackProperty(0)
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
@@ -591,7 +592,6 @@ class StageFour(HubbleStage):
         
         if not advancing and self.stage_state.marker_before('two_his1'):
             self.match_student_class_hist_axes(False)
-            
 
     def match_student_class_hist_axes(self, match = True):        
         student_tool = self.get_viewer("all_distr_viewer_student").toolbar.tools['bqplot:home']
@@ -884,6 +884,7 @@ class StageFour(HubbleStage):
 
     def _on_class_data_update(self, *args):
         self.reset_viewer_limits()
+        self.stage_state.class_data_size = int(self.get_data(CLASS_DATA_LABEL).size / 5)
 
     def _on_student_data_update(self, *args):
         self.reset_viewer_limits()
