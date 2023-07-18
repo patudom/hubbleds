@@ -249,16 +249,29 @@
         cols="12"
         lg="5"
       >
+        <v-row
+          no-gutters
+          class="mb-2"
+        >
+          <v-col
+            class="mr-1"
+          >
+            <py-myclass-statistics-selector
+            v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['mos_lik2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] " 
+            />
+          </v-col>
+          <v-col
+            class="ml-1"
+          >
+            <py-myclass-percentage-selector 
+            v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] "
+            />
+          </v-col>
+        </v-row>
         <guideline-class-age-distribution
           v-if="stage_state.marker == 'age_dis1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
-        <py-myclass-statistics-selector
-          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['mos_lik2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] " 
-        />
-        <py-myclass-percentage-selector 
-         v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] "
-        />
         <guideline-most-likely-value2
           v-if="stage_state.marker == 'mos_lik2'"
           :state="stage_state"
@@ -314,18 +327,21 @@
         cols="12"
         lg="5"
       >
-        <py-all-statistics-selector />
-        <py-all-percentage-selector />
-      </v-col>
-    </v-row> 
-    <v-row
-      class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
-    >
-      <v-col
-        cols="12"
-        lg="5"
-      >
+        <v-row
+          no-gutters
+          class="mb-2"
+        >
+          <v-col
+            class="mr-1"
+          >
+            <py-all-statistics-selector />
+          </v-col>
+          <v-col
+            class="ml-1"
+          >
+            <py-all-percentage-selector />
+          </v-col>
+        </v-row>
         <guideline-class-age-distribution-c
           v-if="stage_state.marker == 'age_dis1c'"
           :state="stage_state"
