@@ -47,7 +47,11 @@
           v-if="stage_state.marker == 'ran_var1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
-        <guideline-trend-lines-draw2-c
+        <guideline-class-data
+          v-if="stage_state.marker == 'cla_dat1'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+          <guideline-trend-lines-draw2-c
           v-if="stage_state.marker == 'tre_lin2c'"
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
@@ -340,11 +344,6 @@
           :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.two_hist3_response = true"/>
-        <guideline-two-histograms-mc4
-          v-if="stage_state.marker == 'two_his4'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.two_hist4_response = true"/>
         <guideline-two-histograms-reflect5
           v-if="stage_state.marker == 'two_his5'"
           :state="stage_state"
@@ -365,13 +364,15 @@
         <guideline-more-data-distribution
           v-if="stage_state.marker == 'mor_dat1'"
           :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-account-uncertainty
+          v-intersect.once="scrollIntoView"
+          @stage_complete="() => {stage_five_complete(); console.log('emit: stage five complete');}"
+        />
+        <!-- <guideline-account-uncertainty
           v-if="stage_state.marker == 'acc_unc1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"
           @stage_complete="() => {stage_five_complete(); console.log('emit: stage five complete');}"
-          />
+          /> -->
       </v-col>
       <v-col
         cols="12"
