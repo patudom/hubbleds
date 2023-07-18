@@ -8,7 +8,13 @@
     <div
       class="mb-4"
     >
-      Explain why an age value measured by a single student might have a greater uncertainty than an age value measured by a single class.
+      <p>
+        The broader confidence intervals for the All Students data tell us that an age value measured by one student has more uncertainty than an age value measured by a single class.
+      </p>
+      <p>
+        Explain why you think this might be true.
+      </p>
+
           <free-response
             outlined
             auto-grow

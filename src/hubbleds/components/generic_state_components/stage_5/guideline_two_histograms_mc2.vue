@@ -18,7 +18,7 @@
         class="px-0"
         fluid
       >
-        <p>In comparing the All Students and All Classes histogram, which spans a bigger range of ages?</p>
+        <p>In comparing the All Students and All Classes histogram, which spans a larger range of ages?</p>
         <mc-radiogroup
           :radio-options="[
             'The histogram of student measurements.',
@@ -26,7 +26,7 @@
             'The student and class histograms are the same.'
           ]"
           :feedbacks="[
-            'That’s right. The student histogram has a bigger range.',
+            'That’s right. The student histogram has a larger range.',
             'Not quite. Look at the x-axis for each histogram. Where does the range of values start and end for each histogram? Try again.',
             'Not quite. Look at the x-axis for each histogram. Where does the range of values start and end for each histogram? Try again.'
           ]"

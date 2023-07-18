@@ -28,7 +28,7 @@ class StageState(CDSState):
     relage_response = CallbackProperty(False)
     two_hist_response = CallbackProperty(False)
     two_hist3_response = CallbackProperty(False)
-    two_hist4_response = CallbackProperty(False)
+    # two_hist4_response = CallbackProperty(False)
     lack_bias_response = CallbackProperty(False)
     uncertainty_hint_dialog = CallbackProperty(False)
     class_trend_line_drawn = CallbackProperty(False)
@@ -41,7 +41,7 @@ class StageState(CDSState):
     uncertainty_dialog_complete = CallbackProperty(False)
     uncertainty_state = DictCallbackProperty({
         'step': 0,
-        'length': 9,
+        'length': 10,
         'titles': [
             'What is the true age of the universe?',
             "Shortcomings in our measurements",
@@ -51,10 +51,12 @@ class StageState(CDSState):
             "Random Uncertainty (Noise)",
             "Systematic Uncertainty (Bias)",
             "Causes of Systematic Uncertainty",
+            "Systematic Uncertainty",
             "Finished Uncertainty Tutorial",
         ]
     })
     
+    define_outlier = CallbackProperty(False)
     
     mmm_dialog = CallbackProperty(False)
     mmm_dialog_opened = CallbackProperty(False)
@@ -113,7 +115,8 @@ class StageState(CDSState):
         'con_int1',
         'con_int2',
         'con_int3',
-        
+
+        'cla_dat1',
         'tre_lin2c',
         'bes_fit1c',
         'you_age1c',
@@ -125,13 +128,13 @@ class StageState(CDSState):
         'two_his1',
         'two_his2',
         'two_his3',
-        'two_his4',
+        # 'two_his4', cutting because it's too long redundant
         'two_his5',
         #'lac_bia1',
         #'lac_bia2',
         #'lac_bia3',
         'mor_dat1',
-        'acc_unc1',
+        #'acc_unc1',
         
     ])
 
@@ -289,11 +292,11 @@ class StageFour(HubbleStage):
         comparison_viewer = self.add_viewer(HubbleScatterView, "comparison_viewer", "Data Comparison")
         all_viewer = self.add_viewer(HubbleScatterView, "all_viewer", "All Data")
         class_distr_viewer = self.add_viewer(HubbleClassHistogramView,
-                                             'class_distr_viewer', "My Class")
+                                             'class_distr_viewer', "My Class Ages (5 galaxies each)")
         all_distr_viewer_student = self.add_viewer(HubbleHistogramView,
-                                           'all_distr_viewer_student', "All Students") # really just All students, but need the title bar
+                                           'all_distr_viewer_student', "All Student Ages (5 galaxies each)") # really just All students, but need the title bar
         all_distr_viewer_class = self.add_viewer(HubbleHistogramView,
-                                           'all_distr_viewer_class', "All Classes")
+                                           'all_distr_viewer_class', "All Class Ages (~100 galaxies each)")
         all_distr_viewer_class.toolbar.tools['bqplot:home'].old_activate = all_distr_viewer_class.toolbar.tools['bqplot:home'].activate
 
         add_callback(self.stage_state, 'marker',
@@ -348,7 +351,7 @@ class StageFour(HubbleStage):
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
 
-        layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("tre_lin2c"))
+        layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("cla_dat1"))
         layer_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("bes_fit1c"))
 
         # Create the class slider
@@ -551,7 +554,7 @@ class StageFour(HubbleStage):
             if not all_viewer.toolbar.tools["hubble:linefit"].active: # if off
                 all_viewer.toolbar.tools["hubble:linefit"].activate() # toggle on
                     
-        if advancing and new == "tre_lin2c":
+        if advancing and new == "cla_dat1":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
             student_data = self.get_data(STUDENT_DATA_LABEL)

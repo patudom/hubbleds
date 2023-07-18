@@ -47,6 +47,10 @@
           v-if="stage_state.marker == 'ran_var1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
+        <guideline-class-data
+          v-if="stage_state.marker == 'cla_dat1'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
         <guideline-trend-lines-draw2-c
           v-if="stage_state.marker == 'tre_lin2c'"
           :state="stage_state"
@@ -89,7 +93,7 @@
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['tre_lin2c']"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_dat1']"
     > 
       <v-col
         cols="12"
@@ -245,16 +249,29 @@
         cols="12"
         lg="5"
       >
+        <v-row
+          no-gutters
+          class="mb-2"
+        >
+          <v-col
+            class="mr-1"
+          >
+            <py-myclass-statistics-selector
+            v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['mos_lik2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] " 
+            />
+          </v-col>
+          <v-col
+            class="ml-1"
+          >
+            <py-myclass-percentage-selector 
+            v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] "
+            />
+          </v-col>
+        </v-row>
         <guideline-class-age-distribution
           v-if="stage_state.marker == 'age_dis1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
-        <py-myclass-statistics-selector
-          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['mos_lik2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] " 
-        />
-        <py-myclass-percentage-selector 
-         v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] "
-        />
         <guideline-most-likely-value2
           v-if="stage_state.marker == 'mos_lik2'"
           :state="stage_state"
@@ -310,18 +327,21 @@
         cols="12"
         lg="5"
       >
-        <py-all-statistics-selector />
-        <py-all-percentage-selector />
-      </v-col>
-    </v-row> 
-    <v-row
-      class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
-    >
-      <v-col
-        cols="12"
-        lg="5"
-      >
+        <v-row
+          no-gutters
+          class="mb-2"
+        >
+          <v-col
+            class="mr-1"
+          >
+            <py-all-statistics-selector />
+          </v-col>
+          <v-col
+            class="ml-1"
+          >
+            <py-all-percentage-selector />
+          </v-col>
+        </v-row>
         <guideline-class-age-distribution-c
           v-if="stage_state.marker == 'age_dis1c'"
           :state="stage_state"
@@ -340,11 +360,6 @@
           :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.two_hist3_response = true"/>
-        <guideline-two-histograms-mc4
-          v-if="stage_state.marker == 'two_his4'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView"
-          @ready="stage_state.two_hist4_response = true"/>
         <guideline-two-histograms-reflect5
           v-if="stage_state.marker == 'two_his5'"
           :state="stage_state"
@@ -365,13 +380,15 @@
         <guideline-more-data-distribution
           v-if="stage_state.marker == 'mor_dat1'"
           :state="stage_state"
-          v-intersect.once="scrollIntoView"/>
-        <guideline-account-uncertainty
+          v-intersect.once="scrollIntoView"
+          @stage_complete="() => {stage_five_complete(); console.log('emit: stage five complete');}"
+        />
+        <!-- <guideline-account-uncertainty
           v-if="stage_state.marker == 'acc_unc1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"
           @stage_complete="() => {stage_five_complete(); console.log('emit: stage five complete');}"
-          />
+          /> -->
       </v-col>
       <v-col
         cols="12"

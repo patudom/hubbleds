@@ -9,10 +9,10 @@
       class="mb-4"
     >
       <p>
-        Earlier, your most likely value for the age of the universe was: <StudentResponse class="StudentResponses">{{ state.age_calc_state.best_guess }}</StudentResponse>&nbsp;Gyr, with a likely range from <StudentResponse class="StudentResponses">{{ state.age_calc_state.low_guess }}</StudentResponse>&nbsp;to <StudentResponse class="StudentResponses">{{ state.age_calc_state.high_guess }}</StudentResponse>&nbsp;Gyr.
+        From your class's data, you determined that the most likely value for the age of the universe was: <StudentResponse class="StudentResponses">{{ state.age_calc_state.best_guess }}</StudentResponse>&nbsp;Gyr, with a confidence interval from <StudentResponse class="StudentResponses">{{ state.age_calc_state.low_guess }}</StudentResponse>&nbsp;to <StudentResponse class="StudentResponses">{{ state.age_calc_state.high_guess }}</StudentResponse>&nbsp;Gyr.
       </p>
       <p>
-        You can update your responses based on this additional data from other classes.
+        Update your responses based on the additional data from this larger All Classes data set.
       </p>
       <v-row>
         <v-col
