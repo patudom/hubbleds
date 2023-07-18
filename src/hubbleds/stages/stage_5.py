@@ -351,7 +351,7 @@ class StageFour(HubbleStage):
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
 
-        layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("tre_lin2c"))
+        layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("cla_dat1"))
         layer_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("bes_fit1c"))
 
         # Create the class slider
@@ -554,7 +554,7 @@ class StageFour(HubbleStage):
             if not all_viewer.toolbar.tools["hubble:linefit"].active: # if off
                 all_viewer.toolbar.tools["hubble:linefit"].activate() # toggle on
                     
-        if advancing and new == "tre_lin2c":
+        if advancing and new == "cla_dat1":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
             student_data = self.get_data(STUDENT_DATA_LABEL)
