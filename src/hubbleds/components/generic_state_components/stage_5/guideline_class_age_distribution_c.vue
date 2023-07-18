@@ -10,6 +10,9 @@
       <p>
         Here is a histogram of the class by class age measurements.
       </p>
+      <p>
+        Explore the mean, median, and mode and the different percentage ranges for the All Classes dataset. 
+      </p>
     </div>
   </scaffold-alert>
 </template>
