@@ -8,7 +8,7 @@
       class="mb-4"
     >
       <p>
-        Click the radio buttons to display each quantity as a vertical line in the histogram. 
+        Click the switches to display each quantity as a vertical line in the histogram. 
       </p>
       <p>
         Click <v-icon>mdi-help-circle-outline</v-icon> to learn more about each quantity.
