@@ -34,7 +34,7 @@
           &&
           stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1'])
         || // OR
-        (stage_state.indices[stage_state.marker] > stage_state.indices['con_int2']
+        (stage_state.indices[stage_state.marker] > stage_state.indices['con_int3']
           &&
           stage_state.indices[stage_state.marker] < stage_state.indices['cla_res1c'])"
     >
@@ -120,8 +120,8 @@
           v-if="stage_state.marker == 'cla_age4'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
-        <guideline-confidence-interval
-          v-if="stage_state.marker == 'con_int1'"
+        <guideline-most-likely-value1
+          v-if="stage_state.marker == 'mos_lik1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
       </v-col>
@@ -186,7 +186,7 @@
     <!--------------------- OUR CLASS HISTOGRAM VIEWER ----------------------->
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.marker == 'age_dis1' || stage_state.marker == 'con_int2'" 
+      v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['age_dis1'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] "
     >
       <v-col
         cols="12"
@@ -196,6 +196,29 @@
           v-if="stage_state.marker == 'age_dis1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
+        <py-myclass-statistics-selector
+          v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['mos_lik2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] " 
+        />
+        <py-myclass-percentage-selector 
+         v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] "
+        />
+        <guideline-most-likely-value2
+          v-if="stage_state.marker == 'mos_lik2'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-most-likely-value3
+          v-if="stage_state.marker == 'mos_lik3'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+        <guideline-confidence-interval
+        v-if="stage_state.marker == 'con_int1'"
+        :state="stage_state"
+        v-intersect.once="scrollIntoView" />
+        <guideline-confidence-interval2
+          v-if="stage_state.marker == 'con_int2'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" />
+
       </v-col>
       <v-col
         cols="12"
@@ -212,6 +235,16 @@
         </v-card>
       </v-col>
     </v-row>
+
+
+    <guideline-most-likely-value-reflect4
+      v-if="stage_state.marker == 'mos_lik4'"
+      :state="stage_state"
+      v-intersect.once="scrollIntoView" />
+    <guideline-confidence-interval-reflect3
+      v-if="stage_state.marker == 'con_int3'"
+      :state="stage_state"
+      v-intersect.once="scrollIntoView" />
 
     <!--------------------- ALL DATA HISTOGRAM VIEWER ----------------------->
     <!-- cla_age1c -->
@@ -245,7 +278,19 @@
     </v-row>
     <v-row
       class="d-flex align-stretch"
-      v-if="(stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c'])"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
+    >
+      <v-col
+        cols="12"
+        lg="5"
+      >
+        <py-all-percentage-selector />
+        <py-all-statistics-selector />
+      </v-col>
+    </v-row> 
+    <v-row
+      class="d-flex align-stretch"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['cla_age1c']"
     >
       <v-col
         cols="12"
@@ -259,34 +304,6 @@
           v-if="stage_state.marker == 'two_his1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
-        <guideline-new1
-          v-if="stage_state.marker == 'new1'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-new2
-          v-if="stage_state.marker == 'new2'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-new3
-          v-if="stage_state.marker == 'new3'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-new4
-          v-if="stage_state.marker == 'new4'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-new5
-          v-if="stage_state.marker == 'new5'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-new6
-          v-if="stage_state.marker == 'new6'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
-        <guideline-new7
-          v-if="stage_state.marker == 'new7'"
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" />
         <guideline-learn-uncertainty1
           v-if="stage_state.marker == 'lea_unc1'"
           :state="stage_state"
@@ -343,16 +360,35 @@
       </v-col>
     </v-row>
 
-    <guideline-confidence-interval-reflect2
-      v-if="stage_state.marker == 'con_int2'"
-      :state="stage_state"
-      v-intersect.once="scrollIntoView"/>
     <guideline-confidence-interval-reflect2-c
       v-if="stage_state.marker == 'con_int2c'"
       :state="stage_state"
       v-intersect.once="scrollIntoView"/>
 
-
+      <v-row v-if="show_team_interface">
+      <v-col>
+        <v-btn
+          color="error"
+          class="black--text"
+          @click="() => {
+            console.log('stage state:', stage_state);
+            console.log('story state:', story_state);
+          }"
+        >
+          State
+        </v-btn>
+        <v-btn
+          color="error"
+          class="black--text"
+          @click="() => {
+            stage_state.marker = 'lea_unc1';
+          }"
+        >
+          jump
+        </v-btn>
+        Marker: {{ stage_state.marker }}
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

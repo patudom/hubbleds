@@ -18,24 +18,24 @@
       class="mb-4"
     >
       <p>
-        Based on these results from your class, 
-        what do you think is the most likely value of the age of the 
-        universe and what is a likely range of possible values?
+        After comparing different percentage ranges for your class's age measurements in the histogram, enter your responses below.
       </p>
-      <v-row>
+      <v-row
+      >
         <v-col
           cols="12"
-          lg="9">      
-          1. My best guess for the age of the universe based on my entire class’s data set: 
+          lg="9"
+        >
+          3. The range of age values for the universe that I am most confident in based on my class’s data set: 
         </v-col>
         <v-col>
           <v-btn
             color="secondary lighten-1"
-            @click="state.age_calc_state.hint1_dialog = true"
+            @click="state.age_calc_state.hint2_dialog = true"
           >
             hint
             <v-dialog
-              v-model="state.age_calc_state.hint1_dialog"
+              v-model="state.age_calc_state.hint2_dialog"
               persistent
               max-width="600px">
               <v-card
@@ -49,14 +49,14 @@
                   <v-toolbar-title
                     class="text-h6 text-uppercase font-weight-regular"
                   >
-                    Hint #1
+                    Hint #2
                   </v-toolbar-title>
                   <v-spacer></v-spacer>
                   <span
                     @click="
                       () => {
                         $emit('close');
-                        state.age_calc_state.hint1_dialog = false;
+                        state.age_calc_state.hint2_dialog = false;
                       }
                     "
                   >
@@ -67,8 +67,13 @@
                 </v-toolbar>
                 <div class="pa-6">
                   <p>
-                    The mean, median, and mode may be different values. 
-                    Which one do you think is the best value to use for the age of the universe?
+                    The range you pick will have a tradeoff between how likely it is that the “true” value actually lies within the range you choose vs. having a narrow enough range that your measurement is actually useful. A very large range is more likely to include the "true" value, but may be so nonspecific that it is not useful. A narrow range has more specificity but may not include the "true" value.
+                  </p>
+                  <p>
+                    Different people will feel more or less comfortable with the different sides of this tradeoff, and there isn’t really a right or wrong answer as long as you justify why you chose what you did.
+                  </p>
+                  <p>
+                    If you are feeling really stuck, feel free to discuss this with a classmate or your instructor.
                   </p>
                 </div>
               </v-card>
@@ -76,34 +81,48 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row
+        v-if="revealIter >= 0"
+      >
         <v-col
           cols="12"
-          lg="3"
-        >
+          lg="3">
           <free-response
             outlined
             rows="1"
-            label="Best Guess Age"
-            tag="best-guess-age"
+            label="Likely Low Age"
+            tag="likely-low-age"
           ></free-response>
         </v-col>
-        <v-col>
+        <v-col
+          lg="2">
+          Gyr
+        </v-col>
+              <v-col
+          cols="12"
+          lg="3">
+          <free-response
+            outlined
+            rows="1"
+            label="Likely High Age"
+            tag="likely-high-age"
+          ></free-response>
+        </v-col>
+        <v-col
+          lg="2">
           Gyr
         </v-col>
       </v-row>
-
 
       <v-row
         v-if="revealIter >= 1"
       >
         <v-col>
-          2. Explain why you picked that value and whether whether you based it on your understanding of the mean, median, or mode
-
+          4. Explain why you chose your values using information from the histogram or other viewers:
         </v-col>
       </v-row>
       <v-row
-        v-if="revealIter >= 2"
+        v-if="revealIter >= 1"
       >
         <v-col>
           <free-response
@@ -111,10 +130,11 @@
             auto-grow
             rows="2"
             label="My Reasoning"
-            tag="my-reasoning"
+            tag="my-reasoning-2"
           ></free-response>
         </v-col>
       </v-row>
+
 
     </div>
   </scaffold-alert>

@@ -18,49 +18,22 @@
       class="mb-4"
     >
       <p>
-        Based on these results from your class, what do you think is the most likely value of the age of the universe and what is a likely range of possible values?
+        After comparing the mean, median, and mode(s) of your class's age measurements within the histogram, enter your responses below.
       </p>
       <v-row>
         <v-col
           cols="12"
           lg="9">      
-          1. My best guess for the age of the universe based on my entire class’s data set: 
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col
-          cols="12"
-          lg="3"
-        >
-          <free-response
-            outlined
-            rows="1"
-            label="Best Guess Age"
-            tag="best-guess-age"
-          ></free-response>
-        </v-col>
-        <v-col>
-          Gyr
-        </v-col>
-      </v-row>
-
-      <v-row
-        v-if="revealIter >= 0"
-      >
-        <v-col
-          cols="12"
-          lg="9"
-        >
-          2. My best guess for the likely range of ages of the universe based on my entire class’s data set: 
+          1. The <strong>most likely</strong> age of the universe based on my class’s data set: 
         </v-col>
         <v-col>
           <v-btn
             color="secondary lighten-1"
-            @click="state.age_calc_state.hint2_dialog = true"
+            @click="state.age_calc_state.hint1_dialog = true"
           >
             hint
             <v-dialog
-              v-model="state.age_calc_state.hint2_dialog"
+              v-model="state.age_calc_state.hint1_dialog"
               persistent
               max-width="600px">
               <v-card
@@ -74,14 +47,14 @@
                   <v-toolbar-title
                     class="text-h6 text-uppercase font-weight-regular"
                   >
-                    Hint #2
+                    Hint #1
                   </v-toolbar-title>
                   <v-spacer></v-spacer>
                   <span
                     @click="
                       () => {
                         $emit('close');
-                        state.age_calc_state.hint2_dialog = false;
+                        state.age_calc_state.hint1_dialog = false;
                       }
                     "
                   >
@@ -92,14 +65,10 @@
                 </v-toolbar>
                 <div class="pa-6">
                   <p>
-                    The range you pick will have a tradeoff between how likely it is that the “true” value actually lies within the range you choose vs. having a narrow enough range that your measurement is actually useful. A very large range is more likely to include the "true" value, but may be so nonspecific that it is not useful. A narrow range has more specificity but may not include the "true" value.
+                    Sometimes, the mean, median, and mode of a distribution all have the same value. That value would be a strong candidate for being the most likely value based on the distribution.
                   </p>
                   <p>
-                    Different people will feel more or less comfortable with the different sides of this tradeoff, and there isn’t really a right or wrong answer as long as you justify why you
-                    chose what you did.
-                  </p>
-                  <p>
-                    If you are feeling really stuck, feel free to discuss this with a classmate or your instructor.
+                    When the values do not agree, you can choose any of the mean, median or mode, or even something different, as long as you justify why you chose it. You can review what each quantity represents and when scientists might use it by clicking the <v-icon>mdi-help-circle-outline</v-icon> next to it.
                   </p>
                 </div>
               </v-card>
@@ -107,44 +76,29 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-row
-        v-if="revealIter >= 0"
-      >
+      <v-row>
         <v-col
           cols="12"
-          lg="3">
+          lg="3"
+        >
           <free-response
             outlined
             rows="1"
-            label="Likely Low Age"
-            tag="likely-low-age"
+            label="Most Likely Age"
+            tag="best-guess-age"
           ></free-response>
         </v-col>
-        <v-col
-          lg="2">
-          Gyr
-        </v-col>
-              <v-col
-          cols="12"
-          lg="3">
-          <free-response
-            outlined
-            rows="1"
-            label="Likely High Age"
-            tag="likely-high-age"
-          ></free-response>
-        </v-col>
-        <v-col
-          lg="2">
+        <v-col>
           Gyr
         </v-col>
       </v-row>
+
 
       <v-row
         v-if="revealIter >= 1"
       >
         <v-col>
-          3. Explain why you chose your values using information from the scatterplot and/or the histogram:
+          2. Explain why you picked that value and how your choice is connected to your understanding of the mean, median, or mode.
         </v-col>
       </v-row>
       <v-row
@@ -160,8 +114,6 @@
           ></free-response>
         </v-col>
       </v-row>
-
-
     </div>
   </scaffold-alert>
 </template>

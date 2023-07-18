@@ -1,9 +1,10 @@
 from functools import partial
+from math import ceil, floor
 from glue.core.subset import RangeSubsetState
 
 from numpy import where
 # from cosmicds.components.layer_toggle import LayerToggle
-from cosmicds.components.table import Table
+from cosmicds.components import PercentageSelector, StatisticsSelector, Table 
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
 from cosmicds.utils import extend_tool, load_template, update_figure_css
@@ -69,7 +70,7 @@ class StageState(CDSState):
     indices = CallbackProperty({})
     advance_marker = CallbackProperty(True)
 
-    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/stage_three") #this needs to be updated if we have real Stage 4 images
+    image_location = CallbackProperty(f"{IMAGE_BASE_URL}/mean_median_mode") 
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
@@ -100,9 +101,14 @@ class StageState(CDSState):
         'cla_age2',
         'cla_age3',
         'cla_age4',
-        'con_int1',
+        'mos_lik1', 
         'age_dis1',
+        'mos_lik2',
+        'mos_lik3',
+        'mos_lik4',
+        'con_int1',
         'con_int2',
+        'con_int3',
         
         'tre_lin2c',
         'bes_fit1c',
@@ -113,13 +119,6 @@ class StageState(CDSState):
         'con_int2c',
         
         'two_his1',
-        'new1',
-        'new2',
-        'new3',
-        'new4',
-        'new5',
-        'new6',
-        'new7',
         'lea_unc1',
         'two_his2',
         'lac_bia1',
@@ -304,6 +303,7 @@ class StageFour(HubbleStage):
         # Grab data
         class_summ_data = self.get_data(CLASS_SUMMARY_LABEL)
         classes_summary_data = self.get_data(ALL_CLASS_SUMMARIES_LABEL)
+        students_summary_data = self.get_data(ALL_STUDENT_SUMMARIES_LABEL)
 
         # Set up the listener to sync the histogram <--> scatter viewers
 
@@ -362,11 +362,75 @@ class StageFour(HubbleStage):
         class_slider.on_id_change(class_slider_change)
         class_slider.on_refresh(class_slider_refresh)
 
+        allclasses_percentage_subset_label = "allclasses_percentage_subset"
+        myclass_percentage_subset_label = "myclass_percentage_subset"
+        allstudents_percentage_subset_label = "allstudents_percentage_subset"
+        
+        mmm_text = {
+            'mean':"""The mean is the average of all values in the dataset. The 
+                      average is calculated by adding all the values together and dividing by the number of values.
+                      In this example, the mean of the distribution is 14.
+                      """, 
+            'median': """The median is the middle of the dataset. 
+                        Fifty percent of the data is above the median and fifty percent is less than or equal to the median.
+                        In this example, the median the distribution is 15
+                        """, 
+            'mode':"""The mode is the most commonly measured value or range 
+                        of values in a set of data and appears as the tallest bar in a histogram. 
+                        In this example, the mode of the distribution is 16.
+                        """
+            }
+        mmm_urls = {
+            'median': f"{self.stage_state.image_location}/median.png",  #'https://picsum.photos/900/600', #
+            'mean':   f"{self.stage_state.image_location}/mean.png",     #'https://picsum.photos/900/600', #
+            'mode':   f"{self.stage_state.image_location}/mode.png"      #'https://picsum.photos/900/600'  # 
+        }
+        
+        all_percentage_selector = PercentageSelector([all_distr_viewer_class, all_distr_viewer_student],
+                                                 [classes_summary_data, students_summary_data],
+                                                 units=["Gyr"] * 2,
+                                                 resolution=0,
+                                                 subset_labels=[allclasses_percentage_subset_label, allstudents_percentage_subset_label])
+        self.add_component(all_percentage_selector, "py-all-percentage-selector")
+
+        all_statistics_selector = StatisticsSelector([all_distr_viewer_class, all_distr_viewer_student],
+                                                 [classes_summary_data, students_summary_data],
+                                                 units=["Gyr"] * 2,
+                                                 transform=round)
+        all_statistics_selector.help_text = mmm_text
+        all_statistics_selector.help_images = mmm_urls
+        self.add_component(all_statistics_selector, "py-all-statistics-selector")
+
+        myclass_percentage_selector = PercentageSelector([class_distr_viewer],
+                                                 [class_summ_data],
+                                                 units=["Gyr"],
+                                                 resolution=0,
+                                                 subset_labels=[myclass_percentage_subset_label])
+        self.add_component(myclass_percentage_selector, "py-myclass-percentage-selector")
+
+        myclass_statistics_selector = StatisticsSelector([class_distr_viewer],
+                                                 [class_summ_data],
+                                                 units=["Gyr"],
+                                                 transform=round)
+        myclass_statistics_selector.help_text = mmm_text
+        myclass_statistics_selector.help_images = mmm_urls
+        self.add_component(myclass_statistics_selector, "py-myclass-statistics-selector")
+        
+        
+        self.selectors = {
+            'all': [all_percentage_selector, all_statistics_selector, myclass_percentage_selector, myclass_statistics_selector],
+            'myclass': {'percentage': myclass_percentage_selector, 'statistics':myclass_statistics_selector},
+            'allclass': {'percentage': all_percentage_selector, 'statistics':all_statistics_selector}
+        }
+
         not_ignore = {
             fit_table.subset_label: [layer_viewer],
             histogram_source_label: [class_distr_viewer],
             histogram_modify_label: [comparison_viewer],
             student_slider_subset_label: [comparison_viewer],
+            allclasses_percentage_subset_label: [all_distr_viewer_class],
+            myclass_percentage_subset_label: [class_distr_viewer],
+            allstudents_percentage_subset_label: [all_distr_viewer_student],
             BEST_FIT_SUBSET_LABEL: [layer_viewer]
         }
 
@@ -510,6 +574,10 @@ class StageFour(HubbleStage):
         if advancing and new == 'two_his1':
             self.get_viewer("all_distr_viewer_student").state.reset_limits()
             self.match_student_class_hist_axes(True)
+            # reset the selectors going to a new view
+            for selector in self.selectors['all']:
+                selector.selected = None
+            
             
         
         if not advancing and self.stage_state.marker_before('two_his1'):
@@ -635,13 +703,13 @@ class StageFour(HubbleStage):
             if viewer not in all_distr:
                 viewer.add_data(class_summ_data)
                 layer = viewer.layer_artist_for_data(class_summ_data)
-                layer.state.color = '#8338EC'
-                layer.state.alpha = 0.7 # purple from alt palette #1
+                layer.state.color = '#8338EC' # purple from alt palette #1
+                layer.state.alpha = 1
             if viewer != class_distr_viewer and viewer != all_distr_viewer_class:
                 viewer.add_data(students_summary_data)
                 layer = viewer.layer_artist_for_data(students_summary_data)
                 layer.state.color = '#FFBE0B' # yellow from alt palette #1
-                layer.state.alpha = 0.7
+                layer.state.alpha = 1
                 if viewer == all_distr_viewer_class:
                     layer.state.visible = False
                 viewer.state.hist_n_bin = 20
@@ -649,7 +717,7 @@ class StageFour(HubbleStage):
                 viewer.add_data(classes_summary_data)
                 layer = viewer.layer_artist_for_data(classes_summary_data)
                 layer.state.color = '#619EFF' # light blue from alt palette #1
-                layer.state.alpha = 0.7
+                layer.state.alpha = 1
                 if viewer == all_distr_viewer_student:
                     layer.state.visible = False
                 # viewer.state.normalize = True
@@ -748,6 +816,7 @@ class StageFour(HubbleStage):
             self.stage_state.hypgal_distance = data[DISTANCE_COMPONENT][index]
             self.stage_state.our_age = (AGE_CONSTANT * self.stage_state.hypgal_distance/self.stage_state.hypgal_velocity)
 
+    # Can we remove this? This looks very old as it is referencing "stage_three" 
     def _update_image_location(self, using_voila):
         prepend = "voila/files/" if using_voila else ""
         self.stage_state.image_location = prepend + "data/images/stage_three"
