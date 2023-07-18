@@ -51,7 +51,7 @@
           v-if="stage_state.marker == 'cla_dat1'"
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
-          <guideline-trend-lines-draw2-c
+        <guideline-trend-lines-draw2-c
           v-if="stage_state.marker == 'tre_lin2c'"
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
@@ -93,7 +93,7 @@
 
     <v-row
       class="d-flex align-stretch"
-      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['tre_lin2c']"
+      v-if="stage_state.indices[stage_state.marker] > stage_state.indices['ran_var1'] && stage_state.indices[stage_state.marker] < stage_state.indices['cla_dat1']"
     > 
       <v-col
         cols="12"
