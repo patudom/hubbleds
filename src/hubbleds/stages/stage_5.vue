@@ -250,19 +250,14 @@
         lg="5"
       >
         <v-row
-          no-gutters
           class="mb-2"
         >
-          <v-col
-            class="mr-1"
-          >
+          <v-col>
             <py-myclass-statistics-selector
             v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['mos_lik2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] " 
             />
           </v-col>
-          <v-col
-            class="ml-1"
-          >
+          <v-col>
             <py-myclass-percentage-selector 
             v-if="stage_state.indices[stage_state.marker] >= stage_state.indices['con_int2'] && stage_state.indices[stage_state.marker] <= stage_state.indices['con_int3'] "
             />
@@ -328,17 +323,12 @@
         lg="5"
       >
         <v-row
-          no-gutters
           class="mb-2"
         >
-          <v-col
-            class="mr-1"
-          >
+          <v-col>
             <py-all-statistics-selector />
           </v-col>
-          <v-col
-            class="ml-1"
-          >
+          <v-col>
             <py-all-percentage-selector />
           </v-col>
         </v-row>
