@@ -29,6 +29,20 @@
       </v-btn>
     </v-toolbar>
     <div class="distance-content">
+      <v-snackbar
+        v-model="bad_measurement"
+        transition="fab-transition"
+        timeout="5000"
+        top
+        right
+        color="warning lighten-2"
+        class="pa-4 black--text"
+        style="font-size: 1.25rem;"
+        multi-line
+        elevation="24"
+      >
+        You've measured an impossible size for the galaxy. Please try again.
+      </v-snackbar>
       <canvas
         v-show="measuring"
         class="distance-canvas"

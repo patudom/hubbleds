@@ -38,6 +38,12 @@ class DistanceTool(v.VueTemplate):
     _dec = Angle(0 * u.deg)
     wwtStyle = Dict().tag(sync=True)
     reset_style = Bool(False).tag(sync=True)
+    
+    # Gaurd
+    gaurd = Bool(False).tag(sync=True)
+    galaxy_max_size = Angle("60 arcmin") # 2 x Pinwheel galaxy (d = 7 Mpc, r = 1.7 Rmw)
+    galaxy_min_size = Angle("6 arcsec") # 3 x sdss resoltuion
+    bad_measurement = Bool(False).tag(sync=True)
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
@@ -46,6 +52,7 @@ class DistanceTool(v.VueTemplate):
         self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self._setup_widget()
         self.measuring = kwargs.get('measuring', False)
+        self.gaurd = kwargs.get('gaurd', False)
         self.angular_size = Angle(0, u.deg)
         self.angular_height = Angle(60, u.deg)
         self.widget._set_message_type_callback('wwt_view_state',
@@ -89,7 +96,10 @@ class DistanceTool(v.VueTemplate):
     def _on_measured_distance_changed(self, change):
         fov = self.widget.get_fov()
         widget_height = self._height_from_pixel_str(self.widget.layout.height)
-        self.angular_size = Angle(((change["new"] / widget_height) * fov))
+        ang_size = Angle(((change["new"] / widget_height) * fov))
+        if not self.validate_angular_size(ang_size):
+            return None
+        self.angular_size = ang_size
         self.measurement_count += 1
 
     @observe('measuring')
@@ -137,4 +147,26 @@ class DistanceTool(v.VueTemplate):
         # toggle reset style to trigger watch in vue
         self.reset_style = True
         self.reset_style = False
- 
+    
+    def activate_gaurd(self):
+        self.gaurd = True
+        
+    def deactivate_gaurd(self):
+        self.gaurd = False
+        self.bad_measurement = False
+        
+    def set_gaurd(self, max = None, min = None):
+        self.activate_gaurd()
+        self.galaxy_max_size = max or self.galaxy_max_size
+        self.galaxy_min_size = min or self.galaxy_min_size
+    
+    def validate_angular_size(self, angular_size):
+        if not self.gaurd:
+            return True
+        max_wwt_size = Angle("60 deg")
+        c1 = (angular_size < max_wwt_size) 
+        c2 = (angular_size >= self.galaxy_min_size) 
+        c3 = (angular_size <= self.galaxy_max_size)
+        self.bad_measurement = not (c1 and c2 and c3)
+        return c1 and c2 and c3
+    
