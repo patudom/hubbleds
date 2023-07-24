@@ -39,8 +39,8 @@ class DistanceTool(v.VueTemplate):
     wwtStyle = Dict().tag(sync=True)
     reset_style = Bool(False).tag(sync=True)
     
-    # Gaurd
-    gaurd = Bool(False).tag(sync=True)
+    # Guard
+    guard = Bool(False).tag(sync=True)
     galaxy_max_size = Angle("60 arcmin") # 2 x Pinwheel galaxy (d = 7 Mpc, r = 1.7 Rmw)
     galaxy_min_size = Angle("6 arcsec") # 3 x sdss resoltuion
     bad_measurement = Bool(False).tag(sync=True)
@@ -52,7 +52,7 @@ class DistanceTool(v.VueTemplate):
         self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self._setup_widget()
         self.measuring = kwargs.get('measuring', False)
-        self.gaurd = kwargs.get('gaurd', False)
+        self.guard = kwargs.get('guard', False)
         self.angular_size = Angle(0, u.deg)
         self.angular_height = Angle(60, u.deg)
         self.widget._set_message_type_callback('wwt_view_state',
@@ -148,20 +148,20 @@ class DistanceTool(v.VueTemplate):
         self.reset_style = True
         self.reset_style = False
     
-    def activate_gaurd(self):
-        self.gaurd = True
+    def activate_guard(self):
+        self.guard = True
         
-    def deactivate_gaurd(self):
-        self.gaurd = False
+    def deactivate_guard(self):
+        self.guard = False
         self.bad_measurement = False
         
-    def set_gaurd(self, max = None, min = None):
-        self.activate_gaurd()
+    def set_guard(self, max = None, min = None):
+        self.activate_guard()
         self.galaxy_max_size = max or self.galaxy_max_size
         self.galaxy_min_size = min or self.galaxy_min_size
     
     def validate_angular_size(self, angular_size):
-        if not self.gaurd:
+        if not self.guard:
             return True
         max_wwt_size = Angle("60 deg")
         c1 = (angular_size < max_wwt_size) 
