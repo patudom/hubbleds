@@ -351,6 +351,8 @@ class StageTwo(HubbleStage):
         self.distance_tool.observe(self._distance_tool_flagged,
                                    names=["flagged"])
 
+        self.distance_tool.activate_gaurd()
+        
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_changed)
         add_callback(self.stage_state, 'show_ruler', self._show_ruler_changed)
         add_callback(self.stage_state, 'brightness', self._update_brightness)
