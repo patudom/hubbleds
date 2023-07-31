@@ -97,8 +97,10 @@ class DistanceTool(v.VueTemplate):
         fov = self.widget.get_fov()
         widget_height = self._height_from_pixel_str(self.widget.layout.height)
         ang_size = Angle(((change["new"] / widget_height) * fov))
-        if not self.validate_angular_size(ang_size):
-            return None
+        valid = self.validate_angular_size(ang_size, change['new'] > 0)
+        # print(ang_size, change["new"], valid)
+        # if valid:
+        #     print('valid measurement')
         self.angular_size = ang_size
         self.measurement_count += 1
 
@@ -160,13 +162,16 @@ class DistanceTool(v.VueTemplate):
         self.galaxy_max_size = max or self.galaxy_max_size
         self.galaxy_min_size = min or self.galaxy_min_size
     
-    def validate_angular_size(self, angular_size):
+    def validate_angular_size(self, angular_size, check = True):
         if not self.guard:
             return True
+        if not check:
+            return self.bad_measurement
         max_wwt_size = Angle("60 deg")
         c1 = (angular_size < max_wwt_size) 
         c2 = (angular_size >= self.galaxy_min_size) 
         c3 = (angular_size <= self.galaxy_max_size)
         self.bad_measurement = not (c1 and c2 and c3)
         return c1 and c2 and c3
+    
     
