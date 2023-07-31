@@ -694,6 +694,10 @@ class StageTwo(HubbleStage):
     
     #@print_function_name
     def _make_measurement(self):
+        bad_meas = self.distance_tool.bad_measurement
+        if bad_meas:
+            print("Bad measurement")
+            return
         galaxy = self.stage_state.galaxy
         table = self.current_table
         data_label = table._glue_data.label
@@ -766,7 +770,7 @@ class StageTwo(HubbleStage):
                     v4.toolbar.tools['bqplot:home'].activate()
             
 
-            
+        
 
         if data_label == STUDENT_MEASUREMENTS_LABEL:
             self.story_state.update_student_data()
