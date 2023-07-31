@@ -61,6 +61,7 @@ class StageState(CDSState):
     meas_theta = CallbackProperty(0)
     distance_calc_count = CallbackProperty(0)
     ruler_clicked_total = CallbackProperty(0)
+    bad_angsize = CallbackProperty(False)
     
     show_dotplot1 = CallbackProperty(False)
     show_dotplot2 = CallbackProperty(False)
@@ -694,10 +695,12 @@ class StageTwo(HubbleStage):
     
     #@print_function_name
     def _make_measurement(self):
-        bad_meas = self.distance_tool.bad_measurement
-        if bad_meas:
+        self.stage_state.bad_angsize = self.distance_tool.bad_measurement
+        if self.stage_state.bad_angsize:
             print("Bad measurement")
             return
+        else:
+            print('Good measurment')
         galaxy = self.stage_state.galaxy
         table = self.current_table
         data_label = table._glue_data.label
