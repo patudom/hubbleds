@@ -159,8 +159,8 @@ class DistanceTool(v.VueTemplate):
         
     def set_guard(self, max = None, min = None):
         self.activate_guard()
-        self.galaxy_max_size = max or self.galaxy_max_size
-        self.galaxy_min_size = min or self.galaxy_min_size
+        self.galaxy_max_size = Angle(max) or self.galaxy_max_size
+        self.galaxy_min_size = Angle(min) or self.galaxy_min_size
     
     def validate_angular_size(self, angular_size, check = True):
         if not self.guard:
