@@ -29,7 +29,7 @@
       </v-btn>
     </v-toolbar>
     <div class="distance-content">
-      <v-snackbar
+      <!-- <v-snackbar
         v-model="bad_measurement"
         transition="fab-transition"
         timeout="5000"
@@ -42,7 +42,7 @@
         elevation="24"
       >
         You've measured an impossible size for the galaxy. Please try again.
-      </v-snackbar>
+      </v-snackbar> -->
       <canvas
         v-show="measuring"
         class="distance-canvas"
@@ -386,7 +386,7 @@ export default {
     },
 
     perpSlope: function(p1=this.startPoint, p2=this.endPoint) {
-      if (!(p1 && p2)) { return undefined; }
+      if (!(p1 && p2)) { return 1; }
       return (p1[0] - p2[0]) / (p2[1] - p1[1]);
     },
 
