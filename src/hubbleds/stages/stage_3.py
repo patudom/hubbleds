@@ -61,6 +61,8 @@ class StageState(CDSState):
     meas_theta = CallbackProperty(0)
     distance_calc_count = CallbackProperty(0)
     ruler_clicked_total = CallbackProperty(0)
+    bad_angsize = CallbackProperty(False)
+    bad_angsize_index = CallbackProperty(None)
     
     show_dotplot1 = CallbackProperty(False)
     show_dotplot2 = CallbackProperty(False)
@@ -302,6 +304,12 @@ class StageTwo(HubbleStage):
         self.add_widget(distance_table, label="distance_table")
         distance_table.observe(
             self.distance_table_selected_change, names=["selected"])
+        self.distance_table.allow_row_click = not self.stage_state.bad_angsize
+
+        def _on_has_bad_angsize(val):
+            self.distance_table.allow_row_click = not self.stage_state.bad_angsize
+        
+        add_callback(self.stage_state, 'bad_angsize', _on_has_bad_angsize)
         
         add_distances_tool = \
             dict(id="update-distances",
@@ -330,6 +338,9 @@ class StageTwo(HubbleStage):
 
         if self.stage_state.marker_reached('dot_seq5a'):
             example_galaxy_distance_table.filter_by(None)
+
+        if self.stage_state.marker_reached('rep_rem1'):
+            self.select_bad_measurement_row()
         
         self.add_widget(example_galaxy_distance_table, label="example_galaxy_distance_table")
         example_galaxy_distance_table.observe(
@@ -351,6 +362,9 @@ class StageTwo(HubbleStage):
         self.distance_tool.observe(self._distance_tool_flagged,
                                    names=["flagged"])
 
+        self.distance_tool.activate_guard()
+        self.distance_tool.set_guard(max = '30 arcmin', min = '5 arcsec')
+        
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_changed)
         add_callback(self.stage_state, 'show_ruler', self._show_ruler_changed)
         add_callback(self.stage_state, 'brightness', self._update_brightness)
@@ -707,6 +721,14 @@ class StageTwo(HubbleStage):
         index = table.index
         if index is None:
             return
+
+        self.stage_state.bad_angsize = self.distance_tool.bad_measurement
+
+        if self.stage_state.bad_angsize:
+            change = {'new':galaxy, 'old': None, 'owner': self.distance_table}
+            self.distance_table_selected_change(change)
+            self.stage_state.bad_angsize_index = index
+
         data = table.glue_data
         curr_value = data[ANGULAR_SIZE_COMPONENT][index]
 
@@ -764,12 +786,18 @@ class StageTwo(HubbleStage):
                     v4.toolbar.tools['bqplot:home'].activate()
             
 
-            
+        
 
         if data_label == STUDENT_MEASUREMENTS_LABEL:
             self.story_state.update_student_data()
         with ignore_callback(self.stage_state, 'make_measurement'):
             self.stage_state.make_measurement = False
+
+    def select_bad_measurement_row(self):
+        if self.stage_state.bad_angsize:
+            index = self.stage_state.bad_angsize_index
+            galaxy = self.distance_table.items[index]
+            self.distance_table.selected = [galaxy]        
 
     def _distance_tool_flagged(self, change):
         if not change["new"]:
