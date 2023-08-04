@@ -363,6 +363,7 @@ class StageTwo(HubbleStage):
                                    names=["flagged"])
 
         self.distance_tool.activate_guard()
+        self.distance_tool.set_guard(max = '30 arcmin', min = '5 arcsec')
         
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_changed)
         add_callback(self.stage_state, 'show_ruler', self._show_ruler_changed)
