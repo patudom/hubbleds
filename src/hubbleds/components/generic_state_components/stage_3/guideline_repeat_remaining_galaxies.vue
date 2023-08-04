@@ -7,7 +7,7 @@
     :title-text="state.angsizes_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'"
     @back="state.marker = 'dot_seq5'"
     @next="state.marker = 'fil_rem1'"
-    :can-advance="(state) => state.angsizes_total >= 5"
+    :can-advance="(state) => state.angsizes_total >= 5  && !state.bad_angsize"
     :state="state"
   >
     <template #before-next>
