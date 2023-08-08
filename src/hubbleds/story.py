@@ -3,7 +3,6 @@ from datetime import datetime
 from io import BytesIO
 from math import floor
 from pathlib import Path
-import requests
 
 import ipyvuetify as v
 import numpy as np
@@ -70,7 +69,7 @@ class HubblesLaw(Story):
         ])
 
         # Load in the galaxy data
-        galaxies = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/galaxies?types=Sp").json()
+        galaxies = self._request_session.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/galaxies?types=Sp").json()
         galaxies_dict = { k : [x[k] for x in galaxies] for k in galaxies[0] }
         galaxies_dict["name"] = [x[:-len(self.name_ext)] for x in galaxies_dict["name"]]
         self.data_collection.append(Data(
@@ -79,7 +78,7 @@ class HubblesLaw(Story):
         ))
 
         # Load in the overall data
-        all_json = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/all-data").json()
+        all_json = self._request_session.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/all-data").json()
         all_measurements = all_json["measurements"]
         for measurement in all_measurements:
             measurement.update({"galaxy_id": measurement["galaxy"]["id"]})
@@ -191,7 +190,7 @@ class HubblesLaw(Story):
             type_folders = { "Sp" : "spiral", "E" : "elliptical", "Ir" : "irregular" }
             folder = type_folders[gal_type]
             url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{filename}"
-            response = requests.get(url)
+            response = self._request_session.get(url)
             f = BytesIO(response.content)
             f.name = name
             hdulist = fits.open(f)
@@ -235,7 +234,7 @@ class HubblesLaw(Story):
         Create empty Data for student measurements of example galaxy
         """
         # Load in the galaxy data
-        example_galaxy_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-galaxy").json()
+        example_galaxy_data = self._request_session.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-galaxy").json()
         example_galaxy_data = { k : [example_galaxy_data[k]] for k in example_galaxy_data }
         example_galaxy_data['name'] = [name.replace('.fits','') for name in example_galaxy_data['name']]
         self.data_collection.append(Data(label=EXAMPLE_GALAXY_DATA, **example_galaxy_data))
@@ -243,7 +242,7 @@ class HubblesLaw(Story):
         # load the seed data for the example galaxy to populate
         # parse the json into a dictionary of arrays
         # create glue Data object [each dictionary item becomes a component]
-        example_galaxy_seed_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements").json()
+        example_galaxy_seed_data = self._request_session.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements").json()
         example_galaxy_seed_data = {k: np.array([record[k] for record in example_galaxy_seed_data]) for k in example_galaxy_seed_data[0]}
         good = example_galaxy_seed_data[DB_VELOCITY_FIELD] != None
 
@@ -506,7 +505,7 @@ class HubblesLaw(Story):
         return data
 
     def fetch_measurements(self, url):
-        response = requests.get(url)
+        response = self._request_session.get(url)
         res_json = response.json()
         return res_json["measurements"]
 
