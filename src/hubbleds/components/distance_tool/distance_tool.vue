@@ -244,9 +244,8 @@ export default {
       // If we haven't put the second point down
       } else if (this.endPoint === null) {
 
-        // If we haven't moved since we put the first point down, reset
+        // If we haven't moved since we put the first point down, do nothing
         if (!this.hasMovedWhileDrawing) {
-          this.startPoint = null;
           return;
         }
 
