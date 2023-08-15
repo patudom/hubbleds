@@ -13,7 +13,7 @@ from cosmicds.phases import Story
 from cosmicds.registries import story_registry
 from cosmicds.utils import API_URL, RepeatedTimer
 from dateutil.parser import isoparse
-from echo import DictCallbackProperty, CallbackProperty
+from echo import DictCallbackProperty, CallbackProperty, add_callback
 from echo.callback_container import CallbackContainer
 from glue.core import Data
 from glue.core.component import CategoricalComponent, Component
@@ -151,6 +151,16 @@ class HubblesLaw(Story):
         self.class_last_modified = None
         self.class_data_timer = RepeatedTimer(30, self._on_timer)
         self.class_data_timer.start()
+
+        add_callback(self, 'max_stage_index', self._on_max_stage_index_changed)
+
+    def _on_max_stage_index_changed(self, value):
+        # Fetch data one last time as the student starts stage 5
+        # We need to do this on a max index change (rather than
+        # stage_index) so that this only happens once
+        # Otherwise the student's stage 5 data will change!
+        if value == 5:
+            self.fetch_class_data()
 
     def _on_timer(self):
         if self.max_stage_index < 5:

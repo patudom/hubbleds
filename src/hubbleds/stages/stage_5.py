@@ -76,6 +76,7 @@ class StageState(CDSState):
     advance_marker = CallbackProperty(True)
 
     image_location = CallbackProperty(f"{IMAGE_BASE_URL}/mean_median_mode") 
+    class_data_size = CallbackProperty(0)
 
     hypgal_distance = CallbackProperty(0)
     hypgal_velocity = CallbackProperty(0)
@@ -268,6 +269,9 @@ class StageFour(HubbleStage):
         student_data = self.get_data(STUDENT_DATA_LABEL)
         class_meas_data = self.get_data(CLASS_DATA_LABEL)
         all_data = self.get_data(ALL_DATA_LABEL)
+
+        # Set the size from the class data
+        self.stage_state.class_data_size = int(self.get_data(CLASS_DATA_LABEL).size / 5)
 
         fit_table = Table(self.session,
                           data=student_data,
@@ -591,7 +595,6 @@ class StageFour(HubbleStage):
         
         if not advancing and self.stage_state.marker_before('two_his1'):
             self.match_student_class_hist_axes(False)
-            
 
     def match_student_class_hist_axes(self, match = True):        
         student_tool = self.get_viewer("all_distr_viewer_student").toolbar.tools['bqplot:home']
@@ -882,12 +885,9 @@ class StageFour(HubbleStage):
                 class_slider.update_data(msg.data)
             self._reset_limits_for_data(label)
 
-    def _on_class_data_update(self, *args):
-        self.reset_viewer_limits()
+        if label == CLASS_DATA_LABEL:
+            self.stage_state.class_data_size = int(self.get_data(CLASS_DATA_LABEL).size / 5)
 
-    def _on_student_data_update(self, *args):
-        self.reset_viewer_limits()
-    
     def _on_dark_mode_change(self, dark):
         super()._on_dark_mode_change(dark)
         self._update_viewer_style(dark)
