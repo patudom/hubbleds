@@ -267,22 +267,34 @@ export default {
       // If we aren't drawing the line
       // and we aren't on one of the endpoints,
       // then we're done here
-      if (!(this.onStart || this.onEnd)) {
+      if (!(this.onStart || this.onEnd || this.shouldFollowMouse)) {
         event.stopImmediatePropagation();
         return;
       }
 
       // To make things easier, we define the point that
       // isn't being modified as the 'start' point
-      if (this.onStart) {
+      if (!this.shouldFollowMouse && this.onStart) {
         const tempPoint = this.startPoint;
         this.startPoint = this.endPoint;
         this.endPoint = tempPoint;
       }
       this.clearCanvas();
       this.drawPoint(this.startPoint);
-      this.canvas.classList.add(this.grabbingClass);
-      this.shouldFollowMouse = true;
+      if (this.canvas.classList.contains(this.grabbingClass)) {
+        this.canvas.classList.remove(this.grabbingClass);
+      } else {
+        this.canvas.classList.add(this.grabbingClass);
+      }
+
+      if (this.shouldFollowMouse) {
+        this.endPoint = this.position(event);
+        this.clearCanvas();
+        this.drawLine(this.startPoint, this.endPoint);
+        this.drawEndcaps(this.startPoint, this.endPoint);
+        this.updateMeasuredDistance();
+      }
+      this.shouldFollowMouse = !this.shouldFollowMouse;
 
       // To avoid the line 'vanishing' when we grab an endpoint
       // we draw a line from the other point to where the mouse it
@@ -290,24 +302,15 @@ export default {
     },
 
     handleMouseUp: function(event) {
-      if (this.lineCreated && this.shouldFollowMouse) {
-        const coordinates = this.position(event);
-        this.endPoint = this.position(event);
-        this.clearCanvas();
-        this.drawLine(this.startPoint, this.endPoint);
-        this.drawEndcaps(this.startPoint, this.endPoint);
-      }
       this.mouseDown = false;
-      this.canvas.classList.remove(this.grabbingClass);
       this.mouseMoving = false;
-      this.shouldFollowMouse = false;
     },
 
     handleMouseMove: function(event) {
       this.mouseMoving = true;
       if (this.shouldFollowMouse) {
         this.hasMovedWhileDrawing = true;
-        this.lineFollow(event, true);
+        this.lineFollow(event, false);
       } else if (this.startPoint && this.endPoint) {
         this.lookForEndpoints(event);
       }
