@@ -1,7 +1,6 @@
 import json
 
 import ipyvuetify as v
-import requests
 from cosmicds.components import Table
 from cosmicds.phases import Stage
 from cosmicds.utils import API_URL, CDSJSONEncoder
@@ -50,14 +49,14 @@ class HubbleStage(Stage):
     def submit_measurement(self, measurement):
         if self.app_state.update_db:
             prepared = self._prepare_measurement(measurement)
-            requests.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/submit-measurement",
+            self._request_session.put(f"{API_URL}/{HUBBLE_ROUTE_PATH}/submit-measurement",
                         json=prepared)
    
     def submit_example_galaxy_measurement(self, measurement):
         if self.app_state.update_db:
             prepared = self._prepare_sample_measurement(measurement)
             endpoint = f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurement"
-            requests.put(endpoint, json=prepared)
+            self._request_session.put(endpoint, json=prepared)
 
     def remove_measurement(self, galaxy_name):
         name = str(galaxy_name)
@@ -68,7 +67,7 @@ class HubbleStage(Stage):
                                 single=True)
         user = self.app_state.student
         if self.app_state.update_db and user.get("id", None) is not None:
-            requests.delete(
+            self._request_session.delete(
                 f"{API_URL}/{HUBBLE_ROUTE_PATH}/measurement/{user['id']}/{galaxy_name}")
 
     def update_data_value(self, dc_name, comp_name, value, index, block_submit=False):

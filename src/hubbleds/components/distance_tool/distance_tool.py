@@ -2,14 +2,13 @@ from datetime import datetime
 
 import astropy.units as u
 import ipyvue as v
-import requests
 from astropy.coordinates import Angle, SkyCoord
-from cosmicds.utils import RepeatedTimer, load_template, API_URL
+from cosmicds.utils import RepeatedTimer, load_template
 from ipywidgets import DOMWidget, widget_serialization
 from pywwt.jupyter import WWTJupyterWidget
 from traitlets import Instance, Bool, Float, Int, Unicode, observe, Dict
 
-from ...utils import GALAXY_FOV, HUBBLE_ROUTE_PATH, angle_to_json, \
+from ...utils import GALAXY_FOV, angle_to_json, \
     angle_from_json
 
 

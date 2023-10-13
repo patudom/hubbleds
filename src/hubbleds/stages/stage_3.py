@@ -1,8 +1,6 @@
 import logging
-import requests
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
@@ -812,7 +810,7 @@ class StageTwo(HubbleStage):
             if not name.endswith(".fits"):
                 name += ".fits"
             data = {"galaxy_name": name}
-        requests.post(f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-tileload-bad",
+        self._request_session.post(f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-tileload-bad",
                       json=data)
 
         index = self.distance_table.index
