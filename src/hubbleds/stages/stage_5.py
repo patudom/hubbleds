@@ -399,7 +399,7 @@ class StageFour(HubbleStage):
             'mode':   f"{self.stage_state.image_location}/mode.png"      #'https://picsum.photos/900/600'  # 
         }
         
-        all_percentage_selector = PercentageSelector([all_distr_viewer_class, all_distr_viewer_student],
+        all_percentage_selector = PercentageSelector([self.viewers["all_distr_viewer_class"], self.viewers["all_distr_viewer_student"]],
                                                  [classes_summary_data, students_summary_data],
                                                  units=["Gyr"] * 2,
                                                  resolution=0,
@@ -414,7 +414,7 @@ class StageFour(HubbleStage):
         all_statistics_selector.help_images = mmm_urls
         self.add_component(all_statistics_selector, "py-all-statistics-selector")
 
-        myclass_percentage_selector = PercentageSelector([class_distr_viewer],
+        myclass_percentage_selector = PercentageSelector([self.viewers["class_distr_viewer"]],
                                                  [class_summ_data],
                                                  units=["Gyr"],
                                                  resolution=0,
