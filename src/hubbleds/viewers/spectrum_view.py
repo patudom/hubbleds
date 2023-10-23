@@ -46,12 +46,12 @@ class SpectrumViewLayerArtist(BqplotScatterLayerArtist):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        old_scatter = self.scatter
-        self.scatter = Lines(scales=self.scales, x=[0, 1], y=[0, 1],
+        old_scatter = self.scatter_mark
+        self.scatter_mark = Lines(scales=self.scales, x=[0, 1], y=[0, 1],
                              marker=None, colors=['#507FB6'], stroke_width=1.8)
         self.view.figure.marks = list(
             filter(lambda x: x is not old_scatter, self.view.figure.marks)) + [
-                                     self.scatter]
+                                     self.scatter_mark]
 
 
 class SpecView(LineHoverViewerMixin, BqplotScatterView):
