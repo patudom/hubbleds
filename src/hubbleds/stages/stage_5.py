@@ -667,7 +667,6 @@ class StageFour(HubbleStage):
 
         comparison_viewer.toolbar.tools["hubble:linefit"].activate() 
 
-        all_data = self.get_data(ALL_DATA_LABEL)
         student_layer = all_viewer.layer_artist_for_data(student_data)
         student_layer.state.zorder = 2
         student_layer.state.visible = False
@@ -675,14 +674,8 @@ class StageFour(HubbleStage):
         class_layer = all_viewer.layer_artist_for_data(class_meas_data)
         class_layer.state.zorder = 1
         class_layer.state.visible = False
-        all_viewer.add_data(all_data)
-        all_layer = all_viewer.layer_artist_for_data(all_data)
-        all_layer.state.zorder = 0
-        all_layer.state.color = "#78909C"
-        all_layer.state.size = 7
-        all_layer.state.visible = False
-        all_viewer.state.x_att = all_data.id[DISTANCE_COMPONENT]
-        all_viewer.state.y_att = all_data.id[VELOCITY_COMPONENT]
+        all_viewer.state.x_att = class_meas_data.id[DISTANCE_COMPONENT]
+        all_viewer.state.y_att = class_meas_data.id[VELOCITY_COMPONENT]
         all_viewer.state.reset_limits(visible_only=False)
 
         # Set up all viewer tools
