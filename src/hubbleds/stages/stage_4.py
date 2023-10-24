@@ -388,7 +388,7 @@ class StageThree(HubbleStage):
         race_layer = race_viewer.layer_artist_for_data(race_data)
         race_layer.state.color = '#111111'
         race_layer.state.alpha = 1
-        race_layer.state.size = 28
+        race_layer.state.size = 56
         race_viewer.state.reset_limits()
         race_viewer.state.x_max = 1.1 * race_viewer.state.x_max 
         race_viewer.state.y_max = 1.1 * race_viewer.state.y_max 
