@@ -340,7 +340,7 @@ class StageThree(HubbleStage):
         student_layer = layer_viewer.layer_artist_for_data(student_data)
         student_layer.state.color = '#FB5607'
         student_layer.state.zorder = 5
-        student_layer.state.size = 8                    
+        student_layer.state.size = 56
         student_layer.state.alpha = 1
         # add class measurement data and hide by default
         layer_viewer.add_data(class_meas_data)
@@ -349,7 +349,7 @@ class StageThree(HubbleStage):
         class_layer.state.zorder = 1
         class_layer.state.color = "#3A86FF"
         class_layer.state.alpha = 1
-        class_layer.state.size = 4
+        class_layer.state.size = 14
         class_layer.state.visible = False
 
         # cosmicds PR157 - turn off fit line label for layer_viewer
@@ -388,7 +388,7 @@ class StageThree(HubbleStage):
         race_layer = race_viewer.layer_artist_for_data(race_data)
         race_layer.state.color = '#111111'
         race_layer.state.alpha = 1
-        race_layer.state.size = 8
+        race_layer.state.size = 28
         race_viewer.state.reset_limits()
         race_viewer.state.x_max = 1.1 * race_viewer.state.x_max 
         race_viewer.state.y_max = 1.1 * race_viewer.state.y_max 

@@ -679,7 +679,7 @@ class StageFour(HubbleStage):
         all_layer = all_viewer.layer_artist_for_data(all_data)
         all_layer.state.zorder = 0
         all_layer.state.color = "#78909C"
-        all_layer.state.size = 2
+        all_layer.state.size = 7
         all_layer.state.visible = False
         all_viewer.state.x_att = all_data.id[DISTANCE_COMPONENT]
         all_viewer.state.y_att = all_data.id[VELOCITY_COMPONENT]
