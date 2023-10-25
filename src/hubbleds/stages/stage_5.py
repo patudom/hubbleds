@@ -337,7 +337,7 @@ class StageFour(HubbleStage):
         # Create the student slider
         self.student_slider_subset = class_meas_data.new_subset(label=STUDENT_SLIDER_SUBSET_LABEL)
         self.student_slider_subset.style.alpha = 1
-        self.student_slider_subset.style.markersize = 60
+        self.student_slider_subset.style.markersize = 56
         student_slider = IDSlider(class_summ_data, STUDENT_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "py-student-slider")
         def student_slider_change(id, highlighted):
@@ -360,7 +360,7 @@ class StageFour(HubbleStage):
 
         # Create the class slider
         self.class_slider_subset = all_data.new_subset(label=CLASS_SLIDER_SUBSET_LABEL)
-        self.class_slider_subset.style.markersize = 60
+        self.class_slider_subset.style.markersize = 56
         class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.classroom["id"]], default_color = "#FF006E", highlight_color = "#3A86FF")
         self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
