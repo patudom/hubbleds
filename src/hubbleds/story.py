@@ -207,6 +207,8 @@ class HubblesLaw(Story):
 
         all_student_summ_data = self.data_from_summaries(all_student_summaries, label=ALL_STUDENT_SUMMARIES_LABEL, id_key=STUDENT_ID_COMPONENT)
         all_class_summ_data = self.data_from_summaries(all_class_summaries, label=ALL_CLASS_SUMMARIES_LABEL, id_key=CLASS_ID_COMPONENT)
+        HubblesLaw.make_data_writeable(all_student_summ_data)
+        HubblesLaw.make_data_writeable(all_class_summ_data)
         self.data_collection.append(all_student_summ_data)
         self.data_collection.append(all_class_summ_data)
         for comp in [AGE_COMPONENT, H0_COMPONENT]:
