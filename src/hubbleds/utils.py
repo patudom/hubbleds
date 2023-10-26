@@ -114,7 +114,7 @@ def data_summary_for_component(data, component_id):
     }
     values = data[component_id]
     percents = [50, 68, 95]
-    sorted_indices = argsort(data)
+    sorted_indices = argsort(values)
 
     for percent in percents:
         bottom_index, top_index = percent_around_center_indices(data.size, percent)

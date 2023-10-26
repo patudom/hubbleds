@@ -157,7 +157,8 @@ class HubblesLaw(Story):
             # Calculate a few stats for the class data that the student is actually using
             # This is for teachers to use to give a rough estimate of how appropriate
             # the student's numerical answers are
-            self.class_data_info = data_summary_for_component(class_data, class_data.id[AGE_COMPONENT])
+            class_summary_data = self.data_collection[CLASS_SUMMARY_LABEL]
+            self.class_data_info = data_summary_for_component(class_summary_data, class_summary_data.id[AGE_COMPONENT])
 
             # This is pretty important stuff for the student's state
             # so let's make sure that it gets saved 
