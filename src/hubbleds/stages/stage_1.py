@@ -1,34 +1,26 @@
 import logging
 from random import sample
-from pathlib import Path
-from os.path import join
-
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
-from cosmicds.utils import load_template, update_figure_css, debounce, extend_tool
+from cosmicds.utils import load_template, update_figure_css, debounce
 from echo import add_callback, ignore_callback, CallbackProperty, \
-    DictCallbackProperty, ListCallbackProperty, delay_callback, \
-    callback_property
+    DictCallbackProperty, ListCallbackProperty, callback_property
 from glue.core import Data
-from glue.core.message import NumericalDataChangedMessage, SubsetUpdateMessage
+from glue.core.message import NumericalDataChangedMessage
 from numpy import isin, zeros
-from traitlets import Bool, default, validate
+from traitlets import Bool, default
 
 from ..components import SpectrumSlideshow, SelectionTool, SpectrumMeasurementTutorialSequence, DotplotTutorialSlideshow
 from ..data.styles import load_style
 from ..data_management import *
 from ..stage import HubbleStage
 from ..utils import GALAXY_FOV, H_ALPHA_REST_LAMBDA, IMAGE_BASE_URL, \
-    MG_REST_LAMBDA, SPEED_OF_LIGHT, velocity_from_wavelengths
+    MG_REST_LAMBDA, velocity_from_wavelengths
 from ..viewers import SpectrumView, HubbleDotPlotView
-from ..viewers.viewers import HubbleHistogramView
-from glue.core.data_factories import load_data
-from bqplot.marks import Lines
-from glue_jupyter.link import link
 
 log = logging.getLogger()
 
@@ -101,8 +93,8 @@ class StageState(CDSState):
             'been_opened',
             'show_specviewer', 
             'allow_specview_mouse_interaction', 
-            'show_first_measurment', 
-            'show_second_measurment', 
+            'show_first_measurement',
+            'show_second_measurement',
             'zoom_tool_activated', 
             'show_selector_lines', 
             ]}

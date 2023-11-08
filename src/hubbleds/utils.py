@@ -1,11 +1,6 @@
 from astropy import units as u
 from astropy.modeling import models, fitting
 from numpy import pi
-from bqplot.marks import Lines
-from bqplot.scales import LinearScale
-from glue_jupyter.bqplot.histogram.layer_artist import \
-    BqplotHistogramLayerArtist
-from glue_jupyter.bqplot.scatter.layer_artist import BqplotScatterLayerArtist
 
 try:
     from astropy.cosmology import Planck18 as planck
@@ -18,7 +13,6 @@ __all__ = [
     'MG_REST_LAMBDA', 'GALAXY_FOV', 'FULL_FOV',
     'angle_to_json', 'angle_from_json',
     'age_in_gyr', 'format_fov', 'format_measured_angle',
-    'line_mark', 'vertical_line_mark',
 ]
 
 HUBBLE_ROUTE_PATH = "hubbles_law"

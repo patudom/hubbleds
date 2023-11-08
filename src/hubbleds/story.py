@@ -436,7 +436,7 @@ class HubblesLaw(Story):
                                                  subset=subset_state,
                                                  color="blue",
                                                  alpha=1,
-                                                 markersize=10)
+                                                 markersize=58)
     
     def update_example_galaxy_data(self, *args):
         dc = self.data_collection
