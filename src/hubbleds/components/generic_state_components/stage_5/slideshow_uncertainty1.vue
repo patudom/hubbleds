@@ -142,6 +142,7 @@
                     label="Shortcoming #4"
                     hint="(if you can think of any more)"
                     tag="shortcoming-4"
+                    allow-empty="true"
                   ></free-response>
                 </v-col>
               </v-row>
