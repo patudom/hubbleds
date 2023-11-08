@@ -81,9 +81,9 @@ class HubblesLaw(Story):
         all_json = self._request_session.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/all-data").json()
         all_measurements = all_json["measurements"]
         for measurement in all_measurements:
-            measurement.update({"galaxy_id": measurement["galaxy"]["id"]})
-            measurement.pop("galaxy")
-            measurement.pop("student")
+            measurement.update({"galaxy_id": measurement["galaxy_id"]})
+            measurement.pop("galaxy", None)
+            measurement.pop("student", None)
         all_student_summaries = all_json["studentData"]
         all_class_summaries = all_json["classData"]
         all_data = Data(

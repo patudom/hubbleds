@@ -1,5 +1,4 @@
 from functools import partial
-from math import ceil, floor
 from glue.core.subset import RangeSubsetState
 
 from numpy import where
