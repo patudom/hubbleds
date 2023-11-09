@@ -176,13 +176,13 @@ class HubblesLaw(Story):
         v.theme.themes.light.secondary = 'colors.cyan.darken4'
         v.theme.themes.dark.accent = 'colors.amber.accent3'   # Next/Back buttons
         v.theme.themes.light.accent = 'colors.amber.accent2'
-        v.theme.themes.dark.error = 'colors.pink.lighten1'  # Team insider buttons that will not appear for user
-        v.theme.themes.light.error = 'colors.indigo.lighten2'
+        v.theme.themes.dark.error = 'colors.lime.accent1'  # New: Error alerts for free response inputs
+        v.theme.themes.light.error = 'colors.indigo.darken4' 
         v.theme.themes.dark.info = 'colors.deepOrange.darken4'  # Instruction scaffolds & viewer highlights
         v.theme.themes.light.info = 'colors.deepOrange.lighten1'
-        v.theme.themes.dark.success = 'colors.green.accent3'   # Actions and interactions
-        v.theme.themes.light.success = 'colors.green.accent3'
-        v.theme.themes.dark.warning = 'colors.deepOrange.accent4' # Unallocated (maybe viewer highlights?)
+        v.theme.themes.dark.success = 'colors.pink.lighten1'   # New: Team insider buttons that will not appear for user
+        v.theme.themes.light.success = 'colors.indigo.lighten2' #formerly green.accent3 or 00E676
+        v.theme.themes.dark.warning = 'colors.deepOrange.accent4' # Reflection and some other slideshow headers
         v.theme.themes.light.warning = 'colors.deepOrange.accent4'
         #Alt Palette 1:  Y:FFBE0B, O:FB5607, Pi:FF006E, Pu:8338EC, Bl:3A86FF, LiBl:619EFF
 
