@@ -563,7 +563,6 @@ class StageFour(HubbleStage):
                 all_viewer.toolbar.tools["hubble:linefit"].activate() # toggle on
                     
         if advancing and new == "cla_dat1":
-            layer_viewer.state.reset_limits()
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", False)
             student_data = self.get_data(STUDENT_DATA_LABEL)
@@ -579,6 +578,7 @@ class StageFour(HubbleStage):
             if linefit_tool.active:
                 linefit_tool.activate()
             layer_viewer.toolbar.set_tool_enabled("hubble:linefit", False )
+            layer_viewer.state.reset_limits()
 
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
