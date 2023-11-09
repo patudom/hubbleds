@@ -566,7 +566,6 @@ class StageFour(HubbleStage):
             layer_viewer.state.reset_limits()
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", False)
-            layer_viewer.toolbar.set_tool_enabled("hubble:linefit", False )
             student_data = self.get_data(STUDENT_DATA_LABEL)
             if len(student_data.subsets) > 0:
                 best_fit_subset = student_data.subsets[0]
@@ -576,6 +575,10 @@ class StageFour(HubbleStage):
             class_layer.state.visible = True
             student_layer = layer_viewer.layer_artist_for_data(student_data)
             student_layer.state.visible = False
+            linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
+            if linefit_tool.active:
+                linefit_tool.activate()
+            layer_viewer.toolbar.set_tool_enabled("hubble:linefit", False )
 
         if advancing and new == "tre_lin2c":
             layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
