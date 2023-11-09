@@ -350,6 +350,11 @@
           :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.two_hist3_response = true"/>
+          <guideline-two-histograms-mc3a
+          v-if="stage_state.marker == 'two_his3a'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.two_hist3a_response = true"/>
         <guideline-two-histograms-reflect5
           v-if="stage_state.marker == 'two_his5'"
           :state="stage_state"
