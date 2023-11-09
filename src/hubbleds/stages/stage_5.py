@@ -27,6 +27,7 @@ class StageState(CDSState):
     relage_response = CallbackProperty(False)
     two_hist_response = CallbackProperty(False)
     two_hist3_response = CallbackProperty(False)
+    two_hist3a_response = CallbackProperty(False)
     # two_hist4_response = CallbackProperty(False)
     lack_bias_response = CallbackProperty(False)
     uncertainty_hint_dialog = CallbackProperty(False)
@@ -128,6 +129,7 @@ class StageState(CDSState):
         'two_his1',
         'two_his2',
         'two_his3',
+        'two_his3a',
         # 'two_his4', cutting because it's too long redundant
         'two_his5',
         #'lac_bia1',
@@ -354,6 +356,9 @@ class StageFour(HubbleStage):
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
 
+        if self.stage_state.marker_reached("cla_dat1"):
+            layer_viewer.state.reset_limits()
+
         layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("cla_dat1"))
         layer_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("bes_fit1c"))
 
@@ -558,8 +563,10 @@ class StageFour(HubbleStage):
                 all_viewer.toolbar.tools["hubble:linefit"].activate() # toggle on
                     
         if advancing and new == "cla_dat1":
+            layer_viewer.state.reset_limits()
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
-            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
+            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", False)
+            layer_viewer.toolbar.set_tool_enabled("hubble:linefit", False )
             student_data = self.get_data(STUDENT_DATA_LABEL)
             if len(student_data.subsets) > 0:
                 best_fit_subset = student_data.subsets[0]
@@ -569,9 +576,9 @@ class StageFour(HubbleStage):
             class_layer.state.visible = True
             student_layer = layer_viewer.layer_artist_for_data(student_data)
             student_layer.state.visible = False
-            linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
-            if linefit_tool.active:
-                linefit_tool.activate()
+
+        if advancing and new == "tre_lin2c":
+            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
 
         if advancing and new == "bes_fit1c":
             linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
