@@ -3,7 +3,7 @@
     <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             console.log('stage state:', stage_state);
@@ -13,7 +13,7 @@
           State
         </v-btn>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             console.log('jumping');
@@ -262,7 +262,7 @@
             </v-card>
             <v-btn
               v-if="show_team_interface"
-              color="error"
+              color="success"
               class="black--text"
               @click="update_distances()"
             >
