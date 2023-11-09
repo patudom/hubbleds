@@ -100,7 +100,7 @@
               <v-row>
                 <v-col>
                   <p>
-                    Recall your thoughts about shortcomings in your measurements and your estimate of the universe's age.
+                    If you recall, you identified these shortcomings in your measurements and your estimate of the universe's age.
                   </p>
                   <p
                     class="mb-3 mt-10"
