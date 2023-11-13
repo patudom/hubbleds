@@ -1,4 +1,5 @@
 from collections import defaultdict, Counter
+from contextlib import closing
 from datetime import datetime, timezone
 from io import BytesIO
 from math import floor
@@ -83,6 +84,7 @@ class HubblesLaw(Story):
             label=SDSS_DATA_LABEL,
             **galaxies_dict
         ))
+
 
         # Compose empty data containers to be populated by user
         self.student_cols = [NAME_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT,
@@ -178,13 +180,13 @@ class HubblesLaw(Story):
         v.theme.themes.light.secondary = 'colors.cyan.darken4'
         v.theme.themes.dark.accent = 'colors.amber.accent3'   # Next/Back buttons
         v.theme.themes.light.accent = 'colors.amber.accent2'
-        v.theme.themes.dark.error = 'colors.pink.lighten1'  # Team insider buttons that will not appear for user
-        v.theme.themes.light.error = 'colors.indigo.lighten2'
+        v.theme.themes.dark.error = 'colors.lime.accent1'  # New: Error alerts for free response inputs
+        v.theme.themes.light.error = 'colors.indigo.darken4' 
         v.theme.themes.dark.info = 'colors.deepOrange.darken4'  # Instruction scaffolds & viewer highlights
         v.theme.themes.light.info = 'colors.deepOrange.lighten1'
-        v.theme.themes.dark.success = 'colors.green.accent3'   # Actions and interactions
-        v.theme.themes.light.success = 'colors.green.accent3'
-        v.theme.themes.dark.warning = 'colors.deepOrange.accent4' # Unallocated (maybe viewer highlights?)
+        v.theme.themes.dark.success = 'colors.pink.lighten1'   # New: Team insider buttons that will not appear for user
+        v.theme.themes.light.success = 'colors.indigo.lighten2' #formerly green.accent3 or 00E676
+        v.theme.themes.dark.warning = 'colors.deepOrange.accent4' # Reflection and some other slideshow headers
         v.theme.themes.light.warning = 'colors.deepOrange.accent4'
         #Alt Palette 1:  Y:FFBE0B, O:FB5607, Pi:FF006E, Pu:8338EC, Bl:3A86FF, LiBl:619EFF
 
@@ -230,10 +232,10 @@ class HubblesLaw(Story):
             folder = type_folders[gal_type]
             url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{filename}"
             response = self._request_session.get(url)
-            f = BytesIO(response.content)
-            f.name = name
-            hdulist = fits.open(f)
-            data = next((d for d in fits_reader(hdulist) if d.label == data_name), None)
+            with closing(BytesIO(response.content)) as f:
+                f.name = name
+                with fits.open(f) as hdulist:
+                    data = next((d for d in fits_reader(hdulist) if d.label == data_name), None)
             if data is None:
                 return
             data.label = name
