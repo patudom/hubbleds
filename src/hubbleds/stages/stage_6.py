@@ -162,8 +162,8 @@ class StageFive(HubbleStage):
             self.deferred_setup()
         
 
-    def _on_stage_index_changed(self):
-        if self.story_state.stage_index >= self.index:
+    def _on_stage_index_changed(self, index):
+        if index >= self.index:
             self.deferred_setup()
     
     def deferred_setup(self):
