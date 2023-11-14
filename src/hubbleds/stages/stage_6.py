@@ -156,6 +156,17 @@ class StageFive(HubbleStage):
         layer_toggle.add_ignore_condition(self.ignore_slider_layer)
         self.add_component(layer_toggle, label="py-layer-toggle")    
         
+        # If possible, we defer some of the setup for later, to make loading faster
+        add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
+        if self.story_state.stage_index == self.index:
+            self.deferred_setup()
+        
+
+    def _on_stage_index_changed(self):
+        if self.story_state.stage_index >= self.index:
+            self.deferred_setup()
+    
+    def deferred_setup(self):
         self.setup_prodata_viewer()
         
         self._update_viewer_style(dark=self.app_state.dark_mode)
