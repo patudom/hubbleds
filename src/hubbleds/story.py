@@ -1,9 +1,9 @@
 from collections import defaultdict, Counter
-from datetime import datetime
+from contextlib import closing
+from datetime import datetime, timezone
 from io import BytesIO
 from math import floor
 from pathlib import Path
-import requests
 
 import ipyvuetify as v
 import numpy as np
@@ -13,7 +13,9 @@ from cosmicds.phases import Story
 from cosmicds.registries import story_registry
 from cosmicds.utils import API_URL, RepeatedTimer
 from dateutil.parser import isoparse
+
 from echo import DictCallbackProperty, CallbackProperty, add_callback
+from echo import DictCallbackProperty, CallbackProperty, ListCallbackProperty, add_callback
 from echo.callback_container import CallbackContainer
 from glue.core import Data
 from glue.core.component import CategoricalComponent, Component
@@ -21,10 +23,9 @@ from glue.core.data_factories.fits import fits_reader
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import CategorySubsetState
 
-from hubbleds.data.hubble_simulation.simulate import H0
 
 from .data_management import *
-from .utils import AGE_CONSTANT, H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, fit_line, MG_REST_LAMBDA
+from .utils import H_ALPHA_REST_LAMBDA, HUBBLE_ROUTE_PATH, age_in_gyr_simple, data_summary_for_component, fit_line, MG_REST_LAMBDA
 
 @story_registry(name="hubbles_law")
 class HubblesLaw(Story):
@@ -34,11 +35,17 @@ class HubblesLaw(Story):
     validation_failure_counts = DictCallbackProperty({})
     has_best_fit_galaxy = CallbackProperty(False)
     enough_students_ready = CallbackProperty(False)
+    started = CallbackProperty()
+    class_data_students = ListCallbackProperty([])
+    class_data_info = DictCallbackProperty({})
 
     name_ext = ".fits"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # UNIX epoch time, in milliseconds
+        self.started = round(datetime.now(tz=timezone.utc).timestamp() * 1000)
 
         self._set_theme()
 
@@ -70,7 +77,7 @@ class HubblesLaw(Story):
         ])
 
         # Load in the galaxy data
-        galaxies = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/galaxies?types=Sp").json()
+        galaxies = self._request_session.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/galaxies?types=Sp").json()
         galaxies_dict = { k : [x[k] for x in galaxies] for k in galaxies[0] }
         galaxies_dict["name"] = [x[:-len(self.name_ext)] for x in galaxies_dict["name"]]
         self.data_collection.append(Data(
@@ -78,29 +85,6 @@ class HubblesLaw(Story):
             **galaxies_dict
         ))
 
-        # Load in the overall data
-        all_json = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/all-data").json()
-        all_measurements = all_json["measurements"]
-        for measurement in all_measurements:
-            measurement.update({"galaxy_id": measurement["galaxy"]["id"]})
-            measurement.pop("galaxy")
-            measurement.pop("student")
-        all_student_summaries = all_json["studentData"]
-        all_class_summaries = all_json["classData"]
-        all_data = Data(
-            label=ALL_DATA_LABEL,
-            **{ STATE_TO_MEAS.get(k, k) : [x[k] for x in all_measurements] for k in all_measurements[0] }
-        )
-        HubblesLaw.prune_none(all_data)
-        self.data_collection.append(all_data)
-        self.base_all_dict = None
-
-        all_student_summ_data = self.data_from_summaries(all_student_summaries, label=ALL_STUDENT_SUMMARIES_LABEL, id_key=STUDENT_ID_COMPONENT)
-        all_class_summ_data = self.data_from_summaries(all_class_summaries, label=ALL_CLASS_SUMMARIES_LABEL, id_key=CLASS_ID_COMPONENT)
-        self.data_collection.append(all_student_summ_data)
-        self.data_collection.append(all_class_summ_data)
-        for comp in [AGE_COMPONENT, H0_COMPONENT]:
-            self.app.add_link(all_student_summ_data, comp, all_class_summ_data, comp)
 
         # Compose empty data containers to be populated by user
         self.student_cols = [NAME_COMPONENT, RA_COMPONENT, DEC_COMPONENT, Z_COMPONENT,
@@ -152,15 +136,35 @@ class HubblesLaw(Story):
         self.class_data_timer = RepeatedTimer(30, self._on_timer)
         self.class_data_timer.start()
 
-        add_callback(self, 'max_stage_index', self._on_max_stage_index_changed)
+        add_callback(self, 'max_stage_index', self._on_max_stage_index_changed, echo_old=True)
 
-    def _on_max_stage_index_changed(self, value):
-        # Fetch data one last time as the student starts stage 5
-        # We need to do this on a max index change (rather than
-        # stage_index) so that this only happens once
-        # Otherwise the student's stage 5 data will change!
-        if value == 5:
+    def _on_max_stage_index_changed(self, old_value, value):
+        if old_value == 4 and value == 5:
+            # Make sure that the classroom size is up-to-date
+            res = self._request_session.get(f"{API_URL}/class-for-student-story/{self.student_user['id']}/hubbles_law").json()
+            if res and "size" in res:
+                self.classroom["size"] = res["size"]
+
+            # Fetch data one last time as the student starts stage 5
+            # We need to do this on a max index change (rather than
+            # stage_index) so that this only happens once
+            # Otherwise the student's stage 5 data will change!
             self.fetch_class_data()
+            
+            # Keep a record of which students' data is used in the class data
+            class_data = self.data_collection[CLASS_DATA_LABEL]
+            student_ids = set(class_data[STUDENT_ID_COMPONENT])
+            self.class_data_students = list(student_ids)
+
+            # Calculate a few stats for the class data that the student is actually using
+            # This is for teachers to use to give a rough estimate of how appropriate
+            # the student's numerical answers are
+            class_summary_data = self.data_collection[CLASS_SUMMARY_LABEL]
+            self.class_data_info = data_summary_for_component(class_summary_data, class_summary_data.id[AGE_COMPONENT])
+
+            # This is pretty important stuff for the student's state
+            # so let's make sure that it gets saved 
+            self.write_to_db()
 
     def _on_timer(self):
         if self.max_stage_index < 5:
@@ -176,16 +180,42 @@ class HubblesLaw(Story):
         v.theme.themes.light.secondary = 'colors.cyan.darken4'
         v.theme.themes.dark.accent = 'colors.amber.accent3'   # Next/Back buttons
         v.theme.themes.light.accent = 'colors.amber.accent2'
-        v.theme.themes.dark.error = 'colors.pink.lighten1'  # Team insider buttons that will not appear for user
-        v.theme.themes.light.error = 'colors.indigo.lighten2'
+        v.theme.themes.dark.error = 'colors.lime.accent1'  # New: Error alerts for free response inputs
+        v.theme.themes.light.error = 'colors.indigo.darken4' 
         v.theme.themes.dark.info = 'colors.deepOrange.darken4'  # Instruction scaffolds & viewer highlights
         v.theme.themes.light.info = 'colors.deepOrange.lighten1'
-        v.theme.themes.dark.success = 'colors.green.accent3'   # Actions and interactions
-        v.theme.themes.light.success = 'colors.green.accent3'
-        v.theme.themes.dark.warning = 'colors.deepOrange.accent4' # Unallocated (maybe viewer highlights?)
+        v.theme.themes.dark.success = 'colors.pink.lighten1'   # New: Team insider buttons that will not appear for user
+        v.theme.themes.light.success = 'colors.indigo.lighten2' #formerly green.accent3 or 00E676
+        v.theme.themes.dark.warning = 'colors.deepOrange.accent4' # Reflection and some other slideshow headers
         v.theme.themes.light.warning = 'colors.deepOrange.accent4'
         #Alt Palette 1:  Y:FFBE0B, O:FB5607, Pi:FF006E, Pu:8338EC, Bl:3A86FF, LiBl:619EFF
 
+    def _setup_all_data(self):
+        # Load in the overall data
+        all_json = self._request_session.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/all-data?before={self.started}").json()
+        all_measurements = all_json["measurements"]
+        for measurement in all_measurements:
+            measurement.update({"galaxy_id": measurement["galaxy_id"]})
+            measurement.pop("galaxy", None)
+            measurement.pop("student", None)
+        all_student_summaries = all_json["studentData"]
+        all_class_summaries = all_json["classData"]
+        all_data = Data(
+            label=ALL_DATA_LABEL,
+            **{ STATE_TO_MEAS.get(k, k) : [x[k] for x in all_measurements] for k in all_measurements[0] }
+        )
+        HubblesLaw.prune_none(all_data)
+        self.data_collection.append(all_data)
+        self.base_all_dict = None
+
+        all_student_summ_data = self.data_from_summaries(all_student_summaries, label=ALL_STUDENT_SUMMARIES_LABEL, id_key=STUDENT_ID_COMPONENT)
+        all_class_summ_data = self.data_from_summaries(all_class_summaries, label=ALL_CLASS_SUMMARIES_LABEL, id_key=CLASS_ID_COMPONENT)
+        HubblesLaw.make_data_writeable(all_student_summ_data)
+        HubblesLaw.make_data_writeable(all_class_summ_data)
+        self.data_collection.append(all_student_summ_data)
+        self.data_collection.append(all_class_summ_data)
+        for comp in [AGE_COMPONENT, H0_COMPONENT]:
+            self.app.add_link(all_student_summ_data, comp, all_class_summ_data, comp)
 
     def load_spectrum_data(self, name, gal_type):
         if not name.endswith(self.name_ext):
@@ -201,11 +231,11 @@ class HubblesLaw(Story):
             type_folders = { "Sp" : "spiral", "E" : "elliptical", "Ir" : "irregular" }
             folder = type_folders[gal_type]
             url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{filename}"
-            response = requests.get(url)
-            f = BytesIO(response.content)
-            f.name = name
-            hdulist = fits.open(f)
-            data = next((d for d in fits_reader(hdulist) if d.label == data_name), None)
+            response = self._request_session.get(url)
+            with closing(BytesIO(response.content)) as f:
+                f.name = name
+                with fits.open(f) as hdulist:
+                    data = next((d for d in fits_reader(hdulist) if d.label == data_name), None)
             if data is None:
                 return
             data.label = name
@@ -245,7 +275,7 @@ class HubblesLaw(Story):
         Create empty Data for student measurements of example galaxy
         """
         # Load in the galaxy data
-        example_galaxy_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-galaxy").json()
+        example_galaxy_data = self._request_session.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-galaxy").json()
         example_galaxy_data = { k : [example_galaxy_data[k]] for k in example_galaxy_data }
         example_galaxy_data['name'] = [name.replace('.fits','') for name in example_galaxy_data['name']]
         self.data_collection.append(Data(label=EXAMPLE_GALAXY_DATA, **example_galaxy_data))
@@ -253,7 +283,7 @@ class HubblesLaw(Story):
         # load the seed data for the example galaxy to populate
         # parse the json into a dictionary of arrays
         # create glue Data object [each dictionary item becomes a component]
-        example_galaxy_seed_data = requests.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements").json()
+        example_galaxy_seed_data = self._request_session.get(f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-measurements").json()
         example_galaxy_seed_data = {k: np.array([record[k] for record in example_galaxy_seed_data]) for k in example_galaxy_seed_data[0]}
         good = example_galaxy_seed_data[DB_VELOCITY_FIELD] != None
 
@@ -437,7 +467,7 @@ class HubblesLaw(Story):
                                                  subset=subset_state,
                                                  color="blue",
                                                  alpha=1,
-                                                 markersize=10)
+                                                 markersize=58)
     
     def update_example_galaxy_data(self, *args):
         dc = self.data_collection
@@ -516,7 +546,7 @@ class HubblesLaw(Story):
         return data
 
     def fetch_measurements(self, url):
-        response = requests.get(url)
+        response = self._request_session.get(url)
         res_json = response.json()
         return res_json["measurements"]
 
@@ -612,65 +642,67 @@ class HubblesLaw(Story):
             if students_ready >= min(10, self.classroom["size"]):
                 self.enough_students_ready = True
 
-    def fetch_class_data(self):
-        def check_update(measurements):
-            last_modified = max([isoparse(m[DB_LAST_MODIFIED_FIELD]) for m in measurements], default=None)
-            need_update = self.class_last_modified is None or last_modified is None or last_modified > self.class_last_modified
-            if need_update and last_modified is not None:
-                self.class_last_modified = last_modified
-            return need_update
+    def _check_class_data_need_update(self, measurements):
+        last_modified = max([isoparse(m[DB_LAST_MODIFIED_FIELD]) for m in measurements], default=None)
+        need_update = self.class_last_modified is None or last_modified is None or last_modified > self.class_last_modified
+        if need_update and last_modified is not None:
+            self.class_last_modified = last_modified
+        return need_update
 
+    def fetch_class_data(self):
         class_data_url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/stage-3-data/{self.student_user['id']}/{self.classroom['id']}"
         if self.class_last_modified is not None:
             timestamp = floor(self.class_last_modified.timestamp() * 1000)
             class_data_url = f"{class_data_url}?last_checked={timestamp}"
-        updated_meas, updated_data = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=check_update)
+        updated_meas, updated_data = self.fetch_measurement_data_and_update(class_data_url, CLASS_DATA_LABEL, prune_none=True, update_if_empty=False, check_update=self._check_class_data_need_update)
         
         if updated_data is not None:
             class_id = self.classroom["id"]
             self.update_summary_data(updated_data, CLASS_SUMMARY_LABEL, STUDENT_ID_COMPONENT)
-            all_data = self.data_collection[ALL_DATA_LABEL]
+            if ALL_DATA_LABEL in self.data_collection:
+                all_data = self.data_collection[ALL_DATA_LABEL]
 
-            # We can't do this when all_data is created
-            # because it seems that the classroom info hasn't been populated
-            if self.base_all_dict is None:
-                indices = all_data[CLASS_ID_COMPONENT] != self.classroom["id"]
-                self.base_all_dict = { k.label : all_data[k][indices] for k in all_data.main_components }
+                # We can't do this when all_data is created
+                # because it seems that the classroom info hasn't been populated
+                if self.base_all_dict is None:
+                    indices = all_data[CLASS_ID_COMPONENT] != self.classroom["id"]
+                    self.base_all_dict = { k.label : all_data[k][indices] for k in all_data.main_components }
 
-            all_dict = self.base_all_dict.copy()
-            all_dict[CLASS_ID_COMPONENT] = np.concatenate([all_dict[CLASS_ID_COMPONENT], [class_id] * len(updated_meas)]) 
-            for k in all_dict:
-                if k == CLASS_ID_COMPONENT:
-                    continue
-                all_dict[k] = np.concatenate([all_dict[k], [m[MEAS_TO_STATE.get(k, k)] for m in updated_meas]])
-            new_all = Data(label=all_data.label, **all_dict)
-            all_data.update_values_from_data(new_all)
-            HubblesLaw.prune_none(all_data)
+                all_dict = self.base_all_dict.copy()
+                all_dict[CLASS_ID_COMPONENT] = np.concatenate([all_dict[CLASS_ID_COMPONENT], [class_id] * len(updated_meas)])
+                for k in all_dict:
+                    if k == CLASS_ID_COMPONENT:
+                        continue
+                    all_dict[k] = np.concatenate([all_dict[k], [m[MEAS_TO_STATE.get(k, k)] for m in updated_meas]])
+                new_all = Data(label=all_data.label, **all_dict)
+                all_data.update_values_from_data(new_all)
+                HubblesLaw.prune_none(all_data)
 
             # We also need to update the all class summary data
-            dists = updated_data[DISTANCE_COMPONENT]
-            vels = updated_data[VELOCITY_COMPONENT]
-            h0, age = self.create_single_summary(dists, vels)
-            all_summ_data = self.data_collection[ALL_CLASS_SUMMARIES_LABEL]
-            index = next((i for i in range(all_summ_data.size) if all_summ_data[CLASS_ID_COMPONENT][i] == class_id), None)
-            if index is None:
-                self.add_data_values(
-                    data=all_summ_data,
-                    values={
-                        H0_COMPONENT: h0,
-                        AGE_COMPONENT: age,
-                        CLASS_ID_COMPONENT: class_id
-                    }
-                )
-            else:
-                h0s = all_summ_data[H0_COMPONENT]
-                ages = all_summ_data[AGE_COMPONENT]
-                h0s[index]= h0
-                ages[index]= age
-                all_summ_data.update_components({
-                    all_summ_data.id[H0_COMPONENT]: h0s,
-                    all_summ_data.id[AGE_COMPONENT]: ages
-                })
+            if ALL_CLASS_SUMMARIES_LABEL in self.data_collection:
+                dists = updated_data[DISTANCE_COMPONENT]
+                vels = updated_data[VELOCITY_COMPONENT]
+                h0, age = self.create_single_summary(dists, vels)
+                all_summ_data = self.data_collection[ALL_CLASS_SUMMARIES_LABEL]
+                index = next((i for i in range(all_summ_data.size) if all_summ_data[CLASS_ID_COMPONENT][i] == class_id), None)
+                if index is None:
+                    self.add_data_values(
+                        data=all_summ_data,
+                        values={
+                            H0_COMPONENT: h0,
+                            AGE_COMPONENT: age,
+                            CLASS_ID_COMPONENT: class_id
+                        }
+                    )
+                else:
+                    h0s = all_summ_data[H0_COMPONENT]
+                    ages = all_summ_data[AGE_COMPONENT]
+                    h0s[index]= h0
+                    ages[index]= age
+                    all_summ_data.update_components({
+                        all_summ_data.id[H0_COMPONENT]: h0s,
+                        all_summ_data.id[AGE_COMPONENT]: ages
+                    })
 
 
     def setup_for_student(self, app_state):
@@ -683,7 +715,10 @@ class HubblesLaw(Story):
         ]
         if any(self.student_user["id"] in r for r in ranges):
             app_state.update_db = False
+
+        self._setup_all_data()
         self.fetch_student_data()
         self.fetch_class_data()
         self.fetch_example_galaxy_data()
+
 

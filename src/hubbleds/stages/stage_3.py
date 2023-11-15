@@ -1,8 +1,6 @@
 import logging
-import requests
 
 import astropy.units as u
-from astropy.coordinates import SkyCoord
 from cosmicds.components.table import Table
 from cosmicds.phases import CDSState
 from cosmicds.registries import register_stage
@@ -61,6 +59,8 @@ class StageState(CDSState):
     meas_theta = CallbackProperty(0)
     distance_calc_count = CallbackProperty(0)
     ruler_clicked_total = CallbackProperty(0)
+    bad_angsize = CallbackProperty(False)
+    bad_angsize_index = CallbackProperty(None)
     
     show_dotplot1 = CallbackProperty(False)
     show_dotplot2 = CallbackProperty(False)
@@ -302,6 +302,12 @@ class StageTwo(HubbleStage):
         self.add_widget(distance_table, label="distance_table")
         distance_table.observe(
             self.distance_table_selected_change, names=["selected"])
+        self.distance_table.allow_row_click = not self.stage_state.bad_angsize
+
+        def _on_has_bad_angsize(val):
+            self.distance_table.allow_row_click = not self.stage_state.bad_angsize
+        
+        add_callback(self.stage_state, 'bad_angsize', _on_has_bad_angsize)
         
         add_distances_tool = \
             dict(id="update-distances",
@@ -330,6 +336,9 @@ class StageTwo(HubbleStage):
 
         if self.stage_state.marker_reached('dot_seq5a'):
             example_galaxy_distance_table.filter_by(None)
+
+        if self.stage_state.marker_reached('rep_rem1'):
+            self.select_bad_measurement_row()
         
         self.add_widget(example_galaxy_distance_table, label="example_galaxy_distance_table")
         example_galaxy_distance_table.observe(
@@ -351,6 +360,9 @@ class StageTwo(HubbleStage):
         self.distance_tool.observe(self._distance_tool_flagged,
                                    names=["flagged"])
 
+        self.distance_tool.activate_guard()
+        self.distance_tool.set_guard(max = '30 arcmin', min = '5 arcsec')
+        
         add_callback(self.stage_state, 'galaxy', self._on_galaxy_changed)
         add_callback(self.stage_state, 'show_ruler', self._show_ruler_changed)
         add_callback(self.stage_state, 'brightness', self._update_brightness)
@@ -540,7 +552,7 @@ class StageTwo(HubbleStage):
             self._update_state_from_measurements()
     
     @staticmethod
-    def add_point(viewer, x, color, label = None): 
+    def add_point(viewer, x, color, label=None): 
         scales = {'x': viewer.figure.scale_x, 'y': viewer.figure.scale_y}
         size = viewer.layers[0].bars.default_size 
         return  Scatter(x=[x], y=[1], 
@@ -572,7 +584,7 @@ class StageTwo(HubbleStage):
         index = int((x - bins[0])/bin_width)
         return bins[0] + bin_width * (index + 1/2)
     
-    def plot_measurement(self, viewer, index, distance = False, color = 'black', label = None):
+    def plot_measurement(self, viewer, index, distance=False, color='black', label=None):
         viewer = self.get_viewer(viewer)
         x = self.get_data(EXAMPLE_GALAXY_MEASUREMENTS)[ANGULAR_SIZE_COMPONENT][index]
         if distance:
@@ -635,7 +647,6 @@ class StageTwo(HubbleStage):
         
         self.stage_state.galaxy = galaxy
         self.stage_state.galaxy_dist = None
-       #print('bool(galaxy)',bool(galaxy))
         self.distance_tool.measuring_allowed = bool(galaxy)
         self.stage_state.meas_theta = data[ANGULAR_SIZE_COMPONENT][index]
 
@@ -692,6 +703,10 @@ class StageTwo(HubbleStage):
     
     #@print_function_name
     def _make_measurement(self):
+        # We don't want a student's data to change once they've reached stage 4
+        if self.story_state.max_stage_index >= 4:
+            return
+
         galaxy = self.stage_state.galaxy
         table = self.current_table
         data_label = table._glue_data.label
@@ -700,22 +715,23 @@ class StageTwo(HubbleStage):
                                       single=True)
         
         angular_size = self.distance_tool.angular_size
-        # ang_size_deg = angular_size.value
-        # distance = round(MILKY_WAY_SIZE_MPC * 180 / (ang_size_deg * pi))
-        # angular_size_as = round(angular_size.to(u.arcsec).value)
 
         index = table.index
         if index is None:
             return
+
+        self.stage_state.bad_angsize = self.distance_tool.bad_measurement
+
+        if self.stage_state.bad_angsize:
+            change = {'new':galaxy, 'old': None, 'owner': self.distance_table}
+            self.distance_table_selected_change(change)
+            self.stage_state.bad_angsize_index = index
+
         data = table.glue_data
         curr_value = data[ANGULAR_SIZE_COMPONENT][index]
 
         if (curr_value is None) and (data_label == STUDENT_MEASUREMENTS_LABEL):
             self.stage_state.angsizes_total = self.stage_state.angsizes_total + 1
-
-        # self.stage_state.galaxy_dist = distance
-        # self.update_data_value(STUDENT_MEASUREMENTS_LABEL, DISTANCE_COMPONENT, distance, index)
-        # self.update_data_value(STUDENT_MEASUREMENTS_LABEL, ANGULAR_SIZE_COMPONENT, angular_size_as, index)
 
         self.stage_state.meas_theta = round(angular_size.to(u.arcsec).value)
 
@@ -762,20 +778,22 @@ class StageTwo(HubbleStage):
                            filter=lambda msg: msg.data.label == EXAMPLE_GALAXY_MEASUREMENTS,
                            handler=v4_plot)
                     v4.toolbar.tools['bqplot:home'].activate()
-            
-
-            
 
         if data_label == STUDENT_MEASUREMENTS_LABEL:
             self.story_state.update_student_data()
         with ignore_callback(self.stage_state, 'make_measurement'):
             self.stage_state.make_measurement = False
 
+    def select_bad_measurement_row(self):
+        if self.stage_state.bad_angsize:
+            index = self.stage_state.bad_angsize_index
+            galaxy = self.distance_table.items[index]
+            self.distance_table.selected = [galaxy]        
+
     def _distance_tool_flagged(self, change):
         if not change["new"]:
             return
         
-
         galaxy = self.state.galaxy
         if galaxy["id"]:
             data = {"galaxy_id": int(galaxy["id"])}
@@ -784,7 +802,7 @@ class StageTwo(HubbleStage):
             if not name.endswith(".fits"):
                 name += ".fits"
             data = {"galaxy_name": name}
-        requests.post(f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-tileload-bad",
+        self._request_session.post(f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-tileload-bad",
                       json=data)
 
         index = self.distance_table.index
@@ -828,7 +846,6 @@ class StageTwo(HubbleStage):
         self.get_distance_count()
     
     def fill_table(self, table, tool=None):
-       #print("in fill_table")
         self.update_data_value(table._glue_data.label, ANGULAR_SIZE_COMPONENT, 35, 0)
         self.update_data_value(table._glue_data.label, DISTANCE_COMPONENT, distance_from_angular_size(35), 0)
 
@@ -838,7 +855,6 @@ class StageTwo(HubbleStage):
         self.update_distances(self.example_galaxy_distance_table)
 
     def vue_fill_table(self, _args):
-       #print("in vue_fill_table")
         self.fill_table(self.example_galaxy_distance_table)
     
     #@print_function_name

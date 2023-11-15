@@ -3,7 +3,7 @@
     <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             console.log('stage state:', stage_state);
@@ -13,7 +13,7 @@
           State
         </v-btn>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             stage_state.marker = 'lea_unc1';
@@ -354,6 +354,11 @@
           :state="stage_state"
           v-intersect.once="scrollIntoView"
           @ready="stage_state.two_hist3_response = true"/>
+          <guideline-two-histograms-mc3a
+          v-if="stage_state.marker == 'two_his3a'"
+          :state="stage_state"
+          v-intersect.once="scrollIntoView"
+          @ready="stage_state.two_hist3a_response = true"/>
         <guideline-two-histograms-reflect5
           v-if="stage_state.marker == 'two_his5'"
           :state="stage_state"
@@ -415,7 +420,7 @@
       <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             console.log('stage state:', stage_state);
@@ -425,7 +430,7 @@
           State
         </v-btn>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             stage_state.marker = 'lea_unc1';

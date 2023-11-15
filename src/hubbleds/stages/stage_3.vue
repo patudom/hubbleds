@@ -3,7 +3,7 @@
     <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             console.log('stage state:', stage_state);
@@ -13,7 +13,7 @@
           State
         </v-btn>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             console.log('jumping');
@@ -184,7 +184,7 @@
         cols="12"
         lg="4"
       >
-          <guideline-dotplot-seq1
+        <guideline-dotplot-seq1
           v-if="stage_state.marker == 'dot_seq1'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView" />
@@ -197,6 +197,15 @@
           v-if="stage_state.marker == 'dot_seq3'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
+        <guideline-dotplot-seq4
+          v-if="stage_state.marker == 'dot_seq4'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView"/>
+        <guideline-dotplot-seq4a
+          v-if="stage_state.marker == 'dot_seq4a'" 
+          :state="stage_state"
+          v-intersect.once="scrollIntoView" 
+          @ready="stage_state.dot_seq4a_q = true"/>
         <guideline-dotplot-seq6
           v-if="stage_state.marker == 'dot_seq6'" 
           :state="stage_state"
@@ -222,12 +231,15 @@
             <v-card class="dotplot" v-if="stage_state.show_dotplot2 || ((stage_state.indices['dot_seq5c'] <= stage_state.indices[stage_state.marker]) && (stage_state.indices[stage_state.marker] < stage_state.indices['rep_rem1']))">
               <jupyter-widget :widget="viewers.dotplot_viewer_dist_2"/>
             </v-card>
+            <v-card class='dotplot' v-if="stage_state.show_dotplot1_ang || stage_state.marker == 'dot_seq4' || stage_state.marker == 'dot_seq4a'">
+              <jupyter-widget :widget="viewers.dotplot_viewer_ang"/>
+            </v-card>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
 
-    <v-row>
+    <!-- <v-row>
       <v-col
         cols="12"
         lg="4"
@@ -236,11 +248,6 @@
         v-if="stage_state.marker == 'dot_seq4'" 
           :state="stage_state"
           v-intersect.once="scrollIntoView"/>
-        <guideline-dotplot-seq4a
-        v-if="stage_state.marker == 'dot_seq4a'" 
-          :state="stage_state"
-          v-intersect.once="scrollIntoView" 
-          @ready="stage_state.dot_seq4a_q = true"/>
       </v-col>
       <v-col
         cols="12"
@@ -255,7 +262,7 @@
             </v-card>
             <v-btn
               v-if="show_team_interface"
-              color="error"
+              color="success"
               class="black--text"
               @click="update_distances()"
             >
@@ -264,7 +271,7 @@
           </v-col>
         </v-row>
       </v-col>
-    </v-row>
+    </v-row> -->
   </v-container>
 </template>
 

@@ -3,12 +3,12 @@
     <v-row v-if="show_team_interface">
       <v-col>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="fill_data();"
         >fill data points</v-btn>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             console.log('stage state:', stage_state);
@@ -18,7 +18,7 @@
           console.log State
         </v-btn>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             print_state();
@@ -27,7 +27,7 @@
           Print Python State
         </v-btn>
         <v-btn
-          color="error"
+          color="success"
           class="black--text"
           @click="() => {
             fill_data();
@@ -74,7 +74,7 @@
         />
         <v-btn
           v-if="show_team_interface && (stage_state.marker === 'sel_gal2' || 'sel_gal3 || sel_gal4' && stage_state.gals_total < stage_state.gals_max)"
-          color="error"
+          color="success"
           class="black--text"
           block
           max-width="800"
@@ -444,7 +444,7 @@
           <v-col
             v-if="show_team_interface">
             <v-btn
-              color="error"
+              color="success"
               class="black--text"
               @click="update_velocities()"
             >

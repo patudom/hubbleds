@@ -1,5 +1,4 @@
 from functools import partial
-from math import ceil, floor
 from glue.core.subset import RangeSubsetState
 
 from numpy import where
@@ -28,6 +27,7 @@ class StageState(CDSState):
     relage_response = CallbackProperty(False)
     two_hist_response = CallbackProperty(False)
     two_hist3_response = CallbackProperty(False)
+    two_hist3a_response = CallbackProperty(False)
     # two_hist4_response = CallbackProperty(False)
     lack_bias_response = CallbackProperty(False)
     uncertainty_hint_dialog = CallbackProperty(False)
@@ -130,6 +130,7 @@ class StageState(CDSState):
         'two_his1',
         'two_his2',
         'two_his3',
+        'two_his3a',
         # 'two_his4', cutting because it's too long redundant
         'two_his5',
         #'lac_bia1',
@@ -336,9 +337,9 @@ class StageFour(HubbleStage):
                                                     modify_subset_label=histogram_modify_label)
 
         # Create the student slider
-        student_slider_subset_label = STUDENT_SLIDER_SUBSET_LABEL
-        self.student_slider_subset = class_meas_data.new_subset(label=student_slider_subset_label)
+        self.student_slider_subset = class_meas_data.new_subset(label=STUDENT_SLIDER_SUBSET_LABEL)
         self.student_slider_subset.style.alpha = 1
+        self.student_slider_subset.style.markersize = 56
         student_slider = IDSlider(class_summ_data, STUDENT_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.student_user["id"]])
         self.add_component(student_slider, "py-student-slider")
         def student_slider_change(id, highlighted):
@@ -356,12 +357,15 @@ class StageFour(HubbleStage):
         student_slider.on_id_change(student_slider_change)
         student_slider.on_refresh(student_slider_refresh)
 
+        if self.stage_state.marker_reached("cla_dat1"):
+            layer_viewer.state.reset_limits()
+
         layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", self.stage_state.marker_reached("cla_dat1"))
         layer_viewer.toolbar.set_tool_enabled("hubble:linefit", self.stage_state.marker_reached("bes_fit1c"))
 
         # Create the class slider
-        class_slider_subset_label = "class_slider_subset"
-        self.class_slider_subset = all_data.new_subset(label=class_slider_subset_label)
+        self.class_slider_subset = all_data.new_subset(label=CLASS_SLIDER_SUBSET_LABEL)
+        self.class_slider_subset.style.markersize = 56
         class_slider = IDSlider(classes_summary_data, CLASS_ID_COMPONENT, AGE_COMPONENT, highlight_ids=[self.story_state.classroom["id"]], default_color = "#FF006E", highlight_color = "#3A86FF")
         self.add_component(class_slider, "py-class-slider")
         def class_slider_change(id, highlighted):
@@ -400,7 +404,7 @@ class StageFour(HubbleStage):
             'mode':   f"{self.stage_state.image_location}/mode.png"      #'https://picsum.photos/900/600'  # 
         }
         
-        all_percentage_selector = PercentageSelector([all_distr_viewer_class, all_distr_viewer_student],
+        all_percentage_selector = PercentageSelector([self.viewers["all_distr_viewer_class"], self.viewers["all_distr_viewer_student"]],
                                                  [classes_summary_data, students_summary_data],
                                                  units=["Gyr"] * 2,
                                                  resolution=0,
@@ -415,7 +419,7 @@ class StageFour(HubbleStage):
         all_statistics_selector.help_images = mmm_urls
         self.add_component(all_statistics_selector, "py-all-statistics-selector")
 
-        myclass_percentage_selector = PercentageSelector([class_distr_viewer],
+        myclass_percentage_selector = PercentageSelector([self.viewers["class_distr_viewer"]],
                                                  [class_summ_data],
                                                  units=["Gyr"],
                                                  resolution=0,
@@ -441,7 +445,7 @@ class StageFour(HubbleStage):
             fit_table.subset_label: [layer_viewer],
             histogram_source_label: [class_distr_viewer],
             histogram_modify_label: [comparison_viewer],
-            student_slider_subset_label: [comparison_viewer],
+            STUDENT_SLIDER_SUBSET_LABEL: [comparison_viewer],
             allclasses_percentage_subset_label: [all_distr_viewer_class],
             myclass_percentage_subset_label: [class_distr_viewer],
             allstudents_percentage_subset_label: [all_distr_viewer_student],
@@ -561,7 +565,7 @@ class StageFour(HubbleStage):
                     
         if advancing and new == "cla_dat1":
             layer_viewer.toolbar.tools["hubble:linedraw"].erase_line() 
-            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
+            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", False)
             student_data = self.get_data(STUDENT_DATA_LABEL)
             if len(student_data.subsets) > 0:
                 best_fit_subset = student_data.subsets[0]
@@ -574,6 +578,11 @@ class StageFour(HubbleStage):
             linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
             if linefit_tool.active:
                 linefit_tool.activate()
+            layer_viewer.toolbar.set_tool_enabled("hubble:linefit", False )
+            layer_viewer.state.reset_limits()
+
+        if advancing and new == "tre_lin2c":
+            layer_viewer.toolbar.set_tool_enabled("hubble:linedraw", True)
 
         if advancing and new == "bes_fit1c":
             linefit_tool = layer_viewer.toolbar.tools["hubble:linefit"]
@@ -680,7 +689,7 @@ class StageFour(HubbleStage):
         all_layer = all_viewer.layer_artist_for_data(all_data)
         all_layer.state.zorder = 0
         all_layer.state.color = "#78909C"
-        all_layer.state.size = 2
+        all_layer.state.size = 7
         all_layer.state.visible = False
         all_viewer.state.x_att = all_data.id[DISTANCE_COMPONENT]
         all_viewer.state.y_att = all_data.id[VELOCITY_COMPONENT]
@@ -693,8 +702,7 @@ class StageFour(HubbleStage):
 
         # We want to turn this off here so that a it doesn't show up in previous stages
 
-        student_slider_subset_label = "student_slider_subset"
-        student_slider_subset_layer = [layer for layer in layer_viewer.layers if student_slider_subset_label in layer.layer.label]
+        student_slider_subset_layer = [layer for layer in layer_viewer.layers if STUDENT_SLIDER_SUBSET_LABEL in layer.layer.label]
         student_slider_subset_layer = next(student_slider_subset_layer.__iter__(), None) # get the first element or None if empty
         if student_slider_subset_layer is not None:
             student_slider_subset_layer.visible = False

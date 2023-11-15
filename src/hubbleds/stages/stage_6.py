@@ -134,6 +134,8 @@ class StageFive(HubbleStage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.show_team_interface = self.app_state.show_team_interface
+
+        self._setup_complete = False
         
         # self.stage_state.marker = self.stage_state.markers[0]
         
@@ -156,6 +158,20 @@ class StageFive(HubbleStage):
         layer_toggle.add_ignore_condition(self.ignore_slider_layer)
         self.add_component(layer_toggle, label="py-layer-toggle")    
         
+        # If possible, we defer some of the setup for later, to make loading faster
+        add_callback(self.story_state, 'stage_index', self._on_stage_index_changed)
+        if self.story_state.stage_index == self.index:
+            self.deferred_setup()
+        
+
+    def _on_stage_index_changed(self, index):
+        if index >= self.index:
+            self.deferred_setup()
+    
+    def deferred_setup(self):
+        if self._setup_complete:
+            return
+
         self.setup_prodata_viewer()
         
         self._update_viewer_style(dark=self.app_state.dark_mode)
@@ -173,6 +189,7 @@ class StageFive(HubbleStage):
         if self.stage_state.marker_reached('pro_dat1'):
                 self.set_class_age()
 
+        self._setup_complete = True
         
     def setup_prodata_viewer(self):
         # load the prodata_viewer
@@ -206,7 +223,7 @@ class StageFive(HubbleStage):
         class_layer.state.zorder = 1
         class_layer.state.color = "#3A86FF"
         class_layer.state.alpha = 1
-        class_layer.state.size = 4
+        class_layer.state.size = 14
 
         prodata_viewer.state.x_att = class_data.id[DISTANCE_COMPONENT]
         prodata_viewer.state.y_att = class_data.id[VELOCITY_COMPONENT]
@@ -215,7 +232,7 @@ class StageFive(HubbleStage):
         student_layer = prodata_viewer.layer_artist_for_data(student_data)
         student_layer.state.color = '#FF7043'
         student_layer.state.zorder = 5
-        student_layer.state.size = 8                    
+        student_layer.state.size = 56                    
         student_layer.state.alpha = 1
         student_layer.state.visible = False
  
@@ -223,12 +240,14 @@ class StageFive(HubbleStage):
         prodata_viewer.add_data(hubble_data)
         hubble_layer = prodata_viewer.layer_artist_for_data(hubble_data)
         hubble_layer.state.color = '#D500F9'
+        hubble_layer.state.size = 21
         hubble_layer.state.visible = self.stage_state.marker_reached('pro_dat1')
         
         # load hubble key data
         prodata_viewer.add_data(hst_data)
         hst_layer = prodata_viewer.layer_artist_for_data(hst_data)
         hst_layer.state.color = '#AEEA00'
+        hst_layer.state.size = 21
         hst_layer.state.visible = self.stage_state.marker_reached('pro_dat5')
         
         prodata_viewer.state.reset_limits()
