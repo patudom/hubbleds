@@ -16,7 +16,6 @@ from ..utils import DISTANCE_CONSTANT, GALAXY_FOV, HUBBLE_ROUTE_PATH, IMAGE_BASE
 from ..viewers import HubbleDotPlotView
 from ..data.styles import load_style
 from cosmicds.utils import  update_figure_css
-from numpy import searchsorted
 
 from bqplot.marks import Scatter
 
