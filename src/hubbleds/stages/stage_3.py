@@ -276,6 +276,7 @@ class StageTwo(HubbleStage):
         dotplot_viewer_dist_2.ignore(lambda layer: layer in [first])
         
         self.setup_dotplot_viewers()
+        self.get_distance_count()
         
         add_distances_tool = \
             dict(id="update-distances",
