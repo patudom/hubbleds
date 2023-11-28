@@ -16,7 +16,6 @@ from ..utils import DISTANCE_CONSTANT, GALAXY_FOV, HUBBLE_ROUTE_PATH, IMAGE_BASE
 from ..viewers import HubbleDotPlotView
 from ..data.styles import load_style
 from cosmicds.utils import  update_figure_css
-from numpy import searchsorted
 
 from bqplot.marks import Scatter
 
@@ -276,6 +275,7 @@ class StageTwo(HubbleStage):
         dotplot_viewer_dist_2.ignore(lambda layer: layer in [first])
         
         self.setup_dotplot_viewers()
+        self.get_distance_count()
         
         add_distances_tool = \
             dict(id="update-distances",
