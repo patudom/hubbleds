@@ -723,7 +723,7 @@ class StageTwo(HubbleStage):
         self.stage_state.bad_angsize = self.distance_tool.bad_measurement
 
         if self.stage_state.bad_angsize:
-            change = {'new':galaxy, 'old': None, 'owner': self.distance_table}
+            change = {'new':galaxy, 'old': None, 'owner': table}
             self.distance_table_selected_change(change)
             self.stage_state.bad_angsize_index = index
 
