@@ -46,7 +46,7 @@
         >
           <v-container>
             <v-row>
-              <v-col cols="12" lg="6">
+              <v-col cols="12" lg="5">
                 <p>
                   Humans have always looked to the sky and wondered how we and our universe came to be. 
                 </p>
@@ -71,17 +71,17 @@
                   </p>
                 </v-card>
               </v-col>
-              <v-col cols="12" lg="6">
+              <v-col cols="12" lg="7" align="center">
                 <v-img
                   lazy-src="https://annettelee.com/wp-content/uploads/2019/05/3-7-744x1024.jpg"
                   src="https://annettelee.com/wp-content/uploads/2019/05/3-7-744x1024.jpg"
                   alt="Colorful mixed media painting depicting 4 Native astronomers gazing at the sky. One holds a telescope. Native constellations are depicted in the sky. A large group of people in silhouette sit and stand in a circle around a small fire."
-                  max-height = "450"
+                  max-height = "550"
                   contain
                 ></v-img>
                 <div
                   class="text-center mt-2 grey--text"
-                  style="width: 100%;"
+                  style="width: 75%;"
                 >
                   Painting depicting a Native American view of the night sky, by <a href="https://annettelee.com/"  target="_blank" rel="noopener noreferrer" style = "color:lightskyblue">Annette Lee </a>
                 </div>
@@ -98,7 +98,7 @@
         >
           <v-container>
             <v-row>
-              <v-col cols="12" lg="6">
+              <v-col cols="12" lg="5">
                 
                 <p>
                   When scientists collect data to answer questions no one has answered yet, there is no answer key in the back of some book. So, as you explore this data story, you will learn how to <strong>evaluate the reliability</strong> of your results. Are the data really good enough to support a conclusion? <strong>How can you know?</strong> 
@@ -110,7 +110,7 @@
                   Let's get started.
                 </p>
               </v-col>
-              <v-col cols="12" lg="6">
+              <v-col cols="12" lg="7">
                 <v-row no-gutter>
                   <v-col cols="6" lg="12">
                     <v-img
