@@ -14,7 +14,7 @@ class IntroSlideshow(v.VuetifyTemplate):
     template = load_template("intro_slideshow.vue", __file__,
                              traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
-    length = Int(7).tag(sync=True)
+    length = Int(8).tag(sync=True)
     dialog = Bool(False).tag(sync=True)
     currentTitle = Unicode("").tag(sync=True)
     exploration_complete = Bool(False).tag(sync=True)
@@ -24,19 +24,22 @@ class IntroSlideshow(v.VuetifyTemplate):
     timer_duration = Int(120000).tag(sync=True)  # 2 minutes in ms 
     timer_done = Dict({}).tag(sync=True)
     timer_started = Dict({}).tag(sync=True)
+    image_location = Unicode().tag(sync=True)
 
     _titles = [
-        "Welcome to Your Data Story",
-        "Astronomy in the 1920's",
+        "Our Place in the Universe",
+        "Answering Questions with Data",
+        "Astronomy in the early 1900s",
         "Explore the Cosmic Sky",
         "What are the Fuzzy Things?",
         "Spiral Nebulae and the Great Debate",
         "Henrietta Leavitt's Discovery",
         "Vesto Slipher and Spectral Data"
     ]
-    _default_title = "Welcome to Your Data Story"
+    _default_title = "Our Place in the Universe"
 
-    def __init__(self, show_team_interface, *args, **kwargs):
+    def __init__(self, show_team_interface, image_location, *args, **kwargs):
+        self.image_location = image_location
         self.show_team_interface = show_team_interface
         exploration_tool = ExplorationTool()
         exploration_tool1 = ExplorationTool()
