@@ -155,7 +155,7 @@
                   Imagine that you are an astronomer living in the <strong>early 1900s</strong>. You and your colleagues around the world, including Albert Einstein, would agree that the <strong>universe is unchanging</strong> and <strong>everlasting.</strong> In other words, you expect that the universe always has been and will be the way it is the way you see it now. This picture of an unchanging universe had rarely been questioned throughout human history, thanks in large part to <strong>Aristotle</strong>, who embraced perfection and permanence. 
                 </p>
               </v-col>
-              <v-col cols="12" lg="7" no-gutters>
+              <v-col cols="12" lg="7">
                 <v-row>
                   <v-col cols="12">
                     <v-img
@@ -166,6 +166,12 @@
                       contain
                     ></v-img>
                   </v-col>
+                  <div
+                    class="text-center grey--text mb-5"
+                    style="width: 100%;"
+                  >
+                    Top: Women astronomers at Harvard College Observatory in 1892, including Henrietta Leavitt (third from left), Williamina Fleming (standing), and Annie Jump Cannon (far right).
+                  </div>
                 </v-row>
                 <v-row no-gutters>
                   <v-col cols="6">
@@ -189,19 +195,13 @@
                       max-height="150"
                     ></v-img>
                   </v-col>
+                  <div
+                    class="text-center mt-3 grey--text"
+                    style="width: 100%;"
+                  >
+                    Bottom left: Albert Einstein in 1921. Bottom right: Aristotle, depicted in “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Both believed in an unchanging universe. 
+                  </div>
                 </v-row>
-                <div
-                  class="text-center mt-2 grey--text"
-                  style="width: 100%;"
-                >
-                  Top: Women astronomers at Harvard College Observatory in 1892, including Henrietta Leavitt (third from left), Williamina Fleming (standing), and Annie Jump Cannon (far right).
-                </div>
-                <div
-                  class="text-center mt-2 grey--text"
-                  style="width: 100%;"
-                >
-                  Bottom left: Albert Einstein in 1921. Bottom right: Aristotle, depicted in “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Both believed in an unchanging universe. 
-                </div>
               </v-col>
             </v-row>
           </v-container>
