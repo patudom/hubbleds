@@ -73,9 +73,9 @@
               </v-col>
               <v-col cols="12" lg="7" align="center">
                 <v-img
-                  lazy-src="https://annettelee.com/wp-content/uploads/2019/05/3-7-744x1024.jpg"
-                  src="https://annettelee.com/wp-content/uploads/2019/05/3-7-744x1024.jpg"
-                  alt="Colorful mixed media painting depicting 4 Native astronomers gazing at the sky. One holds a telescope. Native constellations are depicted in the sky. A large group of people in silhouette sit and stand in a circle around a small fire."
+                  :lazy-src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.jpg`"
+                  :src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.jpg`"
+                  alt="Colorful image of our Milky Way galaxy in the sky over a dark silhouette of mountains on the horizon."
                   max-height = "550"
                   contain
                 ></v-img>
@@ -83,7 +83,7 @@
                   class="text-center mt-2 grey--text"
                   style="width: 75%;"
                 >
-                  Painting depicting a Native American view of the night sky, by <a href="https://annettelee.com/index.php/portfolio/on-paper/"  target="_blank" rel="noopener noreferrer" style = "color:lightskyblue">Annette Lee </a>
+                  Our Milky Way galaxy over a mountain range. (Credit: NASA and STScI)
                 </div>
               </v-col>
             </v-row>
