@@ -37,17 +37,21 @@
       class="overflow-auto"
       v-model="step"
     >
+
       <v-window-item :value="0" 
         class="no-transition"
-      >
+       >
         <v-card-text
           style="min-height: 550px;"
         >
           <v-container>
             <v-row>
-              <v-col cols="6">
+              <v-col cols="12" lg="5">
                 <p>
-                  Welcome to the <strong><i>Hubble's Law</i> Cosmic Data Story</strong> where you will use real astronomical data&#8212;old and new&#8212;to investigate the mysteries of our Universe. In particular, let's ask:
+                  Humans have always looked to the sky and wondered how we and our universe came to be. 
+                </p>
+                <p>
+                  In this <strong>Cosmic Data Story</strong>, you will use authentic astronomical data to investigate the mysteries of our Universe. In particular, you will be answering these questions:
                 </p>
                 <v-card
                   class="justify-center pa-2 mx-12 my-8"
@@ -66,6 +70,36 @@
                     If not, how long ago did it form?
                   </p>
                 </v-card>
+              </v-col>
+              <v-col cols="12" lg="7" align="center">
+                <v-img
+                  :lazy-src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.jpg`"
+                  :src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.jpg`"
+                  alt="Colorful image of our Milky Way galaxy in the sky over a dark silhouette of mountains on the horizon."
+                  max-height = "550"
+                  contain
+                ></v-img>
+                <div
+                  class="text-center mt-2 grey--text"
+                  style="width: 75%;"
+                >
+                  Our Milky Way galaxy over a mountain range. (Credit: NASA and STScI)
+                </div>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-window-item>
+
+      <v-window-item :value="1" 
+        class="no-transition"
+      >
+        <v-card-text
+        >
+          <v-container>
+            <v-row>
+              <v-col cols="12" lg="5">
+                
                 <p>
                   When scientists collect data to answer questions no one has answered yet, there is no answer key in the back of some book. So, as you explore this data story, you will learn how to <strong>evaluate the reliability</strong> of your results. Are the data really good enough to support a conclusion? <strong>How can you know?</strong> 
                 </p>
@@ -76,17 +110,33 @@
                   Let's get started.
                 </p>
               </v-col>
-              <v-col cols="6">
-                <v-img
-                  lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HST-SM4.jpeg"
-                  src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HST-SM4.jpeg"
-                  alt="Hubble Telescope"
-                ></v-img>
+              <v-col cols="12" lg="7">
+                <v-row no-gutter>
+                  <v-col cols="6" lg="12">
+                    <v-img
+                      position="center center"
+                      :lazy-src="`${image_location}/HST-SM4.jpeg`"
+                      :src="`${image_location}/HST-SM4.jpeg`"  
+                      alt="The Hubble Space Telescope against a dark background"
+                      max-height = "250"
+                      contain
+                    ></v-img>
+                  </v-col>
+                  <v-col cols="6" lg="12">
+                    <v-img
+                      :lazy-src="`${image_location}/EdwinHubble.jpg`"
+                      :src="`${image_location}/EdwinHubble.jpg`"
+                      alt="Astronomer Edwin Hubble holding an image of the Andromeda Galaxy"
+                      max-height = "250"
+                      contain
+                    ></v-img>
+                  </v-col>
+                </v-row>
                 <div
                   class="text-center mt-2 grey--text"
                   style="width: 100%;"
                 >
-                  Ever wonder who the Hubble Space Telescope is named for, and why?
+                  The Hubble Space Telescope and Edwin Hubble, the astronomer it was named for. Hubble holds an image of the Andromeda Galaxy, for which the earliest recorded observation was made in 964 AD by Iranian scholar al-Sufi.
                 </div>
               </v-col>
             </v-row>
@@ -94,36 +144,71 @@
         </v-card-text>
       </v-window-item>
       
-      <v-window-item :value="1" 
+      <v-window-item :value="2" 
         class="no-transition"
        >
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="6">
+              <v-col cols="12" lg="5">
                 <p>
-                  Imagine that you are an astronomer living in the <strong>early 1920s</strong>. You and your colleagues around the world, including Albert Einstein, would agree that the <strong>universe is unchanging</strong> and <strong>everlasting.</strong> In other words, you expect that the universe always has been and will be the way it is the way you see it now. This picture of an unchanging universe had rarely been questioned throughout human history, thanks in large part to <strong>Aristotle</strong>, who embraced perfection and permanence. 
+                  Imagine that you are an astronomer living in the <strong>early 1900s</strong>. You and your colleagues around the world, including Albert Einstein, would agree that the <strong>universe is unchanging</strong> and <strong>everlasting.</strong> In other words, you expect that the universe always has been and will be the way it is the way you see it now. This picture of an unchanging universe had rarely been questioned throughout human history, thanks in large part to <strong>Aristotle</strong>, who embraced perfection and permanence. 
                 </p>
-                </v-col>
-                <v-col cols="6">
-                <v-img
-                  lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/School_of_Athens.jpg"
-                  src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/School_of_Athens.jpg"
-                  alt="School of Athens"
-                ></v-img>
-                <div
-                  class="text-center mt-2 grey--text"
-                  style="width: 100%;"
-                >
-                  Plato (red robe) and his pupil Aristotle (blue robe) at the center of “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Aristotle lived from 384-322 BC, and his theory of an unchanging universe persisted until the time of Edwin Hubble, 23 centuries later.
-                </div>
+              </v-col>
+              <v-col cols="12" lg="7">
+                <v-row>
+                  <v-col cols="12">
+                    <v-img
+                      :lazy-src="`${image_location}/Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg`"
+                      :src="`${image_location}/Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg`"
+                      alt="Eight women astronomers, wearing late 1800s clothing and hairstyles, are sitting or standing in a room. Some are observing astronomical images with magnifying glasses. Some are writing in notebooks."
+                      max-height="300"
+                      contain
+                    ></v-img>
+                  </v-col>
+                  <div
+                    class="text-center grey--text mb-5"
+                    style="width: 100%;"
+                  >
+                    Women astronomers at Harvard College Observatory in 1892, including Henrietta Leavitt (third from left), Williamina Fleming (standing), and Annie Jump Cannon (far right).
+                  </div>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col cols="6">
+                    <v-img
+                      class="mr-5"
+                      position="center right"
+                      :lazy-src="`${image_location}/Einstein_1921_by_F_Schmutzer_-_restorationCropped.png`"
+                      :src="`${image_location}/Einstein_1921_by_F_Schmutzer_-_restorationCropped.png`"
+                      alt="Portrait of Albert Einstein"
+                      contain
+                      max-height="150"
+                    ></v-img>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-img
+                      position="center left"
+                      :lazy-src="`${image_location}/AristotleSchoolOfAthensCutoutZoom.png`"
+                      :src="`${image_location}/AristotleSchoolOfAthensCutoutZoom.png`"
+                      alt="Cutout showing a small portion of a much larger, colorful paiting by Raphael depicting Aristotle wearing a blue robe."
+                      contain
+                      max-height="150"
+                    ></v-img>
+                  </v-col>
+                  <div
+                    class="text-center mt-3 grey--text"
+                    style="width: 100%;"
+                  >
+                    Left: Albert Einstein in 1921. Right: Aristotle, depicted in “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Both believed in an unchanging universe. 
+                  </div>
+                </v-row>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="2" 
+      <v-window-item :value="3" 
         class="no-transition"
       >
         <v-card-text>
@@ -245,7 +330,7 @@
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="3" 
+      <v-window-item :value="4" 
         class="no-transition"
       >
         <v-card-text>
@@ -459,7 +544,7 @@
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="4" 
+      <v-window-item :value="5" 
         class="no-transition"
       >
         <v-card-text>
@@ -635,7 +720,7 @@
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="5" 
+      <v-window-item :value="6" 
         class="no-transition"
       >
         <v-card-text>
@@ -649,11 +734,11 @@
             </v-row>
             <v-row>
               <v-col cols= "8">
-                <v-row>
+                <v-row class="pb-3">
                   <v-img
-                      lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
-                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_at_work.jpg"
-                      alt="Leavitt at Work "
+                    :lazy-src="`${image_location}/Leavitt_at_work.jpg`"
+                    :src="`${image_location}/Leavitt_at_work.jpg`"
+                      alt="Photograph of Henrietta Leavitt writing in a notebook. Several other notes are open neatly around her desk. "
                       max-height = "350"
                       contain
                     ></v-img>
@@ -668,12 +753,12 @@
               <v-col cols= "4">
                 <v-row>
                   <v-img
-                      lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
-                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/Leavitt_Plate.png"
-                      alt="Leavitt Plate"
-                      max-height = "200"
-                      contain
-                    ></v-img>
+                    :lazy-src="`${image_location}/Leavitt_Plate.png`"
+                    :src="`${image_location}/Leavitt_Plate.png`"
+                    alt="Photographic glass plate of the Small Magellenic Cloud. Handwritten markings are scattered around the plate, noting objects of interest."
+                    max-height = "200"
+                    contain
+                  ></v-img>
                   <div
                     class="text-center mb-6 mt-2 grey--text"
                     style="width: 100%;"
@@ -683,11 +768,11 @@
                 </v-row>
                 <v-row>
                   <v-img
-                      lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
-                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/HSLeavittHSCr13Fig2_1912.jpeg"
-                      alt="Leavitt graph"
-                      max-height = "200"
-                      contain
+                    :lazy-src="`${image_location}/HSLeavittHSCr13Fig2_1912.jpeg`"
+                    :src="`${image_location}/HSLeavittHSCr13Fig2_1912.jpeg`"
+                    alt="A graph depicting stellar magnitude on the y-axis and period in days on the x-axis. Two plots are shown that go from the bottom left to the upper right of the chart."
+                    max-height = "200"
+                    contain
                   ></v-img>
                   <div
                     class="text-center mt-3 grey--text"
@@ -702,7 +787,7 @@
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="6" 
+      <v-window-item :value="7" 
         class="no-transition"
         
       >
@@ -722,9 +807,9 @@
               </v-col>
               <v-col cols="5">
                 <v-img
-                  lazy-src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/V.M.Slipher.gif"
-                  src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_intro/V.M.Slipher.gif"
-                  alt="Vesto Slipher"
+                  :lazy-src="`${image_location}/V.M.Slipher.gif`"
+                  :src="`${image_location}/V.M.Slipher.gif`"
+                  alt="Portrait of Vesto Slipher"
                   max-height = "400"
                   contain
                 ></v-img>
@@ -753,13 +838,13 @@
         depressed
         @click="() => {
           step--;
-          if(step==3) go_to_location_tool1({ // reset viewer to MW
+          if(step==4) go_to_location_tool1({ // reset viewer to MW
                                 ra: 266.64, // default MW coords
                                 dec: -28.39,
                                 fov: 216000, // 60 degrees
                                 instant: true, // also optional, false by default
                               })
-          if(step==4) go_to_location_tool2({ // Set to M31 with button pressed
+          if(step==5) go_to_location_tool2({ // Set to M31 with button pressed
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
@@ -795,23 +880,23 @@
         </v-item>
       </v-item-group>
       <v-spacer></v-spacer>
-      <!-- Code to use for disable in button below if step 2 depends on exploring WWT first: -->
-      <!-- :disabled="step === 6 || (step === 2 && !exploration_complete)" -->
+      <!-- Code to use for disable in button below if step 3 depends on exploring WWT first: -->
+      <!-- :disabled="step === length-1 || (step === 3 && !exploration_complete)" -->
       <v-btn
-        :disabled="step >= 6"
-        v-if="step < 6"
+        :disabled="step >= length-1"
+        v-if="step < length-1"
         class="black--text"
         color="accent"
         depressed
         @click="() => {
           step++;
-          if(step==3) go_to_location_tool1({ // reset viewer to MW
+          if(step==4) go_to_location_tool1({ // reset viewer to MW
                                 ra: 266.64, // default MW coords
                                 dec: -28.39,
                                 fov: 216000, // 60 degrees
                                 instant: true, // also optional, false by default
                               })
-          if(step==4) go_to_location_tool2({ // Go to M31 with button pressed
+          if(step==5) go_to_location_tool2({ // Go to M31 with button pressed
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
@@ -824,7 +909,7 @@
       </v-btn>
       <!-- first button below just being used for testing, delete when using live with students -->
       <v-btn
-        v-if="step < 6 && show_team_interface"
+        v-if="step < length-1 && show_team_interface"
         color="success"
         class="black--text"
         depressed
@@ -837,8 +922,8 @@
         get started
       </v-btn>
       <v-btn
-        v-if="step >= 6"
-        :disabled="step > 6"
+        v-if="step >= length-1"
+        :disabled="step > length-1"
         color="accent"
         class="black--text"
         depressed
@@ -904,9 +989,5 @@ module.exports = {
 </script>
 
 <style>
-
-div {
-  color: "purple";
-}
 
 </style>
