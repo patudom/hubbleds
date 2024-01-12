@@ -83,7 +83,7 @@
                   class="text-center mt-2 grey--text"
                   style="width: 75%;"
                 >
-                  Painting depicting a Native American view of the night sky, by <a href="https://annettelee.com/"  target="_blank" rel="noopener noreferrer" style = "color:lightskyblue">Annette Lee </a>
+                  Painting depicting a Native American view of the night sky, by <a href="https://annettelee.com/index.php/portfolio/on-paper/"  target="_blank" rel="noopener noreferrer" style = "color:lightskyblue">Annette Lee </a>
                 </div>
               </v-col>
             </v-row>
