@@ -1,3 +1,7 @@
 .theme--dark.v-sheet {
     background-color: transparent;
 }
+
+.v-application--wrap > div:nth-child(2) > div:nth-child(2){
+    display: none !important;
+}
