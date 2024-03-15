@@ -1,8 +1,7 @@
 <template>
   <v-card
-    outlined
     color="info"
-    class="pa-1"
+    :class="highlighted ? 'pa-1' : ''"
     v-intersect.once="(entries, observer, isIntersecting) => {
       const root = entries[0].target;
       const element = root.querySelector('iframe');
