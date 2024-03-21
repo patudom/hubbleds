@@ -6,7 +6,10 @@ from ...decorators import computed_property
 import dataclasses
 from cosmicds.utils import API_URL
 from ...state import GLOBAL_STATE
-from ...data_models.student import example_data, StudentMeasurement
+from ...data_models.student import example_data, StudentMeasurement, SpectrumData
+from contextlib import closing
+from io import BytesIO
+from astropy.io import fits
 
 
 class Marker(enum.Enum):
@@ -73,8 +76,8 @@ class ComponentState:
 
         return getattr(self, f"{step.name}_gate")().value
 
-    def transition_to(self, step: Marker):
-        if self.can_transition(step):
+    def transition_to(self, step: Marker, force=False):
+        if self.can_transition(step) or force:
             self.current_step.set(step)
         else:
             print(
@@ -169,6 +172,10 @@ class ComponentState:
                 ".fits", ""
             )
 
+            # Load the spectrum associated with the example data
+            spec_data = self._load_spectrum_data(self._example_galaxy_data)
+            self._example_galaxy_data["spectrum"] = spec_data
+
             # Explicitly add the example galaxy to the example measurements
             example_data.measurements.append(
                 StudentMeasurement(**self.example_galaxy_data)
@@ -176,30 +183,31 @@ class ComponentState:
 
         return self._example_galaxy_data
 
-    # def get_spectrum_data(self, name, gal_type):
-    #     if not name.endswith(".fits"):
-    #         filename = name + ".fits"
-    #     else:
-    #         filename = name
-    #         name = name[: -len(".fits")]
-    #
-    #     data_name = name + "[COADD]"
-    #     type_folders = {"Sp": "spiral", "E": "elliptical", "Ir": "irregular"}
-    #     folder = type_folders[gal_type]
-    #     url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{filename}"
-    #     response = GLOBAL_STATE.request_session.get(url)
-    #
-    #     with closing(BytesIO(response.content)) as f:
-    #         f.name = name
-    #         with fits.open(f) as hdulist:
-    #             data = next(
-    #                 (d for d in fits_reader(hdulist) if d.label == data_name), None
-    #             )
-    #
-    #     if data is None:
-    #         return
-    #
-    #     data.label = name
-    #     dc.append(data)
-    #     data["lambda"] = 10 ** data["loglam"]
-    #     HubblesLaw.make_data_writeable(data)
+    @staticmethod
+    def _load_spectrum_data(gal_info):
+        file_name = f"{gal_info['name']}.fits"
+        gal_type = gal_info["type"]
+
+        type_folders = {"Sp": "spiral", "E": "elliptical", "Ir": "irregular"}
+        folder = type_folders[gal_type]
+        url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{file_name}"
+        response = GLOBAL_STATE.request_session.get(url)
+
+        with closing(BytesIO(response.content)) as f:
+            f.name = gal_info["name"]
+
+            with fits.open(f) as hdulist:
+                data = hdulist["COADD"].data if "COADD" in hdulist else None
+
+        if data is None:
+            print("No extension named 'COADD' in spectrum fits file.")
+            return
+
+        spec_data = dict(
+            name=gal_info["name"],
+            wave=10 ** data["loglam"],
+            flux=data["flux"],
+            ivar=data["ivar"],
+        )
+
+        return spec_data
