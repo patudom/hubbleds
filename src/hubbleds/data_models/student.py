@@ -2,6 +2,13 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 
+class SpectrumData(BaseModel):
+    name: str
+    wave: list[float]
+    flux: list[float]
+    ivar: list[float]
+
+
 class StudentMeasurement(BaseModel):
     id: Optional[str]
     name: Optional[str]
@@ -13,6 +20,7 @@ class StudentMeasurement(BaseModel):
     rest_wave: Optional[float] = 0.0
     measured_wave: Optional[float] = 0.0
     velocity: Optional[float] = 0.0
+    spectrum: Optional[SpectrumData] = None
 
 
 class StudentData(BaseModel):

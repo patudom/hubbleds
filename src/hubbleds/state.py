@@ -1,10 +1,11 @@
-from dataclasses import dataclass
+import dataclasses
 from cosmicds.state import GlobalState
+from solara import Reactive
 
 
-@dataclass
+@dataclasses.dataclass
 class LocalState:
-    pass
+    debug_mode: Reactive[bool] = dataclasses.field(default=Reactive(False))
 
 
 GLOBAL_STATE = GlobalState()
