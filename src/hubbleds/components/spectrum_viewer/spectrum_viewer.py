@@ -14,7 +14,7 @@ df = Table(
 
 
 @solara.component
-def SpectrumViewer(data=pd.DataFrame()):
+def SpectrumViewer(data=pd.DataFrame(), on_click=None):
     with rv.Card():
         with rv.Toolbar(color="primary", dense=True):
             with rv.ToolbarTitle():
