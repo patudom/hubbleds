@@ -7,7 +7,7 @@
     title-text="Choose a Row"
     @back="back_callback()"
     @next="next_callback()"
-    :can-advance="!can_advance"
+    :can-advance="can_advance"
   >
   <template #before-next>
       Select the example galaxy from your table.
