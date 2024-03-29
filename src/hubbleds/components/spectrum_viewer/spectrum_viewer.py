@@ -14,11 +14,22 @@ df = Table(
 
 
 @solara.component
-def SpectrumViewer(data=pd.DataFrame(), on_click=None):
+def SpectrumViewer(
+    data=pd.DataFrame(),
+    on_lambda_clicked=None,
+    on_zoom_clicked=None,
+    on_spectrum_clicked=None,
+):
     with rv.Card():
         with rv.Toolbar(color="primary", dense=True):
             with rv.ToolbarTitle():
-                solara.Text("MY GALAXIES")
+                solara.Text("SPECTRUM VIEWER")
+
+            rv.Spacer()
+
+            solara.IconButton(icon_name="mdi-select-search", on_click=on_zoom_clicked)
+            solara.IconButton(icon_name="mdi-lambda", on_click=on_lambda_clicked)
+            solara.IconButton(icon_name="mdi-lambda", on_click=on_spectrum_clicked)
 
         fig = px.line(data, x="wave", y="flux")
 
@@ -32,11 +43,23 @@ def SpectrumViewer(data=pd.DataFrame(), on_click=None):
             annotation_position="bottom right",
         )
 
+        fig.add_shape(
+            editable=True,
+            x0=6790,
+            x1=6830,
+            y0=85,
+            y1=100,
+            xref="x",
+            yref="y",
+            line_color="red",
+            fillcolor="red",
+        )
+
         fig.update_layout(
             xaxis_zeroline=False,
             yaxis_zeroline=False,
             xaxis=dict(
-                spikecolor="white",
+                spikecolor="black",
                 spikethickness=1,
                 spikedash="solid",
                 spikemode="across",
@@ -46,6 +69,10 @@ def SpectrumViewer(data=pd.DataFrame(), on_click=None):
             #     hoverdistance=0,
             hovermode="x",
         )
+
+        line = fig.data[0]
+
+        line.on_click(lambda: print("CLICKED POLOT"))
 
         solara.FigurePlotly(
             fig,
