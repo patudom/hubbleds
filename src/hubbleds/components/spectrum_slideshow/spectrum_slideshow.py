@@ -11,5 +11,6 @@ def SpectrumSlideshow(
     dialog=False,
     opened=False,
     image_location=f"{IMAGE_BASE_URL}/stage_one_spectrum",
+    event_on_dialog_opened=None,
 ):
     pass

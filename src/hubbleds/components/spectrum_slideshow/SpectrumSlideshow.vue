@@ -11,7 +11,7 @@
         block
         color="secondary"
         elevation="2"
-        @click.stop="() => { opened = true }"
+        @click.stop="() => { opened = true; on_dialog_opened() }"
       >
         Spectrum tutorial
       </v-btn>
