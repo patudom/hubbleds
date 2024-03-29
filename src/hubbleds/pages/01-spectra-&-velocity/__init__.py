@@ -56,6 +56,7 @@ def Page():
 
     solara.Text(
         f"Current step: {component_state.current_step.value}, "
+        f"Next step: {Marker(component_state.current_step.value.value + 1)}"
         f"Can advance: {component_state.can_transition(next=True)}"
     )
 
@@ -234,22 +235,81 @@ def Page():
                 GUIDELINE_ROOT / "GuidelineSpectrum.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.mee_spe1),
+                show=component_state.is_current_step(Marker.mee_spe1)
+                or component_state.is_current_step(Marker.spe_tut1),
                 state_view={
-                    "spectrum_tutorial_opened": bool(
-                        component_state.spectrum_tutorial_opened.value
-                    )
+                    "spectrum_tutorial_opened": component_state.spectrum_tutorial_opened.value
+                },
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineRestwave.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.res_wav1),
+                state_view={
+                    "selected_example_galaxy": component_state.selected_example_galaxy.value,
+                    "lambda_on": component_state.lambda_on.value,
+                    "lambda_used": component_state.lambda_used.value,
+                },
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineObswave1.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.obs_wav1),
+                state_view={
+                    "selected_example_galaxy": component_state.selected_example_galaxy.value,
+                },
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineObswave2.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.obs_wav2),
+                state_view={
+                    "selected_example_galaxy": component_state.selected_example_galaxy.value,
+                    "zoom_tool_activate": component_state.zoom_tool_activated.value,
+                },
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDopplerCalc0.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dop_cal0),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDopplerCalc2.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dop_cal2),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDopplerCalc4.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.mee_gui1),
+                state_view={
+                    "lambda_obs": component_state.lambda_obs.value,
+                    "lambda_rest": component_state.lambda_rest.value,
+                    "failed_validation_4": component_state.doppler_calc_state.failed_validation_4.value,
                 },
             )
 
         with rv.Col(cols=8):
-            if component_state.is_current_step(Marker.mee_spe1):
+            if component_state.current_step.value.value >= Marker.mee_spe1.value:
                 spec_data = example_data.model_dump()["measurements"][0]["spectrum"]
 
                 spectrum_viewer = SpectrumViewer(
                     Table(
                         {"wave": spec_data["wave"], "flux": spec_data["flux"]}
-                    ).to_pandas()
+                    ).to_pandas(),
+                    on_lambda_clicked=lambda: component_state.lambda_used.set(True),
+                    on_zoom_clicked=lambda: component_state.zoom_tool_activated.set(
+                        True
+                    ),
+                    on_spectrum_clicked=lambda: component_state.spectrum_clicked.set(
+                        True
+                    ),
                 )
 
     with rv.Row():
@@ -258,4 +318,9 @@ def Page():
 
         with rv.Col(cols=8):
             if component_state.current_step.value.value >= Marker.mee_spe1.value:
-                SpectrumSlideshow()
+                solara.Text(f"{component_state.spectrum_tutorial_opened.value}")
+                SpectrumSlideshow(
+                    event_on_dialog_opened=lambda *args: component_state.spectrum_tutorial_opened.set(
+                        True
+                    )
+                )
