@@ -7,6 +7,7 @@
     title-text="Introducing the Guidelines"
     @next="next_callback()"
     :allow-back="false"
+    :can-advance="can_advance"
   >
     <template #back-content>
       <div>
