@@ -22,7 +22,13 @@ class Marker(enum.Enum):
     cho_row1 = enum.auto()
     mee_spe1 = enum.auto()
     spe_tut1 = enum.auto()
-    res_wave1 = enum.auto()
+    res_wav1 = enum.auto()
+    obs_wav1 = enum.auto()
+    obs_wav2 = enum.auto()
+    dop_cal0 = enum.auto()
+    dop_cal2 = enum.auto()
+    dop_cal4 = enum.auto()
+    NA3 = enum.auto()
 
     @staticmethod
     def next(step):
@@ -34,6 +40,35 @@ class Marker(enum.Enum):
 
 
 @dataclasses.dataclass
+class DopplerCalculation:
+    step: Reactive[int] = dataclasses.field(default=Reactive(0))
+    length: Reactive[int] = dataclasses.field(default=Reactive(6))
+    current_title: Reactive[str] = dataclasses.field(
+        default=Reactive("Doppler Calculation")
+    )
+    failed_validation_4: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    failed_validation_5: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    interact_steps_5: Reactive[list] = dataclasses.field(default=Reactive([3, 4]))
+    max_step_completed_5: Reactive[int] = dataclasses.field(default=Reactive(0))
+    student_c: Reactive[int] = dataclasses.field(default=Reactive(0))
+    student_vel_calc: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    complete: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    titles: Reactive[list] = dataclasses.field(
+        default=Reactive(
+            [
+                "Doppler Calculation",
+                "Doppler Calculation",
+                "Doppler Calculation",
+                "Reflect on Your Result",
+                "Enter Speed of Light",
+                "Your Galaxy's Velocity",
+            ]
+        )
+    )
+    mj_inputs: Reactive[list] = dataclasses.field(default=Reactive([]))
+
+
+@dataclasses.dataclass
 class ComponentState:
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.mee_gui1)
@@ -42,7 +77,20 @@ class ComponentState:
     selected_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
     show_example_galaxy: Reactive[bool] = dataclasses.field(default=Reactive(False))
     selected_example_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    spectrum_tutorial_opened: Reactive[bool] = dataclasses.field(default=Reactive(bool))
+    spectrum_tutorial_opened: Reactive[bool] = dataclasses.field(
+        default=Reactive(False)
+    )
+    lambda_on: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    lambda_used: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    spectrum_clicked: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    zoom_tool_activated: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    doppler_calc_reached: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    lambda_obs: Reactive[float] = dataclasses.field(default=Reactive(0.0))
+    lambda_rest: Reactive[float] = dataclasses.field(default=Reactive(0.0))
+    doppler_calc_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    doppler_calc_state: DopplerCalculation = dataclasses.field(
+        default_factory=DopplerCalculation
+    )
 
     def __post_init__(self):
         self._galaxy_data = None
@@ -74,7 +122,14 @@ class ComponentState:
         elif prev:
             step = Marker.previous(self.current_step.value)
 
-        return getattr(self, f"{step.name}_gate")().value
+        if hasattr(self, f"{step.name}_gate"):
+            return getattr(
+                self,
+                f"{step.name}_gate",
+            )().value
+
+        print(f"No gate exists for step {step.name}, allowing anyway.")
+        return True
 
     def transition_to(self, step: Marker, force=False):
         if self.can_transition(step) or force:
@@ -91,7 +146,7 @@ class ComponentState:
 
     def transition_previous(self):
         previous_marker = Marker.previous(self.current_step.value)
-        self.transition_to(previous_marker)
+        self.transition_to(previous_marker, force=True)
 
     @computed_property
     def mee_gui1_gate(self):
@@ -131,11 +186,34 @@ class ComponentState:
 
     @computed_property
     def spe_tut1_gate(self):
+        return (
+            bool(self.selected_example_galaxy.value)
+            and self.spectrum_tutorial_opened.value
+        )
+
+    @computed_property
+    def res_wav1_gate(self):
         return bool(self.selected_example_galaxy.value)
 
     @computed_property
-    def res_wave1_gate(self):
-        return bool(self.selected_example_galaxy.value)
+    def obs_wav1_gate(self):
+        return self.lambda_used.value and not self.spectrum_clicked.value
+
+    @computed_property
+    def obs_wav2_gate(self):
+        return self.spectrum_clicked.value
+
+    @computed_property
+    def obs_wav2_gate(self):
+        return self.spectrum_clicked.value
+
+    @computed_property
+    def dop_cal0_gate(self):
+        return self.zoom_tool_activated.value
+
+    @computed_property
+    def dop_cal4_gate(self):
+        return self.doppler_calc_reached.value
 
     @property
     def galaxy_data(self):
