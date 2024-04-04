@@ -1,13 +1,13 @@
 <template>
   <scaffold-alert
-    class="mb-4 mx-auto doppler_alert"
-    color="info"
-    elevation="6"
-    max-width="800"
-    title-text="Input Wavelengths"
-    @back="back_callback()"
-    :can-advance="can_advance"
-    @next="() =>
+      class="mb-4 mx-auto doppler_alert"
+      color="info"
+      elevation="6"
+      max-width="800"
+      title-text="Input Wavelengths"
+      @back="back_callback()"
+      :can-advance="can_advance"
+      @next="() =>
       {
         const expectedAnswers = [state_view.lambda_obs, state_view.lambda_rest];
         state_view.doppler_calc_dialog = !!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers);
@@ -160,62 +160,17 @@ mjx-mstyle {
 
 
 <script>
-export default {
-  // mounted: () => {
-  //   console.log("MOUNTED Doppler Calc 4");
-  // },
-  async mounted() {
-    console.log("MOUNTED Doppler Calc 4");
-
-    // Grab MathJax itself
-    // We want to wait for it to finish loading, in case there are
-    // any elements that need to be typeset on the initial screen
-    await new Promise((resolve, reject) => {
-      const mathJaxScript = document.createElement('script');
-      mathJaxScript.async = false;
-      mathJaxScript.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
-      document.head.appendChild(mathJaxScript);
-      mathJaxScript.onload = (_e) => resolve();
-      mathJaxScript.onerror = (_e) => reject();
-    });
-    await MathJax.startup.promise;
-
-    // Not all of our elements are initially in the DOM,
-    // so we need to account for that in order to get MathJax
-    // to render their formulae properly
-    const mathJaxOpeningDelimiters = [ "$$", "\\(", "\\[" ];
-    const containsMathJax = node => mathJaxOpeningDelimiters.some(delim => node.innerHTML.includes(delim));
-    const elementToScan = node => node.nodeType === Node.ELEMENT_NODE;
-    const mathJaxCallback = function(mutationList, _observer) {
-      mutationList.forEach(mutation => {
-        if (mutation.type === 'childList') {
-
-          const needTypesetting = [];
-          mutation.addedNodes.forEach(node => {
-            if (elementToScan(node) && containsMathJax(node)) {
-              needTypesetting.push(node);
-            }
-          });
-          if (needTypesetting.length > 0) {
-            MathJax.typesetPromise(needTypesetting);
-          }
-
-          const toClear = [];
-          mutation.removedNodes.forEach(node => {
-            if (elementToScan(node) && containsMathJax(node)) {
-              toClear.push(node);
-            }
-          })
-          if (toClear.length > 0) {
-            MathJax.typesetClear(toClear);
-          }
-        }
-      });
+module.exports = {
+  computed: {
+    MathJax() {
+      return document.defaultView.MathJax
     }
-    const observer = new MutationObserver(mathJaxCallback);
-    const options = { childList: true, subtree: true };
-    observer.observe(this.$el, options);
   },
+  data: () => ({
+    state_view: {
+      failed_validation_4: false
+    }
+  }),
   methods: {
     getValue(inputID) {
       const input = document.getElementById(inputID);
@@ -232,7 +187,8 @@ export default {
     validateAnswersJS(inputIDs, expectedAnswers) {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
-        this.state_view.failed_validation_4 = (value && value === expectedAnswers[index]) ? false : true;
+        console.log(id, index, value, expectedAnswers[index], value && value === expectedAnswers[index]);
+        this.state_view.failed_validation_4 = (!(value && value === expectedAnswers[index]));
         return value && value === expectedAnswers[index];
       });
     }

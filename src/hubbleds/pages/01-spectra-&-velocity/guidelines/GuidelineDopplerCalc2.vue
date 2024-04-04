@@ -118,12 +118,8 @@
 
 <script>
 module.exports = {
-  mounted() {
-    console.log(document.defaultView.MathJax);
-  },
   computed: {
     MathJax() {
-      console.log(document.defaultView.MathJax);
       return document.defaultView.MathJax
     }
   },
