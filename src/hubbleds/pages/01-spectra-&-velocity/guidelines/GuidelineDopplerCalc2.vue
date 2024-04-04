@@ -16,7 +16,9 @@
         class="legend mt-8"
         color="info"
       >
-        <v-container>
+        <v-container
+            v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+        >
           <v-row
             no-gutters
           >
@@ -113,3 +115,17 @@
 }
 
 </style>
+
+<script>
+module.exports = {
+  mounted() {
+    console.log(document.defaultView.MathJax);
+  },
+  computed: {
+    MathJax() {
+      console.log(document.defaultView.MathJax);
+      return document.defaultView.MathJax
+    }
+  },
+}
+</script>
