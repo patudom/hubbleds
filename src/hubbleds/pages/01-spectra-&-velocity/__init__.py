@@ -234,6 +234,7 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSpectrum.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.mee_spe1)
                 or component_state.is_current_step(Marker.spe_tut1),
@@ -244,6 +245,7 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRestwave.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.res_wav1),
                 state_view={
@@ -255,6 +257,7 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineObswave1.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.obs_wav1),
                 state_view={
@@ -264,6 +267,7 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineObswave2.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.obs_wav2),
                 state_view={
@@ -274,20 +278,23 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc0.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dop_cal0),
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc2.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dop_cal2),
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc4.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.mee_gui1),
+                show=component_state.is_current_step(Marker.dop_cal4),
                 state_view={
                     "lambda_obs": component_state.lambda_obs.value,
                     "lambda_rest": component_state.lambda_rest.value,
