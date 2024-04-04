@@ -211,10 +211,6 @@ class ComponentState:
     def dop_cal0_gate(self):
         return self.zoom_tool_activated.value
 
-    @computed_property
-    def dop_cal4_gate(self):
-        return self.doppler_calc_reached.value
-
     @property
     def galaxy_data(self):
         return self._galaxy_data
