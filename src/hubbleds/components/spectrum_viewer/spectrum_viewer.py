@@ -20,6 +20,8 @@ def SpectrumViewer(
     on_zoom_clicked=None,
     on_spectrum_clicked=None,
 ):
+    obs_pos = solara.use_reactive(0.0)
+
     with rv.Card():
         with rv.Toolbar(color="primary", dense=True):
             with rv.ToolbarTitle():
@@ -31,10 +33,13 @@ def SpectrumViewer(
             solara.IconButton(icon_name="mdi-lambda", on_click=on_lambda_clicked)
             solara.IconButton(icon_name="mdi-lambda", on_click=on_spectrum_clicked)
 
+        solara.Text(f"{obs_pos.value}")
+        solara.Button(label="Test", on_click=lambda: obs_pos.set(np.random.randint(3000, 8000)))
+
         fig = px.line(data, x="wave", y="flux")
 
-        fig.add_hline(
-            y=1,
+        fig.add_vline(
+            x=obs_pos.value,
             line_width=0.5,
             line_dash="dot",
             line_color="cyan",
@@ -44,7 +49,7 @@ def SpectrumViewer(
         )
 
         fig.add_shape(
-            editable=True,
+            editable=False,
             x0=6790,
             x1=6830,
             y0=85,
@@ -66,14 +71,27 @@ def SpectrumViewer(
                 spikesnap="cursor",
             ),
             spikedistance=-1,
-            #     hoverdistance=0,
             hovermode="x",
         )
 
-        line = fig.data[0]
+        def _clicked(**kwargs):
+            print(kwargs)
+            # fig.update_traces(patch={'x0': kwargs['points']['xs'][0],
+            #                          'x1': kwargs['points']['xs'][0]})
+            fig.layout.shapes[0].x0 = kwargs['points']['xs'][0]
+            fig.layout.shapes[0].x1 = kwargs['points']['xs'][0]
 
-        line.on_click(lambda: print("CLICKED POLOT"))
+            fig.add_vline(
+                x=obs_pos.value,
+                line_width=1,
+                line_color="cyan",
+                annotation_font_size=12,
+                annotation_position="bottom right",
+            )
+            obs_pos.set(kwargs['points']['xs'][0])
 
         solara.FigurePlotly(
             fig,
+            on_click=lambda kwargs: _clicked(**kwargs),
+            dependencies=[obs_pos]
         )
