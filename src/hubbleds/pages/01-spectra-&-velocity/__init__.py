@@ -12,7 +12,7 @@ from solara import Reactive
 from pathlib import Path
 from astropy.table import Table
 
-from ...components import DataTable, SpectrumViewer, SpectrumSlideshow
+from ...components import DataTable, SpectrumViewer, SpectrumSlideshow, DopplerSlideshow
 from ...data_management import *
 from ...state import GLOBAL_STATE, LOCAL_STATE
 from ...widgets.selection_tool import SelectionTool
@@ -40,7 +40,18 @@ def _on_galaxy_selected(galaxy):
 
 def _on_example_galaxy_table_row_selected(row):
     galaxy = row["item"]
-    component_state.selected_example_galaxy.value = galaxy
+    component_state.selected_example_galaxy.set(galaxy)
+    component_state.lambda_rest.set(galaxy['rest_wave'])
+    component_state.lambda_obs.subscribe(
+        lambda *args: example_data.update(galaxy['id'], {'measured_wave': args[0]}))
+
+
+def _on_galaxy_table_row_selected(row):
+    galaxy = row["item"]
+    component_state.selected_galaxy.set(galaxy)
+    component_state.lambda_rest.set(galaxy['rest_wave'])
+    component_state.lambda_obs.subscribe(
+        lambda *args: student_data.update(galaxy['id'], {'measured_wave': args[0]}))
 
 
 @solara.component
@@ -72,6 +83,7 @@ def Page():
             component_state.transition_to(Marker.sel_gal3, force=True)
 
         solara.Button("Select 5 Galaxies", on_click=_on_select_galaxies_clicked)
+        solara.Text(f"{component_state.doppler_calc_dialog.value}")
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -177,9 +189,7 @@ def Page():
             )
 
         with rv.Col(cols=8):
-            if component_state.is_current_step(
-                Marker.cho_row1
-            ) or component_state.is_current_step(Marker.mee_spe1):
+            if Marker.cho_row1.value <= component_state.current_step.value.value < Marker.rem_gal1.value:
                 example_data_table = DataTable(
                     title="Example Galaxy",
                     headers=[
@@ -200,7 +210,7 @@ def Page():
                         },
                         {"text": "Velocity (km/s)", "value": "velocity"},
                     ],
-                    items=example_data.model_dump(exclude=["spectrum"])["measurements"],
+                    items=example_data.dict(exclude={'measurements': {'__all__': 'spectrum'}})["measurements"],
                     highlighted=component_state.is_current_step(Marker.cho_row1),
                     event_on_row_selected=_on_example_galaxy_table_row_selected,
                 )
@@ -225,8 +235,9 @@ def Page():
                         },
                         {"text": "Velocity (km/s)", "value": "velocity"},
                     ],
-                    items=student_data.model_dump(exclude=["spectrum"])["measurements"],
+                    items=student_data.dict(exclude={'measurements': {'__all__': 'spectrum'}})["measurements"],
                     highlighted=component_state.is_current_step(Marker.not_gal_tab),
+                    event_on_row_selected=_on_example_galaxy_table_row_selected,
                 )
 
     with rv.Row():
@@ -236,8 +247,8 @@ def Page():
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.mee_spe1)
-                or component_state.is_current_step(Marker.spe_tut1),
+                show=component_state.is_current_step(Marker.mee_spe1),
+                # or component_state.is_current_step(Marker.spe_tut1),
                 state_view={
                     "spectrum_tutorial_opened": component_state.spectrum_tutorial_opened.value
                 },
@@ -310,6 +321,8 @@ def Page():
                     Table(
                         {"wave": spec_data["wave"], "flux": spec_data["flux"]}
                     ).to_pandas(),
+                    lambda_obs=component_state.lambda_obs,
+                    spectrum_click_enabled=component_state.current_step.value.value >= Marker.obs_wav1.value,
                     on_lambda_clicked=lambda: component_state.lambda_used.set(True),
                     on_zoom_clicked=lambda: component_state.zoom_tool_activated.set(
                         True
@@ -325,9 +338,25 @@ def Page():
 
         with rv.Col(cols=8):
             if component_state.current_step.value.value >= Marker.mee_spe1.value:
-                solara.Text(f"{component_state.spectrum_tutorial_opened.value}")
                 SpectrumSlideshow(
                     event_on_dialog_opened=lambda *args: component_state.spectrum_tutorial_opened.set(
                         True
                     )
                 )
+
+            component_state.doppler_calc_dialog.value = component_state.is_current_step(Marker.dop_cal5)
+
+            DopplerSlideshow(
+                dialog=component_state.doppler_calc_dialog.value,
+                titles=component_state.doppler_calc_state.titles.value,
+                step=component_state.doppler_calc_state.step.value,
+                length=component_state.doppler_calc_state.length.value,
+                lambda_obs=component_state.lambda_obs.value,
+                lambda_rest=component_state.lambda_rest.value,
+                max_step_completed_5=component_state.doppler_calc_state.max_step_completed_5.value,
+                failed_validation_5=component_state.doppler_calc_state.failed_validation_5.value,
+                interact_steps_5=component_state.doppler_calc_state.interact_steps_5.value,
+                student_vel=component_state.student_vel.value,
+                student_c=component_state.doppler_calc_state.student_c.value,
+                student_vel_calc=component_state.doppler_calc_state.student_vel_calc.value
+            )
