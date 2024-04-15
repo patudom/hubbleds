@@ -12,6 +12,12 @@ from io import BytesIO
 from astropy.io import fits
 
 
+ELEMENT_REST = {
+    'H-α': 6562.79,
+    'Mg-I': 5176.7
+}
+
+
 class Marker(enum.Enum):
     mee_gui1 = enum.auto()
     sel_gal1 = enum.auto()
@@ -21,13 +27,33 @@ class Marker(enum.Enum):
     sel_gal4 = enum.auto()
     cho_row1 = enum.auto()
     mee_spe1 = enum.auto()
-    spe_tut1 = enum.auto()
+    # spe_tut1 = enum.auto()  # This step doesn't seem to do anything?
     res_wav1 = enum.auto()
     obs_wav1 = enum.auto()
     obs_wav2 = enum.auto()
     dop_cal0 = enum.auto()
     dop_cal2 = enum.auto()
     dop_cal4 = enum.auto()
+    dop_cal5 = enum.auto()
+    che_mea1 = enum.auto()
+    int_dot1 = enum.auto()
+    dot_seq1 = enum.auto()
+    dot_seq2 = enum.auto()
+    dot_seq3 = enum.auto()
+    dot_seq4 = enum.auto()
+    dot_seq5 = enum.auto()
+    dot_seq6 = enum.auto()
+    dot_seq7 = enum.auto()
+    dot_seq8 = enum.auto()
+    dot_seq9 = enum.auto()
+    dot_seq13 = enum.auto()
+    dot_seq13a = enum.auto()
+    dot_seq14 = enum.auto()
+    rem_gal1 = enum.auto()
+    ref_dat1 = enum.auto()
+    dot_gal6 = enum.auto()
+    ref_vel1 = enum.auto()
+    end_sta1 = enum.auto()
     NA3 = enum.auto()
 
     @staticmethod
@@ -91,6 +117,7 @@ class ComponentState:
     doppler_calc_state: DopplerCalculation = dataclasses.field(
         default_factory=DopplerCalculation
     )
+    student_vel: Reactive[float] = dataclasses.field(default=Reactive(0))
 
     def __post_init__(self):
         self._galaxy_data = None
@@ -193,11 +220,14 @@ class ComponentState:
 
     @computed_property
     def res_wav1_gate(self):
-        return bool(self.selected_example_galaxy.value)
+        return (
+            bool(self.selected_example_galaxy.value)
+            and self.spectrum_tutorial_opened.value
+        )
 
     @computed_property
     def obs_wav1_gate(self):
-        return self.lambda_used.value and not self.spectrum_clicked.value
+        return self.lambda_used.value
 
     @computed_property
     def obs_wav2_gate(self):
@@ -210,6 +240,10 @@ class ComponentState:
     @computed_property
     def dop_cal0_gate(self):
         return self.zoom_tool_activated.value
+
+    @computed_property
+    def che_mea1(self):
+        return self.doppler_calc_state.complete.value
 
     @property
     def galaxy_data(self):
@@ -229,6 +263,7 @@ class ComponentState:
             self._galaxy_data["name"] = [
                 x[: -len(".fits")] for x in self._galaxy_data["name"]
             ]
+            self._galaxy_data["rest_wave"] = [round(ELEMENT_REST[x['element']]) for x in galaxies]
 
         return self._galaxy_data
 
@@ -245,6 +280,7 @@ class ComponentState:
             self._example_galaxy_data["name"] = example_galaxy_data["name"].replace(
                 ".fits", ""
             )
+            self._example_galaxy_data["rest_wave"] = round(ELEMENT_REST[example_galaxy_data['element']])
 
             # Load the spectrum associated with the example data
             spec_data = self._load_spectrum_data(self._example_galaxy_data)
