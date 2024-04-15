@@ -42,17 +42,17 @@
       </template>
 
       <template v-slot:item.rest_wave="{ item }">
-        6565
+        {{ item.rest_wave }}
       </template>
 
       <template v-slot:item.measured_wave="{ item }">
         <v-icon v-if="item.measured_wave < 1.0">mdi-alert</v-icon>
-        <span v-else>{{ item }}</span>
+        <span v-else>{{ item.measured_wave }}</span>
       </template>
 
       <template v-slot:item.velocity="{ item }">
         <v-icon v-if="item.velocity < 1.0">mdi-alert</v-icon>
-        <span v-else>{{ item }}</span>
+        <span v-else>{{ item.velocity }}</span>
       </template>
 
     </v-data-table>
