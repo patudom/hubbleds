@@ -155,7 +155,6 @@ mjx-mstyle {
   font-family: "Roboto", Arial, Helvetica, sans-serif;
   padding: 3px;
 }
-
 </style>
 
 
@@ -188,6 +187,7 @@ module.exports = {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
         console.log(id, index, value, expectedAnswers[index], value && value === expectedAnswers[index]);
+        // TODO: CHANGE THIS TO A CALLBACK
         this.state_view.failed_validation_4 = (!(value && value === expectedAnswers[index]));
         return value && value === expectedAnswers[index];
       });
