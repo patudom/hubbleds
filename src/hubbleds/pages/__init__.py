@@ -26,12 +26,9 @@ _titles = [
 ]
 
 def carousel_title(step, titles):
-    solara.HTML(
-        tag="h2",
-        unsafe_innerHTML=titles[step],
-        classes=["display-1", "mb-4"],
-    )
-
+    with rv.Toolbar(color="warning", dense=True,):
+        with rv.ToolbarTitle( ):
+            solara.Text(titles[step], classes=["toolbar-title"])
 
 @solara.component
 def Page():
@@ -65,25 +62,28 @@ def Page():
                         <p>
                         In this <b>Cosmic Data Story</b>, you will use authentic astronomical data to investigate the mysteries of our Universe. In particular, you will be answering these questions:
                         </p>
-                        """                   
+                        """  ,
+                        classes = ["padded-text"],                 
                     )
 
-                    with rv.Alert(
-                        text=True,
-                        color="info",
-                        outlined=True,
-                        icon="mdi-help-circle",
-                        class_="mt-4",
-                    ):
-                        solara.Text("Has the universe always existed?")
+                    with solara.Card(style="background-color: blue"):
+                        solara.HTML(
+                            unsafe_innerHTML=
+                            """
+                            <p
+                                class="my-3 text-center"
+                            >
+                                Has the universe always existed?
+                            </p>
+                            <p
+                                class="my-3 text-center"
+                            >
+                                If not, how long ago did it form?
+                            </p>                            
+                            """,
+                            classes=["intro-card-text"],
+                        )
 
-                    with rv.Alert(
-                        text=True,
-                        color="info",
-                        outlined=True,
-                        icon="mdi-help-circle",
-                    ):
-                        solara.Text("If not, how long ago did it form?")
                 with solara.Column(align="center"):
                     rv.Img(
                         src = image_location + "MilkyWayOverMountainsNASASTScILevay.jpg",
@@ -115,7 +115,8 @@ def Page():
                                 <p>
                                     Let's get started.
                                 </p>
-                            """                   
+                            """,
+                        classes = ["padded-text"],                       
                         )
 
                     with solara.Column(align="center"):
@@ -161,7 +162,8 @@ def Page():
                             <p>
                             Imagine that you are an astronomer living in the <b>early 1900s</b>. You and your colleagues around the world, including Albert Einstein, would agree that the <b>universe is unchanging</b> and <b>everlasting.</b> In other words, you expect that the universe always has been and will be the way it is the way you see it now. This picture of an unchanging universe had rarely been questioned throughout human history, thanks in large part to <b>Aristotle</b>, who embraced perfection and permanence. 
                             </p>
-                            """
+                            """,
+                            classes = ["padded-text"],    
                         )
 
                     with solara.Column(align="center"):
@@ -231,7 +233,8 @@ def Page():
                     <p>
                         You can explore this view and see what is in the night sky, as astronomers have been doing for centuries. <b>Pan</b> (click and drag) and <b>zoom</b> (scroll in and out) to see parts of the sky beyond this view.
                     </p>
-                    """
+                    """,
+                    classes = ["padded-text"],    
                 )
 
                 with solara.Columns([8, 4]):
@@ -280,7 +283,8 @@ def Page():
                     <p>
                         Click on the buttons to the right to <b>view some Messier Objects</b>. (Fun fact: “nebula” means “cloud” or “fog” in Latin.)
                     </p>
-                    """
+                    """,
+                    classes = ["padded-text"],    
                 )
 
                 with solara.Columns([2, 1]):
@@ -335,7 +339,8 @@ def Page():
                     <p>
                         While you view these spiral nebulae, ponder what you would need to know to determine if they are within the Milky Way or beyond it. (Don't worry if you don't know. You will learn in this Data Story.) 
                     </p>
-                    """
+                    """,
+                    classes = ["padded-text"],                        
                 )
 
                 with solara.Columns([2, 1]):
@@ -391,7 +396,8 @@ def Page():
                     <p>
                     Between 1907&#8211;1921, Harvard astronomer <b>Henrietta Leavitt</b> observed Cepheid variable stars in a nebula called the Small Magellanic Cloud (SMC). By analyzing changes in the Cepheid stars’ brightness over time, she discovered that <b>fainter Cepheids vary more slowly than brighter ones</b>, as shown in her graph below. This important discovery made it possible to determine distances to spiral nebulae and finally resolve the Shapley-Curtis Great Debate: it turned out that spiral nebulae are far beyond the Milky Way and constitute <b>individual galaxies</b> in their own right.
                     </p>
-                    """
+                    """,
+                    classes = ["padded-text"],    
                 )
 
             with solara.Columns([2, 1]):
@@ -453,7 +459,8 @@ def Page():
                         <p>
                         It’s time for you to collect some of your own data, form conclusions, and compare your conclusions to what Vesto Slipher found.
                         </p>
-                        """
+                        """,
+                        classes = ["padded-text"],                            
                     )
 
                 with solara.Column(align="center"):
