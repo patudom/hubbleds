@@ -6,6 +6,41 @@
     display: none !important;
 }
 
+.max-width-350 {
+    max-width: 350px;
+}
+
+.max-height-150 {
+    max-height: 150px;
+}
+
+.max-height-200 {
+    max-height: 200px;
+}
+
+.max-height-250 {
+    max-height: 250px;
+}
+
+.max-height-300 {
+    max-height: 300px;
+}
+
+.max-height-350 {
+    max-height: 350px;
+}
+
+.max-height-400 {
+    max-height: 400px;
+}
+
+img {
+    display: block;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 1em;
+  }
+
 /*.solara-container-main {*/
 /*    max-width: 1264px;*/
 /*    height: 100%;*/
