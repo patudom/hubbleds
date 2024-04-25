@@ -85,8 +85,11 @@ def Page():
                     ):
                         solara.Text("If not, how long ago did it form?")
                 with solara.Column(align="center"):
-                    solara.Image(
-                        image= image_location + "MilkyWayOverMountainsNASASTScILevay.jpg",
+                    rv.Img(
+                        src = image_location + "MilkyWayOverMountainsNASASTScILevay.jpg",
+                        max_height = 550,
+                        contain = True,
+                        alt = "Colorful image of our Milky Way galaxy in the sky over a dark silhouette of mountains on the horizon.",
                     )
                     solara.Text(
                         "Our Milky Way galaxy over a mountain range. (Credit: NASA and STScI)",
@@ -122,18 +125,28 @@ def Page():
                                     image= image_location + "HST-SM4.jpeg",
                                     classes = ["max-height-250", ],
                                 )
+                                # rv.Img(
+                                #     src = image_location + "HST-SM4.jpeg",
+                                #     max_height = "250px",
+                                #     contain = True,  
+                                #     alt = "The Hubble Space Telescope against a dark background",
+                                # )
                             with solara.Column(align="center", classes=[]):
                                 solara.Image(
                                     image= image_location + "EdwinHubble.jpg",
                                     classes = ["max-height-250", ],
                                 )
-                        with solara.Columns(classes=[]):
-                            with solara.Column(align="center", classes=[]):
-                                solara.Text(
-                                    "The Hubble Space Telescope and Edwin Hubble, the astronomer it was named for. Hubble holds an image of the Andromeda Galaxy, for which the earliest recorded observation was made in 964 AD by Iranian scholar al-Sufi.",
-                                    classes=["caption", ],
-                                    style="text-align: center; max-width: 80%",
-                                )        
+                                # rv.Img(
+                                #     src = image_location + "EdwinHubble.jpg",
+                                #     max_height = "250px",
+                                #     contain = True,
+                                #     alt = "Astronomer Edwin Hubble holding an image of the Andromeda Galaxy"
+                                # )
+                        solara.Text(
+                            "The Hubble Space Telescope and Edwin Hubble, the astronomer it was named for. Hubble holds an image of the Andromeda Galaxy, for which the earliest recorded observation was made in 964 AD by Iranian scholar al-Sufi.",
+                            classes=["caption", ],
+                            style="text-align: center; max-width: 80%",
+                        )        
 
         # Slide 2
         with rv.CarouselItem():
@@ -158,6 +171,12 @@ def Page():
                                     image= image_location + "Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg",
                                     classes = ["max-height-300", ],
                                 )
+                                # rv.Img(
+                                #     src = image_location + "Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg",
+                                #     max_height = 300,
+                                #     contain = True,
+                                #     alt = "Eight women astronomers, wearing late 1800s clothing and hairstyles, are sitting or standing in a room. Some are observing astronomical images with magnifying glasses. Some are writing in notebooks.",                                    
+                                # )
                                 solara.Text(
                                     "Women astronomers at Harvard College Observatory in 1892, including Henrietta Leavitt (third from left), Williamina Fleming (standing), and Annie Jump Cannon (far right).",
                                     classes=["caption", ],
@@ -170,11 +189,25 @@ def Page():
                                             image= image_location + "Einstein_1921_by_F_Schmutzer_-_restorationCropped.png",
                                             classes = ["max-height-150", ],
                                         )
+                                        # rv.Img(
+                                        #     src = image_location + "Einstein_1921_by_F_Schmutzer_-_restorationCropped.png",
+                                        #     max_height = 150,
+                                        #     contain = True,
+                                        #     position = "right center" 
+                                        #     alt = "Portrait of Albert Einstein",                                            
+                                        # )
                                     with solara.Column(align="start"):
                                         solara.Image(
                                             image= image_location + "AristotleSchoolOfAthensCutoutZoom.png",
                                             classes = ["max-height-150", ],
-                                        )
+                                        )                                       
+                                        # rv.Img(
+                                        #     src = image_location + "AristotleSchoolOfAthensCutoutZoom.png",
+                                        #     max_height = 150,
+                                        #     contain = True, 
+                                        #     position = "left center"
+                                        #     alt = "Cutout showing a small portion of a much larger, colorful paiting by Raphael depicting Aristotle wearing a blue robe.",                                                     
+                                        # )
                                 solara.Text(
                                     "Left: Albert Einstein in 1921. Right: Aristotle, depicted in “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Both believed in an unchanging universe.",
                                     classes=["caption", ],
@@ -362,10 +395,12 @@ def Page():
                 )
 
             with solara.Columns([2, 1]):
-                with solara.Column(align="center"):
-                    solara.Image(
-                        image= image_location + "Leavitt_at_work.jpg",
-                        classes = ["max-height-350", ],
+                with solara.Column(align="center"):                
+                    rv.Img(
+                        src = image_location + "Leavitt_at_work.jpg",
+                        max_height = 350,
+                        contain = True,  
+                        alt = "Photograph of Henrietta Leavitt writing in a notebook. Several other notes are open neatly around her desk.",
                     )
                     solara.Text(
                         "Astronomer Henrietta Swan Leavitt",
@@ -374,9 +409,11 @@ def Page():
                     )     
                 
                 with solara.Column(align="center"):
-                    solara.Image(
-                        image= image_location + "Leavitt_Plate.png",
-                        classes = ["max-height-200", ],
+                    rv.Img(
+                        src = image_location + "Leavitt_Plate.png",
+                        max_height = 200,
+                        contain = True,
+                        alt = "Photographic glass plate of the Small Magellenic Cloud. Handwritten markings are scattered around the plate, noting objects of interest.",  
                     )
                     solara.Text(
                         "Glass plate showing Cepheid variable stars in Small Magellanic Cloud studied by Leavitt",
@@ -384,9 +421,11 @@ def Page():
                         style="text-align: center; max-width: 100%",
                     ) 
 
-                    solara.Image(
-                        image= image_location + "HSLeavittHSCr13Fig2_1912.jpeg",
-                        classes = ["max-height-200", ],
+                    rv.Img(
+                        src = image_location + "HSLeavittHSCr13Fig2_1912.jpeg",
+                        max_height = 200,
+                        contain = True,  
+                        alt = "A graph depicting stellar magnitude on the y-axis and period in days on the x-axis. Two plots are shown that go from the bottom left to the upper right of the chart.",
                     )
                     solara.Text(
                         "Graph from Leavitt's 1912 paper showing the relationship between period and brightness of Cepheid variables.",
@@ -418,9 +457,11 @@ def Page():
                     )
 
                 with solara.Column(align="center"):
-                    solara.Image(
-                        image= image_location + "V.M.Slipher.gif",
-                        classes = ["max-height-400", ],
+                    rv.Img(
+                        src = image_location + "V.M.Slipher.gif",
+                        max_height = 400,
+                        contain = True,  
+                        alt = "Portrait of Vesto Slipher",
                     )
                     solara.Text(
                         "Astronomer Vesto Slipher",
