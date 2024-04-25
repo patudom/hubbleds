@@ -10,6 +10,27 @@ from cosmicds.utils import API_URL
 from glue_jupyter.app import JupyterApplication
 
 from ..state import GLOBAL_STATE
+from ..utils import IMAGE_BASE_URL
+
+image_location = IMAGE_BASE_URL + "/stage_intro/"
+
+_titles = [
+    "Our Place in the Universe",
+    "Answering Questions with Data",
+    "Astronomy in the early 1900s",
+    "Explore the Cosmic Sky",
+    "What are the Fuzzy Things?",
+    "Spiral Nebulae and the Great Debate",
+    "Henrietta Leavitt's Discovery",
+    "Vesto Slipher and Spectral Data"
+]
+
+def carousel_title(step, titles):
+    solara.HTML(
+        tag="h2",
+        unsafe_innerHTML=titles[step],
+        classes=["display-1", "mb-4"],
+    )
 
 
 @solara.component
@@ -29,28 +50,22 @@ def Page():
         show_arrows=False,
         height="100%",
     ) as carousel:
+        # Slide 0
         with rv.CarouselItem():
-            solara.HTML(
-                tag="h2",
-                unsafe_innerHTML="Our Place in the Universe",
-                classes=["display-1", "mb-4"],
-            )
+            carousel_title(step, _titles)
 
-            with solara.Row():
-                with solara.Column():
-                    solara.Text(
+            with solara.ColumnsResponsive(12, large=[5,7]):
+                with solara.Column(align="center"):
+                    solara.HTML(
+                        unsafe_innerHTML=
                         """
-                        Humans have always looked to the sky and wondered how we 
-                        and our universe came to be.
-                        """
-                    )
-                    solara.Text(
-                        """
-                        In this Cosmic Data Story, you will use authentic 
-                        astronomical data to investigate the mysteries of our 
-                        Universe. In particular, you will be answering these 
-                        questions:
-                        """
+                        <p>
+                        Humans have always looked to the sky and wondered how we and our universe came to be. 
+                        </p>
+                        <p>
+                        In this <b>Cosmic Data Story</b>, you will use authentic astronomical data to investigate the mysteries of our Universe. In particular, you will be answering these questions:
+                        </p>
+                        """                   
                     )
 
                     with rv.Alert(
@@ -69,66 +84,350 @@ def Page():
                         icon="mdi-help-circle",
                     ):
                         solara.Text("If not, how long ago did it form?")
-                with solara.Column():
+                with solara.Column(align="center"):
                     solara.Image(
-                        image="/static/public/MilkyWayOverMountainsNASASTScILevay.jpg",
+                        image= image_location + "MilkyWayOverMountainsNASASTScILevay.jpg",
                     )
                     solara.Text(
                         "Our Milky Way galaxy over a mountain range. (Credit: NASA and STScI)",
                         classes=["caption"],
                         style="text-align: center",
                     )
+        # Slide 1
         with rv.CarouselItem():
-            solara.HTML(
-                tag="h2",
-                unsafe_innerHTML="Answering Questions with Data",
-                classes=["display-1", "mb-4"],
-            )
+            carousel_title(step, _titles)
+
+            with solara.Row():
+                with solara.ColumnsResponsive(12, large=[7,5]):
+                    with solara.Column(align="center"):
+                        solara.HTML(
+                            unsafe_innerHTML=
+                            """
+                                <p>
+                                    When scientists collect data to answer questions no one has answered yet, there is no answer key in the back of some book. So, as you explore this data story, you will learn how to <b>evaluate the reliability</b> of your results. Are the data really good enough to support a conclusion? <b>How can you know?</b> 
+                                </p>
+                                <p>
+                                    Just as scientists constantly must, you'll <b>determine what can be concluded</b> from the data at-hand, and <b>how much confidence</b> you can have in your conclusions.
+                                </p>
+                                <p>
+                                    Let's get started.
+                                </p>
+                            """                   
+                        )
+
+                    with solara.Column(align="center"):
+                        with solara.ColumnsResponsive(6, large=12):
+                            with solara.Column(align="center", classes=[]):
+                                solara.Image(
+                                    image= image_location + "HST-SM4.jpeg",
+                                    classes = ["max-height-250", ],
+                                )
+                            with solara.Column(align="center", classes=[]):
+                                solara.Image(
+                                    image= image_location + "EdwinHubble.jpg",
+                                    classes = ["max-height-250", ],
+                                )
+                        with solara.Columns(classes=[]):
+                            with solara.Column(align="center", classes=[]):
+                                solara.Text(
+                                    "The Hubble Space Telescope and Edwin Hubble, the astronomer it was named for. Hubble holds an image of the Andromeda Galaxy, for which the earliest recorded observation was made in 964 AD by Iranian scholar al-Sufi.",
+                                    classes=["caption", ],
+                                    style="text-align: center; max-width: 80%",
+                                )        
+
+        # Slide 2
         with rv.CarouselItem():
-            solara.HTML(
-                tag="h2",
-                unsafe_innerHTML="Astronomy in the Early 1900's",
-                classes=["display-1", "mb-4"],
-            )
+            carousel_title(step, _titles)
+
+            with solara.Row():
+                with solara.ColumnsResponsive(12, large=[5,7]):
+                    with solara.Column(align="center"):
+                        solara.HTML(
+                            unsafe_innerHTML=
+                            """
+                            <p>
+                            Imagine that you are an astronomer living in the <b>early 1900s</b>. You and your colleagues around the world, including Albert Einstein, would agree that the <b>universe is unchanging</b> and <b>everlasting.</b> In other words, you expect that the universe always has been and will be the way it is the way you see it now. This picture of an unchanging universe had rarely been questioned throughout human history, thanks in large part to <b>Aristotle</b>, who embraced perfection and permanence. 
+                            </p>
+                            """
+                        )
+
+                    with solara.Column(align="center"):
+                        with solara.ColumnsResponsive(6, large=12):
+                            with solara.Column(align="center", classes=[]):
+                                solara.Image(
+                                    image= image_location + "Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg",
+                                    classes = ["max-height-300", ],
+                                )
+                                solara.Text(
+                                    "Women astronomers at Harvard College Observatory in 1892, including Henrietta Leavitt (third from left), Williamina Fleming (standing), and Annie Jump Cannon (far right).",
+                                    classes=["caption", ],
+                                    style="text-align: center; max-width: 80%",
+                                )    
+                            with solara.Column(align="center"):
+                                with solara.Columns(6):
+                                    with solara.Column(align="end"):
+                                        solara.Image(
+                                            image= image_location + "Einstein_1921_by_F_Schmutzer_-_restorationCropped.png",
+                                            classes = ["max-height-150", ],
+                                        )
+                                    with solara.Column(align="start"):
+                                        solara.Image(
+                                            image= image_location + "AristotleSchoolOfAthensCutoutZoom.png",
+                                            classes = ["max-height-150", ],
+                                        )
+                                solara.Text(
+                                    "Left: Albert Einstein in 1921. Right: Aristotle, depicted in “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Both believed in an unchanging universe.",
+                                    classes=["caption", ],
+                                    style="text-align: center; max-width: 80%",
+                                )        
+        
+        # Slide 3
         with rv.CarouselItem():
-            solara.HTML(
-                tag="h2",
-                unsafe_innerHTML="Explore the Cosmic Sky",
-                classes=["display-1", "mb-4"],
-            )
+            carousel_title(step, _titles)
 
             with solara.Column():
-                solara.Text(
+                solara.HTML(
+                    unsafe_innerHTML=
                     """
-                    The frame below provides an interactive view of the night sky, 
-                    using images from real observations.
+                    <p>
+                        The frame below provides an <b>interactive view</b> of the night sky, using images from real observations.
+                    </p>
+                    <p>
+                        The brighter band you see going diagonally across the frame (before you try the controls) is caused by stars and dust in our home galaxy, called the <b>Milky Way.</b>
+                    </p>
+                    <p>
+                        You can explore this view and see what is in the night sky, as astronomers have been doing for centuries. <b>Pan</b> (click and drag) and <b>zoom</b> (scroll in and out) to see parts of the sky beyond this view.
+                    </p>
                     """
                 )
-                solara.Text(
+
+                with solara.Columns([8, 4]):
+                    with solara.Column():
+                        ExplorationTool.element()
+                        solara.Text(
+                            "Interactive view provided by WorldWide Telescope",
+                            classes=["caption"],
+                            style="text-align: center",
+                        )       
+                    with solara.Column(align="center", gap="20px"):
+                        with solara.ColumnsResponsive(12, large=[4,8]):
+                            with solara.Column():
+                                rv.Chip(label=True, outlined=True, children=["Pan"])
+                            with solara.Column():
+                                solara.HTML(
+                                    unsafe_innerHTML=
+                                    """
+                                    <b>click + drag</b><br>
+                                    (or use <b>I-J-K-L</b> keys)
+                                    """
+                                )
+                        with solara.ColumnsResponsive(12, large=[4,8]):
+                            with solara.Column():
+                                rv.Chip(label=True, outlined=True, children=["Zoom"])
+                            with solara.Column():
+                                solara.HTML(
+                                    unsafe_innerHTML=
+                                    """
+                                    <b>scroll in and out</b><br>
+                                    (or use <b class="codeFont">Z-X</b> keys)
+                                    """
+                                )
+
+        # Slide 4
+        with rv.CarouselItem():
+            carousel_title(step, _titles)
+
+            with solara.Column():
+                solara.HTML(
+                    unsafe_innerHTML=
                     """
-                    The brighter band you see going diagonally across the frame 
-                    (before you try the controls) is caused by stars and dust in 
-                    our home galaxy, called the Milky Way.
+                    <p>
+                        As you explore the cosmic sky, you may see stars and fuzzy blobs called <b>nebulae</b>. In the 1700's, French astronomer Charles Messier cataloged as many nebulae as he could find. They are known as Messier Objects and are identified by their catalog number. For example, M13 represents the 13th Messier Object in the catalog.
+                    </p>
+                    <p>
+                        Click on the buttons to the right to <b>view some Messier Objects</b>. (Fun fact: “nebula” means “cloud” or “fog” in Latin.)
+                    </p>
                     """
-                )
-                solara.Text(
-                    """
-                    You can explore this view and see what is in the night sky, as 
-                    astronomers have been doing for centuries. Pan 
-                    (click and drag) and zoom (scroll in and out) to see parts of 
-                    the sky beyond this view."""
                 )
 
                 with solara.Columns([2, 1]):
                     with solara.Column():
                         ExplorationTool.element()
+                        solara.Text(
+                            "Interactive view provided by WorldWide Telescope",
+                            classes=["caption"],
+                            style="text-align: center",
+                        )  
+                    
                     with solara.Column():
-                        with solara.Row():
-                            rv.Chip(label=True, outlined=True, children=["Pan"])
-                            solara.Text("click + drag (or use I-J-K-L keys)")
-                        with solara.Row():
-                            rv.Chip(label=True, outlined=True, children=["Zoom"])
-                            solara.Text("scroll in and out (or use Z-X keys)")
+                        with solara.ColumnsResponsive(12, large=[6,6]):
+                            with solara.Column():
+                                solara.Button(
+                                    label="M1",
+                                    color="warning",
+                                )
+                                solara.Button(
+                                    label="M31",
+                                    color="warning",
+                                )
+                                solara.Button(
+                                    label="M51",
+                                    color="warning",
+                                )
+                            with solara.Column():
+                                solara.Button(
+                                    label="M13",
+                                    color="warning",
+                                )
+                                solara.Button(
+                                    label="M42",
+                                    color="warning",
+                                )
+                                solara.Button(
+                                    label="M82",
+                                    color="warning",
+                                )                                
+
+        # Slide 5
+        with rv.CarouselItem():
+            carousel_title(step, _titles)
+
+            with solara.Column():
+                solara.HTML(
+                    unsafe_innerHTML=
+                    """
+                    <p>
+                        <b>M31</b> and <b>M51</b> are examples of a particular type of nebula that interested astronomers in the early 1900s. They were known as <b>spiral nebulae</b> because of their distinctive spiral shape. In 1920, there was a Great Debate between astronomers Harlow Shapley and Heber Curtis questioning whether the spiral nebulae were perhaps young solar systems being born within our Milky Way galaxy or were "island universes” beyond it.
+                    </p>
+                    <p>
+                        While you view these spiral nebulae, ponder what you would need to know to determine if they are within the Milky Way or beyond it. (Don't worry if you don't know. You will learn in this Data Story.) 
+                    </p>
+                    """
+                )
+
+                with solara.Columns([2, 1]):
+                    with solara.Column():
+                        ExplorationTool.element()
+                        solara.Text(
+                            "Interactive view provided by WorldWide Telescope",
+                            classes=["caption"],
+                            style="text-align: center",
+                        )  
+                    
+                    with solara.Column():
+                        with solara.ColumnsResponsive(12, large=[6,6]):
+                            with solara.Column():
+                                solara.Button(
+                                    label="M1",
+                                    color="warning",
+                                    disabled=True
+                                )
+                                solara.Button(
+                                    label="M31",
+                                    color="warning",
+                                )
+                                solara.Button(
+                                    label="M51",
+                                    color="warning",
+                                )
+                            with solara.Column():
+                                solara.Button(
+                                    label="M13",
+                                    color="warning",
+                                    disabled=True                                    
+                                )
+                                solara.Button(
+                                    label="M42",
+                                    color="warning",
+                                    disabled=True                                    
+                                )
+                                solara.Button(
+                                    label="M82",
+                                    color="warning",
+                                    disabled=True                                    ,
+                                )        
+
+        # Slide 6
+        with rv.CarouselItem():
+            carousel_title(step, _titles)
+
+            with solara.Column():
+                solara.HTML(
+                    unsafe_innerHTML=
+                    """
+                    <p>
+                    Between 1907&#8211;1921, Harvard astronomer <b>Henrietta Leavitt</b> observed Cepheid variable stars in a nebula called the Small Magellanic Cloud (SMC). By analyzing changes in the Cepheid stars’ brightness over time, she discovered that <b>fainter Cepheids vary more slowly than brighter ones</b>, as shown in her graph below. This important discovery made it possible to determine distances to spiral nebulae and finally resolve the Shapley-Curtis Great Debate: it turned out that spiral nebulae are far beyond the Milky Way and constitute <b>individual galaxies</b> in their own right.
+                    </p>
+                    """
+                )
+
+            with solara.Columns([2, 1]):
+                with solara.Column(align="center"):
+                    solara.Image(
+                        image= image_location + "Leavitt_at_work.jpg",
+                        classes = ["max-height-350", ],
+                    )
+                    solara.Text(
+                        "Astronomer Henrietta Swan Leavitt",
+                        classes=["caption", ],
+                        style="text-align: center; max-width: 100%",
+                    )     
+                
+                with solara.Column(align="center"):
+                    solara.Image(
+                        image= image_location + "Leavitt_Plate.png",
+                        classes = ["max-height-200", ],
+                    )
+                    solara.Text(
+                        "Glass plate showing Cepheid variable stars in Small Magellanic Cloud studied by Leavitt",
+                        classes=["caption", ],
+                        style="text-align: center; max-width: 100%",
+                    ) 
+
+                    solara.Image(
+                        image= image_location + "HSLeavittHSCr13Fig2_1912.jpeg",
+                        classes = ["max-height-200", ],
+                    )
+                    solara.Text(
+                        "Graph from Leavitt's 1912 paper showing the relationship between period and brightness of Cepheid variables.",
+                        classes=["caption", ],
+                        style="text-align: center; max-width: 100%",
+                    ) 
+
+
+
+        # Slide 7
+        with rv.CarouselItem():
+            carousel_title(step, _titles)
+
+            with solara.Columns([7, 5]):
+                with solara.Column(align="center"):
+                    solara.HTML(
+                        unsafe_innerHTML=
+                        """
+                        <p>
+                        Around this same time, astronomer <b>Vesto Slipher</b> observed spiral nebulae using a spectrograph. Spectrographs can reveal a lot about an object in space, like what the object is made of or how fast it is moving toward or away from the observer.
+                        </p>
+                        <p>
+                        Recall that the prevailing view in the early 1900s was that the universe is unchanging and eternal. As a result, the dominant expectation was that distant spiral nebulae are either not moving at all, or if they are moving then they are moving randomly.
+                        </p>
+                        <p>
+                        It’s time for you to collect some of your own data, form conclusions, and compare your conclusions to what Vesto Slipher found.
+                        </p>
+                        """
+                    )
+
+                with solara.Column(align="center"):
+                    solara.Image(
+                        image= image_location + "V.M.Slipher.gif",
+                        classes = ["max-height-400", ],
+                    )
+                    solara.Text(
+                        "Astronomer Vesto Slipher",
+                        classes=["caption", ],
+                        style="text-align: center; max-width: 100%",
+                    ) 
+
 
     rv.Divider(class_="mt-4")
 
