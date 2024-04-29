@@ -122,27 +122,27 @@ def Page():
                     with solara.Column(align="center"):
                         with solara.ColumnsResponsive(6, large=12):
                             with solara.Column(align="center", classes=[]):
-                                solara.Image(
-                                    image= image_location + "HST-SM4.jpeg",
-                                    classes = ["max-height-250", ],
+                                solara.HTML(
+                                    unsafe_innerHTML=
+                                    f"""
+                                    <img
+                                        src = '{ image_location }HST-SM4.jpeg'
+                                        style = 'max-height: 250px;'
+                                        alt = 'The Hubble Space Telescope against a dark background'
+                                    />
+                                    """
                                 )
-                                # rv.Img(
-                                #     src = image_location + "HST-SM4.jpeg",
-                                #     max_height = "250px",
-                                #     contain = True,  
-                                #     alt = "The Hubble Space Telescope against a dark background",
-                                # )
                             with solara.Column(align="center", classes=[]):
-                                solara.Image(
-                                    image= image_location + "EdwinHubble.jpg",
-                                    classes = ["max-height-250", ],
+                                solara.HTML(
+                                    unsafe_innerHTML=
+                                    f"""
+                                    <img
+                                        src = '{ image_location }EdwinHubble.jpg'
+                                        style = 'max-height: 250px;'
+                                        alt = 'Astronomer Edwin Hubble holding an image of the Andromeda Galaxy'
+                                    />
+                                    """
                                 )
-                                # rv.Img(
-                                #     src = image_location + "EdwinHubble.jpg",
-                                #     max_height = "250px",
-                                #     contain = True,
-                                #     alt = "Astronomer Edwin Hubble holding an image of the Andromeda Galaxy"
-                                # )
                         solara.Text(
                             "The Hubble Space Telescope and Edwin Hubble, the astronomer it was named for. Hubble holds an image of the Andromeda Galaxy, for which the earliest recorded observation was made in 964 AD by Iranian scholar al-Sufi.",
                             classes=["caption", ],
@@ -169,16 +169,16 @@ def Page():
                     with solara.Column(align="center"):
                         with solara.ColumnsResponsive(6, large=12):
                             with solara.Column(align="center", classes=[]):
-                                solara.Image(
-                                    image= image_location + "Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg",
-                                    classes = ["max-height-300", ],
+                                solara.HTML(
+                                    unsafe_innerHTML=
+                                    f"""
+                                    <img
+                                        src = "{ image_location }Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg"
+                                        style = 'max-height: 300px;'
+                                        alt = 'Eight women astronomers, wearing late 1800s clothing and hairstyles, are sitting or standing in a room. Some are observing astronomical images with magnifying glasses. Some are writing in notebooks.'
+                                    />
+                                    """
                                 )
-                                # rv.Img(
-                                #     src = image_location + "Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg",
-                                #     max_height = 300,
-                                #     contain = True,
-                                #     alt = "Eight women astronomers, wearing late 1800s clothing and hairstyles, are sitting or standing in a room. Some are observing astronomical images with magnifying glasses. Some are writing in notebooks.",                                    
-                                # )
                                 solara.Text(
                                     "Women astronomers at Harvard College Observatory in 1892, including Henrietta Leavitt (third from left), Williamina Fleming (standing), and Annie Jump Cannon (far right).",
                                     classes=["caption", ],
@@ -187,29 +187,27 @@ def Page():
                             with solara.Column(align="center"):
                                 with solara.Columns(6):
                                     with solara.Column(align="end"):
-                                        solara.Image(
-                                            image= image_location + "Einstein_1921_by_F_Schmutzer_-_restorationCropped.png",
-                                            classes = ["max-height-150", ],
-                                        )
-                                        # rv.Img(
-                                        #     src = image_location + "Einstein_1921_by_F_Schmutzer_-_restorationCropped.png",
-                                        #     max_height = 150,
-                                        #     contain = True,
-                                        #     position = "right center" 
-                                        #     alt = "Portrait of Albert Einstein",                                            
-                                        # )
+                                        solara.HTML(
+                                            unsafe_innerHTML=
+                                            f"""
+                                            <img
+                                                src = '{ image_location }Einstein_1921_by_F_Schmutzer_-_restorationCropped.png'
+                                                style = 'max-height: 150px;'
+                                                alt = 'Portrait of Albert Einstein'
+                                            />
+                                            """
+                                        )                                        
                                     with solara.Column(align="start"):
-                                        solara.Image(
-                                            image= image_location + "AristotleSchoolOfAthensCutoutZoom.png",
-                                            classes = ["max-height-150", ],
-                                        )                                       
-                                        # rv.Img(
-                                        #     src = image_location + "AristotleSchoolOfAthensCutoutZoom.png",
-                                        #     max_height = 150,
-                                        #     contain = True, 
-                                        #     position = "left center"
-                                        #     alt = "Cutout showing a small portion of a much larger, colorful paiting by Raphael depicting Aristotle wearing a blue robe.",                                                     
-                                        # )
+                                        solara.HTML(
+                                            unsafe_innerHTML=
+                                            f"""
+                                            <img
+                                                src = '{ image_location }AristotleSchoolOfAthensCutoutZoom.png'
+                                                style = 'max-height: 150px;'
+                                                alt = 'Cutout showing a small portion of a much larger, colorful paiting by Raphael depicting Aristotle wearing a blue robe.'
+                                            />
+                                            """
+                                        )                                      
                                 solara.Text(
                                     "Left: Albert Einstein in 1921. Right: Aristotle, depicted in “The School of Athens,” painted by Raphael for the walls of the Vatican between 1509 and 1511. Both believed in an unchanging universe.",
                                     classes=["caption", ],
