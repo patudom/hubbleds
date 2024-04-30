@@ -1,6 +1,6 @@
-===============
+========
 hubbleds
-===============
+========
 
 This is the documentation of **hubbleds**.
 

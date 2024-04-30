@@ -10,24 +10,31 @@ except ImportError:
     from astropy.cosmology import Planck15 as planck
 
 __all__ = [
-    'HUBBLE_ROUTE_PATH',
-    'MILKY_WAY_SIZE_MPC', 'H_ALPHA_REST_LAMBDA',
-    'MG_REST_LAMBDA', 'GALAXY_FOV', 'FULL_FOV',
-    'angle_to_json', 'angle_from_json',
-    'age_in_gyr', 'format_fov', 'format_measured_angle',
+    "HUBBLE_ROUTE_PATH",
+    "MILKY_WAY_SIZE_MPC",
+    "H_ALPHA_REST_LAMBDA",
+    "MG_REST_LAMBDA",
+    "GALAXY_FOV",
+    "FULL_FOV",
+    "angle_to_json",
+    "angle_from_json",
+    "age_in_gyr",
+    "format_fov",
+    "format_measured_angle",
 ]
 
 HUBBLE_ROUTE_PATH = "hubbles_law"
 
 MILKY_WAY_SIZE_LTYR = 100000 * u.lightyear
 MILKY_WAY_SIZE_MPC = MILKY_WAY_SIZE_LTYR.to(u.Mpc).value
-DISTANCE_CONSTANT = round(
-    MILKY_WAY_SIZE_MPC * 3600 * 180 / pi / 100) * 100  # theta = L/D:  Distance in Mpc = DISTANCE_CONSTANT / theta in arcsec; Round to hundreds to match slideshow notes.
+DISTANCE_CONSTANT = (
+    round(MILKY_WAY_SIZE_MPC * 3600 * 180 / pi / 100) * 100
+)  # theta = L/D:  Distance in Mpc = DISTANCE_CONSTANT / theta in arcsec; Round to hundreds to match slideshow notes.
 
-AGE_CONSTANT = round( 1.e6 * u.pc.to(u.km)/ (1e9 * u.yr.to(u.s)) / 10  ) * 10 # t = d/v
+AGE_CONSTANT = round(1.0e6 * u.pc.to(u.km) / (1e9 * u.yr.to(u.s)) / 10) * 10  # t = d/v
 HST_KEY_AGE = 12.79687910  # (1/H_0) in Gyr
 
-SPEED_OF_LIGHT = 3.0 * 10 ** 5 # km/s
+SPEED_OF_LIGHT = 3.0 * 10**5  # km/s
 # Both in angstroms
 H_ALPHA_REST_LAMBDA = 6565  # SDSS calibrates to wavelengths in a vacuum
 MG_REST_LAMBDA = 5172  # The value used by SDSS is actually 5176.7, but that wavelength aligns with an upward bump, so we are adjusting it to 5172 to avoid confusing students. Ziegler & Bender 1997 uses lambda_0 ~ 5170, so our choice is justifiable.
@@ -39,10 +46,7 @@ IMAGE_BASE_URL = "https://cosmicds.github.io/cds-website/hubbleds_images"
 
 
 def angle_to_json(angle, _widget):
-    return {
-        "value": angle.value,
-        "unit": angle.unit.name
-    }
+    return {"value": angle.value, "unit": angle.unit.name}
 
 
 def angle_from_json(jsn, _widget):
@@ -79,7 +83,7 @@ def age_in_gyr_simple(H0):
 def fit_line(x, y):
     try:
         fit = fitting.LinearLSQFitter()
-        line_init = models.Linear1D(intercept=0, fixed={'intercept': True})
+        line_init = models.Linear1D(intercept=0, fixed={"intercept": True})
         fitted_line = fit(line_init, x, y)
         return fitted_line
     except ValueError:
@@ -88,8 +92,7 @@ def fit_line(x, y):
 
 def format_fov(fov, units=True):
     suffix = " (dd:mm:ss)" if units else ""
-    return fov.to_string(unit=u.degree, sep=":", precision=0,
-                         pad=True) + suffix
+    return fov.to_string(unit=u.degree, sep=":", precision=0, pad=True) + suffix
 
 
 def format_measured_angle(angle):
@@ -99,7 +102,7 @@ def format_measured_angle(angle):
 
 
 def velocity_from_wavelengths(lamb_meas, lamb_rest):
-    return round((3 * (10 ** 5) * (lamb_meas / lamb_rest - 1)), 0)
+    return round((3 * (10**5) * (lamb_meas / lamb_rest - 1)), 0)
 
 
 def distance_from_angular_size(theta):
@@ -108,8 +111,8 @@ def distance_from_angular_size(theta):
 
 def data_summary_for_component(data, component_id):
     summary = {
-        "mean": data.compute_statistic('mean', component_id),
-        "median": data.compute_statistic('median', component_id),
+        "mean": data.compute_statistic("mean", component_id),
+        "median": data.compute_statistic("median", component_id),
         "mode": mode(data, component_id),
     }
     values = data[component_id]
