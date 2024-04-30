@@ -36,8 +36,7 @@
           :neutral-answers='[1,2]'
           @select="(status) => { if (status.correct) { question_completed = true; } }"
           :score-tag="state_view.score_tag"
-          @mc-initialize-response="mc_callback(['mc-initialize-response',$event])"
-          @mc-score="mc_callback(['mc-score',$event])"
+          @mc-emit="mc_callback($event)"
           :initialization="state_view.mc_score"
         >
         </mc-radiogroup>
