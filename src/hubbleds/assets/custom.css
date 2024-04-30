@@ -6,6 +6,15 @@
     display: none !important;
 }
 
+.toolbar-title {
+    text-transform: uppercase;
+    color: white !important;
+}
+
+.padded-text {
+    padding: 15px;
+}
+
 /*.solara-container-main {*/
 /*    max-width: 1264px;*/
 /*    height: 100%;*/
