@@ -6,9 +6,7 @@
 
 ### Requirements
 - Python-based Cosmic Data Stories now run on [solara](https://solara.dev).
-
 - `hubbleds` requires the base [`cosmicds`](https://github.com/cosmicds/cosmicds/) to be installed.
-
 - Developers need an API key to access the CosmicDS database. Contact the team for more information.
 
 ### Installation
@@ -47,8 +45,10 @@ To run the legacy code, you also need the [legacy](https://github.com/cosmicds/c
     `$ pip install -e .`
 - You may need to pip install any missing dependencies.
 - If you have trouble installing voila, you may need to downgrade your version of `node.js` to a Long Term Support (LTS) version (14.x or 16.x).
-- Open jupyter notebook and run src/hubbleds/HubbleDS.ipynb
+- Open jupyter notebook and run `src/hubbleds/HubbleDS.ipynb`
+
 or
+
 - From the command line:
    `$ cosmicds hubble`
 
