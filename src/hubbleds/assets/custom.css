@@ -6,6 +6,21 @@
     display: none !important;
 }
 
+.toolbar-title {
+    text-transform: uppercase;
+    color: white !important;
+}
+
+.padded-text {
+    padding: 15px;
+}
+
+.theme--dark.v-card .v-card__subtitle, .theme--dark.v-card>.v-card__text {
+    color: hsl(0 0% 100% / 1);
+    font-weight: bold !important;
+    padding-inline: 20px;
+}
+
 /*.solara-container-main {*/
 /*    max-width: 1264px;*/
 /*    height: 100%;*/
