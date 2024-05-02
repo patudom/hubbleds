@@ -860,6 +860,12 @@
 module.exports = {
   props: ["buttonText", "titleText", "closeText"],
 
+  computed: {
+    MathJax() {
+      return document.defaultView.MathJax
+    },
+  },
+
   mounted() {
     console.log("Two Intro");
     console.log(this);
