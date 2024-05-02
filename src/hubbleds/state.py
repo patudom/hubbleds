@@ -34,7 +34,7 @@ LOCAL_STATE = LocalState()
 
 
 # create handlers for mc_radiogroup
-def onInitResponse(local_state , tag: str, set_score: callable = None): 
+def on_init_response(local_state , tag: str, set_score: callable = None): 
     print("onInitResponse")
     # print(tag not in component_state.mc_scoring.value.keys())
     if tag not in local_state.mc_scoring.value.keys():
@@ -57,7 +57,7 @@ def on_mc_score(local_state, set_score, data):
 def mc_callback(event, local_state, set_score: callable = None):
     # mc-initialize-callback returns data which is a string
     if event[0] == 'mc-initialize-response':
-        return onInitResponse(local_state = local_state, tag = event[1], set_score = set_score)
+        return on_init_response(local_state = local_state, tag = event[1], set_score = set_score)
     # mc-score event returns a data which is an mc-score dictionary
     elif event[0] == 'mc-score':
         return on_mc_score(local_state=local_state, data = event[1], set_score = set_score)
