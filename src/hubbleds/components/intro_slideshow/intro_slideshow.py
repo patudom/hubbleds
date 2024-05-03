@@ -59,7 +59,7 @@ def IntroSlideshow():
                         classes = ["padded-text"],                 
                     )
 
-                    with solara.Card(style="background-color: blue"):
+                    with solara.Card(style="background-color: #0D47A1"):
                         solara.HTML(
                             unsafe_innerHTML=
                             """
