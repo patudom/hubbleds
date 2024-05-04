@@ -27,7 +27,7 @@ class StudentData(BaseModel):
     measurements: Optional[List[StudentMeasurement]]
 
     def update(self, id_: str, data: dict):
-        idx = next(i for i, x in enumerate(self.measurements) if x.id == id_)
+        idx = next(iter(i for i, x in enumerate(self.measurements) if x.id == id_), None)
 
         if idx is None:
             print(f"No data with id {id_} found.")

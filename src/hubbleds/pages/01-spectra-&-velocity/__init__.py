@@ -46,6 +46,8 @@ def _on_example_galaxy_table_row_selected(row):
     component_state.lambda_rest.set(galaxy['rest_wave'])
     component_state.lambda_obs.subscribe(
         lambda *args: example_data.update(galaxy['id'], {'measured_wave': args[0]}))
+    component_state.student_vel.subscribe(
+        lambda *args: example_data.update(galaxy['id'], {'velocity': args[0]}))
 
 
 def _on_galaxy_table_row_selected(row):
@@ -54,6 +56,8 @@ def _on_galaxy_table_row_selected(row):
     component_state.lambda_rest.set(galaxy['rest_wave'])
     component_state.lambda_obs.subscribe(
         lambda *args: student_data.update(galaxy['id'], {'measured_wave': args[0]}))
+    component_state.student_vel.subscribe(
+        lambda *args: student_data.update(galaxy['id'], {'velocity': args[0]}))
 
 
 @solara.component
@@ -80,8 +84,9 @@ def Page():
 
     solara.Text(
         f"Current step: {component_state.current_step.value}, "
-        f"Next step: {Marker(component_state.current_step.value.value + 1)}"
-        f"Can advance: {component_state.can_transition(next=True)}"
+        f"Next step: {Marker(component_state.current_step.value.value + 1)} "
+        f"Can advance: {component_state.can_transition(next=True)} "
+        f"Student vel: {component_state.student_vel.value}"
     )
 
     if LOCAL_STATE.debug_mode:
@@ -211,6 +216,7 @@ def Page():
                     "lambda_rest": component_state.lambda_rest.value,
                     "failed_validation_4": component_state.doppler_calc_state.failed_validation_4.value,
                 },
+                event_failed_validation_4_callback=lambda v: component_state.doppler_calc_state.failed_validation_4.set(v)
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
@@ -364,6 +370,8 @@ def Page():
                     )
                 )
 
+            # TODO: this probably doesn't need to be an extra reactive
+            #  variable since we're just tracking the step.
             component_state.doppler_calc_dialog.value = component_state.is_current_step(Marker.dop_cal5)
 
             DopplerSlideshow(
@@ -379,7 +387,8 @@ def Page():
                 student_vel=component_state.student_vel.value,
                 student_c=component_state.doppler_calc_state.student_c.value,
                 event_set_student_vel_calc=lambda *args: component_state.doppler_calc_state.student_vel_calc.set(True),
-                event_next_callback=lambda *args: component_state.transition_next()
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_student_vel_callback=lambda v: component_state.student_vel.set(v)
             )
 
             DotplotTutorialSlideshow(
