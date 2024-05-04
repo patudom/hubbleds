@@ -80,3 +80,6 @@ class ExplorationTool(v.VueTemplate):
         self._fov = fov
         self.last_update = datetime.now()
         self._check_if_complete()
+
+    def go_to_coordinates(self, coordinates):
+        self.widget.center_on_coordinates(coordinates)

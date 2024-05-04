@@ -1,5 +1,10 @@
+import dataclasses
 import solara
+from solara import Reactive
 import reacton.ipyvuetify as rv
+
+from astropy.coordinates import SkyCoord
+import astropy.units as u
 
 from ...widgets.exploration_tool import ExplorationTool
 
@@ -24,8 +29,22 @@ def carousel_title(step, titles):
             solara.Text(titles[step], classes=["toolbar-title"])
 
 
+@dataclasses.dataclass
+class ComponentState:
+    coordinates: Reactive[SkyCoord] = dataclasses.field(
+        default=Reactive(SkyCoord(0 * u.deg, 0 * u.deg, frame="icrs"))
+    )
+
+component_state = ComponentState()
+
+def update_coordinates(coords):
+    print("update_coordinates")
+    print(coords)
+    component_state.coordinates.set(coords)
+
 def IntroSlideshow():
     step, on_step = solara.use_state(0)
+    coordinates = solara.use_reactive(None)
 
     @solara.lab.computed
     def index():
@@ -40,6 +59,7 @@ def IntroSlideshow():
         show_arrows=False,
         height="100%",
     ) as carousel:
+
         # Slide 0
         with rv.CarouselItem():
             carousel_title(step, _titles)
@@ -264,6 +284,23 @@ def IntroSlideshow():
         with rv.CarouselItem():
             carousel_title(step, _titles)
 
+            def go_to_coordinates():
+                print("go_to_coordinates")
+                print(component_state.coordinates.value)
+                if component_state.coordinates.value:
+                    tool_widget = solara.get_widget(tool)
+                    print(tool_widget)
+                    print(tool_widget.widget)
+                    print(tool_widget.widget.center_on_coordinates)
+                    tool_widget.go_to_coordinates(component_state.coordinates.value)
+            
+            solara.use_effect(go_to_coordinates, [component_state.coordinates.value])
+    
+            def set_coords_m1():
+                print("Button clicked")
+                update_coordinates(SkyCoord(83.633 * u.deg, 22.014 * u.deg, frame="icrs"))
+                print(coordinates.value)
+
             with solara.Column():
                 solara.HTML(
                     unsafe_innerHTML=
@@ -280,23 +317,29 @@ def IntroSlideshow():
 
                 with solara.Columns([2, 1]):
                     with solara.Column():
-                        ExplorationTool.element()
+                        tool = ExplorationTool.element()
+
                         solara.Text(
                             "Interactive view provided by WorldWide Telescope",
                             classes=["caption"],
                             style="text-align: center",
-                        )  
+                        ) 
                     
                     with solara.Column():
                         with solara.ColumnsResponsive(12, large=[6,6]):
                             with solara.Column():
+
+
+
                                 solara.Button(
                                     label="M1",
                                     color="warning",
+                                    on_click=set_coords_m1
                                 )
                                 solara.Button(
                                     label="M31",
                                     color="warning",
+                                    on_click=lambda: print(coordinates.value)
                                 )
                                 solara.Button(
                                     label="M51",
