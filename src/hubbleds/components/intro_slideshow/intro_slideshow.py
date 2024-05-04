@@ -60,6 +60,9 @@ def IntroSlideshow():
         height="100%",
     ) as carousel:
 
+        # Just a dummy thing for testing 
+        solara.Text(str(component_state.coordinates.value))
+
         # Slide 0
         with rv.CarouselItem():
             carousel_title(step, _titles)
