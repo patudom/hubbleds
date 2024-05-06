@@ -98,7 +98,7 @@ def IntroSlideshow():
                         classes=["padded-text"],
                     )
 
-                    with solara.Card(style="background-color: blue"):
+                    with solara.Card(style="background-color: #0D47A1"):
                         solara.HTML(
                             unsafe_innerHTML=
                             """
@@ -133,7 +133,7 @@ def IntroSlideshow():
             carousel_title(step, _titles)
 
             with solara.Row():
-                with solara.ColumnsResponsive(12, large=[7, 5]):
+                with solara.ColumnsResponsive(12, large=[7,5]):
                     with solara.Column(align="center"):
                         solara.HTML(
                             unsafe_innerHTML=
@@ -148,7 +148,7 @@ def IntroSlideshow():
                                     Let's get started.
                                 </p>
                             """,
-                            classes=["padded-text"],
+                        classes = ["padded-text"],                       
                         )
 
                     with solara.Column(align="center"):
@@ -158,7 +158,7 @@ def IntroSlideshow():
                                     unsafe_innerHTML=
                                     f"""
                                     <img
-                                        src = '{image_location}HST-SM4.jpeg'
+                                        src = '{ image_location }HST-SM4.jpeg'
                                         style = 'max-height: 250px;'
                                         alt = 'The Hubble Space Telescope against a dark background'
                                     />
@@ -169,7 +169,7 @@ def IntroSlideshow():
                                     unsafe_innerHTML=
                                     f"""
                                     <img
-                                        src = '{image_location}EdwinHubble.jpg'
+                                        src = '{ image_location }EdwinHubble.jpg'
                                         style = 'max-height: 250px;'
                                         alt = 'Astronomer Edwin Hubble holding an image of the Andromeda Galaxy'
                                     />
@@ -179,7 +179,7 @@ def IntroSlideshow():
                             "The Hubble Space Telescope and Edwin Hubble, the astronomer it was named for. Hubble holds an image of the Andromeda Galaxy, for which the earliest recorded observation was made in 964 AD by Iranian scholar al-Sufi.",
                             classes=["caption", ],
                             style="text-align: center; max-width: 80%",
-                        )
+                        )        
 
                         # Slide 2
         with rv.CarouselItem():
