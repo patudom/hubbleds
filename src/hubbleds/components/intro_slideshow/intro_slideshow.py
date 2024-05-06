@@ -32,8 +32,6 @@ messier_coordinates = {
     "M82": { "coord": SkyCoord(148.97 * u.deg, 69.68 * u.deg, frame="icrs"), "fov": 400 * u.arcsec },
 }
 
-messier_moves = 0
-
 def carousel_title(step, titles):
     with rv.Toolbar(color="warning", dense=True, ):
         with rv.ToolbarTitle():
@@ -43,6 +41,7 @@ def carousel_title(step, titles):
 @solara.component
 def ExplorationToolComponent(messier_object):
     tool = ExplorationTool.element()
+    moves, set_moves = solara.use_state(0)
 
     def go_to_coordinates():
         if messier_object.value:
@@ -52,7 +51,8 @@ def ExplorationToolComponent(messier_object):
             location = coordinates["coord"]
             fov = coordinates.get("fov", GALAXY_FOV)
             tool_widget = solara.get_widget(tool)
-            tool_widget.go_to_coordinates(location, fov=fov, instant=False)
+            tool_widget.go_to_coordinates(location, fov=fov, instant=moves >= 3)
+            set_moves(moves + 1)
 
     solara.use_effect(go_to_coordinates, [messier_object.value])
 
