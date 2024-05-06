@@ -24,14 +24,15 @@ _titles = [
 ]
 
 messier_coordinates = {
-    "M1": { "coord": SkyCoord(83.633 * u.deg, 22.014 * u.deg, frame="icrs"), "fov": 350 * u.arcsec },
-    "M13": { "coord": SkyCoord(250.4 * u.deg, 36.46 * u.deg, frame="icrs"), "fov": 700 * u.arcsec },
-    "M31": { "coord": SkyCoord(10.63 * u.deg, 41.27 * u.deg, frame="icrs"), "fov": 6000 * u.arcsec },
-    "M42": { "coord": SkyCoord(83.82 * u.deg, -5.39 * u.deg, frame="icrs"), "fov": 7500 * u.arcsec },
-    "M51": { "coord": SkyCoord(202.47 * u.deg, 47.195 * u.deg, frame="icrs"), "fov": 700 * u.arcsec },
-    "M82": { "coord": SkyCoord(148.97 * u.deg, 69.68 * u.deg, frame="icrs"), "fov": 400 * u.arcsec },
+    "M1": { "coord": SkyCoord(83.633 * u.deg, 22.014 * u.deg, frame="icrs"), "fov": 500 * u.arcsec },
+    "M13": { "coord": SkyCoord(250.4 * u.deg, 36.44 * u.deg, frame="icrs"), "fov": 1400 * u.arcsec },
+    "M31": { "coord": SkyCoord(10.63 * u.deg, 41.17 * u.deg, frame="icrs"), "fov": 10000 * u.arcsec },
+    "M42": { "coord": SkyCoord(83.82 * u.deg, -5.39 * u.deg, frame="icrs"), "fov": 9000 * u.arcsec },
+    "M51": { "coord": SkyCoord(202.47 * u.deg, 47.195 * u.deg, frame="icrs"), "fov": 900 * u.arcsec },
+    "M82": { "coord": SkyCoord(148.97 * u.deg, 69.68 * u.deg, frame="icrs"), "fov": 500 * u.arcsec },
 }
 
+@solara.component
 def carousel_title(step, titles):
     with rv.Toolbar(color="warning", dense=True, ):
         with rv.ToolbarTitle():
@@ -51,7 +52,7 @@ def ExplorationToolComponent(messier_object):
             location = coordinates["coord"]
             fov = coordinates.get("fov", GALAXY_FOV)
             tool_widget = solara.get_widget(tool)
-            tool_widget.go_to_coordinates(location, fov=fov, instant=moves >= 3)
+            tool_widget.go_to_coordinates(location, fov=fov, instant=moves >= 2)
             set_moves(moves + 1)
 
     solara.use_effect(go_to_coordinates, [messier_object.value])
@@ -390,7 +391,8 @@ def IntroSlideshow():
 
                 with solara.Columns([2, 1]):
                     with solara.Column():
-                        ExplorationTool.element()
+                        ExplorationToolComponent(messier_object)
+
                         solara.Text(
                             "Interactive view provided by WorldWide Telescope",
                             classes=["caption"],
@@ -408,11 +410,15 @@ def IntroSlideshow():
                                 solara.Button(
                                     label="M31",
                                     color="warning",
+                                    on_click=lambda: set_coords("M31"),
+                                    outlined=messier_object.value == "M31"
                                 )
                                 solara.Button(
                                     label="M51",
                                     color="warning",
-                                )
+                                    on_click=lambda: set_coords("M51"),
+                                    outlined=messier_object.value == "M51"
+                                ) 
                             with solara.Column():
                                 solara.Button(
                                     label="M13",
