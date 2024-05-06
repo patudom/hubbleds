@@ -1,3 +1,4 @@
+from hubbleds.utils import GALAXY_FOV
 import solara
 from ..components import IntroSlideshow
 import dataclasses
@@ -10,14 +11,12 @@ from cosmicds.layout import Layout
 
 @dataclasses.dataclass
 class ComponentState:
-    coordinates: Reactive[SkyCoord] = dataclasses.field(
-        default=Reactive(SkyCoord(0 * u.deg, 0 * u.deg, frame="icrs"))
+    messier_object: Reactive[str] = dataclasses.field(
+        default=Reactive(None)
     )
-
 
 component_state = ComponentState()
 
-
 @solara.component
 def Page():
-    IntroSlideshow(component_state.coordinates)
+    IntroSlideshow(component_state.messier_object)

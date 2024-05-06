@@ -8,7 +8,7 @@ import astropy.units as u
 
 from ...widgets.exploration_tool import ExplorationTool
 
-from ...utils import IMAGE_BASE_URL
+from ...utils import IMAGE_BASE_URL, GALAXY_FOV
 
 image_location = IMAGE_BASE_URL + "/stage_intro/"
 
@@ -23,6 +23,16 @@ _titles = [
     "Vesto Slipher and Spectral Data"
 ]
 
+messier_coordinates = {
+    "M1": { "coord": SkyCoord(83.633 * u.deg, 22.014 * u.deg, frame="icrs"), "fov": 350 * u.arcsec },
+    "M13": { "coord": SkyCoord(250.4 * u.deg, 36.46 * u.deg, frame="icrs"), "fov": 700 * u.arcsec },
+    "M31": { "coord": SkyCoord(10.63 * u.deg, 41.27 * u.deg, frame="icrs"), "fov": 6000 * u.arcsec },
+    "M42": { "coord": SkyCoord(83.82 * u.deg, -5.39 * u.deg, frame="icrs"), "fov": 7500 * u.arcsec },
+    "M51": { "coord": SkyCoord(202.47 * u.deg, 47.195 * u.deg, frame="icrs"), "fov": 700 * u.arcsec },
+    "M82": { "coord": SkyCoord(148.97 * u.deg, 69.68 * u.deg, frame="icrs"), "fov": 400 * u.arcsec },
+}
+
+messier_moves = 0
 
 def carousel_title(step, titles):
     with rv.Toolbar(color="warning", dense=True, ):
@@ -31,29 +41,27 @@ def carousel_title(step, titles):
 
 
 @solara.component
-def ExplorationToolComponent(coordinates):
+def ExplorationToolComponent(messier_object):
     tool = ExplorationTool.element()
 
     def go_to_coordinates():
-        print("go_to_coordinates")
-        print(coordinates.value)
-        if coordinates.value:
+        if messier_object.value:
+            coordinates = messier_coordinates.get(messier_object.value, None)
+            if coordinates is None:
+                return
+            location = coordinates["coord"]
+            fov = coordinates.get("fov", GALAXY_FOV)
             tool_widget = solara.get_widget(tool)
-            print(tool_widget)
-            print(tool_widget.widget)
-            print(tool_widget.widget.center_on_coordinates)
-            tool_widget.go_to_coordinates(coordinates.value)
+            tool_widget.go_to_coordinates(location, fov=fov, instant=False)
 
-    solara.use_effect(go_to_coordinates, [coordinates.value])
+    solara.use_effect(go_to_coordinates, [messier_object.value])
 
     return tool
 
 
 @solara.component
-def IntroSlideshow(coordinates):
+def IntroSlideshow(messier_object):
     step, on_step = solara.use_state(0)
-
-    # coordinates = solara.use_reactive(None)
 
     @solara.lab.computed
     def index():
@@ -68,8 +76,6 @@ def IntroSlideshow(coordinates):
             show_arrows=False,
             height="100%",
     ) as carousel:
-        # Just a dummy thing for testing
-        solara.Text(str(coordinates.value))
 
         # Slide 0
         with rv.CarouselItem():
@@ -295,10 +301,8 @@ def IntroSlideshow(coordinates):
         with rv.CarouselItem():
             carousel_title(step, _titles)
 
-            def set_coords_m1():
-                print("Button clicked")
-                coordinates.set(SkyCoord(83.633 * u.deg, 22.014 * u.deg, frame="icrs"))
-                print(coordinates.value)
+            def set_coords(key):
+                messier_object.set(key)
 
             with solara.Column():
                 solara.HTML(
@@ -316,7 +320,7 @@ def IntroSlideshow(coordinates):
 
                 with solara.Columns([2, 1]):
                     with solara.Column():
-                        ExplorationToolComponent(coordinates)
+                        ExplorationToolComponent(messier_object)
 
                         solara.Text(
                             "Interactive view provided by WorldWide Telescope",
@@ -330,29 +334,39 @@ def IntroSlideshow(coordinates):
                                 solara.Button(
                                     label="M1",
                                     color="warning",
-                                    on_click=set_coords_m1
+                                    on_click=lambda: set_coords("M1"),
+                                    outlined=messier_object.value == "M1"
                                 )
                                 solara.Button(
                                     label="M31",
                                     color="warning",
-                                    on_click=lambda: print(coordinates.value)
+                                    on_click=lambda: set_coords("M31"),
+                                    outlined=messier_object.value == "M31"
                                 )
                                 solara.Button(
                                     label="M51",
                                     color="warning",
+                                    on_click=lambda: set_coords("M51"),
+                                    outlined=messier_object.value == "M51"
                                 )
                             with solara.Column():
                                 solara.Button(
                                     label="M13",
                                     color="warning",
+                                    on_click=lambda: set_coords("M13"),
+                                    outlined=messier_object.value == "M13"
                                 )
                                 solara.Button(
                                     label="M42",
                                     color="warning",
+                                    on_click=lambda: set_coords("M42"),
+                                    outlined=messier_object.value == "M42"
                                 )
                                 solara.Button(
                                     label="M82",
                                     color="warning",
+                                    on_click=lambda: set_coords("M82"),
+                                    outlined=messier_object.value == "M82"
                                 )
 
                                 # Slide 5

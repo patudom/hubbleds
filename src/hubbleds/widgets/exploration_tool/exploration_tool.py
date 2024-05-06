@@ -81,5 +81,5 @@ class ExplorationTool(v.VueTemplate):
         self.last_update = datetime.now()
         self._check_if_complete()
 
-    def go_to_coordinates(self, coordinates):
-        self.widget.center_on_coordinates(coordinates)
+    def go_to_coordinates(self, coordinates, fov=60 * u.deg, instant=False):
+        self.widget.center_on_coordinates(coordinates, fov=fov, instant=instant)
