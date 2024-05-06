@@ -20,6 +20,24 @@
     font-weight: bold !important;
     padding-inline: 20px;
 }
+footer .col {
+    padding-block: 0;
+}
+
+footer .row {
+    align-items: center;
+    margin-left: 0;
+}
+
+footer .v-card__text {
+    padding: 6px;
+}
+
+.cosmicds-footer {
+    background-color: #003186 !important; 
+    color: #BDBDBD !important; 
+    padding-block: 0;
+}
 
 .theme--dark .MathJax {
     color: white !important;
