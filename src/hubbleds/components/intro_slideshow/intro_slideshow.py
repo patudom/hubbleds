@@ -60,8 +60,9 @@ def ExplorationToolComponent(messier_object):
 
 
 @solara.component
-def IntroSlideshow(messier_object):
+def IntroSlideshow():
     step, on_step = solara.use_state(0)
+    messier_object = solara.use_reactive(None)
 
     @solara.lab.computed
     def index():
