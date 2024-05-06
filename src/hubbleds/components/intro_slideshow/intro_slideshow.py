@@ -18,12 +18,13 @@ _titles = [
     "Vesto Slipher and Spectral Data"
 ]
 
+@solara.component
 def carousel_title(step, titles):
     with rv.Toolbar(color="warning", dense=True,):
         with rv.ToolbarTitle( ):
             solara.Text(titles[step], classes=["toolbar-title"])
 
-
+@solara.component
 def IntroSlideshow():
     step, on_step = solara.use_state(0)
 
@@ -93,54 +94,53 @@ def IntroSlideshow():
         with rv.CarouselItem():
             carousel_title(step, _titles)
 
-            with solara.Row():
-                with solara.ColumnsResponsive(12, large=[7,5]):
-                    with solara.Column(align="center"):
-                        solara.HTML(
-                            unsafe_innerHTML=
-                            """
-                                <p>
-                                    When scientists collect data to answer questions no one has answered yet, there is no answer key in the back of some book. So, as you explore this data story, you will learn how to <b>evaluate the reliability</b> of your results. Are the data really good enough to support a conclusion? <b>How can you know?</b> 
-                                </p>
-                                <p>
-                                    Just as scientists constantly must, you'll <b>determine what can be concluded</b> from the data at-hand, and <b>how much confidence</b> you can have in your conclusions.
-                                </p>
-                                <p>
-                                    Let's get started.
-                                </p>
-                            """,
-                        classes = ["padded-text"],                       
-                        )
+            with solara.ColumnsResponsive(12, large=[7,5]):
+                with solara.Column(align="center"):
+                    solara.HTML(
+                        unsafe_innerHTML=
+                        """
+                            <p>
+                                When scientists collect data to answer questions no one has answered yet, there is no answer key in the back of some book. So, as you explore this data story, you will learn how to <b>evaluate the reliability</b> of your results. Are the data really good enough to support a conclusion? <b>How can you know?</b> 
+                            </p>
+                            <p>
+                                Just as scientists constantly must, you'll <b>determine what can be concluded</b> from the data at-hand, and <b>how much confidence</b> you can have in your conclusions.
+                            </p>
+                            <p>
+                                Let's get started.
+                            </p>
+                        """,
+                    classes = ["padded-text"],                       
+                    )
 
-                    with solara.Column(align="center"):
-                        with solara.ColumnsResponsive(6, large=12):
-                            with solara.Column(align="center", classes=[]):
-                                solara.HTML(
-                                    unsafe_innerHTML=
-                                    f"""
-                                    <img
-                                        src = '{ image_location }HST-SM4.jpeg'
-                                        style = 'max-height: 250px;'
-                                        alt = 'The Hubble Space Telescope against a dark background'
-                                    />
-                                    """
-                                )
-                            with solara.Column(align="center", classes=[]):
-                                solara.HTML(
-                                    unsafe_innerHTML=
-                                    f"""
-                                    <img
-                                        src = '{ image_location }EdwinHubble.jpg'
-                                        style = 'max-height: 250px;'
-                                        alt = 'Astronomer Edwin Hubble holding an image of the Andromeda Galaxy'
-                                    />
-                                    """
-                                )
-                        solara.Text(
-                            "The Hubble Space Telescope and Edwin Hubble, the astronomer it was named for. Hubble holds an image of the Andromeda Galaxy, for which the earliest recorded observation was made in 964 AD by Iranian scholar al-Sufi.",
-                            classes=["caption", ],
-                            style="text-align: center; max-width: 80%",
-                        )        
+                with solara.Column(align="center"):
+                    with solara.ColumnsResponsive(6, large=12):
+                        with solara.Column(align="center", classes=[]):
+                            solara.HTML(
+                                unsafe_innerHTML=
+                                f"""
+                                <img
+                                    src = '{ image_location }HST-SM4.jpeg'
+                                    style = 'max-height: 250px;'
+                                    alt = 'The Hubble Space Telescope against a dark background'
+                                />
+                                """
+                            )
+                        with solara.Column(align="center", classes=[]):
+                            solara.HTML(
+                                unsafe_innerHTML=
+                                f"""
+                                <img
+                                    src = '{ image_location }EdwinHubble.jpg'
+                                    style = 'max-height: 250px;'
+                                    alt = 'Astronomer Edwin Hubble holding an image of the Andromeda Galaxy'
+                                />
+                                """
+                            )
+                    solara.Text(
+                        "The Hubble Space Telescope and Edwin Hubble, the astronomer it was named for. Hubble holds an image of the Andromeda Galaxy, for which the earliest recorded observation was made in 964 AD by Iranian scholar al-Sufi.",
+                        classes=["caption", ],
+                        style="text-align: center; max-width: 80%",
+                    )        
 
         # Slide 2
         with rv.CarouselItem():
