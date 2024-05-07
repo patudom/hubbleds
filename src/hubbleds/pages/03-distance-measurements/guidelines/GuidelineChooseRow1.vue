@@ -5,10 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Choose a Galaxy"
-    @back="state.marker_backward = 1"
-    @next="state.marker_forward = 1"
-    :can-advance="(state) => state.galaxy_selected"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Select example galaxy from table.
@@ -24,9 +23,3 @@
   </scaffold-alert>
 </template>
 
-
-<script>
-module.exports = {
- props: ['state']
-}
-</script>

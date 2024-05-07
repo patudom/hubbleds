@@ -5,10 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Angular Size Measurement"
-    @back="state.marker_backward = 1"
-    @next="state.marker_forward = 1"
-    :can-advance="(state) => state.dos_donts_opened"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Click <span style="background-color: #02838f; border-radius: 5px; padding: 3px; color:white!important;">MEASUREMENT DOS AND DONTS</span> button.
@@ -25,8 +24,3 @@
 </template>
 
 
-<script>
-module.exports = {
- props: ['state']
-}
-</script>

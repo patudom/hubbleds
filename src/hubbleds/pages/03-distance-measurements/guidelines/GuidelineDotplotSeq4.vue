@@ -1,9 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Measurement Comparison"
-    @back="state.marker_backward = 1"
-    @next="state.marker_forward = 1"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -15,9 +15,3 @@
   </scaffold-alert>
 </template>
 
-
-<script>
-module.exports = {
- props: ['state']
-}
-</script>

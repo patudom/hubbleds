@@ -1,10 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Measurement Comparison"
-    @back="state.marker_backward = 1"
-    @next="state.marker_forward = 1"
-    :can-advance="(state) => state.dot_seq2_q"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Choose a response
@@ -57,8 +56,7 @@
 
 <script>
 module.exports = {
-  props: ['state'],
-
+  
   data: () => ({
       define_consensus: false,
   })

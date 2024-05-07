@@ -5,8 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Angular Size Measurements"
-    @next="state.marker = 'cho_row1'"
+    @next="next_callback()"
     :allow-back="false"
+    :can-advance="can_advance"
   >
     <template #back-content>
       <div>
@@ -29,9 +30,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
- props: ['state']
-}
-</script>

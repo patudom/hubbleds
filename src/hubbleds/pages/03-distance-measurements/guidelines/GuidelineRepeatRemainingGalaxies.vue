@@ -5,10 +5,9 @@
     max-width="800"
     elevation="6"
     :title-text="state.angsizes_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'"
-    @back="state.marker = 'dot_seq5'"
-    @next="state.marker = 'fil_rem1'"
-    :can-advance="(state) => state.angsizes_total >= 5  && !state.bad_angsize"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       <span v-if="!state.bad_angsize">
@@ -58,9 +57,3 @@
   </scaffold-alert>
 </template>
 
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

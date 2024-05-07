@@ -1,10 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Second Measurement Comparison"
-    @back="state.marker = 'dot_seq5c'"
-    @next="state.marker = 'dot_seq7'"
-    :can-advance="(state) => state.dot_seq6_q"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
     >
       <template #before-next>
         Choose a response
@@ -39,10 +38,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

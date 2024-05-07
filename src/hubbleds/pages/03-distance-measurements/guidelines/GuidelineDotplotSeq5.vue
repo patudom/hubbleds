@@ -1,9 +1,8 @@
 <template>
   <scaffold-alert
     title-text="Measurement Comparison"
-    @back="state.marker_backward = 1"
-    :can-advance="(state) => false"
-    :state="state"
+    @back="back_callback()"
+    :can-advance="can_advance"
   >
     <template #next-content>
     </template>
@@ -50,7 +49,6 @@
 
 <script>
 module.exports = {
-  props: ['state'],
 
   data: () => ({
     can_advance: false,

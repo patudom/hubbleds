@@ -6,10 +6,9 @@
     max-width="800"
     elevation="6"
     title-text="Second Measurement Comparison"
-    @back="state.marker = 'dot_seq5'"
-    @next="state.marker = 'dot_seq5c'"
-    :can-advance="(state) => state.exgal_second_measured"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
     >
     <template #before-next>
         Remeasure galaxy angular size
@@ -22,9 +21,3 @@
   </scaffold-alert>
 </template>
 
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

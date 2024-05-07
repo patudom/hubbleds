@@ -1,13 +1,9 @@
 <template>
   <scaffold-alert
     header-text="Estimate Distance"
-    @back="
-      state.marker = 'est_dis1';
-    "
-    @next="() => { 
-      state.marker = 'cho_row2';
-      state.galaxy_selected = false;
-    }"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -72,12 +68,6 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
- props: ['state']
-}
-</script>
 
 <style>
 

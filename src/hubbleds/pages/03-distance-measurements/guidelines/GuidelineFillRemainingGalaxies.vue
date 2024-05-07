@@ -2,10 +2,9 @@
   <scaffold-alert
     title-text="Estimate Distance"
     next-text="stage 4"
-    @back="state.marker = 'rep_rem1'"
-    @next="() => { $emit('stage_complete'); }"
-    :can-advance="(state) => state.distances_total === 5"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-tape-measure</v-icon></v-btn> in toolbar
@@ -30,10 +29,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-
-<script>
-module.exports = {
- props: ['state']
-}
-</script>

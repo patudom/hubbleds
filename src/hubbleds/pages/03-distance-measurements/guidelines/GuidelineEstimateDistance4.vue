@@ -5,12 +5,9 @@
     max-width="800"
     elevation="6"
     header-text="Estimate Distance"
-    @back="state.marker_backward = 1"
-    @next="() => {
-      state.marker_forward = 1;
-      state.distance_calc_count += 1;
-      state.show_ruler = false;
-    }"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -86,12 +83,6 @@
     </div>
   </scaffold-alert> 
 </template>
-
-<script>
-module.exports = {
- props: ['state']
-}
-</script>
 
 <style>
 

@@ -5,13 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Second Measurement Comparison"
-    @back="state.marker = 'dot_seq5'"
-    @next="() => {
-      state.show_ruler = true;
-      state.marker = 'dot_seq5b'
-    }"         
-    :can-advance="(state) => state.exgal_second_row_selected"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
     >
     <template #before-next>
         Select second measurement row
@@ -24,9 +20,3 @@
   </scaffold-alert>
 </template>
 
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

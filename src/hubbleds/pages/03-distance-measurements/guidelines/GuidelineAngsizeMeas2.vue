@@ -1,12 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Angular Size Measurement"
-    @back="
-      state.marker = 'cho_row1';
-    "
-    @next="
-      state.marker = 'ang_siz2b';
-    "
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -20,9 +17,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
- props: ['state']
-}
-</script>

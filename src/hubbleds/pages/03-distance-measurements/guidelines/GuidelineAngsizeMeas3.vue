@@ -5,10 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Angular Size Measurement"
-    @back="state.marker = 'ang_siz2b'"
-    @next="state.marker = 'ang_siz4'"
-    :can-advance="(state) => state.ruler_clicked_total > 0"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Click the <v-btn icon dark x-small disabled class="mx-1 black--text" elevation="2" style="background-color: #00E676;"><v-icon style="color:black!important;">mdi-ruler</v-icon></v-btn>  icon.
@@ -30,9 +29,3 @@
   </scaffold-alert>
 </template>
 
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

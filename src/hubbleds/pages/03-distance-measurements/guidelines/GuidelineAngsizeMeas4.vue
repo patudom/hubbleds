@@ -5,10 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Angular Size Measurement"
-    @back="state.marker = 'ang_siz3'"
-    @next="state.marker = 'ang_siz5'"
-    :can-advance="(state) => state.n_meas > 0"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Measure angular size of galaxy
@@ -29,9 +28,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
- props: ['state']
-}
-</script>

@@ -5,9 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Second Measurement Comparison"
-    @back="state.marker = 'dot_seq5'"
-    @next="state.marker = 'dot_seq6'"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
     >
     <div class="mb-4">
       <p>
@@ -20,9 +20,3 @@
   </scaffold-alert>
 </template>
 
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

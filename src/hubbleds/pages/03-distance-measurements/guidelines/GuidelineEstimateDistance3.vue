@@ -6,11 +6,9 @@
     elevation="6"
     header-text="Estimate Distance"
     next-text="calculate"
-    @back="state.marker = 'cho_row2'"
-    @next="() => {
-      const expectedAnswers = [state.meas_theta];
-      state.marker = validateAnswersJS(['gal_ang_size'], expectedAnswers) ? 'est_dis4' : 'est_dis3';
-    }"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -97,8 +95,6 @@
 
 <script>
 module.exports = {
-
-  props: ['state'],
 
   data: function() {
     return {
