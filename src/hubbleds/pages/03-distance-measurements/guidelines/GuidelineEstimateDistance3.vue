@@ -7,20 +7,28 @@
     header-text="Estimate Distance"
     next-text="calculate"
     @back="back_callback()"
-    @next="next_callback()"
+    @next="() => {
+      const expectedAnswers = [state_view.meas_theta];
+      validateAnswersJS(['gal_ang_size'], expectedAnswers) ? next_callback() : null;
+    }"
     :can-advance="can_advance"
   >
     <div
       class="mb-4"
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
     >
+      <v-card color="error" class="mb-4">
+        <v-card-text>
+          For now, enter {{ state_view.meas_theta }} until we've properly wired up the galaxy measurements.
+        </v-card-text>
+      </v-card>
       <p>
         Enter the <strong>angular size</strong> of your galaxy in <strong>arcseconds</strong> in the box.
       </p>
       <div
         class="JaxEquation my-8"
       >
-        $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\bbox[#FBE9E7]{\input[gal_ang_size][]{}}} $$
+        $$ D = \frac{ {{ Math.round(state_view.distance_const) }} }{\bbox[#FBE9E7]{\input[gal_ang_size][]{}}} $$
       </div>
       <v-divider role="presentation"></v-divider>
       <div
@@ -42,7 +50,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta \text{ (in arcsec)}} \text{ Mpc}$$
+                $$ D = \frac{ {{ Math.round(state_view.distance_const) }} }{\theta \text{ (in arcsec)}} \text{ Mpc}$$
               </div>
             </v-col>
           </v-row>
@@ -100,6 +108,12 @@ module.exports = {
     return {
       failedValidation: false
     }
+  },
+
+  computed: {
+    MathJax() {
+      return document.defaultView.MathJax
+    },    
   },
 
   methods: {

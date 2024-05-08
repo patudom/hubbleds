@@ -25,7 +25,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta \text{ (in arcsec)}} \text{ Mpc} $$
+                $$ D = \frac{ {{ Math.round(state_view.distance_const) }} }{\theta \text{ (in arcsec)}} \text{ Mpc} $$
               </div>
             </v-col>
           </v-row>
@@ -68,6 +68,17 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  computed: {
+    MathJax() {
+      return document.defaultView.MathJax
+    },    
+  }
+}
+
+</script>
 
 <style>
 

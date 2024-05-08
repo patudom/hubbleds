@@ -15,6 +15,7 @@ from astropy.table import Table
 from ...components import DataTable, AngsizeDosDontsSlideshow
 from ...data_management import *
 from ...state import GLOBAL_STATE, LOCAL_STATE
+from ...utils import DISTANCE_CONSTANT
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
 from .component_state import ComponentState, Marker
@@ -192,6 +193,9 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.est_dis2),
+                state_view={
+                    "distance_const": DISTANCE_CONSTANT
+                },
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineChooseRow2.vue",
@@ -206,6 +210,10 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.est_dis3),
+                state_view={
+                    "distance_const": DISTANCE_CONSTANT,
+                    "meas_theta": 10, #FIX to pass student's value once we hook up angular size measurements
+                },
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEstimateDistance4.vue",
@@ -213,6 +221,10 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.est_dis4),
+                state_view={
+                    "distance_const": DISTANCE_CONSTANT,
+                    "meas_theta": 10, #FIX to pass student's value once we hook up angular size measurements
+                },
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq5a.vue",

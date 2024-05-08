@@ -21,7 +21,7 @@
         color="info lighten-1"
         elevation="0"
       >
-        $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state.meas_theta).toFixed(0) }} } } } \text{ Mpc}$$
+        $$ D = \frac{ {{ Math.round(state_view.distance_const) }} }{\textcolor{black}{\colorbox{#FFAB91}{ {{ (state_view.meas_theta).toFixed(0) }} } } } \text{ Mpc}$$
       </v-card>    
       <p class="mt-4">
         Dividing through gives you the estimated distance to your galaxy:
@@ -29,7 +29,7 @@
       <div
         class="JaxEquation my-8"
       >
-        $$ D = {{ (Math.round(state.distance_const)/state.meas_theta).toFixed(0) }} \text{ Mpc} $$
+        $$ D = {{ (Math.round(state_view.distance_const)/state_view.meas_theta).toFixed(0) }} \text{ Mpc} $$
       </div>
       <v-divider role="presentation" class="mt-3"></v-divider>
       <v-card
@@ -45,7 +45,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ D = \frac{ {{ Math.round(state.distance_const) }} }{\theta \text{ (in arcsec)} } \text{ Mpc}$$
+                $$ D = \frac{ {{ Math.round(state_view.distance_const) }} }{\theta \text{ (in arcsec)} } \text{ Mpc}$$
               </div>
             </v-col>
           </v-row>
@@ -83,6 +83,16 @@
     </div>
   </scaffold-alert> 
 </template>
+
+<script>
+module.exports = {
+  computed: {
+    MathJax() {
+      return document.defaultView.MathJax
+    },    
+  },
+}
+</script>
 
 <style>
 
