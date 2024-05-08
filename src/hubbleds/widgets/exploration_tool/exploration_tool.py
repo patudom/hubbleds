@@ -8,6 +8,8 @@ from ipywidgets import DOMWidget, widget_serialization
 from ipywwt import WWTWidget
 from traitlets import Bool, Instance, Int
 
+from ...utils import GALAXY_FOV
+
 
 class ExplorationTool(v.VueTemplate):
     template = load_template("exploration_tool.vue", __file__, traitlet=True).tag(
@@ -80,3 +82,6 @@ class ExplorationTool(v.VueTemplate):
         self._fov = fov
         self.last_update = datetime.now()
         self._check_if_complete()
+
+    def go_to_coordinates(self, coordinates, fov=GALAXY_FOV, instant=False):
+        self.widget.center_on_coordinates(coordinates, fov=fov, instant=instant)
