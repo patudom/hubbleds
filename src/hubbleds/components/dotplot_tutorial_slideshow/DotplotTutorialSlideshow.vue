@@ -177,7 +177,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); dialog = false; step = 0; finished = true }"
+          @click="() => { $emit('close'); dialog = false }"
         >
           Done
         </v-btn>
@@ -185,44 +185,6 @@
     </v-card>
   </v-dialog>
 </template>
-
-<script>
-export default {
-  
-  watch: {
-    step(newStep) {
-      this.maxStepCompleted = newStep;
-
-      if (newStep == 1) {
-        this.activateMeasuringTool();
-      }
-
-      if (newStep == 2) {
-        this.activate_zoom_tool();
-        this.home_add_line();
-      }
-
-      if (newStep == 3) {
-        this.activate_selector();
-        this.home_add_previous_line()
-      }
-    },
-  },
-
-  methods: {
-    closeDialog() {
-        this.$emit('close');
-        this.dialog = false;
-        if (this.step == this.length - 1) {
-          this.step = 0;
-      }
-    }
-  }
-
-  
-};
-
-</script>
 
 <style scoped>
 .no-transition {
