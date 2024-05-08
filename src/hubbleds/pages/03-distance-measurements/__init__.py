@@ -284,7 +284,7 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq2),
                 event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('ange_meas_consensus'), 'score_tag': 'ange_meas_consensus'}
+                state_view={'mc_score': mc_scoring.get('ang_meas_consensus'), 'score_tag': 'ang_meas_consensus'}
             )            
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq3.vue",
@@ -316,7 +316,7 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq6),
                 event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('ange_meas_consensus_2'), 'score_tag': 'ange_meas_consensus_2'}
+                state_view={'mc_score': mc_scoring.get('ang_meas_consensus_2'), 'score_tag': 'ang_meas_consensus_2'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq7.vue",
