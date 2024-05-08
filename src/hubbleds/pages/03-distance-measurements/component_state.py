@@ -36,7 +36,7 @@ class Marker(enum.Enum):
     dot_seq4 = enum.auto()	
     dot_seq4a = enum.auto()	
     ang_siz5a  = enum.auto()	
-    ang_siz6  = enum.auto()
+    # ang_siz6  = enum.auto() We skipped this in the voila version
     dot_seq5  = enum.auto()	
     dot_seq5a = enum.auto()	
     dot_seq5b = enum.auto()	
@@ -104,7 +104,7 @@ class ComponentState:
         self.transition_to(previous_marker, force=True)
 
     @computed_property
-    def ang_siz6_gate(self):
+    def dot_seq5_gate(self):
         return (
             bool(self.dosdonts_tutorial_opened.value)
         )
