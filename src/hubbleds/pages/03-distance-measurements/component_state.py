@@ -44,7 +44,8 @@ class Marker(enum.Enum):
     dot_seq6  = enum.auto()	
     dot_seq7 = enum.auto()	
     rep_rem1 = enum.auto()	
-    fil_rem1 = enum.auto()	
+    fil_rem1 = enum.auto()
+    dummy = enum.auto() # Added temporarily because I'm having an off by 1 issue with my marker list.	
 
     @staticmethod
     def next(step):

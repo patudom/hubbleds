@@ -146,6 +146,7 @@ def Page():
                 GUIDELINE_ROOT / "GuidelineDotplotSeq5.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
+                event_jump_rep_rem1=lambda *args: component_state.transition_to(Marker.rep_rem1),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq5),
             )
@@ -251,7 +252,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
+                # event_next_callback should go to next stage but I don't know how to set that up.
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.fil_rem1),
@@ -307,6 +308,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq6),
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                state_view={'mc_score': mc_scoring.get('ange_meas_consensus_2'), 'score_tag': 'ange_meas_consensus_2'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq7.vue",

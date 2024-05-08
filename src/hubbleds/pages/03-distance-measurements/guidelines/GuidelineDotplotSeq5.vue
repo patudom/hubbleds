@@ -3,6 +3,7 @@
     title-text="Measurement Comparison"
     @back="back_callback()"
     :can-advance="can_advance"
+    :hide-next="true"
   >
     <template #next-content>
     </template>
@@ -23,7 +24,7 @@
         class="black--text"
         elevation="2"
         @click="() => {
-          state.marker = 'dot_seq5a'
+          next_callback()
         }"
       >
          <strong>Remeasure example</strong>
@@ -34,8 +35,8 @@
         class="black--text"
         elevation="2"
         @click="() => {
-          state.show_ruler = true;
-          state.marker = 'rep_rem1'
+          // state.show_ruler = true;
+          jump_rep_rem1()
         }"
       >
          <strong>Move on to my galaxies</strong>

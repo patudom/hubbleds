@@ -3,7 +3,7 @@
     title-text="Second Measurement Comparison"
     @back="back_callback()"
     @next="next_callback()"
-    :can-advance="can_advance"
+    :can-advance="question_completed && can_advance"
     >
       <template #before-next>
         Choose a response
@@ -32,9 +32,22 @@
           ]"
         :correct-answers="[1]"
         :neutral-answers="[0, 2]"
-        @select="(opt) => { if (opt.correct) { console.log('correct'); $emit('ready') } }"
-        score-tag="ange_meas_consensus_2">
+        @select="(status) => { if (status.correct) { question_completed = true; } }"
+        :score-tag="state_view.score_tag"
+        @mc-emit="mc_callback($event)"
+        :initialization="state_view.mc_score"
+      >
       </mc-radiogroup>
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  data() {
+    return {
+      question_completed: false,
+    };
+  },
+};
+</script>
