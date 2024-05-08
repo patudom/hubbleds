@@ -14,7 +14,7 @@ from astropy.table import Table
 
 from ...components import DataTable, AngsizeDosDontsSlideshow
 from ...data_management import *
-from ...state import GLOBAL_STATE, LOCAL_STATE
+from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
 from ...utils import DISTANCE_CONSTANT
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
@@ -64,7 +64,9 @@ def Page():
     # Solara's reactivity is often tied to the _context_ of the Page it's
     #  being rendered in. Currently, in order to trigger subscribed callbacks,
     #  state connections need to be initialized _inside_ a Page.
-    # component_state.setup()
+    component_state.setup()
+
+    mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
 
     solara.Text(
         f"Current step: {component_state.current_step.value}, "
@@ -273,6 +275,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq2),
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                state_view={'mc_score': mc_scoring.get('ange_meas_consensus'), 'score_tag': 'ange_meas_consensus'}
             )            
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq3.vue",
@@ -294,6 +298,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq4a),
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                state_view={'mc_score': mc_scoring.get('ang_meas_dist_relation'), 'score_tag': 'ang_meas_dist_relation'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq6.vue",

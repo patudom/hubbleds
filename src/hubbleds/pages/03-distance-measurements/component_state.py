@@ -64,6 +64,9 @@ class ComponentState:
         default=Reactive(False)
     )
 
+    def setup(self):
+        pass
+
     def is_current_step(self, step: Marker):
         return self.current_step.value == step
 
