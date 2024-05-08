@@ -12,7 +12,7 @@ from solara import Reactive
 from pathlib import Path
 from astropy.table import Table
 
-from ...components import DataTable, SpectrumViewer, SpectrumSlideshow, DopplerSlideshow
+from ...components import DataTable, AngsizeDosDontsSlideshow
 from ...data_management import *
 from ...state import GLOBAL_STATE, LOCAL_STATE
 from ...widgets.selection_tool import SelectionTool
@@ -127,7 +127,11 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.ang_siz5a),
+                state_view={
+                    "dosdonts_tutorial_opened": component_state.dosdonts_tutorial_opened.value
+                },
             )
+
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAngsizeMeas6.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
@@ -151,7 +155,13 @@ def Page():
             )
 
         with rv.Col():
-            pass
+            with rv.Col(cols=6, offset=3):
+                if component_state.current_step.value.value >= Marker.ang_siz5a.value:
+                    AngsizeDosDontsSlideshow(
+                        event_on_dialog_opened=lambda *args: component_state.dosdonts_tutorial_opened.set(
+                            True
+                        )
+                    )
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():

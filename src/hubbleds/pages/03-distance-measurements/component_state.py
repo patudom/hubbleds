@@ -1,7 +1,6 @@
 from solara import Reactive
 import solara
 import enum
-from ...utils import HUBBLE_ROUTE_PATH
 from ...decorators import computed_property
 import dataclasses
 from cosmicds.utils import API_URL
@@ -61,6 +60,9 @@ class ComponentState:
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.ang_siz1)
     )
+    dosdonts_tutorial_opened: Reactive[bool] = dataclasses.field(
+        default=Reactive(False)
+    )
 
     def is_current_step(self, step: Marker):
         return self.current_step.value == step
@@ -96,3 +98,9 @@ class ComponentState:
     def transition_previous(self):
         previous_marker = Marker.previous(self.current_step.value)
         self.transition_to(previous_marker, force=True)
+
+    @computed_property
+    def ang_siz6_gate(self):
+        return (
+            bool(self.dosdonts_tutorial_opened.value)
+        )

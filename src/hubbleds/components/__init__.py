@@ -4,3 +4,4 @@ from .spectrum_viewer.spectrum_viewer import SpectrumViewer
 from .spectrum_slideshow.spectrum_slideshow import SpectrumSlideshow
 from .doppler_slideshow.doppler_slideshow import DopplerSlideshow
 from .stage_2_slideshow.stage_2_slideshow import Stage2Slideshow
+from .angsize_dosdonts_slideshow.angsize_dosdonts_slideshow import AngsizeDosDontsSlideshow
