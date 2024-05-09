@@ -2,6 +2,8 @@ from solara import Reactive
 import solara
 import enum
 from ...utils import HUBBLE_ROUTE_PATH, HST_KEY_AGE
+from ...data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
+
 from ...decorators import computed_property
 import dataclasses
 from cosmicds.utils import API_URL
@@ -88,8 +90,25 @@ class ComponentState:
     def transition_previous(self):
         previous_marker = Marker.previous(self.current_step.value)
         self.transition_to(previous_marker)
-        
     
+    def add_data_by_marker(self, viewer ):
+        if self.current_step.value.value >= Marker.pro_dat1.value:
+            data = GLOBAL_STATE.data_collection[HUBBLE_KEY_DATA_LABEL]
+            data.style.markersize = 10
+            data.style.color = '#AEEA00'
+            viewer.add_data(data)
+            viewer.state.x_att = data.id['Distance (Mpc)']
+            viewer.state.y_att = data.id['Velocity (km/s)']
+        if self.current_step.value.value >= Marker.pro_dat5.value:
+            data = GLOBAL_STATE.data_collection[HUBBLE_1929_DATA_LABEL]
+            data.style.markersize = 10
+            data.style.color = '#D500F9'
+            viewer.add_data(data)
+            viewer.state.x_att = data.id['Distance (Mpc)']
+            viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+        
+        viewer.state.reset_limits()
+        
     # def pro_dat0_gate(self):
     #     return True
     

@@ -4,6 +4,11 @@ import solara
 from cosmicds.components import ScaffoldAlert
 from cosmicds import load_custom_vue_components
 
+from cosmicds.components import LayerToggle
+# from cosmicds.components import ViewerLayout
+from ...components import GridViewer
+from ...viewers import HubbleFitView
+
 from glue_jupyter.app import JupyterApplication
 
 
@@ -15,18 +20,24 @@ from pathlib import Path
 from ...data_management import *
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
 # import for type definitions
-
+from typing import cast
 
 from .component_state import ComponentState, Marker
 
 # the guidelines in the current files parent directory
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
-# create glue app with the global data collection and session
-gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
-
 # intitialize the component state
 component_state = ComponentState()
+
+
+
+def basic_viewer_setup(viewer_class, glue_session, data_collection, name, x_att, y_att):
+    viewer = viewer_class(glue_session)
+    viewer.add_data(data_collection[name])
+    viewer.state.x_att = x_att
+    viewer.state.y_att = y_att
+    return viewer
 
     
 # create the Page for the current stage
@@ -42,6 +53,19 @@ def Page():
     #  state connections need to be initialized _inside_ a Page.
     component_state.setup()
     
+    # create glue app with the global data collection and session
+    def glue_setup() -> JupyterApplication:
+        gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
+        return gjapp
+    gjapp = cast(JupyterApplication, solara.use_memo(glue_setup,[]))
+    
+    
+    viewer = gjapp.new_data_viewer(HubbleFitView, show=False)
+    viewer.state.title = "Professional Data"
+    viewer.figure.update_xaxes(showline=True, mirror=False)
+    viewer.figure.update_yaxes(showline=True, mirror=False)
+    viewer.toolbar.set_tool_enabled("hubble:linefit", False)
+    component_state.add_data_by_marker(viewer)
     
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
         
@@ -176,3 +200,6 @@ def Page():
             )
         
         with solara.Column():
+            LayerToggle(viewer)
+            GridViewer(viewer)
+        
