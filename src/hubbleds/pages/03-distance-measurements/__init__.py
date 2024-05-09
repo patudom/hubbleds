@@ -69,10 +69,18 @@ def Page():
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
 
     solara.Text(
-        f"Current step: {component_state.current_step.value}, "
-        f"Next step: {Marker(component_state.current_step.value.value + 1)}"
-        f"Can advance: {component_state.can_transition(next=True)}"
+        f"Current step: {component_state.current_step.value.value}. {component_state.current_step.value}"
     )
+
+    if (component_state.current_step.value.value < Marker.fil_rem1.value):
+        solara.Text(
+            f"Next step: {Marker(component_state.current_step.value.value + 1)} "
+            f"Can advance: {component_state.can_transition(next=True)}"
+        )
+    else:
+        solara.Text(
+            "End of Stage"
+        )
 
     # if LOCAL_STATE.debug_mode:
 
@@ -261,7 +269,6 @@ def Page():
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
                 # event_next_callback should go to next stage but I don't know how to set that up.
                 event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.fil_rem1),
             )
 
