@@ -1,12 +1,7 @@
 <template>
   <scaffold-alert
     title-text="Shortcomings in Your Estimate"
-    next-text="stage 5"
-    @back="
-      state.marker = 'sho_est1';
-    "
-    @next="() => { $emit('stage_complete'); }"
-          
+    @back="back_callback()"
   >
   <!-- state.marker = 'ran_var1'; -->
     <div
@@ -27,9 +22,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

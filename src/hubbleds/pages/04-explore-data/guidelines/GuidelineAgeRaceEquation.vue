@@ -1,12 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Age of the Race"
-    @back="
-      state.marker = 'hyp_gal1';
-    "
-    @next="
-      state.marker = 'age_uni2';
-    "
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -83,9 +80,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

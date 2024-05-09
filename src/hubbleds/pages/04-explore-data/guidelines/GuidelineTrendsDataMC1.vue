@@ -5,18 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Trends in the Data"
-    @back="() => {
-      state.marker = 'exp_dat1';
-      state.define_trend = false;
-    }"
-    @next="() => {
-        state.marker = 'tre_dat2';
-        state.define_trend = false;
-        state.trend_response = false;
-      }
-    "
-    :can-advance="(state) => state.trend_response"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Choose a response.
@@ -71,9 +62,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

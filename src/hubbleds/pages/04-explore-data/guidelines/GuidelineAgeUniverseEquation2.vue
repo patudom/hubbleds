@@ -1,12 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Age of the Universe"
-    @back="
-      state.marker = 'age_rac1';
-    "
-    @next="
-      state.marker = 'age_uni3';
-    "
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -110,9 +107,3 @@
     margin: 20px auto !important;
   }
 </style>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

@@ -5,10 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Trends in the Data"
-    @back="state.marker = 'tre_dat1'"
-    @next="state.marker = 'tre_dat3'"
-    :can-advance="(state) => state.class_layer_toggled > 0"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Click Class Data box
@@ -29,9 +28,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

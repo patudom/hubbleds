@@ -6,11 +6,9 @@
     elevation="6"
     title-text="Estimate Age of Universe"
     next-text="calculate"
-    @back="state.marker = 'age_uni2'"
-    @next="() => {
-      const expectedAnswers = [state.hypgal_distance, state.hypgal_velocity];
-      state.marker = validateAnswersJS(['gal_distance', 'gal_velocity'], expectedAnswers) ? 'age_uni4' : 'age_uni3';
-    }"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
 
     <div
@@ -151,8 +149,6 @@ mjx-mstyle {
 
 <script>
 module.exports = {
-  
-  props: ['state'],
 
   data: function() {
     return {

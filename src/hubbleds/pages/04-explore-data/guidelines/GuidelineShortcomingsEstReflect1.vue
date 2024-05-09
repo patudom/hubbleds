@@ -1,12 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Shortcomings in Your Estimate"
-    @back="
-      state.marker = 'you_age1';
-    "
-    @next="
-      state.marker = 'sho_est2';
-    "
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -40,9 +37,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

@@ -1,12 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Trend Lines"
-    @back="
-      state.marker = 'hub_exp1';
-    "
-    @next="
-      state.marker = 'tre_lin2';
-    "
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -17,9 +14,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

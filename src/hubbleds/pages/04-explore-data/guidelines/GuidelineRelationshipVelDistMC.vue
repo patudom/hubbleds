@@ -5,10 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Relationship Between Velocity and Distance"
-    @back="state.marker = 'tre_dat3'"
-    @next="state.marker = 'hub_exp1'"
-    :can-advance="(state) => state.relvel_response"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #next-content>
       Choose a response.
@@ -48,9 +47,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

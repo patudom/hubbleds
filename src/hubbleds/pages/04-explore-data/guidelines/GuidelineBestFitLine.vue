@@ -5,10 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Best Fit Line"
-    @back="state.marker = 'tre_lin2'"
-    @next="state.marker = 'age_uni1'"
-    :can-advance="(state) => state.best_fit_clicked"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Click <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-chart-timeline-variant</v-icon></v-btn> to show best fit.
@@ -24,9 +23,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

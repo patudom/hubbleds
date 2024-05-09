@@ -5,8 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Estimate Age of Universe"
-    @back="state.marker = 'age_uni3'"
-    @next="state.marker = 'you_age1'"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -135,7 +136,6 @@ mjx-mstyle {
 
 <script>
 module.exports = {
-  props: ['state'],
   data() {
     return {
       enteredJax: this.youEnteredMJax(this.state.hypgal_distance, this.state.hypgal_velocity),

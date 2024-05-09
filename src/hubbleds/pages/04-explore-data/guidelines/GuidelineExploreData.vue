@@ -6,7 +6,8 @@
     elevation="6"
     title-text="Explore Your Data"
     next-text="graph"
-    @next="state.marker = 'tre_dat1'"
+    @next="next_callback()"
+    :can-advance="can_advance"
     :allow-back="false"
   >
     <div
@@ -22,9 +23,3 @@
 
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

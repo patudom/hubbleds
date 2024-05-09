@@ -1,12 +1,9 @@
 <template>
   <scaffold-alert
     title-text="A Hypothetical Galaxy"
-    @back="
-      state.marker = 'age_uni1';
-    "
-    @next="
-      state.marker = 'age_rac1';
-    "
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -20,9 +17,3 @@
     </div>
   </scaffold-alert>
 </template>
-
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>
