@@ -59,7 +59,7 @@ def Page():
         return gjapp
     gjapp = cast(JupyterApplication, solara.use_memo(glue_setup,[]))
     
-    
+    #TODO: Should viewer creation happen somewhere else?
     viewer = gjapp.new_data_viewer(HubbleFitView, show=False)
     viewer.state.title = "Professional Data"
     viewer.figure.update_xaxes(showline=True, mirror=False)
@@ -200,6 +200,7 @@ def Page():
             )
         
         with solara.Column():
+            # TODO: LayerToggle should refresh when the data changes
             LayerToggle(viewer)
             GridViewer(viewer)
         
