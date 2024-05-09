@@ -13,7 +13,6 @@
     <div
       class="mb-4"
     >
-    {{ state_view }}
     <p>
       Edwin Hubble's own data from 1929 is shown in purple. (Your class's data is shown in blue).
     </p>
