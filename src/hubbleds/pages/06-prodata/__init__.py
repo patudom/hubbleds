@@ -88,62 +88,62 @@ def Page():
     with solara.Row():
         with solara.Column():
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data0.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData0.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat0),
             )
             s = ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data1.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData1.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat1),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
                 state_view={'mc_score': mc_scoring.get('pro-dat1'), 'score_tag': 'pro-dat1'}
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data2.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData2.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True), 
+                can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat2),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
                 state_view={'mc_score': mc_scoring.get('pro-dat2'), 'score_tag': 'pro-dat2'}
                 
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data3.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData3.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat3),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
                 state_view={'mc_score': mc_scoring.get('pro-dat3'), 'score_tag': 'pro-dat3'}
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data4.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData4.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat4),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
                 state_view={'mc_score': mc_scoring.get('pro-dat4'), 'score_tag': 'pro-dat4'}
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data5.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData5.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat5),
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data6.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData6.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat6),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
                 state_view={
                     'hst_age': component_state.hst_age, 
                     'class_age': component_state.class_age,
@@ -152,47 +152,47 @@ def Page():
                     }
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data7.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData7.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat7),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
                 state_view={'mc_score': mc_scoring.get('pro-dat7'), 'score_tag': 'pro-dat7'}
                 
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data8.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData8.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat8),
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_professional_data9.vue",
+                GUIDELINE_ROOT / "GuidelineProfessionalData9.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat9),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
                 state_view={'mc_score': mc_scoring.get('pro-dat9'), 'score_tag': 'pro-dat'}
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_story_finish.vue",
+                GUIDELINE_ROOT / "GuidelineStoryFinish.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.sto_fin1),
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_story_finish2.vue",
+                GUIDELINE_ROOT / "GuidelineStoryFinish2.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.sto_fin2),
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "guideline_story_finish3.vue",
+                GUIDELINE_ROOT / "GuidelineStoryFinish3.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
