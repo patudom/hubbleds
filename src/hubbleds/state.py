@@ -5,6 +5,7 @@ from glue.core.data_factories import load_data
 from pathlib import Path
 
 from .data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
+from .tools import *
 
 from typing import TypedDict
 class MCScore(TypedDict):
