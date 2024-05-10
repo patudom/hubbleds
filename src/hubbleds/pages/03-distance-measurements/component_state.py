@@ -45,7 +45,6 @@ class Marker(enum.Enum):
     dot_seq7 = enum.auto()	
     rep_rem1 = enum.auto()	
     fil_rem1 = enum.auto()
-    dummy = enum.auto() # Added temporarily because I'm having an off by 1 issue with my marker list.	
 
     @staticmethod
     def next(step):
@@ -54,6 +53,14 @@ class Marker(enum.Enum):
     @staticmethod
     def previous(step):
         return Marker(step.value - 1)
+    
+    @staticmethod
+    def first():
+        return Marker(1)
+    
+    @staticmethod
+    def last():
+        return Marker(len(Marker))
 
 
 @dataclasses.dataclass
@@ -73,8 +80,12 @@ class ComponentState:
 
     def can_transition(self, step: Marker = None, next=False, prev=False):
         if next:
+            if self.current_step.value is Marker.last():
+                return False  # FIX once we sort out transitions between stages
             step = Marker.next(self.current_step.value)
         elif prev:
+            if self.current_step.value is Marker.first():
+                return False  # FIX once we sort out transitions between stages
             step = Marker.previous(self.current_step.value)
 
         if hasattr(self, f"{step.name}_gate"):
