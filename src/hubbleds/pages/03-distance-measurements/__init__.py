@@ -156,7 +156,7 @@ def Page():
                 GUIDELINE_ROOT / "GuidelineDotplotSeq5.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
-                event_jump_rep_rem1=lambda *args: component_state.transition_to(Marker.rep_rem1),
+                event_force_transition=lambda *args: component_state.transition_to(Marker.rep_rem1),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq5),
             )
@@ -261,7 +261,7 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRepeatRemainingGalaxies.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
+                event_back_callback=lambda *args: component_state.transition_to(Marker.dot_seq5),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.rep_rem1),
             )
