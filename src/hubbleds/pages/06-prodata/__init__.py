@@ -56,14 +56,15 @@ def Page():
     # create glue app with the global data collection and session
     def glue_setup() -> JupyterApplication:
         gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
-        return gjapp
-    gjapp = cast(JupyterApplication, solara.use_memo(glue_setup,[]))
+        viewer = gjapp.new_data_viewer(HubbleFitView, show=False)
+        viewer.state.title = "Professional Data"
+        viewer.figure.update_xaxes(showline=True, mirror=False)
+        viewer.figure.update_yaxes(showline=True, mirror=False)
+        return gjapp, viewer
+    gjapp, viewer = cast(JupyterApplication, solara.use_memo(glue_setup,[]))
     
     #TODO: Should viewer creation happen somewhere else?
-    viewer = gjapp.new_data_viewer(HubbleFitView, show=False)
-    viewer.state.title = "Professional Data"
-    viewer.figure.update_xaxes(showline=True, mirror=False)
-    viewer.figure.update_yaxes(showline=True, mirror=False)
+    
     # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
     component_state.add_data_by_marker(viewer)
     
@@ -146,7 +147,7 @@ def Page():
                 event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
                 state_view={
                     'hst_age': component_state.hst_age, 
-                    'class_age': component_state.class_age,
+                    'class_age': component_state.class_age.value,
                     'mc_score': mc_scoring.get('pro-dat6'), 
                     'score_tag': 'pro-dat4'
                     }

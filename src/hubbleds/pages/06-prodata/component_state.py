@@ -47,6 +47,8 @@ class ComponentState:
     ages_within: Reactive[float] = dataclasses.field(default=Reactive(0.15))
     allow_too_close_correct: Reactive[bool] = dataclasses.field(default=Reactive(False))
     
+    fit_line_shown: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    
     def __post__init(self):
         pass
     
@@ -92,20 +94,26 @@ class ComponentState:
         self.transition_to(previous_marker)
     
     def add_data_by_marker(self, viewer ):
-        if self.current_step.value.value >= Marker.pro_dat1.value:
+        if self.current_step.value.value == Marker.pro_dat1.value:
             data = GLOBAL_STATE.data_collection[HUBBLE_KEY_DATA_LABEL]
-            data.style.markersize = 10
-            data.style.color = '#AEEA00'
-            viewer.add_data(data)
-            viewer.state.x_att = data.id['Distance (Mpc)']
-            viewer.state.y_att = data.id['Velocity (km/s)']
-        if self.current_step.value.value >= Marker.pro_dat5.value:
+            if data not in viewer.state.layers_data:
+                print('adding HST key')
+                data.style.markersize = 10
+                data.style.color = '#AEEA00'
+                viewer.add_data(data)
+                viewer.state.x_att = data.id['Distance (Mpc)']
+                viewer.state.y_att = data.id['Velocity (km/s)']
+                layer = viewer.layer_artist_for_data(data)
+        if self.current_step.value.value == Marker.pro_dat5.value:
             data = GLOBAL_STATE.data_collection[HUBBLE_1929_DATA_LABEL]
-            data.style.markersize = 10
-            data.style.color = '#D500F9'
-            viewer.add_data(data)
-            viewer.state.x_att = data.id['Distance (Mpc)']
-            viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+            if data not in viewer.state.layers_data:
+                print('adding Hubble 1929')
+                data.style.markersize = 10
+                data.style.color = '#D500F9'
+                viewer.add_data(data)
+                viewer.state.x_att = data.id['Distance (Mpc)']
+                viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+                layer = viewer.layer_artist_for_data(data)
         
         viewer.state.reset_limits()
         

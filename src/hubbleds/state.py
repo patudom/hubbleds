@@ -4,6 +4,10 @@ from solara import Reactive
 from glue.core.data_factories import load_data
 from pathlib import Path
 
+# from glue.config import settings as glue_settings
+# glue_settings.BACKGROUND_COLOR = 'white'
+# glue_settings.FOREGROUND_COLOR= 'black'
+
 from .data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
 from .tools import *
 
