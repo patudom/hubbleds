@@ -1,5 +1,4 @@
 from solara import Reactive
-import solara
 import enum
 from ...utils import HUBBLE_ROUTE_PATH
 from ...decorators import computed_property
@@ -95,6 +94,14 @@ class DopplerCalculation:
 
 
 @dataclasses.dataclass
+class DotPlotTutorialState:
+    step: Reactive[int] = dataclasses.field(default=Reactive(0))
+    length: Reactive[int] = dataclasses.field(default=Reactive(4))
+    max_step_completed: Reactive[int] = dataclasses.field(default=Reactive(0))
+    current_title: Reactive[str] = dataclasses.field(default=Reactive(""))
+
+
+@dataclasses.dataclass
 class ComponentState:
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.mee_gui1)
@@ -118,6 +125,10 @@ class ComponentState:
         default_factory=DopplerCalculation
     )
     student_vel: Reactive[float] = dataclasses.field(default=Reactive(0))
+    dotplot_tutorial_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    dotplot_tutorial_state: DotPlotTutorialState = dataclasses.field(
+        default_factory=DotPlotTutorialState
+    )
     dotplot_tutorial_finished: Reactive[bool] = dataclasses.field(default=Reactive(False))
 
     def __post_init__(self):
