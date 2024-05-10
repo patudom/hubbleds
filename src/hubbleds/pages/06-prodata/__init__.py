@@ -64,7 +64,7 @@ def Page():
     viewer.state.title = "Professional Data"
     viewer.figure.update_xaxes(showline=True, mirror=False)
     viewer.figure.update_yaxes(showline=True, mirror=False)
-    viewer.toolbar.set_tool_enabled("hubble:linefit", False)
+    # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
     component_state.add_data_by_marker(viewer)
     
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
