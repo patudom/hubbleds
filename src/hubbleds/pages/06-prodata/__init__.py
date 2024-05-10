@@ -67,6 +67,7 @@ def Page():
     
     # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
     component_state.add_data_by_marker(viewer)
+    component_state.show_legend(viewer, show=True)
     
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
         
