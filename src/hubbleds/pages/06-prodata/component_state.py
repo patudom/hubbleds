@@ -116,7 +116,19 @@ class ComponentState:
                 layer = viewer.layer_artist_for_data(data)
         
         viewer.state.reset_limits()
-        
+    
+    def show_legend(self, viewer, show=True):
+        viewer.figure.update_layout(showlegend=show)
+        if show:
+            viewer.figure.update_layout(
+            legend = {
+                'yanchor': 'top',
+                'xanchor': 'left',
+                "y": 0.99,
+                "x": 0.01
+            })
+        return
+    
     # def pro_dat0_gate(self):
     #     return True
     
