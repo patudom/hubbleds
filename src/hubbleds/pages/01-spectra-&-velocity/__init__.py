@@ -1,16 +1,20 @@
 import dataclasses
+from random import randint
 
 import numpy as np
 import pandas as pd
 import solara
 from cosmicds.widgets.table import Table
-from cosmicds.components import ScaffoldAlert
+from cosmicds.components import ScaffoldAlert, ViewerLayout
 from cosmicds import load_custom_vue_components
+from glue.core import Data
 from glue_jupyter.app import JupyterApplication
 from reacton import ipyvuetify as rv
-from solara import Reactive
 from pathlib import Path
 from astropy.table import Table
+
+from hubbleds.components.dotplot_tutorial_slideshow import DotplotTutorialSlideshow
+from hubbleds.viewers.hubble_dotplot import HubbleDotPlotView
 
 from ...components import DataTable, SpectrumViewer, SpectrumSlideshow, DopplerSlideshow
 from ...data_management import *
@@ -21,8 +25,6 @@ from .component_state import ComponentState, Marker
 
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-
-gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
 
 component_state = ComponentState()
 
@@ -56,6 +58,17 @@ def _on_galaxy_table_row_selected(row):
 
 @solara.component
 def Page():
+
+    def glue_setup():
+        gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
+        dotplot_test_data = Data(x=[randint(1, 10) for _ in range(30)])
+        dotplot_test_data.style.color = "black"
+        gjapp.data_collection.append(dotplot_test_data)
+        dotplot = gjapp.new_data_viewer(HubbleDotPlotView, data=dotplot_test_data, show=False)
+        return gjapp, dotplot
+
+    gjapp, dotplot = solara.use_memo(glue_setup, [])
+
     # Custom vue-only components have to be registered in the Page element
     #  currently, otherwise they will not be available in the front-end
     load_custom_vue_components()
@@ -367,4 +380,12 @@ def Page():
                 student_c=component_state.doppler_calc_state.student_c.value,
                 event_set_student_vel_calc=lambda *args: component_state.doppler_calc_state.student_vel_calc.set(True),
                 event_next_callback=lambda *args: component_state.transition_next()
+            )
+
+            DotplotTutorialSlideshow(
+                dialog=component_state.dotplot_tutorial_dialog.value,
+                step=component_state.dotplot_tutorial_state.step.value,
+                length=component_state.dotplot_tutorial_state.length.value,
+                max_step_completed=component_state.dotplot_tutorial_state.max_step_completed.value,
+                dotplot_viewer=ViewerLayout(dotplot)
             )
