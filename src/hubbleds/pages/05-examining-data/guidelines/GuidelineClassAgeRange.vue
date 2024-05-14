@@ -9,14 +9,15 @@
     @back="back_callback()"
     @next="() => {
       const expectedAnswers = [state_view.student_low_age, state_view.student_high_age];
-      if (validateAnswersJS(['low_age', 'high_age'], expectedAnswers) {
+      if (validateAnswersJS(['low_age', 'high_age'], expectedAnswers)) {
         next_callback();
       }
     }"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
-      v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)); }}"
+      v-intersect="typesetMathJax"
     >
       <p>
         Let's consider the range of age estimates for the universe obtained by you and your classmates.
@@ -83,7 +84,7 @@ mjx-mstyle {
 </style>
 
 <script>
-module.exports = {
+export default {
 
   data: function() {
     return {
@@ -105,12 +106,18 @@ module.exports = {
     validateAnswersJS(inputIDs, expectedAnswers) {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
-        this.failedValidationAgeRange = (value && value === expectedAnswers[index]) ? false : true;
+        this.failedValidationAgeRange = (value != null && value === expectedAnswers[index]) ? false : true;
         console.log("expectedAnswer", expectedAnswers);
         console.log("entered value", value);
-        return value && value === expectedAnswers[index];
+        return value != null && value === expectedAnswers[index];
       });
-    }
+    },
+
+    typesetMathJax(entries, _observer, intersecting) {
+      if (intersecting) {
+        MathJax.typesetPromise(entries.map(entry => entry.target));
+      }
+    },
   }
 };
 </script>

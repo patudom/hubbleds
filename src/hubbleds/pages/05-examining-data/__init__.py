@@ -2,10 +2,9 @@ import solara
 from cosmicds import load_custom_vue_components
 from cosmicds.components import ScaffoldAlert, ViewerLayout
 from cosmicds.viewers import CDSScatterView
-from glue.core import Data, data_collection
+from glue.core import Data
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
-from glue_jupyter.bqplot.scatter import BqplotScatterView
 from pathlib import Path
 from reacton import ipyvuetify as rv
 
@@ -81,7 +80,7 @@ def Page():
                 GUIDELINE_ROOT / "GuidelineRandomVariability.vue",
                 event_next_callback=transition_next,
                 can_advance=component_state.can_transition(next=True),
-                allow_back=component_state.can_transition(prev=True),
+                allow_back=False,
                 show=component_state.is_current_step(Marker.ran_var1),
             )
             ScaffoldAlert(
@@ -118,7 +117,11 @@ def Page():
                 event_next_callback=transition_next,
                 event_back_callback=transition_previous,
                 can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.cla_age1)
+                show=component_state.is_current_step(Marker.cla_age1),
+                state_view={
+                    "student_low_age": component_state.student_low_age.value,
+                    "student_high_age": component_state.student_high_age.value,
+                }
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineClassAgeRange2.vue",
@@ -127,8 +130,8 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.cla_age2),
                 state_view={
-                    "student_low_age": component_state.student_low_age,
-                    "student_high_age": component_state.student_high_age
+                    "student_low_age": component_state.student_low_age.value,
+                    "student_high_age": component_state.student_high_age.value,
                 }
             )
             ScaffoldAlert(
@@ -138,8 +141,8 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.cla_age3),
                 state_view={
-                    "student_low_age": component_state.student_low_age,
-                    "student_high_age": component_state.student_high_age
+                    "student_low_age": component_state.student_low_age.value,
+                    "student_high_age": component_state.student_high_age.value,
                 }
             )
             ScaffoldAlert(
@@ -149,8 +152,8 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.cla_age4),
                 state_view={
-                    "student_low_age": component_state.student_low_age,
-                    "student_high_age": component_state.student_high_age
+                    "student_low_age": component_state.student_low_age.value,
+                    "student_high_age": component_state.student_high_age.value,
                 }
             )
             ScaffoldAlert(
@@ -240,3 +243,4 @@ def Page():
                          highlight_color=highlight_color,
                 )
             solara.Button("Testing", on_click=toggle_viewer)
+

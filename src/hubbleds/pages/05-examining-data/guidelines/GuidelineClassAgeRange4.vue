@@ -7,7 +7,7 @@
   >
     <div
       class="mb-4"
-      v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+      v-intersect="typesetMathJax"
     >
       <v-card
         class="JaxEquation pa-3"
@@ -23,6 +23,18 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+export default {
+  methods: {
+    typesetMathJax(entries, _observer, intersecting) {
+      if (intersecting) {
+        MathJax.typesetPromise(entries.map(entry => entry.target));
+      }
+    }
+  }
+}
+</script>
 
 <style>
   .JaxEquation .MathJax {

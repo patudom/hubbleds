@@ -3,6 +3,8 @@ from hubbleds.decorators import computed_property
 from solara import Reactive
 import enum
 
+from hubbleds.state import LOCAL_STATE
+
 __all__ = ["Marker", "ComponentState"]
 
 class Marker(enum.Enum):
@@ -156,3 +158,6 @@ class ComponentState:
     def cla_res1_gate(self):
         return True
     
+    @computed_property
+    def cla_age1_gate(self):
+        return "age-slope-trend" in LOCAL_STATE.mc_scoring.value

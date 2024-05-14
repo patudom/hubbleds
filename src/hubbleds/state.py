@@ -24,7 +24,7 @@ class LocalState:
     class_data_info: Reactive[dict] = dataclasses.field(default=Reactive({}))
     mc_scoring : Reactive[dict[str, MCScore]]  = dataclasses.field(default=Reactive({
         # 'pro-dat1': {'tag': 'pro-dat1', 'score': 0.0, 'choice': 1, 'tries': 1, 'wrong_attempts': 0},
-        }))
+    }))
 
 
 GLOBAL_STATE = GlobalState()
