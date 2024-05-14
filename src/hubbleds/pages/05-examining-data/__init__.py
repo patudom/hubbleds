@@ -110,7 +110,8 @@ def Page():
                 event_back_callback=transition_previous,
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.rel_age1),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring)
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
+                state_view = {"mc_score": mc_scoring.get("age-slope-trend"), "score_tag": "age-slope-trend"}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineClassAgeRange.vue",
@@ -160,13 +161,60 @@ def Page():
                 show=component_state.is_current_step(Marker.lea_unc1),
             )
             ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineMostLikelyValue1.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.mos_lik1),
+            )
+            ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
                 event_next_callback=transition_next,
                 event_back_callback=transition_previous,
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.age_dis1),
             )
-            
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineMostLikelyValue2.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.mos_lik2),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineMostLikelyValue3.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.mos_lik3),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineMostLikelyValueReflect4.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.mos_lik4),
+                state_view={
+                    "hint1_dialog": component_state.age_calc_state.hint1_dialog
+                }
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineConfidenceInterval.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.con_int1),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineConfidenceInterval2.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.con_int2),
+                state_view={
+                    "hint2_dialog": component_state.age_calc_state.hint2_dialog,
+                }
+            )
 
 
         def toggle_viewer():

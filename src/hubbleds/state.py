@@ -34,13 +34,13 @@ LOCAL_STATE = LocalState()
 
 
 # create handlers for mc_radiogroup
-def on_init_response(local_state , tag: str, set_score: callable = None): 
+def on_init_response(local_state, tag: str, set_score: callable=None):
     print("onInitResponse")
     # print(tag not in component_state.mc_scoring.value.keys())
     if tag not in local_state.mc_scoring.value.keys():
         print("adding tag", tag)
         mc_scoring = local_state.mc_scoring.value
-        mc_scoring.update({tag:MCScore(tag=tag)})
+        mc_scoring.update({tag: MCScore(tag=tag)})
         local_state.mc_scoring.set(mc_scoring)
         set_score(mc_scoring)
     else:
@@ -54,13 +54,13 @@ def on_mc_score(local_state, set_score, data):
     local_state.mc_scoring.set(mc_scoring)
     set_score(mc_scoring)
     
-def mc_callback(event, local_state, set_score: callable = None):
+def mc_callback(event, local_state, set_score: callable=None):
     # mc-initialize-callback returns data which is a string
     if event[0] == 'mc-initialize-response':
-        return on_init_response(local_state = local_state, tag = event[1], set_score = set_score)
+        return on_init_response(local_state = local_state, tag=event[1], set_score=set_score)
     # mc-score event returns a data which is an mc-score dictionary
     elif event[0] == 'mc-score':
-        return on_mc_score(local_state=local_state, data = event[1], set_score = set_score)
+        return on_mc_score(local_state=local_state, data=event[1], set_score=set_score)
     else:
         print(f"Unknown event in mc_callback: <<{event}>> ")
     

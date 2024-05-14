@@ -37,6 +37,8 @@
           ]"
           :correct-answers="[0]"
           score-tag="age-slope-trend"
+          @mc-emit="mc_callback($event)"
+          :initialization="state_view.mc_score"
         >
         </mc-radiogroup>
       </v-container>
