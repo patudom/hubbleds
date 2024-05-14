@@ -214,11 +214,68 @@ def Page():
                 event_back_callback=transition_previous,
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.con_int2),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineConfidenceIntervalReflect3.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.con_int3),
                 state_view={
                     "hint2_dialog": component_state.age_calc_state.hint2_dialog,
                 }
             )
-
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineClassData.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.cla_dat1),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineTrendLinesDraw2c.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.tre_lin2c),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineBestFitLinec.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.you_age1c),
+                state_view={
+                    "low_guess": component_state.age_calc_state.low_guess,
+                    "high_guess": component_state.age_calc_state.high_guess,
+                    "best_guess": component_state.age_calc_state.best_guess,
+                }
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineClassmatesResultsc.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.cla_res1c),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineClassAgeRangec.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.cla_age1c),
+                state_view={
+                    "student_low_age": component_state.class_low_age.value,
+                    "student_high_age": component_state.class_high_age.value,
+                }
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineClassAgeDistributionc.vue",
+                event_next_callback=transition_next,
+                event_back_callback=transition_previous,
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.age_dis1c),
+            )
 
         def toggle_viewer():
             test.value = not test.value
