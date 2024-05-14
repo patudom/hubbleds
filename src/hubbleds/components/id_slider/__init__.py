@@ -2,7 +2,6 @@ from glue.core.message import NumericalDataChangedMessage
 from numpy import where
 import solara
 from solara.alias import rv
-solara.SliderValue
 
 # NB: I didn't use any of the built-in Solara sliders since none of them really fit our
 # use case. Since we often have duplicate values, the only slider that would really work
