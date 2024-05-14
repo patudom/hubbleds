@@ -87,8 +87,8 @@ def Page():
     )
     
     
-    with solara.Row():
-        with solara.Column():
+    with rv.Row():
+        with rv.Col(cols=4):
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData0.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
@@ -201,8 +201,9 @@ def Page():
                 show=component_state.is_current_step(Marker.sto_fin3),
             )
         
-        with solara.Column():
+        with rv.Col(cols=8):
             # TODO: LayerToggle should refresh when the data changes
-            LayerToggle(viewer)
+            if component_state.current_step.value.value >= Marker.pro_dat1.value:
+                LayerToggle(viewer)
             GridViewer(viewer)
         
