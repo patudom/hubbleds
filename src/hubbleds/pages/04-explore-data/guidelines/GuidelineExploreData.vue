@@ -1,9 +1,5 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Explore Your Data"
     next-text="graph"
     @next="next_callback()"

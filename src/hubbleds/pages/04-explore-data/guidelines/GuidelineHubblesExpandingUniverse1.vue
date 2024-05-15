@@ -1,9 +1,5 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Hubble's Expanding Universe"
     @back="state.marker = 'rel_vel1'"
     @next="state.marker = 'tre_lin1'"

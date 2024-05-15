@@ -1,9 +1,5 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto angsize_alert"
-    max-width="800"
-    elevation="6"
     title-text="Estimate Age of Universe"
     next-text="calculate"
     @back="back_callback()"
