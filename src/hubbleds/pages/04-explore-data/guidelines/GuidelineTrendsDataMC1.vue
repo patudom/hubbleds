@@ -1,13 +1,9 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Trends in the Data"
     @back="back_callback()"
     @next="next_callback()"
-    :can-advance="can_advance"
+    :can-advance="question_completed && can_advance"
   >
     <template #before-next>
       Choose a response.
@@ -37,22 +33,24 @@
           ]"
           :correct-answers="[]"
           :neutral-answers='[0,1,2]'
-          @select="(state) => { $emit('ready'); }"
-          score-tag="tre-dat-mc1"
+          @select="(status) => { if (status.neutral) { question_completed = true; } }"
+          :score-tag="state_view.score_tag"
+          @mc-emit="mc_callback($event)"
+          :initialization="state_view.mc_score"
         >
         </mc-radiogroup>
         <v-btn
           block
           color="deep-orange darken-2"
           @click="
-            state.define_trend = !state.define_trend
+            define_trend = !define_trend
           "
         >
           What is a trend?
         </v-btn>
         <v-alert
           class="mt-4 trend-alert"
-          v-if="state.define_trend"
+          v-if="define_trend"
           dense
           color="info darken-1"
         >
@@ -62,3 +60,15 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  
+  data() {
+    return {
+      question_completed: false,
+      define_trend: false,
+    };
+  },
+};
+</script>

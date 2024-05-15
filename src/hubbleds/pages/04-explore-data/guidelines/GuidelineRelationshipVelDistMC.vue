@@ -1,13 +1,9 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Relationship Between Velocity and Distance"
     @back="back_callback()"
     @next="next_callback()"
-    :can-advance="can_advance"
+    :can-advance="question_completed && can_advance"
   >
     <template #next-content>
       Choose a response.
@@ -39,11 +35,24 @@
           ]"
           :correct-answers="[1]"
           :neutral-answers='[0,2,3]'
-          @select="(state) => { if (state.correct) { $emit('ready'); } }"
-          score-tag="galaxy-trend"
+          @select="(status) => { if (status.correct) { question_completed = true; } }"
+          :score-tag="state_view.score_tag"
+          @mc-emit="mc_callback($event)"
+          :initialization="state_view.mc_score"
         >
         </mc-radiogroup>
       </v-container>
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  
+  data() {
+    return {
+      question_completed: false,
+    };
+  },
+};
+</script>
