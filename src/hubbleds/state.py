@@ -1,6 +1,15 @@
 import dataclasses
 from cosmicds.state import GlobalState
 from solara import Reactive
+from glue.core.data_factories import load_data
+from pathlib import Path
+
+# from glue.config import settings as glue_settings
+# glue_settings.BACKGROUND_COLOR = 'white'
+# glue_settings.FOREGROUND_COLOR= 'black'
+
+from .data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
+from .tools import *
 
 from typing import TypedDict
 class MCScore(TypedDict):
@@ -30,7 +39,20 @@ class LocalState:
 GLOBAL_STATE = GlobalState()
 LOCAL_STATE = LocalState()
 
+# add a csv file to the data collection
 
+def add_link(from_dc_name, from_att, to_dc_name, to_att):
+        from_dc = GLOBAL_STATE.data_collection[from_dc_name]
+        to_dc = GLOBAL_STATE.data_collection[to_dc_name]
+        GLOBAL_STATE._glue_app.add_link(from_dc, from_att, to_dc, to_att)
+
+
+data_dir = Path(__file__).parent / "data"
+GLOBAL_STATE.data_collection.append(load_data(data_dir / f"{HUBBLE_KEY_DATA_LABEL}.csv"))
+GLOBAL_STATE.data_collection.append(load_data(data_dir / f"{HUBBLE_1929_DATA_LABEL}.csv"))
+
+add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)')
+add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)')
 
 
 # create handlers for mc_radiogroup

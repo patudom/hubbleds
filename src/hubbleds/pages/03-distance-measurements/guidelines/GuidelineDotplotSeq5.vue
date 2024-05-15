@@ -2,12 +2,8 @@
   <scaffold-alert
     title-text="Measurement Comparison"
     @back="back_callback()"
-    :can-advance="can_advance"
-    :hide-next="true"
+    :can-advance=false
   >
-    <template #next-content>
-    </template>
-
     <div
       class="mb-4"
     >
@@ -36,7 +32,7 @@
         elevation="2"
         @click="() => {
           // state.show_ruler = true;
-          jump_rep_rem1()
+          force_transition()
         }"
       >
          <strong>Move on to my galaxies</strong>
