@@ -95,16 +95,6 @@ class ComponentState:
     
     def add_data_by_marker(self, viewer ):
         if self.current_step.value.value == Marker.pro_dat1.value:
-            data = GLOBAL_STATE.data_collection[HUBBLE_KEY_DATA_LABEL]
-            if data not in viewer.state.layers_data:
-                print('adding HST key')
-                data.style.markersize = 10
-                data.style.color = '#AEEA00'
-                viewer.add_data(data)
-                viewer.state.x_att = data.id['Distance (Mpc)']
-                viewer.state.y_att = data.id['Velocity (km/s)']
-                layer = viewer.layer_artist_for_data(data)
-        if self.current_step.value.value == Marker.pro_dat5.value:
             data = GLOBAL_STATE.data_collection[HUBBLE_1929_DATA_LABEL]
             if data not in viewer.state.layers_data:
                 print('adding Hubble 1929')
@@ -113,6 +103,17 @@ class ComponentState:
                 viewer.add_data(data)
                 viewer.state.x_att = data.id['Distance (Mpc)']
                 viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+                layer = viewer.layer_artist_for_data(data)
+                
+        if self.current_step.value.value == Marker.pro_dat5.value:
+            data = GLOBAL_STATE.data_collection[HUBBLE_KEY_DATA_LABEL]
+            if data not in viewer.state.layers_data:
+                print('adding HST key')
+                data.style.markersize = 10
+                data.style.color = '#AEEA00'
+                viewer.add_data(data)
+                viewer.state.x_att = data.id['Distance (Mpc)']
+                viewer.state.y_att = data.id['Velocity (km/s)']
                 layer = viewer.layer_artist_for_data(data)
         
         viewer.state.reset_limits()
