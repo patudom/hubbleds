@@ -15,7 +15,7 @@ from astropy.table import Table
 from ...components import DataTable, HubbleExpUniverseSlideshow
 from ...data_management import *
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
-from ...utils import DISTANCE_CONSTANT
+from ...utils import AGE_CONSTANT
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
 from .component_state import ComponentState, Marker
@@ -68,7 +68,7 @@ def Page():
 
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
 
-    StateEditor(Marker, component_state, mc_scoring=mc_scoring)
+    StateEditor(Marker, component_state)
 
     # if LOCAL_STATE.debug_mode:
 
@@ -98,6 +98,12 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.age_uni3),
+                state_view={
+                    "age_const": AGE_CONSTANT,
+                    # FIX - update these once real values are hooked up
+                    "hypgal_distance": 100,
+                    "hypgal_velocity": 8000,
+                },     
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAgeUniverseEstimate4.vue",
@@ -105,6 +111,12 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.age_uni4),
+                state_view={
+                    "age_const": AGE_CONSTANT,
+                    # FIX - update these once real values are hooked up
+                    "hypgal_distance": 100,
+                    "hypgal_velocity": 8000,
+                },   
             )
 
         with rv.Col():
@@ -122,6 +134,7 @@ def Page():
                 state_view={'mc_score': mc_scoring.get('tre-dat-mc1'), 'score_tag': 'tre-dat-mc1'}                
             )
             ScaffoldAlert(
+                #FIX This will need to be wired up once viewer is implemented
                 GUIDELINE_ROOT / "GuidelineTrendsData2.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -154,6 +167,7 @@ def Page():
                 show=component_state.is_current_step(Marker.tre_lin1),               
             )
             ScaffoldAlert(
+                #FIX This will need to be wired up once linedraw tool is implemented
                 GUIDELINE_ROOT / "GuidelineTrendLinesDraw2.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -161,6 +175,7 @@ def Page():
                 show=component_state.is_current_step(Marker.tre_lin2),
             )
             ScaffoldAlert(
+                #FIX This will need to be wired up once best fit line tool is implemented
                 GUIDELINE_ROOT / "GuidelineBestFitLine.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -179,42 +194,52 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAgeUniverse.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.age_uni1),
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineHypotheticalGalaxy.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.hyp_gal1),
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAgeRaceEquation.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.age_rac1),
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAgeUniverseEquation2.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.age_uni1),
+                show=component_state.is_current_step(Marker.age_uni2),
+                state_view={
+                    "age_const": AGE_CONSTANT
+                },             
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineYourAgeEstimate",
+                GUIDELINE_ROOT / "GuidelineYourAgeEstimate.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.you_age1),
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineShortcomingsEstReflect1",
+                # FIX - add free response functionality
+                GUIDELINE_ROOT / "GuidelineShortcomingsEstReflect1.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.sho_est1),
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineShortcomingsEst2",
+                GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",
                 # event_next_callback should go to next stage but I don't know how to set that up.
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),

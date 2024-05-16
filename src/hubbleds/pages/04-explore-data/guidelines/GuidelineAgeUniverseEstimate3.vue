@@ -3,7 +3,10 @@
     title-text="Estimate Age of Universe"
     next-text="calculate"
     @back="back_callback()"
-    @next="next_callback()"
+    @next="() => {
+      const expectedAnswers = [state_view.hypgal_distance, state_view.hypgal_velocity];
+      validateAnswersJS(['gal_distance', 'gal_velocity'], expectedAnswers) ? next_callback() : null;
+    }"
     :can-advance="can_advance"
   >
 
@@ -11,13 +14,20 @@
       class="mb-4"
       v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
     >
+    <v-card color="error" class="mb-4">
+        <v-card-text>
+          For now, enter<br> 
+          distance: {{ state_view.hypgal_distance }} <br>
+          velocity: {{ state_view.hypgal_velocity }} until we've properly wired up the student data.
+        </v-card-text>
+      </v-card>
       <p>
         Enter the <strong>distance</strong> (in <strong>Mpc</strong>) and <strong>velocity</strong> (in <strong>km/s</strong>) of your hypothetical "Best Fit Galaxy" in the boxes.
       </p>
       <div
         class="JaxEquation my-8"
       >
-        $$ t = {{ Math.round(state.age_const) }}  \times \frac{\bbox[#FBE9E7]{\input[gal_distance][]{} } \text{ Mpc} } { \bbox[#FBE9E7]{\input[gal_velocity][]{} } \text{ km/s} } \text{     Gyr}$$
+        $$ t = {{ Math.round(state_view.age_const) }}  \times \frac{\bbox[#FBE9E7]{\input[gal_distance][]{} } \text{ Mpc} } { \bbox[#FBE9E7]{\input[gal_velocity][]{} } \text{ km/s} } \text{     Gyr}$$
       </div>
       <v-divider role="presentation"></v-divider>
       <div
@@ -39,7 +49,7 @@
               <div
                 class="JaxEquation"
               >
-                $$ t \text{ (in Gyr)}= {{ Math.round(state.age_const) }}  \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
+                $$ t \text{ (in Gyr)}= {{ Math.round(state_view.age_const) }}  \times \frac{d \text{ (in Mpc)}}{v \text{ (in km/s)}} $$
               </div>
             </v-col>
           </v-row>
@@ -107,10 +117,56 @@
   </scaffold-alert> 
 </template>
 
+<script>
+module.exports = {
+
+  data: function() {
+    return {
+      failedValidation: false
+    }
+  },
+
+  computed: {
+    MathJax() {
+      return document.defaultView.MathJax
+    },    
+  },
+
+  methods: {
+    getValue(inputID) {
+      const input = document.getElementById(inputID);
+      if (!input) { return null; }
+      return input.value;
+    },
+
+    parseAnswer(inputID) {
+      return parseFloat(this.getValue(inputID).replace(/,/g,''));
+    },
+
+    validateAnswersJS(inputIDs, expectedAnswers) {
+      return inputIDs.every((id, index) => {
+        const value = this.parseAnswer(id);
+        this.failedValidation = (value && value === expectedAnswers[index]) ? false : true;
+        console.log("expectedAnswer", expectedAnswers);
+        console.log("entered value", value);
+        return value && value === expectedAnswers[index];
+      });
+    }
+  }
+};
+</script>
+
 <style>
 
 .JaxEquation .MathJax {
   margin: 16px auto !important;
+}
+
+.v-application .legend {
+  border: 1px solid white !important;
+  max-width: 300px;
+  margin: 0 auto 0;
+  font-size: 15px !important;
 }
 
 mjx-mfrac {
@@ -141,38 +197,3 @@ mjx-mstyle {
 
 
 </style>
-
-
-<script>
-module.exports = {
-
-  data: function() {
-    return {
-      failedValidation: false
-    }
-  },
-
-  methods: {
-    getValue(inputID) {
-      const input = document.getElementById(inputID);
-      if (!input) { return null; }
-      return input.value;
-    },
-
-    parseAnswer(inputID) {
-      return parseFloat(this.getValue(inputID).replace(/,/g,''));
-    },
-
-    validateAnswersJS(inputIDs, expectedAnswers) {
-      return inputIDs.every((id, index) => {
-        const value = this.parseAnswer(id);
-        this.failedValidation = (value && value === expectedAnswers[index]) ? false : true;
-        console.log("expectedAnswer", expectedAnswers);
-        console.log("entered value", value);
-        return value && value === expectedAnswers[index];
-      });
-    }
-  }
-};
-</script>
-

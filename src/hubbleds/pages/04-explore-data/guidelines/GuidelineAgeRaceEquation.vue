@@ -80,3 +80,32 @@
     </div>
   </scaffold-alert>
 </template>
+
+<script>
+module.exports = {
+  computed: {
+    MathJax() {
+      return document.defaultView.MathJax
+    },    
+  }
+}
+</script>
+
+<style>
+
+.JaxEquation {
+  margin: 0;
+}
+
+.JaxEquation .MathJax {
+  margin: 0 auto 16px !important;
+}
+
+.v-application .legend {
+  border: 1px solid white !important;
+  max-width: 300px;
+  margin: 0 auto 0;
+  font-size: 15px !important;
+}
+
+</style>
