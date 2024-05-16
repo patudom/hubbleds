@@ -177,7 +177,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); dialog = false }"
+          @click="() => { $emit('close'); dialog = false, tutorial_finished() }"
         >
           Done
         </v-btn>
