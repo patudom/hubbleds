@@ -12,10 +12,7 @@ from io import BytesIO
 from astropy.io import fits
 
 
-ELEMENT_REST = {
-    'H-α': 6562.79,
-    'Mg-I': 5176.7
-}
+ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
 
 
 class Marker(enum.Enum, MarkerBase):
@@ -46,6 +43,9 @@ class Marker(enum.Enum, MarkerBase):
     dot_seq7 = enum.auto()
     dot_seq8 = enum.auto()
     dot_seq9 = enum.auto()
+    dot_seq10 = enum.auto()
+    dot_seq11 = enum.auto()
+    dot_seq12 = enum.auto()
     dot_seq13 = enum.auto()
     dot_seq13a = enum.auto()
     dot_seq14 = enum.auto()
@@ -122,7 +122,15 @@ class ComponentState:
     dotplot_tutorial_state: DotPlotTutorialState = dataclasses.field(
         default_factory=DotPlotTutorialState
     )
-    dotplot_tutorial_finished: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    dotplot_tutorial_finished: Reactive[bool] = dataclasses.field(
+        default=Reactive(False)
+    )
+
+    has_bad_velocities: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    has_multiple_bad_velocities: Reactive[bool] = dataclasses.field(
+        default=Reactive(False)
+    )
+    obswaves_total: Reactive[int] = dataclasses.field(default=Reactive(0))
 
     def __post_init__(self):
         self._galaxy_data = None
@@ -272,7 +280,9 @@ class ComponentState:
             self._galaxy_data["name"] = [
                 x[: -len(".fits")] for x in self._galaxy_data["name"]
             ]
-            self._galaxy_data["rest_wave"] = [round(ELEMENT_REST[x['element']]) for x in galaxies]
+            self._galaxy_data["rest_wave"] = [
+                round(ELEMENT_REST[x["element"]]) for x in galaxies
+            ]
 
         return self._galaxy_data
 
@@ -289,7 +299,9 @@ class ComponentState:
             self._example_galaxy_data["name"] = example_galaxy_data["name"].replace(
                 ".fits", ""
             )
-            self._example_galaxy_data["rest_wave"] = round(ELEMENT_REST[example_galaxy_data['element']])
+            self._example_galaxy_data["rest_wave"] = round(
+                ELEMENT_REST[example_galaxy_data["element"]]
+            )
 
             # Load the spectrum associated with the example data
             spec_data = self._load_spectrum_data(self._example_galaxy_data)
