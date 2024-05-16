@@ -22,3 +22,8 @@ class WavelengthZoom(PlotlyHZoomMode):
             xbounds_new = [state.x_min, state.x_max]
             self.on_zoom(xbounds_old, xbounds_new)
 
+
+try:
+    viewer_tool(WavelengthZoom)
+except ValueError as e:
+    print("Wavelength Zoom already registered.")

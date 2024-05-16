@@ -153,7 +153,7 @@ class ComponentState:
         self.selected_example_galaxy.subscribe(_on_example_galaxy_selected)
 
     def is_current_step(self, step: Marker):
-        return self.current_step.value == step
+        return self.current_step.value.value == step.value
 
     def can_transition(self, step: Marker = None, next=False, prev=False):
         if next:
