@@ -11,7 +11,7 @@
         color="secondary"
         elevation="2"
         id="hubble-exp-button"
-        @click.stop="() => { dialog = true; opened = true }"
+        @click.stop="() => { dialog = true; }"
       >
         Hubble's Discovery
       </v-btn>
@@ -28,15 +28,15 @@
         <v-toolbar-title
           class="text-h6 text-uppercase font-weight-regular"
         >
-          {{ currentTitle }}
+          {{ titles[step] }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <speech-synthesizer
+        <!-- <speech-synthesizer
           :root="() => this.$refs.content.$el"
           :autospeak-on-change="step"
           :speak-flag="dialog"
           :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
-          />
+          /> -->
         <v-btn
           icon
           @click="closeDialog()"
@@ -136,7 +136,8 @@
                 <v-col
                   cols="12"
                   lg="7">
-                  <jupyter-widget :widget="hubble_race_viewer"/>
+                  hubble_race_viewer goes here
+                  <!-- <jupyter-widget :widget="hubble_race_viewer"/> -->
                 </v-col>
               </v-row>
             </v-container>
@@ -158,7 +159,8 @@
                 <v-col
                   cols="12"
                   lg="7">
-                  <jupyter-widget :widget="hubble_race_viewer"/>
+                  hubble_race_viewer goes here
+                  <!-- <jupyter-widget :widget="hubble_race_viewer"/> -->
                 </v-col>
               </v-row>
               <v-row>
@@ -179,7 +181,8 @@
                 <v-col
                   cols="12"
                   lg="7">
-                  <jupyter-widget :widget="layer_viewer"/>
+                  layer_viewer goes here
+                  <!-- <jupyter-widget :widget="layer_viewer"/> -->
                 </v-col>
               </v-row>
             </v-container>
@@ -239,7 +242,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); dialog = false; step = 0; opened = true }"
+          @click="() => { $emit('close'); dialog = false; step = 0; on_slideshow_finished(); }"
         >
           Done
         </v-btn>

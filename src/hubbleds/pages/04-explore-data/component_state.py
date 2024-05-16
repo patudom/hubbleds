@@ -53,14 +53,22 @@ class Marker(enum.Enum):
     def last():
         return Marker(len(Marker))
 
+@dataclasses.dataclass
+class HubbleSlideshowState:
+    step: Reactive[int] = dataclasses.field(default=Reactive(0))
+    max_step_completed: Reactive[int] = dataclasses.field(default=Reactive(0))
 
 @dataclasses.dataclass
 class ComponentState:
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.exp_dat1)
     )
-    dosdonts_tutorial_opened: Reactive[bool] = dataclasses.field(
+    hubble_slideshow_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    hubble_slideshow_finished: Reactive[bool] = dataclasses.field(
         default=Reactive(False)
+    )
+    hubble_slideshow_state: HubbleSlideshowState = dataclasses.field(
+        default_factory=HubbleSlideshowState
     )
 
     def setup(self):
@@ -105,3 +113,8 @@ class ComponentState:
         previous_marker = Marker.previous(self.current_step.value)
         self.transition_to(previous_marker, force=True)
 
+    @computed_property
+    def tre_lin1_gate(self):
+        return (
+            bool(self.hubble_slideshow_finished.value)
+        )

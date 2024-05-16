@@ -12,7 +12,7 @@ from solara import Reactive
 from pathlib import Path
 from astropy.table import Table
 
-from ...components import DataTable, AngsizeDosDontsSlideshow
+from ...components import DataTable, HubbleExpUniverseSlideshow
 from ...data_management import *
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
 from ...utils import DISTANCE_CONSTANT
@@ -163,7 +163,7 @@ def Page():
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.tre_lin1),
+                show=component_state.is_current_step(Marker.tre_lin1),               
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineTrendLinesDraw2.vue",
@@ -185,6 +185,9 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.hub_exp1),
+                state_view={
+                    "hubble_slideshow_finished": component_state.hubble_slideshow_finished.value
+                }, 
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAgeUniverse.vue",
@@ -231,5 +234,15 @@ def Page():
             )
 
         with rv.Col():
-            solara.Markdown("blah blah")
+            with rv.Col(cols=10, offset=1):
+                if component_state.current_step.value.value > Marker.rel_vel1.value:
+                    solara.Markdown(f"component_state.hubble_slideshow_finished:  { component_state.hubble_slideshow_finished.value}")
+                    HubbleExpUniverseSlideshow(
+                        event_on_slideshow_finished=lambda *args: component_state.hubble_slideshow_finished.set(
+                            True
+                        ),
+                        dialog=component_state.hubble_slideshow_dialog.value,
+                        step=component_state.hubble_slideshow_state.step.value,
+                        maxStepCompleted=component_state.hubble_slideshow_state.max_step_completed.value,
+                    )
 

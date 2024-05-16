@@ -1,9 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Hubble's Expanding Universe"
-    @back="state.marker = 'rel_vel1'"
-    @next="state.marker = 'tre_lin1'"
-    :can-advance="(state) => state.hubble_dialog_opened"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
     :state="state"
   >
     <template #before-next>
@@ -24,8 +24,3 @@
 </template>
 
 
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>
