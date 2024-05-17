@@ -333,7 +333,7 @@
                     class="mt-auto white--text"
                     flat
                     color="info"
-                    v-intersect = "(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+                    v-intersect = "typesetMathJax"
                   >
                     <v-card-text>
                       <div
@@ -393,7 +393,7 @@
                       color="info"
                     >
                       <v-card-text 
-                        v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+                        v-intersect="typesetMathJax"
                       >
                         <div
                           class="JaxEquation"
@@ -477,7 +477,7 @@
                       color="info"
                     >
                       <v-card-text
-                        v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+                        v-intersect="typesetMathJax"
                       >
                         <div
                           class="JaxEquation"
@@ -527,7 +527,7 @@
                       color="info"
                     >
                       <v-card-text
-                        v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+                        v-intersect="typesetMathJax"
                       >
                         <div
                           class="JaxEquation"
@@ -585,7 +585,7 @@
         class="no-transition"
       >
         <v-card-text
-          v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+          v-intersect="typesetMathJax"
         >
           <v-container>
             <v-row>
@@ -615,7 +615,7 @@
                     color="info"
                   >
                     <v-card-text
-                      v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+                      v-intersect="typesetMathJax"
                     >
                       <div
                         class="JaxEquation"
@@ -636,7 +636,7 @@
         class="no-transition"
       >
         <v-card-text
-          v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+          v-intersect="typesetMathJax"
         >
           <v-container>
             <v-row>
@@ -654,7 +654,7 @@
                   color="info"
                 >
                   <v-card-text
-                    v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+                    v-intersect="typesetMathJax"
                   >
                     <div
                       class="JaxEquation"
@@ -689,7 +689,7 @@
                   color="info"
                 >
                   <v-card-text
-                    v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+                    v-intersect="typesetMathJax"
                   >
                     <div
                       class="JaxEquation"
@@ -712,7 +712,7 @@
         class="no-transition"
       >
         <v-card-text
-          v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+          v-intersect="typesetMathJax"
         >
           <v-container>
             <v-row>
@@ -740,7 +740,7 @@
                   color="info"
                 >
                   <v-card-text
-                    v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+                    v-intersect="typesetMathJax"
                   >
                     <div
                       class="JaxEquation"
@@ -860,16 +860,17 @@
 module.exports = {
   props: ["buttonText", "titleText", "closeText"],
 
-  computed: {
-    MathJax() {
-      return document.defaultView.MathJax
-    },
-  },
-
   mounted() {
     console.log("Two Intro");
     console.log(this);
     console.log(this.$el);
+  },
+
+  methods: {
+    typesetMathJax(entries, _observer, intersecting) {
+      if (intersecting) {
+        MathJax.typesetPromise(entries.map(entry => entry.target));
+      }
   },
 
   watch: {
