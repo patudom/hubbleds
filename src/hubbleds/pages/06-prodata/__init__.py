@@ -4,7 +4,7 @@ import solara
 from cosmicds.components import ScaffoldAlert
 from cosmicds import load_custom_vue_components
 
-from cosmicds.components import LayerToggle
+from cosmicds.components import LayerToggle, StateEditor
 # from cosmicds.components import ViewerLayout
 from ...components import GridViewer
 from ...viewers import HubbleFitView
@@ -71,17 +71,12 @@ def Page():
     
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
         
-
+    StateEditor(Marker, component_state)
     
     solara.Markdown(
         f"""
-        Current Step: {component_state.current_step.value}
 
-        Next step: {Marker.next(component_state.current_step.value)}
-
-        Can advance: {component_state.can_transition(next=True)}
-
-        mc-scoring: {mc_scoring}
+        mc-scoring: {mc_scoring}  
 
         """
     )

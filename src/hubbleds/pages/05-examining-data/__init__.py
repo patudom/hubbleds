@@ -1,6 +1,6 @@
 import solara
 from cosmicds import load_custom_vue_components
-from cosmicds.components import ScaffoldAlert, ViewerLayout
+from cosmicds.components import ScaffoldAlert, ViewerLayout, StateEditor
 from cosmicds.viewers import CDSScatterView
 from glue.core import Data
 from glue.core.subset import RangeSubsetState
@@ -62,11 +62,13 @@ def Page():
     #  state connections need to be initialized _inside_ a Page.
     # component_state.setup()
 
-    solara.Text(
-        f"Current step: {component_state.current_step.value}, "
-        f"Next step: {Marker(component_state.current_step.value.value + 1)}"
-        f"Can advance: {component_state.can_transition(next=True)}"
-    )
+    StateEditor(Marker, component_state)
+
+    # solara.Text(
+    #     f"Current step: {component_state.current_step.value}, "
+    #     f"Next step: {Marker(component_state.current_step.value.value + 1)}"
+    #     f"Can advance: {component_state.can_transition(next=True)}"
+    # )
 
     def transition_next(*args):
         component_state.transition_next()

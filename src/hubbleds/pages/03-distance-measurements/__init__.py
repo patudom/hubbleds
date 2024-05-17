@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import solara
 from cosmicds.widgets.table import Table
-from cosmicds.components import ScaffoldAlert
+from cosmicds.components import ScaffoldAlert, StateEditor
 from cosmicds import load_custom_vue_components
 from glue_jupyter.app import JupyterApplication
 from reacton import ipyvuetify as rv
@@ -68,19 +68,7 @@ def Page():
 
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
 
-    solara.Text(
-        f"Current step: {component_state.current_step.value.value}. {component_state.current_step.value}"
-    )
-
-    if (component_state.current_step.value.value < Marker.fil_rem1.value):
-        solara.Text(
-            f"Next step: {Marker(component_state.current_step.value.value + 1)} "
-            f"Can advance: {component_state.can_transition(next=True)}"
-        )
-    else:
-        solara.Text(
-            "End of Stage"
-        )
+    StateEditor(Marker, component_state) 
 
     # if LOCAL_STATE.debug_mode:
 
