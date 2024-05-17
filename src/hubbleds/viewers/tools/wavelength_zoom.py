@@ -3,7 +3,6 @@ from glue.config import viewer_tool
 from glue_plotly.viewers import PlotlyHZoomMode
 
 
-@viewer_tool
 class WavelengthZoom(PlotlyHZoomMode):
     icon = "glue_zoom_to_rect"
     mdi_icon = "mdi-select-search"
