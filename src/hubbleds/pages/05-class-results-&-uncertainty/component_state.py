@@ -49,7 +49,14 @@ class Marker(enum.Enum):
     @staticmethod
     def previous(step):
         return Marker(step.value - 1)
-
+    
+    @staticmethod
+    def first():
+        return Marker(1)
+    
+    @staticmethod
+    def last():
+        return Marker(len(Marker))
 
 @dataclasses.dataclass
 class UncertaintyState:
