@@ -6,3 +6,4 @@ from .doppler_slideshow.doppler_slideshow import DopplerSlideshow
 from .stage_2_slideshow.stage_2_slideshow import Stage2Slideshow
 from .grid_viewer.grid_viewer import GridViewer
 from .angsize_dosdonts_slideshow.angsize_dosdonts_slideshow import AngsizeDosDontsSlideshow
+from .hubble_exp_universe_slideshow.hubble_exp_universe_slideshow import HubbleExpUniverseSlideshow
