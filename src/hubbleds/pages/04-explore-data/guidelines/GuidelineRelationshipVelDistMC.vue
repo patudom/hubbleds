@@ -5,7 +5,7 @@
     @next="next_callback()"
     :can-advance="question_completed && can_advance"
   >
-    <template #next-content>
+    <template #before-next>
       Choose a response.
     </template>
 

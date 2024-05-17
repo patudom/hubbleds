@@ -7,7 +7,7 @@
   >
     <div
       class="mb-4"
-      v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+      v-intersect="typesetMathJax"
     >
       <p class="mb-4">
         You entered:
@@ -101,10 +101,12 @@
 <script>
 module.exports = {
 
-  computed: {
-    MathJax() {
-      return document.defaultView.MathJax
-    },    
+  methods: {
+    typesetMathJax(entries, _observer, intersecting) {
+      if (intersecting) {
+        MathJax.typesetPromise(entries.map(entry => entry.target));
+      }
+    },
   },
 }
 </script>
