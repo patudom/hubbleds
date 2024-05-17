@@ -7,7 +7,7 @@
   >
     <div
       class="mb-4"
-      v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+      v-intersect="typesetMathJax"
     >
       <p>
         Recall, if we assume a galaxy is the <strong>same size as our Milky Way galaxy</strong>, the distance to the galaxy can be found using:
@@ -71,13 +71,14 @@
 
 <script>
 module.exports = {
-  computed: {
-    MathJax() {
-      return document.defaultView.MathJax
-    },    
+  methods: {
+    typesetMathJax(entries, _observer, intersecting) {
+      if (intersecting) {
+        MathJax.typesetPromise(entries.map(entry => entry.target));
+      }
+    }
   }
 }
-
 </script>
 
 <style>

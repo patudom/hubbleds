@@ -17,7 +17,7 @@
         color="info"
       >
         <v-container
-            v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+            v-intersect="typesetMathJax"
         >
           <v-row
             no-gutters
@@ -118,10 +118,12 @@
 
 <script>
 module.exports = {
-  computed: {
-    MathJax() {
-      return document.defaultView.MathJax
+  methods: {
+    typesetMathJax(entries, _observer, intersecting) {
+      if (intersecting) {
+        MathJax.typesetPromise(entries.map(entry => entry.target));
+      }
     }
-  },
+  }
 }
 </script>

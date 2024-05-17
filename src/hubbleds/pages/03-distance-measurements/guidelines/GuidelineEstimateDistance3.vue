@@ -15,7 +15,7 @@
   >
     <div
       class="mb-4"
-      v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+      v-intersect="typesetMathJax"
     >
       <v-card color="error" class="mb-4">
         <v-card-text>
@@ -110,13 +110,13 @@ module.exports = {
     }
   },
 
-  computed: {
-    MathJax() {
-      return document.defaultView.MathJax
-    },    
-  },
-
   methods: {
+    typesetMathJax(entries, _observer, intersecting) {
+      if (intersecting) {
+        MathJax.typesetPromise(entries.map(entry => entry.target));
+      }
+    },
+
     getValue(inputID) {
       const input = document.getElementById(inputID);
       if (!input) { return null; }

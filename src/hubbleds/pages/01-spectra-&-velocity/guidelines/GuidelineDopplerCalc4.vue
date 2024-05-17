@@ -15,7 +15,7 @@
       }"
   >
     <div
-        v-intersect="(entries, _observer, intersecting) => { if (intersecting) { MathJax.typesetPromise(entries.map(entry => entry.target)) }}"
+        v-intersect="typesetMathJax"
         class="mb-4"
     >
       <p>
@@ -160,17 +160,18 @@ mjx-mstyle {
 
 <script>
 module.exports = {
-  computed: {
-    MathJax() {
-      return document.defaultView.MathJax
-    }
-  },
   data: () => ({
     state_view: {
       failed_validation_4: false
     }
   }),
   methods: {
+    typesetMathJax(entries, _observer, intersecting) {
+      if (intersecting) {
+        MathJax.typesetPromise(entries.map(entry => entry.target));
+      }
+    },
+
     getValue(inputID) {
       const input = document.getElementById(inputID);
       if (!input) {
