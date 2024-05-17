@@ -3,7 +3,8 @@ from echo import CallbackProperty
 
 
 from ..utils import age_in_gyr_simple
-from cosmicds.tools import LineFitTool, register_tool
+from cosmicds.config import register_tool
+from cosmicds.tools import LineFitTool
 
 @register_tool
 class HubbleLineFitTool(LineFitTool):
