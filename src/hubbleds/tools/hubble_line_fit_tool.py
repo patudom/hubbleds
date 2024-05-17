@@ -1,12 +1,11 @@
-from glue.config import viewer_tool
 from numpy import isnan
 from echo import CallbackProperty
 
 
 from ..utils import age_in_gyr_simple
-from cosmicds.tools import LineFitTool
+from cosmicds.tools import LineFitTool, register_tool
 
-@viewer_tool
+@register_tool
 class HubbleLineFitTool(LineFitTool):
 
     tool_id = 'hubble:linefit'
