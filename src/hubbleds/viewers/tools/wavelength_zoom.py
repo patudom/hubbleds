@@ -2,7 +2,10 @@ from echo import CallbackProperty
 from glue.config import viewer_tool
 from glue_plotly.viewers import PlotlyHZoomMode
 
+from cosmicds.tools import register_tool
 
+
+@register_tool
 class WavelengthZoom(PlotlyHZoomMode):
     icon = "glue_zoom_to_rect"
     mdi_icon = "mdi-select-search"
@@ -20,9 +23,3 @@ class WavelengthZoom(PlotlyHZoomMode):
         if self.on_zoom is not None:
             xbounds_new = [state.x_min, state.x_max]
             self.on_zoom(xbounds_old, xbounds_new)
-
-
-try:
-    viewer_tool(WavelengthZoom)
-except ValueError as e:
-    print("Wavelength Zoom already registered.")
