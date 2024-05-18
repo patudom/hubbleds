@@ -5,13 +5,14 @@ from ...utils import HUBBLE_ROUTE_PATH, HST_KEY_AGE
 from ...data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
 
 from ...decorators import computed_property
+from ...marker_base import MarkerBase
 import dataclasses
 from cosmicds.utils import API_URL
 from ...state import GLOBAL_STATE
 from ...data_models.student import StudentMeasurement
 from contextlib import closing
 
-class Marker(enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     pro_dat0 = enum.auto()
     pro_dat1 = enum.auto()
     pro_dat2 = enum.auto()
@@ -26,13 +27,6 @@ class Marker(enum.Enum):
     sto_fin2 = enum.auto()
     sto_fin3 = enum.auto()
     
-    @staticmethod
-    def next(step):
-        return Marker(step.value + 1)
-    
-    @staticmethod
-    def previous(step):
-        return Marker(step.value - 1)
     
 @dataclasses.dataclass
 class ComponentState:

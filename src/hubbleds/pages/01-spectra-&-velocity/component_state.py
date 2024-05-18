@@ -1,5 +1,6 @@
 from solara import Reactive
 import enum
+from ...marker_base import MarkerBase
 from ...utils import HUBBLE_ROUTE_PATH
 from ...decorators import computed_property
 import dataclasses
@@ -17,7 +18,7 @@ ELEMENT_REST = {
 }
 
 
-class Marker(enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     mee_gui1 = enum.auto()
     sel_gal1 = enum.auto()
     sel_gal2 = enum.auto()
@@ -54,14 +55,6 @@ class Marker(enum.Enum):
     ref_vel1 = enum.auto()
     end_sta1 = enum.auto()
     NA3 = enum.auto()
-
-    @staticmethod
-    def next(step):
-        return Marker(step.value + 1)
-
-    @staticmethod
-    def previous(step):
-        return Marker(step.value - 1)
 
 
 @dataclasses.dataclass

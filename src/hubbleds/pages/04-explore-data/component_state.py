@@ -1,6 +1,7 @@
 from solara import Reactive
 import solara
 import enum
+from ...marker_base import MarkerBase
 from ...decorators import computed_property
 import dataclasses
 from cosmicds.utils import API_URL
@@ -17,7 +18,7 @@ ELEMENT_REST = {
 }
 
 
-class Marker(enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     exp_dat1 = enum.auto()
     tre_dat1 = enum.auto()
     tre_dat2 = enum.auto()
@@ -37,21 +38,6 @@ class Marker(enum.Enum):
     sho_est1 = enum.auto()
     sho_est2 = enum.auto()
 
-    @staticmethod
-    def next(step):
-        return Marker(step.value + 1)
-
-    @staticmethod
-    def previous(step):
-        return Marker(step.value - 1)
-
-    @staticmethod
-    def first():
-        return Marker(1)
-    
-    @staticmethod
-    def last():
-        return Marker(len(Marker))
 
 @dataclasses.dataclass
 class HubbleSlideshowState:
