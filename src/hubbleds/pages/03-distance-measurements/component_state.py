@@ -2,6 +2,7 @@ from solara import Reactive
 import solara
 import enum
 from ...decorators import computed_property
+from ...marker_base import MarkerBase
 import dataclasses
 from cosmicds.utils import API_URL
 from ...state import GLOBAL_STATE
@@ -17,7 +18,7 @@ ELEMENT_REST = {
 }
 
 
-class Marker(enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     ang_siz1 = enum.auto()	
     cho_row1 = enum.auto()	
     ang_siz2 = enum.auto()	
@@ -46,22 +47,6 @@ class Marker(enum.Enum):
     rep_rem1 = enum.auto()	
     fil_rem1 = enum.auto()
 
-    @staticmethod
-    def next(step):
-        return Marker(step.value + 1)
-
-    @staticmethod
-    def previous(step):
-        return Marker(step.value - 1)
-    
-    @staticmethod
-    def first():
-        return Marker(1)
-    
-    @staticmethod
-    def last():
-        return Marker(len(Marker))
-
 
 @dataclasses.dataclass
 class ComponentState:
@@ -78,7 +63,7 @@ class ComponentState:
     def is_current_step(self, step: Marker):
         return self.current_step.value == step
 
-    def can_transition(self, step: Marker = None, next=False, prev=False):
+    def can_transition(self, step: Marker=None, next=False, prev=False):
         if next:
             if self.current_step.value is Marker.last():
                 return False  # FIX once we sort out transitions between stages
