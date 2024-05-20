@@ -2,7 +2,7 @@ import solara
 import reacton.ipyvuetify as rv
 from ipyvuetify import VuetifyTemplate
 
-@solara.component_vue("stage_2_slideshow.vue")
+@solara.component_vue("Stage2Slideshow.vue")
 def Stage2Slideshow (
     step,
     length,
