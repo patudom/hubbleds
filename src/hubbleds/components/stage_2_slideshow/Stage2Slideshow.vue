@@ -825,7 +825,7 @@
         class="black--text"
         depressed
         @click="() => {
-          stage_2_complete = true;
+          on_slideshow_finished();
           step = 0;
           //this.$refs.synth.stopSpeaking();
         }"
@@ -840,7 +840,7 @@
         class="black--text"
         depressed
         @click="() => {
-          stage_2_complete = true;
+          on_slideshow_finished();
           step = 0;
           //this.$refs.synth.stopSpeaking();
         }"

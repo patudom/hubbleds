@@ -19,7 +19,9 @@ def Page():
     Stage2Slideshow(
         step = component_state.distance_slideshow_state.step_dist.value,
         max_step_completed = component_state.distance_slideshow_state.max_step_completed.value,
-        stage_2_complete = component_state.distance_slideshow_state.complete.value,
+        event_on_slideshow_finished=lambda *args: component_state.distance_slideshow_state.complete.set(
+                            True
+                        ),
         length = 13,
         titles = [
             "1920's Astronomy",
