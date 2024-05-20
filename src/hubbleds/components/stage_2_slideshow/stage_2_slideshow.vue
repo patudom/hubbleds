@@ -871,6 +871,7 @@ module.exports = {
       if (intersecting) {
         MathJax.typesetPromise(entries.map(entry => entry.target));
       }
+    },
   },
 
   watch: {
