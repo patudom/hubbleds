@@ -37,7 +37,7 @@ def Page():
             "Galaxy Distances"
         ],   
         interact_steps=[7,9],     
-        show_team_interface = True,
         distance_const=DISTANCE_CONSTANT,
         image_location=f"{IMAGE_BASE_URL}/stage_two_intro",
+        debug = LOCAL_STATE.debug_mode.value,
     )    

@@ -808,7 +808,7 @@
       <v-spacer></v-spacer>
 
       <v-btn
-        :disabled="!show_team_interface && step > max_step_completed"
+        :disabled="!debug && step > max_step_completed"
         v-if="step < length-1"
         class="black--text"
         color="accent"
@@ -820,7 +820,7 @@
 
       <!-- first button below just being used for testing, delete when using live with students -->
       <v-btn
-        v-if="step < 12 && show_team_interface"
+        v-if="step < 12 && debug"
         color="success"
         class="black--text"
         depressed

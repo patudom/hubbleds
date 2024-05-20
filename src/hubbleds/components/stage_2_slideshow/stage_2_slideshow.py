@@ -10,8 +10,8 @@ def Stage2Slideshow (
     max_step_completed,
     interact_steps,
     stage_2_complete,
-    show_team_interface,
     distance_const,
     image_location,
+    debug,
 ):
     pass
