@@ -4,10 +4,11 @@ from solara import Reactive
 import enum
 
 from hubbleds.state import LOCAL_STATE
+from hubbleds.marker_base import MarkerBase
 
 __all__ = ["Marker", "ComponentState"]
 
-class Marker(enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     ran_var1 = enum.auto()
     fin_cla1 = enum.auto()
     cla_res1 = enum.auto()
@@ -42,21 +43,6 @@ class Marker(enum.Enum):
     two_his5 = enum.auto()
     mor_dat1 = enum.auto()
 
-    @staticmethod
-    def next(step):
-        return Marker(step.value + 1)
-    
-    @staticmethod
-    def previous(step):
-        return Marker(step.value - 1)
-    
-    @staticmethod
-    def first():
-        return Marker(1)
-    
-    @staticmethod
-    def last():
-        return Marker(len(Marker))
 
 @dataclasses.dataclass
 class UncertaintyState:
