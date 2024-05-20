@@ -9,6 +9,7 @@ from pathlib import Path
 from reacton import ipyvuetify as rv
 
 from hubbleds.components.id_slider import IdSlider
+from ...components import UncertaintySlideshow
 
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
 from .component_state import ComponentState, Marker
@@ -302,4 +303,16 @@ def Page():
                          highlight_color=highlight_color,
                 )
             solara.Button("Testing", on_click=toggle_viewer)
+
+            if component_state.current_step.value.value >= Marker.lea_unc1.value and component_state.current_step.value.value <= Marker.you_age1c.value :
+                UncertaintySlideshow(
+                    event_on_slideshow_finished=lambda *args: component_state.uncertainty_slideshow_finished.set(
+                        True
+                    ),
+                    step=component_state.uncertainty_state.step.value,
+                    age_calc_short1=component_state.age_calc_state.short_one.value,
+                    age_calc_short2=component_state.age_calc_state.short_two.value,
+                    age_calc_short_other=component_state.age_calc_state.short_other.value,                    
+                )
+
 

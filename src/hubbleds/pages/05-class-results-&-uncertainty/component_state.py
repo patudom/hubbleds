@@ -47,24 +47,6 @@ class Marker(enum.Enum, MarkerBase):
 @dataclasses.dataclass
 class UncertaintyState:
     step: Reactive[int] = dataclasses.field(default=Reactive(0))
-    length: Reactive[int] = dataclasses.field(default=Reactive(10))
-    titles: Reactive[list] = dataclasses.field(
-        default=Reactive(
-            [
-                'What is the true age of the universe?',
-                "Shortcomings in our measurements",
-                "Shortcomings in our measurements",
-                "Messiness in our distance measurements",
-                "Uncertainty",            
-                "Random Uncertainty (Noise)",
-                "Systematic Uncertainty (Bias)",
-                "Causes of Systematic Uncertainty",
-                "Systematic Uncertainty",
-                "Finished Uncertainty Tutorial",
-            ]
-        )
-    )
-
 
 @dataclasses.dataclass
 class MMMState:
@@ -89,9 +71,9 @@ class AgeCalcState:
     best_guess: Reactive[str] = dataclasses.field(default=Reactive(""))
     low_guess: Reactive[str] = dataclasses.field(default=Reactive(""))
     high_guess: Reactive[str] = dataclasses.field(default=Reactive(""))
-    short_one: Reactive[str] = dataclasses.field(default=Reactive(""))
-    short_two: Reactive[str] = dataclasses.field(default=Reactive(""))
-    short_other: Reactive[str] = dataclasses.field(default=Reactive(""))
+    short_one: Reactive[str] = dataclasses.field(default=Reactive("dummy shortcoming 1"))
+    short_two: Reactive[str] = dataclasses.field(default=Reactive("dummy shortcoming 2"))
+    short_other: Reactive[str] = dataclasses.field(default=Reactive("dummy shortcoming other"))
 
 
 @dataclasses.dataclass
@@ -102,6 +84,9 @@ class ComponentState:
     class_low_age: Reactive[int] = dataclasses.field(default=Reactive(0))
     class_high_age: Reactive[int] = dataclasses.field(default=Reactive(0))
     uncertainty_state: UncertaintyState = dataclasses.field(default_factory=UncertaintyState)
+    uncertainty_slideshow_finished: Reactive[bool] = dataclasses.field(
+        default=Reactive(False)
+    ) 
     mmm_state: MMMState = dataclasses.field(default_factory=MMMState)
     age_calc_state: AgeCalcState = dataclasses.field(default_factory=AgeCalcState)
 
@@ -156,3 +141,9 @@ class ComponentState:
     @computed_property
     def cla_age1_gate(self):
         return "age-slope-trend" in LOCAL_STATE.mc_scoring.value
+    
+    @computed_property
+    def mos_lik1_gate(self):
+        return (
+            bool(self.uncertainty_slideshow_finished.value)
+        )

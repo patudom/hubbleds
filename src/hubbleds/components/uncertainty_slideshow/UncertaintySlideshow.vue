@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-      v-model="state.uncertainty_dialog"
+      v-model="dialog"
       persistent
       max-width="1000px"
   >
@@ -12,8 +12,7 @@
         elevation="2"
         id="uncertainty-button"
         @click.stop="() => { 
-          state.uncertainty_dialog = true; 
-          state.uncertainty_dialog_opened = true
+          dialog = true; 
           }"
       >
         Uncertainty Tutorial
@@ -31,18 +30,18 @@
         <v-toolbar-title
           class="text-h6 text-uppercase font-weight-regular"
         >
-          {{ state.uncertainty_state.titles[state.uncertainty_state.step] }}
+          {{ titles[step] }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <speech-synthesizer
+        <!-- <speech-synthesizer
           :root="() => this.$refs.content.$el"
           :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
-          />
+          /> -->
         <v-btn
           icon
           @click="() => { 
-          state.uncertainty_dialog = false;
-          state.uncertainty_dialog_complete = (state.uncertainty_state.step == (state.uncertainty_state.length-1) );
+          dialog = false;
+          step == (length-1) ? on_slideshow_finished() : null;
           }"
         >
           <v-icon>mdi-close</v-icon>
@@ -50,7 +49,7 @@
       </v-toolbar>
 
         <v-window
-          v-model="state.uncertainty_state.step"
+          v-model="step"
           style="height: 70vh;"
           class="overflow-auto"
         >
@@ -80,7 +79,7 @@
                     <v-img
                       class="mb-4 mx-a mt-n3 image-fit"
                       alt="Cartoon image of the Universe and a birthday cake with a question mark candle."
-                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_five/universecake.png"
+                      :src="`${image_location}/universecake.png`"
                     ></v-img>
                     <div>
                       <cite class="text-center mt-2 grey--text">
@@ -93,7 +92,6 @@
             </v-container>
           </v-card-text>
         </v-window-item>
-        <!-- :src="`${state.image_location}/universecake.png`" -->
         <v-window-item :value="1" class="no-transition">
           <v-card-text>
             <v-container>
@@ -110,7 +108,7 @@
                   <p 
                     class = "StudentResponses">
 
-                    {{ state.age_calc_state.short_one }}
+                    {{ age_calc_short1 }}
                   </p>
                   <p
                     class="mb-3 mt-10"
@@ -120,7 +118,7 @@
                   <p
                     class = "StudentResponses">
 
-                    {{ state.age_calc_state.short_two }}
+                    {{ age_calc_short2 }}
                   </p>
                   <p
                     class="mb-3 mt-10"
@@ -130,7 +128,7 @@
                   <p
                     class = "StudentResponses">
 
-                    {{ state.age_calc_state.short_other }}
+                    {{ age_calc_short_other }}
                   </p>
                   <p class="mt-10">
                     Is there anything more you would like to add now that you’ve seen more data? (It’s OK if not.)
@@ -264,7 +262,7 @@
                     <v-img
                       class="mb-4 mx-a mt-n3 image-fit"
                       alt="Two measuring tapes are side by side. One lies straight. The other is curled up and wrinkled."
-                      src="https://raw.githubusercontent.com/cosmicds/cds-website/main/public/hubbleds_images/stage_five/rulers.png"
+                      :src="`${image_location}/rulers.png`"
                     ></v-img>
                     <div>
                       <cite class="text-center mt-2 grey--text">
@@ -352,22 +350,22 @@
         class="justify-space-between"
       >
         <v-btn
-          :disabled="state.uncertainty_state.step === 0"
+          :disabled="step === 0"
           class="black--text"
           color="accent"
           depressed
-          @click="state.uncertainty_state.step--"
+          @click="step--"
         >
           Back
         </v-btn>
         <v-spacer></v-spacer>
         <v-item-group
-          v-model="state.uncertainty_state.step"
+          v-model="step"
           class="text-center"
           mandatory
         >
           <v-item
-            v-for="n in state.uncertainty_state.length"
+            v-for="n in length"
             :key="`btn-${n}`"
             v-slot="{ active, toggle }"
           >
@@ -382,20 +380,20 @@
         </v-item-group>
         <v-spacer></v-spacer>
           <v-btn
-          v-if="state.uncertainty_state.step < state.uncertainty_state.length-1"
+          v-if="step < length-1"
           color="accent"
           class="black--text"
           depressed
-          @click="() => { state.uncertainty_state.step++; console.log(state.uncertainty_state.step) }"
+          @click="() => { step++; }"
         >
-          {{ state.uncertainty_state.step < state.uncertainty_state.length-1 ? 'next' : '' }}
+          {{ step < length-1 ? 'next' : '' }}
         </v-btn>
         <v-btn
-          v-if = "state.uncertainty_state.step == state.uncertainty_state.length-1"
+          v-if = "step == length-1"
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); state.uncertainty_dialog = false; state.uncertainty_state.step = 0; state.uncertainty_dialog_complete = true }"
+          @click="() => { $emit('close'); dialog = false; step = 0; on_slideshow_finished(); }"
         >
           Done
         </v-btn>
@@ -404,9 +402,12 @@
   </v-dialog>
 </template>
 
-
-<script>
-module.exports = {
-  props: ['state'],
-};
-</script>
+<style>
+  .StudentResponses {
+    /* font-weight: bold; */
+    padding: 5px 10px;
+    background-color: #ffefb2;
+    border-radius: 5px;
+    color: black;
+  }
+</style>
