@@ -1,9 +1,5 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto angsize_alert"
-    max-width="800"
-    elevation="6"
     title-text="All Classes Age Range"
     next-text="check"
     @back="back_callback()"

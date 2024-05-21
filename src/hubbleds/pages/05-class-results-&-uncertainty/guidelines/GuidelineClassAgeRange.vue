@@ -1,9 +1,5 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto angsize_alert"
-    max-width="800"
-    elevation="6"
     header-text="Class Age Range"
     next-text="check"
     @back="back_callback()"
@@ -19,6 +15,13 @@
       class="mb-4"
       v-intersect="typesetMathJax"
     >
+    <v-card color="error" class="mb-4">
+        <v-card-text>
+          For now, enter<br> 
+          low age: {{ state_view.student_low_age }} <br>
+          high age: {{ state_view.student_high_age }} until we've properly wired up the student data.
+        </v-card-text>
+      </v-card>
       <p>
         Let's consider the range of age estimates for the universe obtained by you and your classmates.
       </p>

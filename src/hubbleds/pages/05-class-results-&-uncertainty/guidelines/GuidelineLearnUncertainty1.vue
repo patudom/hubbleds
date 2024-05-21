@@ -1,10 +1,6 @@
 <!-- this state.marker = 'lea_unc1' -->
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Learn About Uncertainty"
     @back="back_callback()"
     @next="next_callback()"

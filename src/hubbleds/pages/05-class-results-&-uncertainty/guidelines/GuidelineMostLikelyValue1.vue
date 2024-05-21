@@ -1,8 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Most Likely Values"
-    @back="state.marker_backward = 1"
-    @next="state.marker_forward = 1"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -21,9 +22,4 @@
   </scaffold-alert>
 </template>
 
-<style>
-  .JaxEquation .MathJax {
-    margin: 3px auto !important;
-  }
-</style>
 
