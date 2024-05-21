@@ -28,7 +28,7 @@ def Page():
 
     def glue_setup():
         gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
-        test_data = Data(x=[1,2,3,4,5], y=[1,4,9,16,25])
+        test_data = Data(x=[1,2,3,4,5], y=[1,4,9,16,25], label="Stage 5 Test Data")
         test_data.style.color = "green"
         test_data.style.alpha = 0.5
     
@@ -292,7 +292,7 @@ def Page():
         with rv.Col(cols=8):
             if test.value:
                 ViewerLayout(viewer=gjapp.viewers[0])
-                test_data = gjapp.data_collection[0]
+                test_data = gjapp.data_collection["Stage 5 Test Data"]
                 IdSlider(gjapp=gjapp,
                          data=test_data,
                          on_id=update_test_subset,
