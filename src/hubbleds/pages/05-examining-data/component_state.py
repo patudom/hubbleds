@@ -106,7 +106,6 @@ class ComponentState:
     age_calc_state: AgeCalcState = dataclasses.field(default_factory=AgeCalcState)
 
     def is_current_step(self, step: Marker):
-        print(step, self.current_step.value == step)
         return self.current_step.value == step
 
     def can_transition(self, step: Marker=None, next=False, prev=False):
