@@ -18,7 +18,7 @@
               target="_blank"
               href='https://harvard.az1.qualtrics.com/jfe/form/SV_d0V9oiJpW0jjz94'
             >
-              <strong>survey</strong>
+              <b>survey</b>
             </v-btn>
     </div>
   </scaffold-alert>

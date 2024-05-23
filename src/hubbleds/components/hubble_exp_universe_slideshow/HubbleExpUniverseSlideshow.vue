@@ -61,7 +61,7 @@
                     The relationship between your galaxies’ velocity and distance is the same as what Hubble found: galaxies at a greater distance away are moving away from us at a higher velocity.
                   </p>
                   <p>
-                    This was a <strong>huge</strong> deal in 1929. This relationship that Hubble found serves as evidence that we live in an <strong>expanding universe</strong>. Hubble realized that an expanding universe implies that at some point all the galaxies were much closer together — "<strong>The Big Bang</strong>". The amount of time since The Big Bang tells us the <strong>age of the universe</strong>.
+                    This was a <b>huge</b> deal in 1929. This relationship that Hubble found serves as evidence that we live in an <b>expanding universe</b>. Hubble realized that an expanding universe implies that at some point all the galaxies were much closer together — "<b>The Big Bang</b>". The amount of time since The Big Bang tells us the <b>age of the universe</b>.
                   </p>
                 </v-col>
               </v-row>
@@ -172,7 +172,7 @@
                     Doesn’t this look a lot like the trend in your class's graph for the galaxies?
                   </p>
                   <p>
-                    As with the runners, you can use your galaxies’ velocity and distance data to calculate the time when all galaxies were in the same place — the <strong>age of the universe</strong>.
+                    As with the runners, you can use your galaxies’ velocity and distance data to calculate the time when all galaxies were in the same place — the <b>age of the universe</b>.
                   </p>
                   <p>
                     Let's learn how.

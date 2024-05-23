@@ -12,8 +12,8 @@
     <div
       class="mb-4"
     >
-      Perhaps even more important than the range of ages is <strong>how those ages are distributed</strong>. If most of the measurements are bunched closely together, that gives us more confidence than
-      if they are spread across a large range of values or are bunched around multiple values. As with the dot plots you saw earlier, more <strong>consensus</strong> in measurements generally gives us more <strong>confidence</strong> in a result.
+      Perhaps even more important than the range of ages is <b>how those ages are distributed</b>. If most of the measurements are bunched closely together, that gives us more confidence than
+      if they are spread across a large range of values or are bunched around multiple values. As with the dot plots you saw earlier, more <b>consensus</b> in measurements generally gives us more <b>confidence</b> in a result.
       <v-container
         class="px-0"
         fluid

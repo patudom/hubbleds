@@ -11,8 +11,8 @@
       <p>
         When scientists measure an unknown quantity, they use the available data to determine: 
         <ol>
-          <li>the measured value they think is <strong>most likely</strong>, and </li>
-          <li>the most plausible range of measured values (called the <strong>confidence interval</strong>). </li> 
+          <li>the measured value they think is <b>most likely</b>, and </li>
+          <li>the most plausible range of measured values (called the <b>confidence interval</b>). </li> 
         </ol>
       </p>
       <p>

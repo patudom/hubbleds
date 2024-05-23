@@ -15,7 +15,7 @@
 <!--            v-if="state_view.total_galaxies < 5 && state_view.total_galaxies > 0"-->
 <!--            style="font-size: 16px;"-->
 <!--        >-->
-<!--          <strong>Select</strong> {{ 5 - state_view.total_galaxies }} <span-->
+<!--          <b>Select</b> {{ 5 - state_view.total_galaxies }} <span-->
 <!--            v-if="state_view.total_galaxies > 0">more</span> <span-->
 <!--            v-if="state_view.total_galaxies < 4">galaxies</span><span-->
 <!--            v-if="state_view.total_galaxies == 4">galaxy</span>.-->
@@ -24,13 +24,13 @@
 <!--            v-if="state_view.total_galaxies == 0 && !state_view.selected_galaxy"-->
 <!--            style="font-size: 16px;"-->
 <!--        >-->
-<!--          <strong>Click</strong> on any green dot.-->
+<!--          <b>Click</b> on any green dot.-->
 <!--        </div>-->
 <!--        <div-->
 <!--            v-if="state_view.total_galaxies == 0 && state_view.selected_galaxy"-->
 <!--            style="font-size: 16px;"-->
 <!--        >-->
-<!--          <strong>Click</strong>-->
+<!--          <b>Click</b>-->
 <!--          <v-btn icon dark x-small disabled class="mx-1 black&#45;&#45;text" elevation="2" style="background-color: #00E676;">-->
 <!--            <v-icon style="color:black!important;">mdi-plus</v-icon>-->
 <!--          </v-btn>-->

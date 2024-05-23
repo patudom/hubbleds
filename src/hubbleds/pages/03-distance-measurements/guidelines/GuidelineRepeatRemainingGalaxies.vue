@@ -20,7 +20,7 @@
         Measure angular size<span v-if="state.angsizes_total < 4">s</span> for {{ 5 - state.angsizes_total }} more <span v-if="state.angsizes_total < 4">galaxies</span><span v-if="state.angsizes_total == 4">galaxy</span>.
       </span>
       <span v-if="state.bad_angsize">
-        <strong>Remeasure angular size</strong>
+        <b>Remeasure angular size</b>
         <br/>
       </span> -->
     </template>

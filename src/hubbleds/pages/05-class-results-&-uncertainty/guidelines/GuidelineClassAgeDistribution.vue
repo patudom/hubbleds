@@ -12,7 +12,7 @@
         First, it is helpful to visualize the data in a different way. 
       </p>
       <p>
-        This is a <strong>histogram</strong>, which displays the distribution of your classmates' age estimates for the universe. The <strong>range</strong> of age values is shown on the <strong>x-axis</strong>, and the number <strong>count</strong> of students who measured that value for the age of the universe is shown on the <strong>y-axis</strong>.
+        This is a <b>histogram</b>, which displays the distribution of your classmates' age estimates for the universe. The <b>range</b> of age values is shown on the <b>x-axis</b>, and the number <b>count</b> of students who measured that value for the age of the universe is shown on the <b>y-axis</b>.
       </p>
     </div>
   </scaffold-alert>

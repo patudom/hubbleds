@@ -23,7 +23,7 @@
         <v-col
           cols="12"
           lg="9">      
-          1. The <strong>most likely</strong> age of the universe based on my class’s data set: 
+          1. The <b>most likely</b> age of the universe based on my class’s data set: 
         </v-col>
         <v-col>
           <v-btn

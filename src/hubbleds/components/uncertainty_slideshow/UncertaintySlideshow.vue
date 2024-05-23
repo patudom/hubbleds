@@ -65,10 +65,10 @@
                 >
                   <div class="ma-4">
                     <p>
-                      There is only one universe that we live in, so our universe only has one age. Our job as scientists is to figure out if the <strong>true age</strong> of the universe is included within the ranges given by our measurements, and if so, which value within the range is the true age.
+                      There is only one universe that we live in, so our universe only has one age. Our job as scientists is to figure out if the <b>true age</b> of the universe is included within the ranges given by our measurements, and if so, which value within the range is the true age.
                     </p>
                     <p>
-                      First, let’s think about <strong>why</strong> we found a range of values in the first place (rather than all getting the same value).
+                      First, let’s think about <b>why</b> we found a range of values in the first place (rather than all getting the same value).
                     </p>
                   </div>
                 </v-col>
@@ -83,7 +83,7 @@
                     ></v-img>
                     <div>
                       <cite class="text-center mt-2 grey--text">
-                        Students, classes, (and scientists) have measured different ages for our universe. How do we know which is the <strong>true</strong> age? Credit: Anna Nolin 
+                        Students, classes, (and scientists) have measured different ages for our universe. How do we know which is the <b>true</b> age? Credit: Anna Nolin 
                       </cite>
                     </div>
                   </div>
@@ -133,7 +133,10 @@
                   <p class="mt-10">
                     Is there anything more you would like to add now that you’ve seen more data? (It’s OK if not.)
                   </p>
-                  <free-response
+                  <p class="StudentResponses">
+                    TODO: add free response box
+                </p>
+                  <!-- <free-response
                     outlined
                     auto-grow
                     rows="2"
@@ -141,7 +144,7 @@
                     hint="(if you can think of any more)"
                     tag="shortcoming-4"
                     allow-empty="true"
-                  ></free-response>
+                  ></free-response> -->
                 </v-col>
               </v-row>
             </v-container>
@@ -157,9 +160,9 @@
                     There are a few things that could prevent us from finding the true age of the universe:
                   </p>
                   <ul>
-                    <li>Our <strong>methods</strong> are imperfect</li>
-                    <li>Our <strong>assumptions</strong> about the universe are imperfect</li>
-                    <li>Our <strong>measurements</strong> are imperfect</li>
+                    <li>Our <b>methods</b> are imperfect</li>
+                    <li>Our <b>assumptions</b> about the universe are imperfect</li>
+                    <li>Our <b>measurements</b> are imperfect</li>
                   </ul>
                 </v-col>
               </v-row>
@@ -178,7 +181,7 @@
                     Given the messiness of our velocity vs. distance graphs, it is clear that we did not use an optimal method for making these measurements.
                   </p>
                   <p>
-                    In particular, professional astronomers have more sophisticated ways to measure <strong>distances</strong> to galaxies (but those are outside of the scope of this data story).
+                    In particular, professional astronomers have more sophisticated ways to measure <b>distances</b> to galaxies (but those are outside of the scope of this data story).
                   </p>
                   <p>
                     To make our measurements, we assumed that all galaxies are the same size as our own galaxy, the Milky Way. This is not a correct assumption, as galaxies have a large amount of natural variability in their sizes. This is likely the biggest source of “messiness” in our results.
@@ -203,7 +206,7 @@
                     Sometimes our tools limit our measurements. For example, did you feel confident that you were able to measure the edges of your galaxies correctly?
                   </p>
                   <p>
-                    Given the imperfect nature of our measurements and assumptions, there is a chance that our results are different than the true age of the universe. We refer to these differences as <strong>uncertainties</strong> in our result.
+                    Given the imperfect nature of our measurements and assumptions, there is a chance that our results are different than the true age of the universe. We refer to these differences as <b>uncertainties</b> in our result.
                   </p>
                 </v-col>
               </v-row>
@@ -219,10 +222,10 @@
                   cols="12"
                   >
                   <p>
-                    Some uncertainties are <strong>random</strong>. For example, if some galaxies in your sample are larger or smaller than the Milky Way, your resulting distances may be too close or too far, and then your resulting age may be too young or too old.
+                    Some uncertainties are <b>random</b>. For example, if some galaxies in your sample are larger or smaller than the Milky Way, your resulting distances may be too close or too far, and then your resulting age may be too young or too old.
                   </p>
                   <p>
-                    With <strong>random</strong> uncertainties, your measurements are as likely to be too high or too low, and with enough data, those variations would likely average out.
+                    With <b>random</b> uncertainties, your measurements are as likely to be too high or too low, and with enough data, those variations would likely average out.
                   </p>
                 </v-col>
               </v-row>
@@ -238,7 +241,7 @@
                   cols="7"
                   >
                   <p>
-                    Some uncertainties are <strong>systematic</strong>. These are problems with our methods or assumptions that lead to all measurements, on average, being <strong>incorrect in the same direction</strong>, which biases our final result.
+                    Some uncertainties are <b>systematic</b>. These are problems with our methods or assumptions that lead to all measurements, on average, being <b>incorrect in the same direction</b>, which biases our final result.
                   </p>
                   <p>
                     For example, imagine using a wrinkled tape measure to determine lengths. All your measurements would read larger than they should.
@@ -246,14 +249,17 @@
                   <p>
                     Can you think of any problems in our methods that could bias everyone’s results in the same direction?
                   </p>
-                  <free-response
+                  <p class="StudentResponses">
+                    TODO: add free response box
+                  </p>
+                  <!-- <free-response
                     outlined
                     auto-grow
                     rows="2"
                     label="Problems in Our Methods"
                     hint="(problems that might lead to systematic uncertainty)"
                     tag="systematic-uncertainty"
-                  ></free-response>
+                  ></free-response> -->
                 </v-col>
                 <v-col
                   cols="5"
@@ -312,7 +318,7 @@
                     Scientists try to eliminate as many sources of systematic bias as possible designing an experiment. Figuring out and accounting for all possible sources of systematic uncertainty is one of the most difficult (and most important!) tasks in science. 
                   </p>
                   <p>  
-                    Because our time is limited, from here on out, our exploration of uncertainties will focus only on <strong>random</strong> uncertainties.
+                    Because our time is limited, from here on out, our exploration of uncertainties will focus only on <b>random</b> uncertainties.
                   </p>
                 </v-col>
               </v-row>
@@ -336,7 +342,7 @@
                   <h3 class="text-h6 font-weight-light mb-2">
                     You're ready to continue exploring the data now.
                   </h3>
-                  <span class="text-caption grey--text">Click the <strong>UNCERTAINTY TUTORIAL</strong> button again if you'd like to come back for a refresher.</span>
+                  <span class="text-caption grey--text">Click the <b>UNCERTAINTY TUTORIAL</b> button again if you'd like to come back for a refresher.</span>
                 </v-col>
               </v-row>
             </v-container>

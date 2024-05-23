@@ -12,7 +12,7 @@
       class="mb-4"
     >
       <p>
-        Based on this graph do you think there is <strong>consensus</strong> on the distance to this galaxy?
+        Based on this graph do you think there is <b>consensus</b> on the distance to this galaxy?
       </p>
       <mc-radiogroup 
         :radio-options="[

@@ -23,7 +23,7 @@
           next_callback()
         }"
       >
-         <strong>Remeasure example</strong>
+         <b>Remeasure example</b>
       </v-btn>
     </p><p>
       <v-btn 
@@ -35,7 +35,7 @@
           force_transition()
         }"
       >
-         <strong>Move on to my galaxies</strong>
+         <b>Move on to my galaxies</b>
       </v-btn>
     </p>
       

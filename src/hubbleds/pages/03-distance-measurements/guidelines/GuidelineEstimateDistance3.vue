@@ -23,7 +23,7 @@
         </v-card-text>
       </v-card>
       <p>
-        Enter the <strong>angular size</strong> of your galaxy in <strong>arcseconds</strong> in the box.
+        Enter the <b>angular size</b> of your galaxy in <b>arcseconds</b> in the box.
       </p>
       <div
         class="JaxEquation my-8"
@@ -34,7 +34,7 @@
       <div
         class="font-weight-medium mt-3"
       >
-        Click <strong>CALCULATE</strong> to divide and find the estimated distance to your galaxy.
+        Click <b>CALCULATE</b> to divide and find the estimated distance to your galaxy.
       </div>
       <v-divider role="presentation" class="mt-3"></v-divider>
       <v-card
