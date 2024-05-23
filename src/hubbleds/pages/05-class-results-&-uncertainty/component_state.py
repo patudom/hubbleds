@@ -39,7 +39,7 @@ class Marker(enum.Enum, MarkerBase):
     two_his1 = enum.auto()
     two_his2 = enum.auto()
     two_his3 = enum.auto()
-    two_his3a = enum.auto()
+    two_his4 = enum.auto()
     two_his5 = enum.auto()
     mor_dat1 = enum.auto()
 
@@ -86,7 +86,7 @@ class ComponentState:
     uncertainty_state: UncertaintyState = dataclasses.field(default_factory=UncertaintyState)
     uncertainty_slideshow_finished: Reactive[bool] = dataclasses.field(
         default=Reactive(False)
-    ) 
+    )
     mmm_state: MMMState = dataclasses.field(default_factory=MMMState)
     age_calc_state: AgeCalcState = dataclasses.field(default_factory=AgeCalcState)
 
@@ -124,22 +124,6 @@ class ComponentState:
     def transition_previous(self):
         previous_marker = Marker.previous(self.current_step.value)
         self.transition_to(previous_marker, force=True)
-
-    @computed_property
-    def ran_var1_gate(self):
-        return True
-
-    @computed_property
-    def fin_cla1_gate(self):
-        return True
-
-    @computed_property
-    def cla_res1_gate(self):
-        return True
-    
-    @computed_property
-    def cla_age1_gate(self):
-        return "age-slope-trend" in LOCAL_STATE.mc_scoring.value
     
     @computed_property
     def mos_lik1_gate(self):
