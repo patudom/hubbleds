@@ -46,7 +46,6 @@
 
 <script>
 module.exports = {
-  
   data() {
     return {
       question_completed: false,

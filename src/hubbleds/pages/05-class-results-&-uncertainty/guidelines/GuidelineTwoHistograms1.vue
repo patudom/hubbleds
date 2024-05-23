@@ -1,14 +1,10 @@
 <!-- this state.marker = 'two_his1' -->
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Student Histogram vs. Class Histogram"
-    @back="state.marker_backward = 1"
-    @next="state.marker_forward = 1"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -23,8 +19,3 @@
   </scaffold-alert>
 </template>
 
-<script>
-module.exports = {
-  props: ['state']
-}
-</script>

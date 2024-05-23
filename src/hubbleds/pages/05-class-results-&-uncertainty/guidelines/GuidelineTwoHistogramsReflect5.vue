@@ -1,9 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Select Best Value"
-    @back="state.marker_backward = 1"
-    @next="state.marker_forward = 1"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"
@@ -14,22 +14,25 @@
       <p>
         Explain why you think this might be true.
       </p>
-
+      <p class="StudentResponses">
+          TODO: add free response box
+      </p>
+<!-- 
           <free-response
             outlined
             auto-grow
             rows="2"
             label="My Reasoning"
             tag="unc-range-change-reasoning"
-          ></free-response>
+          ></free-response> -->
     </div>
     <v-btn
       color="secondary lighten-1"
-      @click="state.uncertainty_hint_dialog = true"
+      @click="uncertainty_hint_dialog = true"
     >
       hint
       <v-dialog
-        v-model="state.uncertainty_hint_dialog"
+        v-model="uncertainty_hint_dialog"
         persistent
         max-width="600px">
         <v-card
@@ -50,7 +53,7 @@
               @click="
                 () => {
                   $emit('close');
-                  state.uncertainty_hint_dialog = false;
+                  uncertainty_hint_dialog = false;
                 }
               "
             >
@@ -72,7 +75,11 @@
 
 
 <script>
-module.exports = {
-  props: ['state']
+export default {
+  data() {
+    return {
+      uncertainty_hint_dialog: false
+    }
+  },
 }
 </script>

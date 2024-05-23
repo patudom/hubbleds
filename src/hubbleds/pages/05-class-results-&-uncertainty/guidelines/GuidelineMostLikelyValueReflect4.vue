@@ -80,13 +80,16 @@
           cols="12"
           lg="3"
         >
-          <free-response
+        <p class="StudentResponses">
+            TODO: add free response box
+        </p>
+        <!-- <free-response
             outlined
             rows="1"
             label="Most Likely Age"
             tag="best-guess-age"
             type="float"
-          ></free-response>
+          ></free-response> -->
         </v-col>
         <v-col>
           Gyr
@@ -105,13 +108,17 @@
         v-if="revealIter >= 1"
       >
         <v-col>
-          <free-response
+          <p class="StudentResponses">
+            TODO: add free response box
+          </p>
+
+          <!-- <free-response
             outlined
             auto-grow
             rows="2"
             label="My Reasoning"
             tag="my-reasoning"
-          ></free-response>
+          ></free-response> -->
         </v-col>
       </v-row>
     </div>

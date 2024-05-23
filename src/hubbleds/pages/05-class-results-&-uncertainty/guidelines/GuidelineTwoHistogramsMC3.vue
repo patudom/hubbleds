@@ -1,16 +1,15 @@
 <!-- this state.marker = 'two_his2' -->
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
+
     title-text="Student Histogram vs. Class Histogram"
-    @back="state.marker_backward = 1"
-    @next="state.marker_forward = 1"
-    :can-advance="(state) => state.two_hist3_response"
-    :state="state"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="question_completed && can_advance"
   >
+    <template #before-next>
+      Choose a response.
+    </template>
     <div
       class="mb-4"
     >
@@ -33,8 +32,10 @@
           ]"
           :correct-answers="[1]"
           :wrong-answers='[0,2]'
-          @select="(state) => { if (state.correct) { $emit('ready'); } }"
-          score-tag="histogram-percent-range"
+          @select="(status) => { if (status.correct) { question_completed = true; } }"
+          :score-tag="state_view.score_tag"
+          @mc-emit="mc_callback($event)"
+          :initialization="state_view.mc_score"
         >
         </mc-radiogroup>
       </v-container>
@@ -44,6 +45,10 @@
 
 <script>
 module.exports = {
-  props: ['state']
-}
+  data() {
+    return {
+      question_completed: false,
+    };
+  },
+};
 </script>

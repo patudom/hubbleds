@@ -18,9 +18,4 @@
   </scaffold-alert>
 </template>
 
-<style>
-  .JaxEquation .MathJax {
-    margin: 3px auto !important;
-  }
-</style>
 

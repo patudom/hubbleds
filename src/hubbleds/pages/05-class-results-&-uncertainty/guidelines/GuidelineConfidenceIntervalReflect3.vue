@@ -32,11 +32,11 @@
         <v-col>
           <v-btn
             color="secondary lighten-1"
-            @click="state_view.age_calc_state.hint2_dialog = true"
+            @click="state_view.hint2_dialog = true"
           >
             hint
             <v-dialog
-              v-model="state_view.age_calc_state.hint2_dialog"
+              v-model="state_view.hint2_dialog"
               persistent
               max-width="600px">
               <v-card
@@ -57,7 +57,7 @@
                     @click="
                       () => {
                         $emit('close');
-                        state_view.age_calc_state.hint2_dialog = false;
+                        state_view.hint2_dialog = false;
                       }
                     "
                   >
@@ -88,13 +88,16 @@
         <v-col
           cols="12"
           lg="3">
-          <free-response
+          <p class="StudentResponses">
+            add free response box
+          </p>
+          <!-- <free-response
             outlined
             rows="1"
             label="Likely Low Age"
             tag="likely-low-age"
             type="float"
-          ></free-response>
+          ></free-response> -->
         </v-col>
         <v-col
           lg="2">
@@ -103,13 +106,16 @@
               <v-col
           cols="12"
           lg="3">
-          <free-response
+          <p class="StudentResponses">
+            TODO: add free response box
+          </p>
+          <!-- <free-response
             outlined
             rows="1"
             label="Likely High Age"
             tag="likely-high-age"
             type="float"
-          ></free-response>
+          ></free-response> -->
         </v-col>
         <v-col
           lg="2">
@@ -128,13 +134,16 @@
         v-if="revealIter >= 1"
       >
         <v-col>
-          <free-response
+          <p class="StudentResponses">
+            TODO: add free response box
+          </p>
+          <!-- <free-response
             outlined
             auto-grow
             rows="2"
             label="My Reasoning"
             tag="my-reasoning-2"
-          ></free-response>
+          ></free-response> -->
         </v-col>
       </v-row>
 

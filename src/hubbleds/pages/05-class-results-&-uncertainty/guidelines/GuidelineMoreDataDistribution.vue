@@ -3,8 +3,7 @@
   <scaffold-alert
     title-text="More Data and Narrow Distributions"
     next-text="stage 6"
-    @back="state.marker_backward = 1"
-    @next="() => {$emit('stage_complete');}"
+    @back="back_callback()"
   >
     <div
       class="mb-4"
@@ -20,14 +19,14 @@
           block
           color="deep-orange darken-2"
           @click="
-            state.define_outlier = !state.define_outlier
+            define_outlier = !define_outlier
           "
         >
           What is an outlier?
         </v-btn>
         <v-alert
           class="mt-4 trend-alert"
-          v-if="state.define_outlier"
+          v-if="define_outlier"
           dense
           color="info darken-1"
         >
@@ -38,6 +37,10 @@
 
 <script>
 module.exports = {
-  props: ['state']
+  data() {
+    return {
+      define_outlier: false,
+    };
+  },
 }
 </script>
