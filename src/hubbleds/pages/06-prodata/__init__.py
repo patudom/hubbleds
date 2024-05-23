@@ -63,7 +63,7 @@ def Page():
         return gjapp, viewer
     gjapp, viewer = cast(JupyterApplication, solara.use_memo(glue_setup,[]))
     
-    #TODO: Should viewer creation happen somewhere else?
+    # TODO: Should viewer creation happen somewhere else?
     
     # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
     component_state.add_data_by_marker(viewer)

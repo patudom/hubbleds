@@ -66,11 +66,11 @@ class ComponentState:
     def can_transition(self, step: Marker = None, next=False, prev=False):
         if next:
             if self.current_step.value is Marker.last():
-                return False  # FIX once we sort out transitions between stages
+                return False  # TODO: once we sort out transitions between stages
             step = Marker.next(self.current_step.value)
         elif prev:
             if self.current_step.value is Marker.first():
-                return False  # FIX once we sort out transitions between stages
+                return False  # TODO: once we sort out transitions between stages
             step = Marker.previous(self.current_step.value)
 
         if hasattr(self, f"{step.name}_gate"):

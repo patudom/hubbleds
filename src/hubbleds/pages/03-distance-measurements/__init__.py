@@ -107,7 +107,7 @@ def Page():
                 show=component_state.is_current_step(Marker.ang_siz2b),
             )
             ScaffoldAlert(
-                #FIX This will need to be wired up once measuring tool is implemented
+                # TODO This will need to be wired up once measuring tool is implemented
                 GUIDELINE_ROOT / "GuidelineAngsizeMeas3.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -115,7 +115,7 @@ def Page():
                 show=component_state.is_current_step(Marker.ang_siz3),
             )
             ScaffoldAlert(
-                #FIX This will need to be wired up once measuring tool is implemented
+                # TODO This will need to be wired up once measuring tool is implemented
                 GUIDELINE_ROOT / "GuidelineAngsizeMeas4.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -149,7 +149,7 @@ def Page():
                 show=component_state.is_current_step(Marker.dot_seq5),
             )
             ScaffoldAlert(
-                #FIX This will need to be wired up once measuring tool is implemented
+                # TODO This will need to be wired up once measuring tool is implemented
                 GUIDELINE_ROOT / "GuidelineDotplotSeq5b.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -169,7 +169,7 @@ def Page():
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
             ScaffoldAlert(
-                #FIX This will need to be wired up once table is implemented
+                # TODO This will need to be wired up once table is implemented
                 GUIDELINE_ROOT / "GuidelineChooseRow1.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -201,7 +201,7 @@ def Page():
                 },
             )
             ScaffoldAlert(
-                #FIX This will need to be wired up once table is implemented
+                # TODO This will need to be wired up once table is implemented
                 GUIDELINE_ROOT / "GuidelineChooseRow2.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -209,7 +209,7 @@ def Page():
                 show=component_state.is_current_step(Marker.cho_row2),
             )
             ScaffoldAlert(
-                #FIX This will need to be wired up once measuring tool is implemented
+                # TODO This will need to be wired up once measuring tool is implemented
                 GUIDELINE_ROOT / "GuidelineEstimateDistance3.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -217,7 +217,7 @@ def Page():
                 show=component_state.is_current_step(Marker.est_dis3),
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
-                    "meas_theta": 10, #FIX to pass student's value once we hook up angular size measurements
+                    "meas_theta": 10, # TODO pass student's value once we hook up angular size measurements
                 },
             )
             ScaffoldAlert(
@@ -228,11 +228,11 @@ def Page():
                 show=component_state.is_current_step(Marker.est_dis4),
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
-                    "meas_theta": 10, #FIX to pass student's value once we hook up angular size measurements
+                    "meas_theta": 10, # TODO pass student's value once we hook up angular size measurements
                 },
             )
             ScaffoldAlert(
-                #FIX This will need to be wired up once table is implemented
+                # TODO This will need to be wired up once table is implemented
                 GUIDELINE_ROOT / "GuidelineDotplotSeq5a.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),

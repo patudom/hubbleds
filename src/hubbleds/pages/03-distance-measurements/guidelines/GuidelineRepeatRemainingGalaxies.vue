@@ -1,5 +1,5 @@
 <template>
-  <!-- FIX when students have measurements 
+  <!-- TODO: update when students have measurements 
     <scaffold-alert
     color="info"
     class="mb-4 mx-auto"

@@ -100,7 +100,7 @@ def Page():
                 show=component_state.is_current_step(Marker.age_uni3),
                 state_view={
                     "age_const": AGE_CONSTANT,
-                    # FIX - update these once real values are hooked up
+                    # TODO - update these once real values are hooked up
                     "hypgal_distance": 100,
                     "hypgal_velocity": 8000,
                 },     
@@ -113,7 +113,7 @@ def Page():
                 show=component_state.is_current_step(Marker.age_uni4),
                 state_view={
                     "age_const": AGE_CONSTANT,
-                    # FIX - update these once real values are hooked up
+                    # TODO - update these once real values are hooked up
                     "hypgal_distance": 100,
                     "hypgal_velocity": 8000,
                 },   
@@ -134,7 +134,7 @@ def Page():
                 state_view={'mc_score': mc_scoring.get('tre-dat-mc1'), 'score_tag': 'tre-dat-mc1'}                
             )
             ScaffoldAlert(
-                #FIX This will need to be wired up once viewer is implemented
+                # TODO This will need to be wired up once viewer is implemented
                 GUIDELINE_ROOT / "GuidelineTrendsData2.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -167,7 +167,7 @@ def Page():
                 show=component_state.is_current_step(Marker.tre_lin1),               
             )
             ScaffoldAlert(
-                #FIX This will need to be wired up once linedraw tool is implemented
+                # TODO This will need to be wired up once linedraw tool is implemented
                 GUIDELINE_ROOT / "GuidelineTrendLinesDraw2.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -175,7 +175,7 @@ def Page():
                 show=component_state.is_current_step(Marker.tre_lin2),
             )
             ScaffoldAlert(
-                #FIX This will need to be wired up once best fit line tool is implemented
+                # TODO This will need to be wired up once best fit line tool is implemented
                 GUIDELINE_ROOT / "GuidelineBestFitLine.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -231,7 +231,7 @@ def Page():
                 show=component_state.is_current_step(Marker.you_age1),
             )
             ScaffoldAlert(
-                # FIX - add free response functionality
+                # TODO - add free response functionality
                 GUIDELINE_ROOT / "GuidelineShortcomingsEstReflect1.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
@@ -240,7 +240,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",
-                # event_next_callback should go to next stage but I don't know how to set that up.
+                # TODO: event_next_callback should go to next stage but I don't know how to set that up.
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.sho_est2),
