@@ -22,6 +22,6 @@ class MarkerBase(metaclass=EnumMeta):
     @classmethod
     # check if the current_step is inclusively within the start and end markers specified. If no end is specified, use the final marker.
     def incl_range(cls, component_state, start, end=None):
-        if end == None:
+        if end is None:
             end = cls.last()
         return (component_state.current_step.value.value >= start.value and component_state.current_step.value.value <= end.value )
