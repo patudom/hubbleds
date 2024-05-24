@@ -6,7 +6,7 @@ from glue.core import Data
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
 from pathlib import Path
-from reacton import ipyvuetify as rv
+from reacton import component, ipyvuetify as rv
 
 from hubbleds.components.id_slider import IdSlider
 from hubbleds.marker_base import MarkerBase
@@ -79,7 +79,7 @@ def Page():
         component_state.transition_previous()
 
     #--------------------- Row 1: OUR DATA HUBBLE VIEWER -----------------------
-    if (Marker.incl_range(component_state, Marker.ran_var1, Marker.fin_cla1) or Marker.incl_range(component_state, Marker.cla_dat1, Marker.you_age1c)):
+    if (component_state.current_step_between(Marker.ran_var1, Marker.fin_cla1) or component_state.current_step_between(Marker.cla_dat1, Marker.you_age1c)):
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 ScaffoldAlert(
@@ -145,7 +145,7 @@ def Page():
 
 
 # --------------------- Row 2: SLIDER VERSION: OUR DATA HUBBLE VIEWER -----------------------
-    if Marker.incl_range(component_state, Marker.cla_res1, Marker.con_int3):
+    if component_state.current_step_between(Marker.cla_res1, Marker.con_int3):
 
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
@@ -257,7 +257,7 @@ def Page():
                         )
                     solara.Button("test slider viewer", on_click=toggle_viewer)
 
-                if Marker.incl_range(component_state, Marker.lea_unc1, Marker.you_age1c):
+                if component_state.current_step_between(Marker.lea_unc1, Marker.you_age1c):
                     UncertaintySlideshow(
                         event_on_slideshow_finished=lambda *args: component_state.uncertainty_slideshow_finished.set(
                             True
@@ -270,7 +270,7 @@ def Page():
 
     #--------------------- Row 3: ALL DATA HUBBLE VIEWER - during class sequence -----------------------
 
-    if Marker.incl_range(component_state, Marker.cla_res1c):
+    if component_state.current_step_between(Marker.cla_res1c):
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 ScaffoldAlert(
@@ -309,13 +309,13 @@ def Page():
 
     #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------
 
-    if Marker.incl_range(component_state, Marker.age_dis1, Marker.con_int3):                
+    if component_state.current_step_between(Marker.age_dis1, Marker.con_int3):                
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
-                if Marker.incl_range(component_state, Marker.mos_lik2, Marker.con_int3):
+                if component_state.current_step_between(Marker.mos_lik2, Marker.con_int3):
                     with solara.Card(style="background-color: #F06292;"):
                         solara.Markdown("my class statistics selector component goes here")
-                if Marker.incl_range(component_state, Marker.con_int2, Marker.con_int3):
+                if component_state.current_step_between(Marker.con_int2, Marker.con_int3):
                     with solara.Card(style="background-color: #F06292;"):
                         solara.Markdown("my class percentage selector component goes here")
 
@@ -384,7 +384,7 @@ def Page():
 
     #--------------------- Row 5: ALL DATA HISTOGRAM VIEWER -----------------------
 
-    if Marker.incl_range(component_state, Marker.age_dis1c):
+    if component_state.current_step_between(Marker.age_dis1c):
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with solara.Card(style="background-color: #F06292;"):
@@ -450,7 +450,7 @@ def Page():
                 )
 
             with rv.Col():
-                if Marker.incl_range(component_state, Marker.two_his1):
+                if component_state.current_step_between(Marker.two_his1):
                     with solara.Card(style="background-color: #F06292;"):
                         solara.Markdown("all data student histogram goes here")
 

@@ -9,7 +9,7 @@ from hubbleds.marker_base import MarkerBase
 MB = TypeVar('MB', bound=MarkerBase)
 
 
-def component_state(M: Type[MB]):
+def base_component_state(M: Type[MB]):
     
     @dataclasses.dataclass
     class BaseComponentState:
@@ -50,6 +50,10 @@ def component_state(M: Type[MB]):
         def transition_previous(self):
             previous_marker = M.previous(self.current_step.value)
             self.transition_to(previous_marker, force=True)
+
+        def current_step_between(self, start, end=None):
+            end = end or M.last()
+            return M.is_between(self.current_step.value, start, end)
 
     return BaseComponentState
 

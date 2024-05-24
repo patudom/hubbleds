@@ -1,4 +1,5 @@
 import dataclasses
+from hubbleds.component_state_base import base_component_state
 from hubbleds.decorators import computed_property
 from solara import Reactive
 import enum
@@ -77,8 +78,7 @@ class AgeCalcState:
 
 
 @dataclasses.dataclass
-class ComponentState:
-    current_step: Reactive[Marker] = dataclasses.field(default=Reactive(Marker.ran_var1))
+class ComponentState(base_component_state(Marker)):
     student_low_age: Reactive[int] = dataclasses.field(default=Reactive(0))
     student_high_age: Reactive[int] = dataclasses.field(default=Reactive(0))
     class_low_age: Reactive[int] = dataclasses.field(default=Reactive(0))
@@ -90,45 +90,6 @@ class ComponentState:
     mmm_state: MMMState = dataclasses.field(default_factory=MMMState)
     age_calc_state: AgeCalcState = dataclasses.field(default_factory=AgeCalcState)
 
-    def is_current_step(self, step: Marker):
-        return self.current_step.value == step
-
-    def can_transition(self, step: Marker=None, next=False, prev=False):
-        if next:
-            if self.current_step.value is Marker.last():
-                return False  # TODO: once we sort out transitions between stages
-            step = Marker.next(self.current_step.value)
-        elif prev:
-            if self.current_step.value is Marker.first():
-                return False  # TODO: once we sort out transitions between stages
-            step = Marker.previous(self.current_step.value)
-
-        if hasattr(self, f"{step.name}_gate"):
-            return getattr(
-                self,
-                f"{step.name}_gate",
-            )().value
-
-        print(f"No gate exists for step {step.name}, allowing anyway.")
-        return True
-
-    def transition_to(self, step: Marker, force=False):
-        if self.can_transition(step) or force:
-            self.current_step.set(step)
-        else:
-            print(
-                f"Conditions not met to transition from "
-                f"{self.current_step.value.name} to {step.name}."
-            )
-
-    def transition_next(self):
-        next_marker = Marker.next(self.current_step.value)
-        self.transition_to(next_marker)
-
-    def transition_previous(self):
-        previous_marker = Marker.previous(self.current_step.value)
-        self.transition_to(previous_marker, force=True)
-    
     @computed_property
     def mos_lik1_gate(self):
         return (
