@@ -10,7 +10,7 @@ from reacton import ipyvuetify as rv
 
 from hubbleds.components.id_slider import IdSlider
 
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
+from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
 from .component_state import ComponentState, Marker
 
 
@@ -109,8 +109,8 @@ def Page():
                 event_back_callback=transition_previous,
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.rel_age1),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                state_view = {"mc_score": mc_scoring.get("age-slope-trend"), "score_tag": "age-slope-trend"}
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                state_view = {"mc_score": mc_serialize_score(mc_scoring.get("age-slope-trend")), "score_tag": "age-slope-trend"}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineClassAgeRange.vue",

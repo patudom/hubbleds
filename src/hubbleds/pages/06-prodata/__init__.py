@@ -18,7 +18,7 @@ from solara import Reactive
 from pathlib import Path
 
 from ...data_management import *
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
+from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
 # import for type definitions
 from typing import cast
 
@@ -69,8 +69,9 @@ def Page():
     component_state.add_data_by_marker(viewer)
     component_state.show_legend(viewer, show=True)
     
+    print('\n =============  setting up mc scoring ============= \n')
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
-        
+    print('\n =============  done setting up mc scoring ============= \n')
 
     
     solara.Markdown(
@@ -87,6 +88,8 @@ def Page():
     )
     
     
+        
+    
     with rv.Row():
         with rv.Col(cols=4):
             ScaffoldAlert(
@@ -101,8 +104,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat1),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('pro-dat1'), 'score_tag': 'pro-dat1'}
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('pro-dat1')), 'score_tag': 'pro-dat1'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData2.vue",
@@ -110,8 +113,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat2),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('pro-dat2'), 'score_tag': 'pro-dat2'}
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('pro-dat2')), 'score_tag': 'pro-dat2'}
                 
             )
             ScaffoldAlert(
@@ -120,8 +123,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat3),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('pro-dat3'), 'score_tag': 'pro-dat3'}
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('pro-dat3')), 'score_tag': 'pro-dat3'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData4.vue",
@@ -129,8 +132,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat4),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('pro-dat4'), 'score_tag': 'pro-dat4'}
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('pro-dat4')), 'score_tag': 'pro-dat4'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData5.vue",
@@ -145,11 +148,11 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat6),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
                 state_view={
                     'hst_age': component_state.hst_age, 
                     'class_age': component_state.class_age.value,
-                    'mc_score': mc_scoring.get('pro-dat6'), 
+                    'mc_score': mc_serialize_score(mc_scoring.get('pro-dat6')), 
                     'score_tag': 'pro-dat4'
                     }
             )
@@ -159,8 +162,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat7),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('pro-dat7'), 'score_tag': 'pro-dat7'}
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('pro-dat7')), 'score_tag': 'pro-dat7'}
                 
             )
             ScaffoldAlert(
@@ -176,8 +179,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat9),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('pro-dat9'), 'score_tag': 'pro-dat'}
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('pro-dat9')), 'score_tag': 'pro-dat'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineStoryFinish.vue",
