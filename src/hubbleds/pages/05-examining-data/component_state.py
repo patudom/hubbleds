@@ -154,4 +154,7 @@ class ComponentState:
     
     @computed_property
     def cla_age1_gate(self):
-        return "age-slope-trend" in LOCAL_STATE.mc_scoring.value
+        if "age-slope-trend" in LOCAL_STATE.mc_scoring.value:
+            if LOCAL_STATE.mc_scoring.value["age-slope-trend"].score.value is not None:
+                return True
+        return False
