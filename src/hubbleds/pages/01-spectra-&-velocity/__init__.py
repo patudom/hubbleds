@@ -266,10 +266,39 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.rem_gal1),
                 state_view={
-                    "obswaves_total": component_state.lambda_obs.value,
-                    "has_bad_velocities": component_state.lambda_rest.value,
-                    "has_multiple_bad_velocities": component_state.doppler_calc_state.failed_validation_4.value,
-                    "selected_galaxy": component_state.selected_galaxy
+                    "obswaves_total": component_state.obswaves_total.value,
+                    "has_bad_velocities": component_state.has_bad_velocities.value,
+                    "has_multiple_bad_velocities": component_state.has_multiple_bad_velocities.value,
+                    "selected_galaxy": student_data.get_by_id(
+                        component_state.selected_galaxy.value,
+                        exclude={"spectrum"},
+                        asdict=True,
+                    ),
+                },
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dop_cal6),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineReflectVelValues.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.ref_vel1),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineEndStage1.vue",
+                event_next_callback=transition_to_next_stage,
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.end_sta1),
+                state_view={
+                    "has_bad_velocities": component_state.has_bad_velocities.value,
+                    "has_multiple_bad_velocities": component_state.has_multiple_bad_velocities.value,
                 },
             )
 
@@ -414,6 +443,13 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq11),
             )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineReflectOnData.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.ref_dat1),
+            )
 
         with rv.Col(cols=8):
             if (
@@ -554,3 +590,11 @@ def Page():
                 )
 
                 ViewerLayout(dotplot_view)
+
+            if component_state.is_current_step(Marker.ref_dat1):
+                ReflectVelocitySlideshow(
+                    reflection_complete=component_state.reflection_complete.value,
+                    event_on_reflection_completed=lambda *args: component_state.reflection_complete.set(
+                        True
+                    ),
+                )
