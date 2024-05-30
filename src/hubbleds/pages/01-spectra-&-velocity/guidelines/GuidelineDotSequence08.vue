@@ -25,7 +25,7 @@
             ]" 
           :correct-answers="[1]"
           :neutral-answers="[0, 2]"
-          @select="(opt) => { if (opt.correct) { console.log('correct'); $emit('ready'); } }"
+          @select="(opt) => { if (opt.correct) { $emit('ready'); } }"
           score-tag="vel_meas_consensus">
             >
           </mc-radiogroup>

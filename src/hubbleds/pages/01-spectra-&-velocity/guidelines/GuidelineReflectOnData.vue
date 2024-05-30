@@ -5,10 +5,9 @@
     max-width="800"
     elevation="6"
     title-text="Reflect on Your Data"
-    :can-advance="(state) => state.reflection_complete"
-    :state="state"
-    @back="() => { state.marker_backward = 1; }"
-    @next="() => { state.marker_forward = 1; }"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
   >
 
     <template #before-next>

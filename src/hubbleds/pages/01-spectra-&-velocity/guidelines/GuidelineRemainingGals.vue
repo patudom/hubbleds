@@ -51,7 +51,7 @@
         Your measured wavelength value is not within the expected range. Please try again.
       </p>
       <p>
-        Align the vertical measuring tool to the <strong><span style="color:#ff665e; background-color: white; border-radius : 5px; padding: 3px">{{ state_view.galaxy.element }} (observed)</span></strong> marker and click.
+        Align the vertical measuring tool to the <strong><span style="color:#ff665e; background-color: white; border-radius : 5px; padding: 3px">{{ state_view.selected_galaxy.element }} (observed)</span></strong> marker and click.
       </p>
       <p>
         Ask your instructor if you are not sure where this is.

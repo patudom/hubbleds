@@ -30,8 +30,7 @@
           class="black--text"
           elevation="2"
           @click="() => {
-          state.show_ruler = true;
-          state.marker = 'rem_gal1'
+          continue_to_galaxies()
         }"
       >
         <strong>Move on to my galaxies</strong>
