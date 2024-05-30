@@ -1,3 +1,4 @@
+import solara.toestand
 from solara import Reactive
 import enum
 from ...marker_base import MarkerBase
@@ -51,10 +52,10 @@ class Marker(enum.Enum, MarkerBase):
     dot_seq14 = enum.auto()
     rem_gal1 = enum.auto()
     ref_dat1 = enum.auto()
-    dot_gal6 = enum.auto()
+    dop_cal6 = enum.auto()
     ref_vel1 = enum.auto()
     end_sta1 = enum.auto()
-    NA3 = enum.auto()
+    nxt_stg = enum.auto()
 
 
 @dataclasses.dataclass
@@ -99,10 +100,12 @@ class ComponentState:
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.mee_gui1)
     )
+    database_changes: Reactive[int] = dataclasses.field(default=Reactive(0))
     total_galaxies: Reactive[int] = dataclasses.field(default=Reactive(0))
-    selected_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
+    selected_galaxy: Reactive[str] = dataclasses.field(default=Reactive(""))
+    selected_galaxies: Reactive[list] = dataclasses.field(default=Reactive([]))
     show_example_galaxy: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    selected_example_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
+    selected_example_galaxy: Reactive[str] = dataclasses.field(default=Reactive(""))
     spectrum_tutorial_opened: Reactive[bool] = dataclasses.field(
         default=Reactive(False)
     )
@@ -131,6 +134,8 @@ class ComponentState:
         default=Reactive(False)
     )
     obswaves_total: Reactive[int] = dataclasses.field(default=Reactive(0))
+    velocities_total: Reactive[int] = dataclasses.field(default=Reactive(0))
+    reflection_complete: Reactive[bool] = dataclasses.field(default=Reactive(False))
 
     def __post_init__(self):
         self._galaxy_data = None
@@ -138,6 +143,34 @@ class ComponentState:
 
         self._load_galaxies()
         self._load_example_galaxy()
+
+    def as_dict(self):
+        def _inner_dict(sub_comp):
+            if dataclasses.is_dataclass(sub_comp):
+                return {
+                    f.name: _inner_dict(getattr(sub_comp, f.name))
+                    for f in dataclasses.fields(sub_comp)
+                }
+
+            return (
+                sub_comp.value
+                if isinstance(sub_comp, solara.toestand.Reactive)
+                else sub_comp
+            )
+
+        return _inner_dict(self)
+
+    def from_dict(self, d):
+        def _inner_dict(dd, parent):
+            for k, v in dd.items():
+                attr = getattr(parent, k)
+
+                if isinstance(attr, solara.toestand.Reactive):
+                    attr.set(v)
+                elif dataclasses.is_dataclass(attr):
+                    _inner_dict(v, attr)
+
+        _inner_dict(d, self)
 
     def setup(self):
         # Set up a forced transition. I don't think this should occur this way,
@@ -261,6 +294,22 @@ class ComponentState:
     @computed_property
     def dot_seq1_gate(self):
         return self.dotplot_tutorial_finished.value
+
+    @computed_property
+    def ref_dat1_gate(self):
+        return self.obswaves_total.value >= 5
+
+    @computed_property
+    def dop_cal6_gate(self):
+        return self.reflection_complete.value
+
+    @computed_property
+    def ref_vel1_gate(self):
+        return self.velocities_total.value >= 5
+
+    @computed_property
+    def nxt_stg_gate(self):
+        return not (self.has_bad_velocities.value or self.has_multiple_bad_velocities)
 
     @property
     def galaxy_data(self):
