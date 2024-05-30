@@ -16,7 +16,13 @@ from astropy.table import Table
 from hubbleds.components.dotplot_tutorial_slideshow import DotplotTutorialSlideshow
 from hubbleds.viewers.hubble_dotplot import HubbleDotPlotView
 
-from ...components import DataTable, SpectrumViewer, SpectrumSlideshow, DopplerSlideshow
+from ...components import (
+    DataTable,
+    SpectrumViewer,
+    SpectrumSlideshow,
+    DopplerSlideshow,
+    ReflectVelocitySlideshow,
+)
 
 from ...state import GLOBAL_STATE, LOCAL_STATE
 from ...widgets.selection_tool import SelectionTool
@@ -36,32 +42,72 @@ def _on_galaxy_selected(galaxy):
     already_present = is_in.size > 0 and is_in[0]
 
     if not already_present:
+        galaxy["spectrum"] = component_state._load_spectrum_data(galaxy)
         student_data.measurements.append(StudentMeasurement(**galaxy))
         component_state.total_galaxies.value += 1
+        component_state.selected_galaxies.set(
+            [*component_state.selected_galaxies.value, galaxy["id"]]
+        )
 
 
 def _on_example_galaxy_table_row_selected(row):
-    galaxy = row["item"]
-    component_state.selected_example_galaxy.set(galaxy)
-    component_state.lambda_rest.set(galaxy["rest_wave"])
-    component_state.lambda_obs.subscribe(
-        lambda *args: example_data.update(galaxy["id"], {"measured_wave": args[0]})
-    )
-    component_state.student_vel.subscribe(
-        lambda *args: example_data.update(galaxy["id"], {"velocity": args[0]})
-    )
+    galaxy = example_data.get_by_id(row["item"]["id"])
+    component_state.selected_example_galaxy.set(galaxy.id)
+    component_state.lambda_rest.set(galaxy.rest_wave)
+    component_state.lambda_obs.set(0.0)
+    component_state.student_vel.set(0.0)
 
 
 def _on_galaxy_table_row_selected(row):
-    galaxy = row["item"]
-    component_state.selected_galaxy.set(galaxy)
-    component_state.lambda_rest.set(galaxy["rest_wave"])
-    component_state.lambda_obs.subscribe(
-        lambda *args: student_data.update(galaxy["id"], {"measured_wave": args[0]})
-    )
-    component_state.student_vel.subscribe(
-        lambda *args: student_data.update(galaxy["id"], {"velocity": args[0]})
-    )
+    galaxy = student_data.get_by_id(row["item"]["id"], exclude={"spectrum"})
+    component_state.selected_galaxy.set(galaxy.id)
+    component_state.lambda_rest.set(galaxy.rest_wave)
+    component_state.lambda_obs.set(0.0)
+    component_state.student_vel.set(0.0)
+
+
+def _on_wavelength_measured(value, update_example=False, update_student=False):
+    if update_example:
+        example_data.update(
+            component_state.selected_example_galaxy.value, {"measured_wave": value}
+        )
+        component_state.lambda_obs.set(value)
+    elif update_student:
+        student_data.update(
+            component_state.selected_galaxy.value, {"measured_wave": value}
+        )
+        component_state.lambda_obs.set(value)
+        component_state.obswaves_total.value += 1
+
+
+def _on_velocity_calculated(value, update_example=False, update_student=False):
+    if update_example:
+        example_data.update(
+            component_state.selected_example_galaxy.value, {"velocity": round(value)}
+        )
+        component_state.student_vel.set(round(value))
+    elif update_student:
+        student_data.update(
+            component_state.selected_galaxy.value, {"velocity": round(value)}
+        )
+        component_state.student_vel.set(round(value))
+
+
+def _calculate_velocity(*args, **kwargs):
+    for gal_id in component_state.selected_galaxies.value:
+        galaxy = student_data.get_by_id(gal_id, exclude={"spectrum"})
+        rest_wave = galaxy.rest_wave
+        obs_wave = galaxy.measured_wave
+        velocity = round((3 * (10**5) * (obs_wave / rest_wave - 1)), 0)
+        student_data.update(galaxy.id, {"velocity": velocity})
+        component_state.velocities_total.value += 1
+
+
+def transition_to_next_stage():
+    route, routes = solara.use_route()
+    _, set_location_path = solara.use_pathname()
+    index = routes.index(route)
+    set_location_path(solara.resolve_path(routes[index + 1]))
 
 
 @solara.component
