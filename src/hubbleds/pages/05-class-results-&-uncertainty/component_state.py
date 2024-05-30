@@ -1,5 +1,5 @@
 import dataclasses
-from hubbleds.component_state_base import base_component_state
+from hubbleds.component_state_base import BaseComponentState
 from hubbleds.decorators import computed_property
 from solara import Reactive
 import enum
@@ -78,7 +78,8 @@ class AgeCalcState:
 
 
 @dataclasses.dataclass
-class ComponentState(base_component_state(Marker)):
+class ComponentState(BaseComponentState):
+    current_step: Reactive[Marker] = dataclasses.field(default=Reactive(Marker.ran_var1))
     student_low_age: Reactive[int] = dataclasses.field(default=Reactive(0))
     student_high_age: Reactive[int] = dataclasses.field(default=Reactive(0))
     class_low_age: Reactive[int] = dataclasses.field(default=Reactive(0))

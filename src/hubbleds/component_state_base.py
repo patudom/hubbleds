@@ -1,26 +1,22 @@
 import dataclasses
-from typing import Generic, Type, TypeVar
 
 from solara import Reactive
 
 from hubbleds.marker_base import MarkerBase
 
 
-MB = TypeVar('MB', bound=MarkerBase)
-
-
 class BaseComponentState:
 
-   current_step: Reactive[MB] = dataclasses.field()
+   current_step: Reactive[MarkerBase] = dataclasses.field()
 
    def is_current_step(self, step):
        return self.current_step.value.value == step.value
 
-   def can_transition(self, step: M = None, next=False, prev=False):
+   def can_transition(self, step: MarkerBase = None, next=False, prev=False):
        if next:
-           step = M.next(self.current_step.value)
+           step = self.current_step.value.next(self.current_step.value)
        elif prev:
-           step = M.previous(self.current_step.value)
+           step = self.current_step.value.previous(self.current_step.value)
 
        if hasattr(self, f"{step.name}_gate"):
            return getattr(
@@ -31,7 +27,7 @@ class BaseComponentState:
        print(f"No gate exists for step {step.name}, allowing anyway.")
        return True
 
-   def transition_to(self, step: M, force=False):
+   def transition_to(self, step: MarkerBase, force=False):
        if self.can_transition(step) or force:
            self.current_step.set(step)
        else:
@@ -41,14 +37,14 @@ class BaseComponentState:
            )
 
    def transition_next(self):
-       next_marker = M.next(self.current_step.value)
+       next_marker = self.current_step.value.next(self.current_step.value)
        self.transition_to(next_marker)
 
    def transition_previous(self):
-       previous_marker = M.previous(self.current_step.value)
+       previous_marker = self.current_step.value.previous(self.current_step.value)
        self.transition_to(previous_marker, force=True)
 
    def current_step_between(self, start, end=None):
-       end = end or M.last()
-       return M.is_between(self.current_step.value, start, end)
+       end = end or self.current_step.value.last()
+       return self.current_step.value.is_between(self.current_step.value, start, end)
 
