@@ -11,6 +11,7 @@
         single-select
         show-select
         @item-selected="on_row_selected"
+        v-model="selected"
     >
       <template
           v-slot:top
@@ -26,6 +27,10 @@
           >
              {{ title }}
           </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="calculate_velocity" v-if="show_velocity_button">
+            <v-icon>mdi-run-fast</v-icon>
+          </v-btn>
         </v-toolbar>
       </template>
 
@@ -62,11 +67,3 @@
 <style scoped>
 
 </style>
-
-<script>
-export default {
-    data: () => ({
-        selected: [],
-    }),
-}
-</script>
