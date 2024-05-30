@@ -158,8 +158,8 @@ def Page():
 
             component_state.transition_to(Marker.sel_gal3, force=True)
 
-        solara.Button("Select 5 Galaxies", on_click=_on_select_galaxies_clicked)
-        solara.Text(f"{component_state.doppler_calc_dialog.value}")
+        with solara.Row():
+            solara.Button("Select 5 Galaxies", on_click=_on_select_galaxies_clicked)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -349,64 +349,52 @@ def Page():
             )
 
         with rv.Col(cols=8):
-            if (
+            show_example_data_table = (
                 Marker.cho_row1.value
                 <= component_state.current_step.value.value
                 < Marker.rem_gal1.value
-            ):
-                example_data_table = DataTable(
-                    title="Example Galaxy",
-                    headers=[
-                        {
-                            "text": "Galaxy Name",
-                            "align": "start",
-                            "sortable": False,
-                            "value": "name",
-                        },
-                        {"text": "Element", "value": "element"},
-                        {
-                            "text": "&lambda;<sub>rest</sub> (&Aring;)",
-                            "value": "rest_wave",
-                        },
-                        {
-                            "text": "&lambda;<sub>obs</sub> (&Aring;)",
-                            "value": "measured_wave",
-                        },
-                        {"text": "Velocity (km/s)", "value": "velocity"},
-                    ],
-                    items=example_data.dict(
+            )
+
+            @solara.lab.computed
+            def data_table_kwargs():
+                # Computed values are recomputed when a reactive variables
+                #  inside them changes. We use the `velocities_total` variable
+                #  to track when certain events should trigger changes in the
+                #  frontend.
+                vel_tot = component_state.velocities_total.value
+
+                if show_example_data_table:
+                    tab_data = example_data.dict(
                         exclude={"measurements": {"__all__": "spectrum"}}
-                    )["measurements"],
-                    highlighted=component_state.is_current_step(Marker.cho_row1),
-                    event_on_row_selected=_on_example_galaxy_table_row_selected,
-                )
-            else:
-                data_table = DataTable(
-                    title="My Galaxies",
-                    headers=[
-                        {
-                            "text": "Galaxy Name",
-                            "align": "start",
-                            "sortable": False,
-                            "value": "name",
-                        },
-                        {"text": "Element", "value": "element"},
-                        {
-                            "text": "&lambda;<sub>rest</sub> (&Aring;)",
-                            "value": "rest_wave",
-                        },
-                        {
-                            "text": "&lambda;<sub>obs</sub> (&Aring;)",
-                            "value": "measured_wave",
-                        },
-                        {"text": "Velocity (km/s)", "value": "velocity"},
-                    ],
-                    items=student_data.dict(
+                    )["measurements"]
+
+                    tab_kwargs = {
+                        "title": "Example Galaxy",
+                        "highlighted": component_state.is_current_step(Marker.cho_row1),
+                        "items": tab_data,
+                        "event_on_row_selected": _on_example_galaxy_table_row_selected,
+                    }
+                else:
+                    tab_data = student_data.dict(
                         exclude={"measurements": {"__all__": "spectrum"}}
-                    )["measurements"],
-                    highlighted=component_state.is_current_step(Marker.not_gal_tab),
-                    event_on_row_selected=_on_example_galaxy_table_row_selected,
-                )
+                    )["measurements"]
+
+                    tab_kwargs = {
+                        "title": "My Galaxies",
+                        "highlighted": component_state.is_current_step(
+                            Marker.not_gal_tab
+                        ),
+                        "items": tab_data,
+                        "event_on_row_selected": _on_galaxy_table_row_selected,
+                        "show_velocity_button": component_state.is_current_step(
+                            Marker.dop_cal6
+                        ),
+                        "event_calculate_velocity": _calculate_velocity,
+                    }
+
+                return tab_kwargs
+
+            DataTable(**data_table_kwargs.value)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -498,19 +486,55 @@ def Page():
             )
 
         with rv.Col(cols=8):
-            if (
+            show_example_galaxy_spec = (
                 (component_state.current_step.value.value >= Marker.mee_spe1.value)
                 and (component_state.current_step.value.value < Marker.int_dot1.value)
-            ) or component_state.current_step.value.value >= Marker.dot_seq4.value:
-                spec_data = example_data.model_dump()["measurements"][0]["spectrum"]
+            ) or (
+                Marker.dot_seq4.value
+                <= component_state.current_step.value.value
+                < Marker.rem_gal1.value
+            )
 
-                spectrum_viewer = SpectrumViewer(
-                    Table(
-                        {"wave": spec_data["wave"], "flux": spec_data["flux"]}
-                    ).to_pandas(),
+            show_galaxy_spec = (
+                component_state.current_step.value.value >= Marker.rem_gal1.value
+            )
+
+            @solara.lab.computed
+            def spec_data():
+                data = {}
+
+                if show_example_galaxy_spec:
+                    data = example_data.measurements[0].spectrum.model_dump()
+                elif show_galaxy_spec:
+                    if component_state.selected_galaxy.value:
+                        data = (
+                            student_data.get_by_id(
+                                component_state.selected_galaxy.value
+                            )
+                            or {}
+                        )
+
+                        if data:
+                            data = data.spectrum.model_dump()
+
+                return Table(
+                    {
+                        "wave": data.get("wave", []),
+                        "flux": data.get("flux", []),
+                    }
+                ).to_pandas()
+
+            if show_example_galaxy_spec or show_galaxy_spec:
+                SpectrumViewer(
+                    spec_data,
                     lambda_obs=component_state.lambda_obs,
                     spectrum_click_enabled=component_state.current_step.value.value
                     >= Marker.obs_wav1.value,
+                    on_wavelength_measured=lambda v: _on_wavelength_measured(
+                        v,
+                        update_example=show_example_galaxy_spec,
+                        update_student=show_galaxy_spec,
+                    ),
                     on_lambda_clicked=lambda: component_state.lambda_used.set(True),
                     on_zoom_clicked=lambda: component_state.zoom_tool_activated.set(
                         True
@@ -618,12 +642,14 @@ def Page():
                         True
                     ),
                     event_next_callback=lambda *args: component_state.transition_next(),
-                    event_student_vel_callback=lambda v: component_state.student_vel.set(
-                        v
+                    event_student_vel_callback=lambda v: _on_velocity_calculated(
+                        v, update_example=True
                     ),
                 )
 
-            if component_state.current_step.value.value >= Marker.int_dot1.value:
+            if (component_state.current_step.value.value >= Marker.int_dot1.value) and (
+                component_state.current_step.value.value < Marker.rem_gal1.value
+            ):
                 DotplotTutorialSlideshow(
                     dialog=component_state.dotplot_tutorial_dialog.value,
                     step=component_state.dotplot_tutorial_state.step.value,
