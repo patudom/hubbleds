@@ -12,7 +12,7 @@ from hubbleds.components.id_slider import IdSlider
 from hubbleds.marker_base import MarkerBase
 from ...components import UncertaintySlideshow
 
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
+from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
 from .component_state import ComponentState, Marker
 
 
@@ -166,8 +166,8 @@ def Page():
                     event_back_callback=transition_previous,
                     can_advance=component_state.can_transition(next=True),
                     show=component_state.is_current_step(Marker.rel_age1),
-                    event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                    state_view = {"mc_score": mc_scoring.get("age-slope-trend"), "score_tag": "age-slope-trend"}
+                    event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                    state_view = {"mc_score": mc_serialize_score(mc_scoring.get("age-slope-trend")), "score_tag": "age-slope-trend"}
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeRange.vue",
@@ -413,8 +413,8 @@ def Page():
                     event_back_callback=transition_previous,
                     can_advance=component_state.can_transition(next=True),
                     show=component_state.is_current_step(Marker.two_his2),
-                    event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                    state_view = {"mc_score": mc_scoring.get("histogram-range"), "score_tag": "histogram-range"}
+                    event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                    state_view = {"mc_score": mc_serialize_score(mc_scoring.get("histogram-range")), "score_tag": "histogram-range"}
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineTwoHistogramsMC3.vue",
@@ -422,8 +422,8 @@ def Page():
                     event_back_callback=transition_previous,
                     can_advance=component_state.can_transition(next=True),
                     show=component_state.is_current_step(Marker.two_his3),
-                    event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                    state_view = {"mc_score": mc_scoring.get("histogram-percent-range"), "score_tag": "histogram-percent-range"}
+                    event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                    state_view = {"mc_score": mc_serialize_score(mc_scoring.get("histogram-percent-range")), "score_tag": "histogram-percent-range"}
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineTwoHistogramsMC4.vue",
@@ -431,8 +431,8 @@ def Page():
                     event_back_callback=transition_previous,
                     can_advance=component_state.can_transition(next=True),
                     show=component_state.is_current_step(Marker.two_his4),
-                    event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, set_score=set_mc_scoring),
-                    state_view = {"mc_score": mc_scoring.get("histogram-distribution"), "score_tag": "histogram-distribution"}
+                    event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                    state_view = {"mc_score": mc_serialize_score(mc_scoring.get("histogram-distribution")), "score_tag": "histogram-distribution"}
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineTwoHistogramsReflect5.vue",
