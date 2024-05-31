@@ -258,6 +258,7 @@ export default {
     step(newStep) {
       const isInteractStep = this.interactSteps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
+      // FIX: change this to a callback
       this.maxStepCompleted = Math.max(this.maxStepCompleted, newCompleted);
     },
   },
