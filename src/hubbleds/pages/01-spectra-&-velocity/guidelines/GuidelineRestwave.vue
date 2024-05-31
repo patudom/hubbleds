@@ -11,7 +11,7 @@
   >
 
     <template #before-next>
-      <strong>Click</strong> the <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon in the Spectrum Viewer toolbar
+      <b>Click</b> the <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #0277BD; border-radius: 5px;"><v-icon style="color:white!important;">mdi-lambda</v-icon></v-btn> icon in the Spectrum Viewer toolbar
     </template>
 
     <div
@@ -25,7 +25,7 @@
       <p
         v-if="!state_view.lambda_used"
       >
-        The known <strong>rest wavelength</strong> (&lambda;<sub>rest</sub>) for the line is recorded in your table.
+        The known <b>rest wavelength</b> (&lambda;<sub>rest</sub>) for the line is recorded in your table.
       </p>
       <p
         v-if="!state_view.lambda_on"

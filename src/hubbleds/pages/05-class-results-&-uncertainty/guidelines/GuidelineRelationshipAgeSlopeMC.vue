@@ -1,13 +1,9 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Relationship Between Age and Slope"
     @back="back_callback()"
     @next="next_callback()"
-    :can-advance="can_advance"
+    :can-advance="question_completed && can_advance"
   >
     <template #before-next>
       Choose a response.
@@ -36,7 +32,8 @@
             'Try again. Drag the slider slowly toward the left (lower age) and observe what happens to the slope of the graphed data. Then drag the slider to the right (higher age) and observe what happens to the slope.'
           ]"
           :correct-answers="[0]"
-          score-tag="age-slope-trend"
+          @select="(status) => { if (status.correct) { question_completed = true; } }"
+          :score-tag="state_view.score_tag"
           @mc-emit="mc_callback($event)"
           :initialization="state_view.mc_score"
         >
@@ -47,4 +44,13 @@
   </scaffold-alert>
 </template>
 
+<script>
+module.exports = {
+  data() {
+    return {
+      question_completed: false,
+    };
+  },
+};
+</script>
 

@@ -87,7 +87,7 @@
                       <v-card-text
                         class="black--text"
                       >
-                        A <strong>spectrum</strong> is created when you pass light from a source through a spectrograph. A <strong>spectrograph</strong> separates the light into its different colors (like a rainbow) and measures how much light there is at each color (i.e. wavelength).
+                        A <b>spectrum</b> is created when you pass light from a source through a spectrograph. A <b>spectrograph</b> separates the light into its different colors (like a rainbow) and measures how much light there is at each color (i.e. wavelength).
                       </v-card-text>
                     </v-card>
                     <p>
@@ -186,8 +186,8 @@
                     </p>
                     <p>
                       At wavelengths where the spectrum graph has a
-                      <strong>high brightness</strong> value, the spectrum
-                      image is <strong>brightly lit</strong> at the
+                      <b>high brightness</b> value, the spectrum
+                      image is <b>brightly lit</b> at the
                       corresponding wavelengths.
                     </p>
                   </div>
@@ -236,9 +236,9 @@
                     </p>
                     <p>
                       At wavelengths where the spectrum graph has a
-                      <strong>low brightness</strong> value, the spectrum
-                      image is <strong>dim</strong> or
-                      <strong>dark</strong> at the corresponding wavelengths.
+                      <b>low brightness</b> value, the spectrum
+                      image is <b>dim</b> or
+                      <b>dark</b> at the corresponding wavelengths.
                     </p>
                   </div>
                 </v-col>
@@ -285,7 +285,7 @@
                       Think about a firetruck racing down the street. Have you noticed how the pitch of the siren changes depending whether the truck is moving toward or away from you? When the truck is moving toward you, the siren’s pitch is higher. When the truck is moving away from you, the siren’s pitch is lower. The faster the truck is moving, the bigger the change in pitch.
                     </p>
                     <p>
-                      This pitch change is due to a phenomenon called the <strong>Doppler shift</strong>, where the observed properties of a sound wave change due to the motion of the object emitting the sound.
+                      This pitch change is due to a phenomenon called the <b>Doppler shift</b>, where the observed properties of a sound wave change due to the motion of the object emitting the sound.
                     </p>
                     <p>
                       So what does this have to do with light waves and spectra?
@@ -328,13 +328,13 @@
                   </h3>
                   <div>
                     <p>
-                      The same <strong>Doppler shift</strong> happens with <strong>light waves</strong> (and all other wave phenomena). But a light source has to be moving very fast for you to notice these changes!
+                      The same <b>Doppler shift</b> happens with <b>light waves</b> (and all other wave phenomena). But a light source has to be moving very fast for you to notice these changes!
                     </p>
                     <p>
-                      When a light source moves <strong>away from you</strong>, you observe the light to have a <strong>longer (redder)</strong> wavelength than you would if the object were not moving. This effect is called <strong>redshift</strong>.
+                      When a light source moves <b>away from you</b>, you observe the light to have a <b>longer (redder)</b> wavelength than you would if the object were not moving. This effect is called <b>redshift</b>.
                     </p>
                     <p>
-                      When a light source moves <strong>toward you</strong>, you observe the light to have a <strong>shorter (bluer)</strong> wavelength than you would if the object were not moving. This effect is called <strong>blueshift</strong>.
+                      When a light source moves <b>toward you</b>, you observe the light to have a <b>shorter (bluer)</b> wavelength than you would if the object were not moving. This effect is called <b>blueshift</b>.
                     </p>
                   </div>
                 </v-col>
@@ -372,7 +372,7 @@
                   </h3>
                   <div>
                     <p>
-                      A key to using the Doppler shift to determine the velocity of an astronomical source is to know the wavelength of its light when it is <strong>not moving</strong>. (This is called the <strong>rest wavelength</strong> of light).
+                      A key to using the Doppler shift to determine the velocity of an astronomical source is to know the wavelength of its light when it is <b>not moving</b>. (This is called the <b>rest wavelength</b> of light).
                     </p>
                     <p>
                       Luckily, elements emit and absorb light at specific wavelengths that are unique to those elements. These unique patterns provide “chemical fingerprints” that we can use to identify the presence of an element in an astronomical source (like a star or a gas cloud).
@@ -462,10 +462,10 @@
                   </h3>
                   <div>
                     <p>
-                      The top spectrum shows <strong>emission lines</strong> from a source containing hydrogen.
+                      The top spectrum shows <b>emission lines</b> from a source containing hydrogen.
                     </p>
                     <p>
-                      The bottom spectrum shows <strong>absorption lines</strong> due to hydrogen.
+                      The bottom spectrum shows <b>absorption lines</b> due to hydrogen.
                     </p>
                     <p>
                       Notice that in both spectra, the emission and absorption lines are present at the same combination of wavelengths (i.e. hydrogen’s “chemical fingerprint”).
@@ -523,7 +523,7 @@
                     Rest vs. Observed Wavelengths
                   </h3>
                   <p>
-                    Since we know the wavelengths emitted or absorbed by an element when it is not moving, we can use these <strong>rest wavelengths</strong> as a reference to compare against the <strong>observed wavelengths</strong> of the light when an object <em>is</em> moving.
+                    Since we know the wavelengths emitted or absorbed by an element when it is not moving, we can use these <b>rest wavelengths</b> as a reference to compare against the <b>observed wavelengths</b> of the light when an object <em>is</em> moving.
                   </p>
                 </v-col>
               </v-row>
@@ -546,7 +546,7 @@
                         Looking for the H-&alpha; emission line
                       </h4>
                       <p>
-                        The dotted line shows the rest wavelength of a hydrogen line known as <strong>H-&alpha;</strong> (pronounced "H alpha"). The solid line shows the observed wavelength of the H-&alpha; line.
+                        The dotted line shows the rest wavelength of a hydrogen line known as <b>H-&alpha;</b> (pronounced "H alpha"). The solid line shows the observed wavelength of the H-&alpha; line.
                       </p>
                     </div>
                     <v-img
@@ -574,7 +574,7 @@
                     Rest vs. Observed Wavelengths
                   </h3>
                   <p>
-                    Since we know the wavelengths emitted or absorbed by an element when it is not moving, we can use these <strong>rest wavelengths</strong> as a reference to compare against the <strong>observed wavelengths</strong> of the light when an object <em>is</em> moving.
+                    Since we know the wavelengths emitted or absorbed by an element when it is not moving, we can use these <b>rest wavelengths</b> as a reference to compare against the <b>observed wavelengths</b> of the light when an object <em>is</em> moving.
                   </p>
                 </v-col>
               </v-row>
@@ -597,7 +597,7 @@
                         Looking for the Mg I absorption line
                       </h4>
                       <p>
-                        The dotted line shows the rest wavelength of a magnesium line known as <strong>Mg I</strong> (pronounced "magnesium one"). The solid line shows the observed wavelength of the Mg I line.
+                        The dotted line shows the rest wavelength of a magnesium line known as <b>Mg I</b> (pronounced "magnesium one"). The solid line shows the observed wavelength of the Mg I line.
                       </p>
                     </div>
                     <v-img
@@ -638,7 +638,7 @@
                   <h3 class="text-h6 font-weight-light mb-2">
                     You're ready to start measuring galaxy velocities now.
                   </h3>
-                  <span class="text-caption grey--text">Click the <strong>SPECTRUM TUTORIAL</strong> button again if you'd like to come back for a refresher.</span>
+                  <span class="text-caption grey--text">Click the <b>SPECTRUM TUTORIAL</b> button again if you'd like to come back for a refresher.</span>
                 </v-col>
               </v-row>
             </v-container>

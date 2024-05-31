@@ -11,7 +11,7 @@
   >
 
   <template #before-next>
-    <strong>Select</strong> {{ 5 - state_view.total_galaxies }} <span v-if="state_view.total_galaxies>0">more</span> <span v-if="state_view.total_galaxies < 4">galaxies</span><span v-if="state_view.total_galaxies == 4">galaxy</span>.
+    <b>Select</b> {{ 5 - state_view.total_galaxies }} <span v-if="state_view.total_galaxies>0">more</span> <span v-if="state_view.total_galaxies < 4">galaxies</span><span v-if="state_view.total_galaxies == 4">galaxy</span>.
   </template>
 
     <div

@@ -13,7 +13,7 @@
       </v-card-text>
     </v-card>
 
-  <!-- FIX when students have measurements 
+  <!-- TODO: update when students have measurements 
     <div
       v-if="state.distances_total < 5"
       class="mb-4"

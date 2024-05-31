@@ -11,7 +11,7 @@
 
     <div>
       <p>
-        This is a <strong>dot plot</strong> of velocity measurements for you and a randomly chosen subset of others who have completed the Hubble Data Story.
+        This is a <b>dot plot</b> of velocity measurements for you and a randomly chosen subset of others who have completed the Hubble Data Story.
       </p>
       <p>
         Your measurement is shown as an orange-red dot.
