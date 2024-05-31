@@ -808,7 +808,7 @@
       <v-spacer></v-spacer>
 
       <v-btn
-        :disabled="!show_team_interface && step > max_step_completed"
+        :disabled="!debug && step > max_step_completed"
         v-if="step < length-1"
         class="black--text"
         color="accent"
@@ -820,12 +820,12 @@
 
       <!-- first button below just being used for testing, delete when using live with students -->
       <v-btn
-        v-if="step < 12 && show_team_interface"
+        v-if="step < 12 && debug"
         color="success"
         class="black--text"
         depressed
         @click="() => {
-          stage_2_complete = true;
+          on_slideshow_finished();
           step = 0;
           //this.$refs.synth.stopSpeaking();
         }"
@@ -840,7 +840,7 @@
         class="black--text"
         depressed
         @click="() => {
-          stage_2_complete = true;
+          on_slideshow_finished();
           step = 0;
           //this.$refs.synth.stopSpeaking();
         }"
@@ -871,12 +871,14 @@ module.exports = {
       if (intersecting) {
         MathJax.typesetPromise(entries.map(entry => entry.target));
       }
+    },
   },
 
   watch: {
     step(newStep, oldStep) {
       const isInteractStep = this.interact_steps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
+      // FIX: change this to a callback
       this.max_step_completed = Math.max(this.max_step_completed, newCompleted);
     },
   },
