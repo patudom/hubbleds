@@ -813,9 +813,7 @@
               const lambdas = [lambda_obs, lambda_rest];
               validateLightSpeed(['speed_light']) ? step++ : null;
               storestudent_c(['speed_light']);
-              // TODO: CHANGE TO CALLBACK
               student_vel_callback(storeStudentVel(student_c, lambdas))
-              // student_vel = storeStudentVel(student_c, lambdas);
           }"
         >
           calculate

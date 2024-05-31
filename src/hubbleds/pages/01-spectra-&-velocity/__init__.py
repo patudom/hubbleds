@@ -268,7 +268,8 @@ def Page():
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.dop_cal4),
+                show=component_state.is_current_step(Marker.dop_cal4)
+                or component_state.is_current_step(Marker.dop_cal5),
                 state_view={
                     "lambda_obs": component_state.lambda_obs.value,
                     "lambda_rest": component_state.lambda_rest.value,
@@ -399,12 +400,132 @@ def Page():
     with rv.Row():
         with rv.Col(cols=4):
             ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineIntroDotplot.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.int_dot1),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence01.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dot_seq1),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence02.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dot_seq2),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence03.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dot_seq3),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence05.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dot_seq5),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence06.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dot_seq6),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence07.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dot_seq7),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence08.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dot_seq8),
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence09.vue",
+                event_next_callback=lambda *args: component_state.transition_next(),
+                event_back_callback=lambda *args: component_state.transition_previous(),
+                can_advance=component_state.can_transition(next=True),
+                show=component_state.is_current_step(Marker.dot_seq9),
+            )
+
+        with rv.Col(cols=8):
+            if (component_state.current_step.value.value >= Marker.mee_spe1.value) and (
+                component_state.current_step.value.value < Marker.int_dot1.value
+            ):
+                # TODO: this probably doesn't need to be an extra reactive
+                #  variable since we're just tracking the step.
+                component_state.doppler_calc_dialog.value = (
+                    component_state.is_current_step(Marker.dop_cal5)
+                )
+
+                DopplerSlideshow(
+                    dialog=component_state.doppler_calc_dialog.value,
+                    titles=component_state.doppler_calc_state.titles.value,
+                    step=component_state.doppler_calc_state.step.value,
+                    length=component_state.doppler_calc_state.length.value,
+                    lambda_obs=component_state.lambda_obs.value,
+                    lambda_rest=component_state.lambda_rest.value,
+                    max_step_completed_5=component_state.doppler_calc_state.max_step_completed_5.value,
+                    failed_validation_5=component_state.doppler_calc_state.failed_validation_5.value,
+                    interact_steps_5=component_state.doppler_calc_state.interact_steps_5.value,
+                    student_vel=component_state.student_vel.value,
+                    student_c=component_state.doppler_calc_state.student_c.value,
+                    event_set_student_vel_calc=lambda *args: component_state.doppler_calc_state.student_vel_calc.set(
+                        True
+                    ),
+                    event_next_callback=lambda *args: component_state.transition_next(),
+                    event_student_vel_callback=lambda v: _on_velocity_calculated(
+                        v, update_example=True
+                    ),
+                )
+
+            if (component_state.current_step.value.value >= Marker.int_dot1.value) and (
+                component_state.current_step.value.value < Marker.rem_gal1.value
+            ):
+                DotplotTutorialSlideshow(
+                    dialog=component_state.dotplot_tutorial_dialog.value,
+                    step=component_state.dotplot_tutorial_state.step.value,
+                    length=component_state.dotplot_tutorial_state.length.value,
+                    max_step_completed=component_state.dotplot_tutorial_state.max_step_completed.value,
+                    dotplot_viewer=ViewerLayout(dotplot_tut),
+                    event_tutorial_finished=lambda *args: component_state.dotplot_tutorial_finished.set(
+                        True
+                    ),
+                )
+
+                ViewerLayout(dotplot_view)
+
+            if component_state.is_current_step(Marker.ref_dat1):
+                ReflectVelocitySlideshow(
+                    reflection_complete=component_state.reflection_complete.value,
+                    event_on_reflection_completed=lambda *args: component_state.reflection_complete.set(
+                        True
+                    ),
+                )
+
+    with rv.Row():
+        with rv.Col(cols=4):
+            ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSpectrum.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.mee_spe1),
-                # or component_state.is_current_step(Marker.spe_tut1),
                 state_view={
                     "spectrum_tutorial_opened": component_state.spectrum_tutorial_opened.value
                 },
@@ -525,148 +646,28 @@ def Page():
                 ).to_pandas()
 
             if show_example_galaxy_spec or show_galaxy_spec:
-                SpectrumViewer(
-                    spec_data,
-                    lambda_obs=component_state.lambda_obs,
-                    spectrum_click_enabled=component_state.current_step.value.value
-                    >= Marker.obs_wav1.value,
-                    on_wavelength_measured=lambda v: _on_wavelength_measured(
-                        v,
-                        update_example=show_example_galaxy_spec,
-                        update_student=show_galaxy_spec,
-                    ),
-                    on_lambda_clicked=lambda: component_state.lambda_used.set(True),
-                    on_zoom_clicked=lambda: component_state.zoom_tool_activated.set(
-                        True
-                    ),
-                    on_spectrum_clicked=lambda: component_state.spectrum_clicked.set(
-                        True
-                    ),
-                )
-
-    with rv.Row():
-        with rv.Col(cols=4):
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineIntroDotplot.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.int_dot1),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence01.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.dot_seq1),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence02.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.dot_seq2),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence03.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.dot_seq3),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence05.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.dot_seq5),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence06.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.dot_seq6),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence07.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.dot_seq7),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence08.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.dot_seq8),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence09.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.dot_seq9),
-            )
-
-        with rv.Col(cols=8):
-            if (component_state.current_step.value.value >= Marker.mee_spe1.value) and (
-                component_state.current_step.value.value < Marker.int_dot1.value
-            ):
-                SpectrumSlideshow(
-                    event_on_dialog_opened=lambda *args: component_state.spectrum_tutorial_opened.set(
-                        True
+                with solara.Column():
+                    SpectrumViewer(
+                        spec_data,
+                        lambda_obs=component_state.lambda_obs,
+                        spectrum_click_enabled=component_state.current_step.value.value
+                        >= Marker.obs_wav1.value,
+                        on_wavelength_measured=lambda v: _on_wavelength_measured(
+                            v,
+                            update_example=show_example_galaxy_spec,
+                            update_student=show_galaxy_spec,
+                        ),
+                        on_lambda_clicked=lambda: component_state.lambda_used.set(True),
+                        on_zoom_clicked=lambda: component_state.zoom_tool_activated.set(
+                            True
+                        ),
+                        on_spectrum_clicked=lambda: component_state.spectrum_clicked.set(
+                            True
+                        ),
                     )
-                )
 
-                # TODO: this probably doesn't need to be an extra reactive
-                #  variable since we're just tracking the step.
-                component_state.doppler_calc_dialog.value = (
-                    component_state.is_current_step(Marker.dop_cal5)
-                )
-
-                DopplerSlideshow(
-                    dialog=component_state.doppler_calc_dialog.value,
-                    titles=component_state.doppler_calc_state.titles.value,
-                    step=component_state.doppler_calc_state.step.value,
-                    length=component_state.doppler_calc_state.length.value,
-                    lambda_obs=component_state.lambda_obs.value,
-                    lambda_rest=component_state.lambda_rest.value,
-                    max_step_completed_5=component_state.doppler_calc_state.max_step_completed_5.value,
-                    failed_validation_5=component_state.doppler_calc_state.failed_validation_5.value,
-                    interact_steps_5=component_state.doppler_calc_state.interact_steps_5.value,
-                    student_vel=component_state.student_vel.value,
-                    student_c=component_state.doppler_calc_state.student_c.value,
-                    event_set_student_vel_calc=lambda *args: component_state.doppler_calc_state.student_vel_calc.set(
-                        True
-                    ),
-                    event_next_callback=lambda *args: component_state.transition_next(),
-                    event_student_vel_callback=lambda v: _on_velocity_calculated(
-                        v, update_example=True
-                    ),
-                )
-
-            if (component_state.current_step.value.value >= Marker.int_dot1.value) and (
-                component_state.current_step.value.value < Marker.rem_gal1.value
-            ):
-                DotplotTutorialSlideshow(
-                    dialog=component_state.dotplot_tutorial_dialog.value,
-                    step=component_state.dotplot_tutorial_state.step.value,
-                    length=component_state.dotplot_tutorial_state.length.value,
-                    max_step_completed=component_state.dotplot_tutorial_state.max_step_completed.value,
-                    dotplot_viewer=ViewerLayout(dotplot_tut),
-                    event_tutorial_finished=lambda *args: component_state.dotplot_tutorial_finished.set(
-                        True
-                    ),
-                )
-
-                ViewerLayout(dotplot_view)
-
-            if component_state.is_current_step(Marker.ref_dat1):
-                ReflectVelocitySlideshow(
-                    reflection_complete=component_state.reflection_complete.value,
-                    event_on_reflection_completed=lambda *args: component_state.reflection_complete.set(
-                        True
-                    ),
-                )
+                    SpectrumSlideshow(
+                        event_on_dialog_opened=lambda *args: component_state.spectrum_tutorial_opened.set(
+                            True
+                        )
+                    )
