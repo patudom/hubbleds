@@ -18,7 +18,7 @@ ELEMENT_REST = {
 }
 
 
-class Marker(MarkerBase, enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     exp_dat1 = enum.auto()
     tre_dat1 = enum.auto()
     tre_dat2 = enum.auto()

@@ -12,7 +12,7 @@ from ...state import GLOBAL_STATE
 from ...data_models.student import StudentMeasurement
 from contextlib import closing
 
-class Marker(MarkerBase, enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     pro_dat0 = enum.auto()
     pro_dat1 = enum.auto()
     pro_dat2 = enum.auto()

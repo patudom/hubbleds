@@ -18,7 +18,7 @@ ELEMENT_REST = {
 }
 
 
-class Marker(MarkerBase, enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     mee_gui1 = enum.auto()
     sel_gal1 = enum.auto()
     sel_gal2 = enum.auto()

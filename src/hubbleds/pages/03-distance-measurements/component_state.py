@@ -18,7 +18,7 @@ ELEMENT_REST = {
 }
 
 
-class Marker(MarkerBase, enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     ang_siz1 = enum.auto()	
     cho_row1 = enum.auto()	
     ang_siz2 = enum.auto()	

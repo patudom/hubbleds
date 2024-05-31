@@ -1,7 +1,7 @@
 from enum import EnumMeta
 
 
-class MarkerBase():
+class MarkerBase(metaclass=EnumMeta):
 
     @classmethod
     def next(cls, step):

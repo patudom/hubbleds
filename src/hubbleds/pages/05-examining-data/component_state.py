@@ -8,7 +8,7 @@ from hubbleds.marker_base import MarkerBase
 
 __all__ = ["Marker", "ComponentState"]
 
-class Marker(MarkerBase, enum.Enum):
+class Marker(enum.Enum, MarkerBase):
     ran_var1 = enum.auto()
     fin_cla1 = enum.auto()
     cla_res1 = enum.auto()
