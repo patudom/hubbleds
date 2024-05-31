@@ -13,10 +13,15 @@ class BaseComponentState:
        return self.current_step.value.value == step.value
 
    def can_transition(self, step: MarkerBase = None, next=False, prev=False):
+       current_step = self.current_step.value
        if next:
-           step = self.current_step.value.next(self.current_step.value)
+           if current_step is current_step.last():
+               return False  # TODO: Fix once we sort out transitions between stages
+           step = current_step.next(current_step)
        elif prev:
-           step = self.current_step.value.previous(self.current_step.value)
+           if current_step is current_step.first():
+               return False  # TODO: Fix once we sort out transitions between stages
+           step = current_step.previous(current_step)
 
        if hasattr(self, f"{step.name}_gate"):
            return getattr(
