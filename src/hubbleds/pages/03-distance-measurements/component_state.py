@@ -5,6 +5,7 @@ from ...decorators import computed_property
 from ...marker_base import MarkerBase
 import dataclasses
 from cosmicds.utils import API_URL
+from ...component_state_base import BaseComponentState
 from ...state import GLOBAL_STATE
 from ...data_models.student import example_data, StudentMeasurement, SpectrumData
 from contextlib import closing
@@ -49,7 +50,7 @@ class Marker(enum.Enum, MarkerBase):
 
 
 @dataclasses.dataclass
-class ComponentState:
+class ComponentState(BaseComponentState):
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.ang_siz1)
     )
@@ -59,45 +60,6 @@ class ComponentState:
 
     def setup(self):
         pass
-
-    def is_current_step(self, step: Marker):
-        return self.current_step.value == step
-
-    def can_transition(self, step: Marker=None, next=False, prev=False):
-        if next:
-            if self.current_step.value is Marker.last():
-                return False  # FIX once we sort out transitions between stages
-            step = Marker.next(self.current_step.value)
-        elif prev:
-            if self.current_step.value is Marker.first():
-                return False  # FIX once we sort out transitions between stages
-            step = Marker.previous(self.current_step.value)
-
-        if hasattr(self, f"{step.name}_gate"):
-            return getattr(
-                self,
-                f"{step.name}_gate",
-            )().value
-
-        print(f"No gate exists for step {step.name}, allowing anyway.")
-        return True
-
-    def transition_to(self, step: Marker, force=False):
-        if self.can_transition(step) or force:
-            self.current_step.set(step)
-        else:
-            print(
-                f"Conditions not met to transition from "
-                f"{self.current_step.value.name} to {step.name}."
-            )
-
-    def transition_next(self):
-        next_marker = Marker.next(self.current_step.value)
-        self.transition_to(next_marker)
-
-    def transition_previous(self):
-        previous_marker = Marker.previous(self.current_step.value)
-        self.transition_to(previous_marker, force=True)
 
     @computed_property
     def dot_seq5_gate(self):

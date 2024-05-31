@@ -9,7 +9,7 @@
       class="mb-4"
     >
       <p>
-        Listed above are 3 quantities that scientists might calculate from a distribution to determine the <strong>most likely value</strong>.
+        Listed above are 3 quantities that scientists might calculate from a distribution to determine the <b>most likely value</b>.
       </p>
     </div>
   </scaffold-alert>

@@ -9,8 +9,6 @@
       }
       else {
         next_callback();
-        // state_view.trend_line_drawn = false;
-        // state_view.best_fit_clicked = false;
       }
     }"
     :can-advance="can_advance"
@@ -19,24 +17,22 @@
       class="mb-4"
     >
       <p>
-        After comparing different percentage ranges for your class's age measurements in the histogram, enter your responses below.
+        After comparing the mean, median, and mode(s) of your class's age measurements within the histogram, enter your responses below.
       </p>
-      <v-row
-      >
+      <v-row>
         <v-col
           cols="12"
-          lg="9"
-        >
-          3. The range of age values for the universe that I am most confident in based on my class’s data set: 
+          lg="9">      
+          1. The <b>most likely</b> age of the universe based on my class’s data set: 
         </v-col>
         <v-col>
           <v-btn
             color="secondary lighten-1"
-            @click="state_view.age_calc_state.hint2_dialog = true"
+            @click="state_view.hint1_dialog = true"
           >
             hint
             <v-dialog
-              v-model="state_view.age_calc_state.hint2_dialog"
+              v-model="state_view.hint1_dialog"
               persistent
               max-width="600px">
               <v-card
@@ -50,14 +46,14 @@
                   <v-toolbar-title
                     class="text-h6 text-uppercase font-weight-regular"
                   >
-                    Hint #2
+                    Hint #1
                   </v-toolbar-title>
                   <v-spacer></v-spacer>
                   <span
                     @click="
                       () => {
                         $emit('close');
-                        state_view.age_calc_state.hint2_dialog = false;
+                        state_view.hint1_dialog = false;
                       }
                     "
                   >
@@ -68,13 +64,10 @@
                 </v-toolbar>
                 <div class="pa-6">
                   <p>
-                    The range you pick will have a tradeoff between how likely it is that the “true” value actually lies within the range you choose vs. having a narrow enough range that your measurement is actually useful. A very large range is more likely to include the "true" value, but may be so nonspecific that it is not useful. A narrow range has more specificity but may not include the "true" value.
+                    Sometimes, the mean, median, and mode of a distribution all have the same value. That value would be a strong candidate for being the most likely value based on the distribution.
                   </p>
                   <p>
-                    Different people will feel more or less comfortable with the different sides of this tradeoff, and there isn’t really a right or wrong answer as long as you justify why you chose what you did.
-                  </p>
-                  <p>
-                    If you are feeling really stuck, feel free to discuss this with a classmate or your instructor.
+                    When the values do not agree, you can choose any of the mean, median or mode, or even something different, as long as you justify why you chose it. You can review what each quantity represents and when scientists might use it by clicking the <v-icon>mdi-help-circle-outline</v-icon> next to it.
                   </p>
                 </div>
               </v-card>
@@ -82,63 +75,52 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-row
-        v-if="revealIter >= 0"
-      >
+      <v-row>
         <v-col
           cols="12"
-          lg="3">
-          <free-response
+          lg="3"
+        >
+        <p class="StudentResponses">
+            TODO: add free response box
+        </p>
+        <!-- <free-response
             outlined
             rows="1"
-            label="Likely Low Age"
-            tag="likely-low-age"
+            label="Most Likely Age"
+            tag="best-guess-age"
             type="float"
-          ></free-response>
+          ></free-response> -->
         </v-col>
-        <v-col
-          lg="2">
-          Gyr
-        </v-col>
-              <v-col
-          cols="12"
-          lg="3">
-          <free-response
-            outlined
-            rows="1"
-            label="Likely High Age"
-            tag="likely-high-age"
-            type="float"
-          ></free-response>
-        </v-col>
-        <v-col
-          lg="2">
+        <v-col>
           Gyr
         </v-col>
       </v-row>
+
 
       <v-row
         v-if="revealIter >= 1"
       >
         <v-col>
-          4. Explain why you chose your values using information from the histogram or other viewers:
+          2. Explain why you picked that value and how your choice is connected to your understanding of the mean, median, or mode.
         </v-col>
       </v-row>
       <v-row
         v-if="revealIter >= 1"
       >
         <v-col>
-          <free-response
+          <p class="StudentResponses">
+            TODO: add free response box
+          </p>
+
+          <!-- <free-response
             outlined
             auto-grow
             rows="2"
             label="My Reasoning"
-            tag="my-reasoning-2"
-          ></free-response>
+            tag="my-reasoning"
+          ></free-response> -->
         </v-col>
       </v-row>
-
-
     </div>
   </scaffold-alert>
 </template>

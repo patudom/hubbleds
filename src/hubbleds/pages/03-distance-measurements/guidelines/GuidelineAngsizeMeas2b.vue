@@ -12,7 +12,7 @@
       The angular scale is measured in degrees (&#176;&thinsp;), arcminutes (&thinsp;'&thinsp;), or arcseconds (&thinsp;"&thinsp;) as you zoom in.  
     </p>
      <p> 
-      There are 60 <strong>arcminutes</strong> in 1 degree, and 60 <strong>arcseconds</strong> in 1 arcminute.
+      There are 60 <b>arcminutes</b> in 1 degree, and 60 <b>arcseconds</b> in 1 arcminute.
     </p>
     <p> The data in your table will be measured in arcseconds.</p>
       

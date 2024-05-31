@@ -22,7 +22,7 @@
         </v-card-text>
       </v-card>
       <p>
-        Enter the <strong>distance</strong> (in <strong>Mpc</strong>) and <strong>velocity</strong> (in <strong>km/s</strong>) of your hypothetical "Best Fit Galaxy" in the boxes.
+        Enter the <b>distance</b> (in <b>Mpc</b>) and <b>velocity</b> (in <b>km/s</b>) of your hypothetical "Best Fit Galaxy" in the boxes.
       </p>
       <div
         class="JaxEquation my-8"
@@ -33,7 +33,7 @@
       <div
         class="font-weight-medium mt-3"
       >
-        Click <strong>CALCULATE</strong> to divide and estimate the age of the universe from your galaxy data set.
+        Click <b>CALCULATE</b> to divide and estimate the age of the universe from your galaxy data set.
       </div>
       <v-divider role="presentation" class="mt-3"></v-divider>
       <v-card

@@ -1,4 +1,4 @@
-<!-- this state.marker = con_int2c -->
+<!-- this state_view.marker = con_int2c -->
 <template>
   <scaffold-alert
     title-text="Identify Your Confidence Interval"
@@ -24,11 +24,11 @@
         <v-col>
           <v-btn
             color="secondary lighten-1"
-            @click="state.age_calc_state.hint1_dialog = true"
+            @click="state_view.hint1_dialog = true"
           >
             hint
             <v-dialog
-              v-model="state.age_calc_state.hint1_dialog"
+              v-model="state_view.hint1_dialog"
               persistent
               max-width="600px">
               <v-card
@@ -49,7 +49,7 @@
                     @click="
                       () => {
                         $emit('close');
-                        state.age_calc_state.hint1_dialog = false;
+                        state_view.hint1_dialog = false;
                       }
                     "
                   >
@@ -76,13 +76,16 @@
           cols="12"
           lg="3"
         >
-          <free-response
+          <p class="StudentResponses">
+            TODO: add free response box
+          </p>
+          <!-- <free-response
             outlined
             rows="1"
             label="New Most Likely Age"
             tag="new-most-likely-age"
             type="float"
-          ></free-response>
+          ></free-response> -->
         </v-col>
         <v-col>
           Gyr
@@ -99,11 +102,11 @@
         <v-col>
           <v-btn
             color="secondary lighten-1"
-            @click="state.age_calc_state.hint2_dialog = true"
+            @click="state_view.hint2_dialog = true"
           >
             hint
             <v-dialog
-              v-model="state.age_calc_state.hint2_dialog"
+              v-model="state_view.hint2_dialog"
               persistent
               max-width="600px">
               <v-card
@@ -124,7 +127,7 @@
                     @click="
                       () => {
                         $emit('close');
-                        state.age_calc_state.hint2_dialog = false;
+                        state_view.hint2_dialog = false;
                       }
                     "
                   >
@@ -154,13 +157,16 @@
         <v-col
           cols="12"
           lg="3">
-          <free-response
+          <p class="StudentResponses">
+            TODO: add free response box
+          </p>
+          <!-- <free-response
             outlined
             rows="1"
             label="New Likely Low Age"
             tag="new-likely-low-age"
             type="float"
-          ></free-response>
+          ></free-response> -->
         </v-col>
         <v-col
           lg="2">
@@ -169,13 +175,16 @@
               <v-col
           cols="12"
           lg="3">
-          <free-response
+          <p class="StudentResponses">
+            TODO: add free response box
+          </p>
+          <!-- <free-response
             outlined
             rows="1"
             label="New Likely High Age"
             tag="new-likely-high-age"
             type="float"
-          ></free-response>
+          ></free-response> -->
         </v-col>
         <v-col
           lg="2">
@@ -186,12 +195,15 @@
       <p class="mt-4">
         3. Explain why you chose these new values based on the All Classes data:
       </p>
-      <free-response
+      <p class="StudentResponses">
+            TODO: add free response box
+          </p>
+      <!-- <free-response
         outlined
         rows="1"
         label="My Updated Reasoning"
         tag="my-updated-reasoning"
-      ></free-response>
+      ></free-response> -->
     </div>
   </scaffold-alert>
 </template>

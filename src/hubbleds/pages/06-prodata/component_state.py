@@ -6,6 +6,7 @@ from ...data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
 
 from ...decorators import computed_property
 from ...marker_base import MarkerBase
+from ...component_state_base import BaseComponentState
 import dataclasses
 from cosmicds.utils import API_URL
 from ...state import GLOBAL_STATE
@@ -29,7 +30,7 @@ class Marker(enum.Enum, MarkerBase):
     
     
 @dataclasses.dataclass
-class ComponentState:
+class ComponentState(BaseComponentState):
     current_step: Reactive[Marker] = dataclasses.field(default=Reactive(Marker.pro_dat0))
     
     hst_age: float = dataclasses.field(default=HST_KEY_AGE) # a constant value
@@ -43,49 +44,8 @@ class ComponentState:
     
     fit_line_shown: Reactive[bool] = dataclasses.field(default=Reactive(False))
     
-    def __post__init(self):
-        pass
-    
     def setup(self):
         pass
-    
-    def is_current_step(self, step: Marker):
-        return self.current_step.value == step
-    
-    def can_transition(self, step: Marker = None, next = False, prev = False):
-        if next:
-            step = Marker.next(self.current_step.value)
-        elif prev:
-            step = Marker.previous(self.current_step.value)
-        
-        print(f"Checking if can transition from {self.current_step.value.name} to {step.name}.")
-        
-        if hasattr(self, f"{step.name}_gate"):
-            return getattr(
-                self, 
-                f"{step.name}_gate"
-                )().value
-        
-        print(f"No gate exists for step {step.name}, allowing anyway.")
-        return True
-    
-    def transition_to(self, step: Marker, force = False):
-        if self.can_transition(step) or force:
-            self.current_step.set(step)
-            print(f"Transitioned to {step.name}.")
-        else:
-            print(
-                f"Conditions not met to transition from "
-                f"{self.current_step.value.name} to {step.name}."
-            )
-    
-    def transition_next(self):
-        next_marker = Marker.next(self.current_step.value)
-        self.transition_to(next_marker)
-        
-    def transition_previous(self):
-        previous_marker = Marker.previous(self.current_step.value)
-        self.transition_to(previous_marker)
     
     def add_data_by_marker(self, viewer ):
         if self.current_step.value.value == Marker.pro_dat1.value:

@@ -1,5 +1,7 @@
 from solara import Reactive
 import enum
+
+from ...component_state_base import BaseComponentState
 from ...marker_base import MarkerBase
 from ...utils import HUBBLE_ROUTE_PATH
 from ...decorators import computed_property
@@ -95,7 +97,7 @@ class DotPlotTutorialState:
 
 
 @dataclasses.dataclass
-class ComponentState:
+class ComponentState(BaseComponentState):
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.mee_gui1)
     )
@@ -144,41 +146,6 @@ class ComponentState:
             self.transition_to(Marker.mee_spe1)
 
         self.selected_example_galaxy.subscribe(_on_example_galaxy_selected)
-
-    def is_current_step(self, step: Marker):
-        return self.current_step.value.value == step.value
-
-    def can_transition(self, step: Marker = None, next=False, prev=False):
-        if next:
-            step = Marker.next(self.current_step.value)
-        elif prev:
-            step = Marker.previous(self.current_step.value)
-
-        if hasattr(self, f"{step.name}_gate"):
-            return getattr(
-                self,
-                f"{step.name}_gate",
-            )().value
-
-        print(f"No gate exists for step {step.name}, allowing anyway.")
-        return True
-
-    def transition_to(self, step: Marker, force=False):
-        if self.can_transition(step) or force:
-            self.current_step.set(step)
-        else:
-            print(
-                f"Conditions not met to transition from "
-                f"{self.current_step.value.name} to {step.name}."
-            )
-
-    def transition_next(self):
-        next_marker = Marker.next(self.current_step.value)
-        self.transition_to(next_marker)
-
-    def transition_previous(self):
-        previous_marker = Marker.previous(self.current_step.value)
-        self.transition_to(previous_marker, force=True)
 
     @computed_property
     def mee_gui1_gate(self):

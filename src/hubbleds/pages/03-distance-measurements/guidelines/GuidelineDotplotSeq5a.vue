@@ -14,7 +14,7 @@
     </template>
     <div class="mb-4">
       <p>
-        Click on the new row labeled <strong>second</strong> to remeasure the galaxy angular size.
+        Click on the new row labeled <b>second</b> to remeasure the galaxy angular size.
       </p>
     </div>
   </scaffold-alert>
