@@ -3,6 +3,7 @@ from cosmicds.state import GlobalState
 from solara import Reactive
 from glue.core.data_factories import load_data
 from pathlib import Path
+from hubbleds.decorators import computed_property
 
 # from glue.config import settings as glue_settings
 # glue_settings.BACKGROUND_COLOR = 'white'
@@ -34,6 +35,11 @@ class MCScore:
     
     def __repr__(self):
         return f"MCScore({self.toJSON()})"
+    
+    @computed_property
+    def completed(self):
+        return self.score.value is not None
+    
 @dataclasses.dataclass
 class LocalState:
     debug_mode: Reactive[bool] = dataclasses.field(default=Reactive(False))
@@ -49,7 +55,11 @@ class LocalState:
     mc_scoring : Reactive[dict[str, MCScore]]  = dataclasses.field(default=Reactive({
         # 'pro-dat1': {'tag': 'pro-dat1', 'score': 0.0, 'choice': 1, 'tries': 1, 'wrong_attempts': 0},
     }))
-
+    
+    def question_completed(self, qtag: str):
+        if qtag in self.mc_scoring.value:
+            return self.mc_scoring.value[qtag].completed().value
+        return False
 
 GLOBAL_STATE = GlobalState()
 LOCAL_STATE = LocalState()
