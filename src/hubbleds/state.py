@@ -23,17 +23,6 @@ class MCScore:
     tries: Reactive[int] = dataclasses.field(default_factory = lambda: Reactive(0))
     wrong_attempts: Reactive[int] = dataclasses.field(default_factory = lambda: Reactive(0))
     
-    @classmethod
-    def update_score(self, score = None, choice = None, tries = None, wrong_attempts = None, **kwargs):
-        if score is not None:
-            self.score.set(score)
-        if choice is not None:
-            self.choice.set(choice)
-        if tries is not None:
-            self.tries.set(tries)
-        if wrong_attempts is not None:
-            self.wrong_attempts.set(wrong_attempts)
-    
     def toJSON(self):
         return {
             'tag': self.tag,
@@ -101,11 +90,10 @@ def on_init_response(local_state: LocalState, tag: str, callback: Optional[Calla
 def on_mc_score(local_state, data, callback: Optional[Callable] = None):
     print("on_mc_score")
     mc_scoring = local_state.mc_scoring.value
-    mc_scoring[data['tag']].update_score(**data)
-    # mc_scoring[data['tag']].score.set(data['score'])
-    # mc_scoring[data['tag']].choice.set(data['choice'])
-    # mc_scoring[data['tag']].tries.set(data['tries'])
-    # mc_scoring[data['tag']].wrong_attempts.set(data['wrong_attempts'])
+    mc_scoring[data['tag']].score.set(data['score'])
+    mc_scoring[data['tag']].choice.set(data['choice'])
+    mc_scoring[data['tag']].tries.set(data['tries'])
+    mc_scoring[data['tag']].wrong_attempts.set(data['wrong_attempts'])
     local_state.mc_scoring.set(mc_scoring)
     if callback is not None:
         callback(mc_scoring)
