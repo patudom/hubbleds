@@ -96,3 +96,8 @@ class ComponentState(BaseComponentState):
         return (
             bool(self.uncertainty_slideshow_finished.value)
         )
+    
+    @computed_property
+    def cla_age1_gate(self):
+        print('cla_age1_gate', LOCAL_STATE.question_completed("age-slope-trend"))
+        return LOCAL_STATE.question_completed("age-slope-trend")
