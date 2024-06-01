@@ -150,7 +150,7 @@ def Page():
                     'hst_age': component_state.hst_age, 
                     'class_age': component_state.class_age.value,
                     'mc_score': mc_serialize_score(mc_scoring.get('pro-dat6')), 
-                    'score_tag': 'pro-dat4'
+                    'score_tag': 'pro-dat6'
                     }
             )
             ScaffoldAlert(

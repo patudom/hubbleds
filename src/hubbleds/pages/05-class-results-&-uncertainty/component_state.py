@@ -13,7 +13,7 @@ class Marker(enum.Enum, MarkerBase):
     ran_var1 = enum.auto()
     fin_cla1 = enum.auto()
     cla_res1 = enum.auto()
-    rel_age1 = enum.auto()
+    rel_age1 = enum.auto() # MC age-slope-trend
     cla_age1 = enum.auto()
     cla_age2 = enum.auto()
     cla_age3 = enum.auto()
@@ -38,9 +38,9 @@ class Marker(enum.Enum, MarkerBase):
     con_int2c = enum.auto()
     
     two_his1 = enum.auto()
-    two_his2 = enum.auto()
-    two_his3 = enum.auto()
-    two_his4 = enum.auto()
+    two_his2 = enum.auto() # MC histogram-range
+    two_his3 = enum.auto() # MC histogram-percent-range
+    two_his4 = enum.auto() # MC histogram-distribution
     two_his5 = enum.auto()
     mor_dat1 = enum.auto()
 
@@ -99,5 +99,17 @@ class ComponentState(BaseComponentState):
     
     @computed_property
     def cla_age1_gate(self):
-        print('cla_age1_gate', LOCAL_STATE.question_completed("age-slope-trend"))
         return LOCAL_STATE.question_completed("age-slope-trend")
+    
+    @computed_property
+    def two_his3_gate(self):
+        return LOCAL_STATE.question_completed("histogram-range")
+    
+    @computed_property
+    def two_his4_gate(self):
+        return LOCAL_STATE.question_completed("histogram-percent-range")
+    
+    @computed_property
+    def two_his5_gate(self):
+        return LOCAL_STATE.question_completed("histogram-distribution")
+    

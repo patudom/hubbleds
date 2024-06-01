@@ -7,7 +7,7 @@
     elevation="6"
     @back="back_callback()"
     @next="next_callback()"
-    :can-advance="question_completed && can_advance"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"

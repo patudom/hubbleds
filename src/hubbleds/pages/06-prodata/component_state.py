@@ -9,7 +9,7 @@ from ...marker_base import MarkerBase
 from ...component_state_base import BaseComponentState
 import dataclasses
 from cosmicds.utils import API_URL
-from ...state import GLOBAL_STATE
+from ...state import GLOBAL_STATE, LOCAL_STATE
 from ...data_models.student import StudentMeasurement
 from contextlib import closing
 
@@ -91,41 +91,41 @@ class ComponentState(BaseComponentState):
     # def pro_dat1_gate(self):
     #     return True
     
-    # @computed_property
-    # def pro_dat2_gate(self):
-    #     return True
+    @computed_property
+    def pro_dat2_gate(self):
+        return LOCAL_STATE.question_completed("pro-dat1")
     
-    # @computed_property
-    # def pro_dat3_gate(self):
-    #     return True
+    @computed_property
+    def pro_dat3_gate(self):
+        return LOCAL_STATE.question_completed("pro-dat2")
     
-    # @computed_property
-    # def pro_dat4_gate(self):
-    #     return True
+    @computed_property
+    def pro_dat4_gate(self):
+        return LOCAL_STATE.question_completed("pro-dat3")
     
-    # @computed_property
-    # def pro_dat5_gate(self):
-    #     return True
+    @computed_property
+    def pro_dat5_gate(self):
+        return LOCAL_STATE.question_completed("pro-dat4")
     
     # @computed_property
     # def pro_dat6_gate(self):
     #     return True
     
-    # @computed_property
-    # def pro_dat7_gate(self):
-    #     return True
+    @computed_property
+    def pro_dat7_gate(self):
+        return LOCAL_STATE.question_completed("pro-dat6")
     
-    # @computed_property
-    # def pro_dat8_gate(self):
-    #     return True
+    @computed_property
+    def pro_dat8_gate(self):
+        return LOCAL_STATE.question_completed("pro-dat7")
     
     # @computed_property
     # def pro_dat9_gate(self):
     #     return True
     
-    # @computed_property
-    # def sto_fin1_gate(self):
-    #     return True
+    @computed_property
+    def sto_fin1_gate(self):
+        return LOCAL_STATE.question_completed("pro-dat9")
     
     # @computed_property
     # def sto_fin2_gate(self):
