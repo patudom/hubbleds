@@ -22,6 +22,7 @@ from ...components import (
     SpectrumSlideshow,
     DopplerSlideshow,
     ReflectVelocitySlideshow,
+    DotplotViewer
 )
 
 from ...state import GLOBAL_STATE, LOCAL_STATE
@@ -126,18 +127,10 @@ def Page():
     #  a conditional will result in a error.
     def glue_setup():
         gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
-        dotplot_test_data = Data(x=[randint(1, 10) for _ in range(30)])
-        dotplot_test_data.style.color = "black"
-        gjapp.data_collection.append(dotplot_test_data)
-        dotplot_tut = gjapp.new_data_viewer(
-            HubbleDotPlotView, data=dotplot_test_data, show=False
-        )
-        dotplot_view = gjapp.new_data_viewer(
-            HubbleDotPlotView, data=dotplot_test_data, show=False
-        )
-        return gjapp, dotplot_tut, dotplot_view
 
-    _, dotplot_tut, dotplot_view = solara.use_memo(glue_setup, [])
+        return gjapp
+
+    gjapp = solara.use_memo(glue_setup, [])
 
     solara.Text(
         f"Current step: {component_state.current_step.value}, "
@@ -160,6 +153,12 @@ def Page():
 
         with solara.Row():
             solara.Button("Select 5 Galaxies", on_click=_on_select_galaxies_clicked)
+
+        def _load_state():
+            component_state.from_dict({'current_step': Marker.int_dot1, 'database_changes': 0, 'total_galaxies': 5, 'selected_galaxy': '', 'selected_galaxies': ['1', '2', '3', '4', '5'], 'show_example_galaxy': False, 'selected_example_galaxy': '1576', 'spectrum_tutorial_opened': True, 'lambda_on': False, 'lambda_used': True, 'spectrum_clicked': True, 'zoom_tool_activated': True, 'doppler_calc_reached': False, 'lambda_obs': 6834, 'lambda_rest': 6563.0, 'doppler_calc_dialog': False, 'doppler_calc_state': {'step': 0, 'length': 6, 'current_title': 'Doppler Calculation', 'failed_validation_4': False, 'failed_validation_5': False, 'interact_steps_5': [3, 4], 'max_step_completed_5': 0, 'student_c': 0, 'student_vel_calc': True, 'complete': False, 'titles': ['Doppler Calculation', 'Doppler Calculation', 'Doppler Calculation', 'Reflect on Your Result', 'Enter Speed of Light', "Your Galaxy's Velocity"], 'mj_inputs': []}, 'student_vel': 12388, 'dotplot_tutorial_dialog': False, 'dotplot_tutorial_state': {'step': 0, 'length': 4, 'max_step_completed': 0, 'current_title': ''}, 'dotplot_tutorial_finished': False, 'has_bad_velocities': False, 'has_multiple_bad_velocities': False, 'obswaves_total': 0, 'velocities_total': 0, 'reflection_complete': False})
+
+        solara.Text(f"{component_state.as_dict()}")
+        solara.Button("Load State", on_click=_load_state)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -502,13 +501,13 @@ def Page():
                     step=component_state.dotplot_tutorial_state.step.value,
                     length=component_state.dotplot_tutorial_state.length.value,
                     max_step_completed=component_state.dotplot_tutorial_state.max_step_completed.value,
-                    dotplot_viewer=ViewerLayout(dotplot_tut),
+                    dotplot_viewer=DotplotViewer(gjapp),
                     event_tutorial_finished=lambda *args: component_state.dotplot_tutorial_finished.set(
                         True
                     ),
                 )
 
-                ViewerLayout(dotplot_view)
+                DotplotViewer(gjapp)
 
             if component_state.is_current_step(Marker.ref_dat1):
                 ReflectVelocitySlideshow(
