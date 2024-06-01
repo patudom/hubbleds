@@ -20,7 +20,7 @@ from ...components import (
     SpectrumSlideshow,
     DopplerSlideshow,
     ReflectVelocitySlideshow,
-    DotplotViewer,
+    DotplotViewer
 )
 
 from ...state import GLOBAL_STATE, LOCAL_STATE
