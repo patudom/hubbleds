@@ -22,7 +22,7 @@ from ...components import (
     SpectrumSlideshow,
     DopplerSlideshow,
     ReflectVelocitySlideshow,
-    DotplotViewer
+    DotplotViewer,
 )
 
 from ...state import GLOBAL_STATE, LOCAL_STATE
@@ -155,7 +155,61 @@ def Page():
             solara.Button("Select 5 Galaxies", on_click=_on_select_galaxies_clicked)
 
         def _load_state():
-            component_state.from_dict({'current_step': Marker.int_dot1, 'database_changes': 0, 'total_galaxies': 5, 'selected_galaxy': '', 'selected_galaxies': ['1', '2', '3', '4', '5'], 'show_example_galaxy': False, 'selected_example_galaxy': '1576', 'spectrum_tutorial_opened': True, 'lambda_on': False, 'lambda_used': True, 'spectrum_clicked': True, 'zoom_tool_activated': True, 'doppler_calc_reached': False, 'lambda_obs': 6834, 'lambda_rest': 6563.0, 'doppler_calc_dialog': False, 'doppler_calc_state': {'step': 0, 'length': 6, 'current_title': 'Doppler Calculation', 'failed_validation_4': False, 'failed_validation_5': False, 'interact_steps_5': [3, 4], 'max_step_completed_5': 0, 'student_c': 0, 'student_vel_calc': True, 'complete': False, 'titles': ['Doppler Calculation', 'Doppler Calculation', 'Doppler Calculation', 'Reflect on Your Result', 'Enter Speed of Light', "Your Galaxy's Velocity"], 'mj_inputs': []}, 'student_vel': 12388, 'dotplot_tutorial_dialog': False, 'dotplot_tutorial_state': {'step': 0, 'length': 4, 'max_step_completed': 0, 'current_title': ''}, 'dotplot_tutorial_finished': False, 'has_bad_velocities': False, 'has_multiple_bad_velocities': False, 'obswaves_total': 0, 'velocities_total': 0, 'reflection_complete': False})
+            component_state.from_dict(
+                {
+                    "current_step": Marker.int_dot1,
+                    "database_changes": 0,
+                    "total_galaxies": 5,
+                    "selected_galaxy": "",
+                    "selected_galaxies": ["1", "2", "3", "4", "5"],
+                    "show_example_galaxy": False,
+                    "selected_example_galaxy": "1576",
+                    "spectrum_tutorial_opened": True,
+                    "lambda_on": False,
+                    "lambda_used": True,
+                    "spectrum_clicked": True,
+                    "zoom_tool_activated": True,
+                    "doppler_calc_reached": False,
+                    "lambda_obs": 6834,
+                    "lambda_rest": 6563.0,
+                    "doppler_calc_dialog": False,
+                    "doppler_calc_state": {
+                        "step": 0,
+                        "length": 6,
+                        "current_title": "Doppler Calculation",
+                        "failed_validation_4": False,
+                        "failed_validation_5": False,
+                        "interact_steps_5": [3, 4],
+                        "max_step_completed_5": 0,
+                        "student_c": 0,
+                        "student_vel_calc": True,
+                        "complete": False,
+                        "titles": [
+                            "Doppler Calculation",
+                            "Doppler Calculation",
+                            "Doppler Calculation",
+                            "Reflect on Your Result",
+                            "Enter Speed of Light",
+                            "Your Galaxy's Velocity",
+                        ],
+                        "mj_inputs": [],
+                    },
+                    "student_vel": 12388,
+                    "dotplot_tutorial_dialog": False,
+                    "dotplot_tutorial_state": {
+                        "step": 0,
+                        "length": 4,
+                        "max_step_completed": 0,
+                        "current_title": "",
+                    },
+                    "dotplot_tutorial_finished": False,
+                    "has_bad_velocities": False,
+                    "has_multiple_bad_velocities": False,
+                    "obswaves_total": 0,
+                    "velocities_total": 0,
+                    "reflection_complete": False,
+                }
+            )
 
         solara.Text(f"{component_state.as_dict()}")
         solara.Button("Load State", on_click=_load_state)
@@ -243,8 +297,34 @@ def Page():
                     Marker.sel_gal2
                 ) or component_state.is_current_step(Marker.sel_gal3)
 
+            def _update_selected_position():
+                """When a data table row is selected, move to galaxy location."""
+                if component_state.selected_galaxy.value:
+                    selection_tool_widget = solara.get_widget(selection_tool)
+                    galaxy = student_data.get_by_id(
+                        component_state.selected_galaxy.value, exclude={"spectrum"}
+                    )
+                    if galaxy is not None:
+                        selection_tool_widget.go_to_location(galaxy.ra, galaxy.decl)
+
+            def _update_example_selected_position():
+                """When an example data table row is selected, move to galaxy location."""
+                if component_state.selected_example_galaxy.value:
+                    selection_tool_widget = solara.get_widget(selection_tool)
+                    galaxy = example_data.get_by_id(
+                        component_state.selected_example_galaxy.value, exclude={"spectrum"}
+                    )
+                    if galaxy is not None:
+                        selection_tool_widget.go_to_location(galaxy.ra, galaxy.decl)
+
             solara.use_effect(
                 _update_selection_tool, [component_state.current_step.value]
+            )
+            solara.use_effect(
+                _update_selected_position, [component_state.selected_galaxy.value]
+            )
+            solara.use_effect(
+                _update_example_selected_position, [component_state.selected_example_galaxy.value]
             )
 
     with rv.Row():
