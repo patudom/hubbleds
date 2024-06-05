@@ -122,9 +122,10 @@ def Page():
     component_state.setup()
 
     # NOTE: use_memo has to be part of the main page render. Including it in
-    #  a conditional will result in a error.
+    #  a conditional will result in an error.
     def glue_setup():
-        gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
+        gjapp = JupyterApplication(GLOBAL_STATE.data_collection,
+                                   GLOBAL_STATE.session)
 
         return gjapp
 

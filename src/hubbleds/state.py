@@ -1,5 +1,5 @@
 import dataclasses
-from cosmicds.state import GlobalState
+from cosmicds.state import GLOBAL_STATE
 from solara import Reactive
 from glue.core.data_factories import load_data
 from pathlib import Path
@@ -68,7 +68,6 @@ class LocalState:
     
     
 
-GLOBAL_STATE = GlobalState()
 LOCAL_STATE = LocalState()
 
 # add a csv file to the data collection
