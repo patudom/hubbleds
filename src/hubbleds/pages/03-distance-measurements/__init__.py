@@ -25,16 +25,22 @@ component_state = ComponentState()
 
 
 @solara.component
-def DistanceToolComponent(galaxy, data):
+def DistanceToolComponent(galaxy, data, show_ruler):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
         widget = solara.get_widget(tool)
         if galaxy.value:
             widget.go_to_location(galaxy.value["ra"], galaxy.value["decl"], fov=GALAXY_FOV)
-        widget.measuring_allowed = galaxy.value is not None
+        widget.measuring_allowed = bool(galaxy.value)
 
     solara.use_effect(set_selected_galaxy, [galaxy.value])
+
+    def update_show_ruler():
+        widget = solara.get_widget(tool)
+        widget.show_ruler = show_ruler.value
+
+    solara.use_effect(update_show_ruler, [show_ruler.value])
 
     def update_angular_size(change):
         angle = change["new"]
@@ -266,14 +272,20 @@ def Page():
                     { "text": "&theta; (arcsec)", "value": "angular_size" },
                     { "text": "Distance (Mpc)", "value": "distance" },
                 ]
+            
+            def update_show_ruler(marker):
+                component_state.show_ruler.value = Marker.is_between(marker, Marker.ang_siz3, Marker.est_dis4) or \
+                                                   Marker.is_between(marker, Marker.est_dis4, Marker.last())
+                
+            component_state.current_step.subscribe(update_show_ruler)
+
             if component_state.current_step.value.value < Marker.rep_rem1.value:
                 def update_example_galaxy(galaxy):
-                    print(galaxy)
                     flag = galaxy.get("value", True)
                     value = galaxy["item"] if flag else None
                     component_state.selected_example_galaxy.set(value)
 
-                DistanceToolComponent(component_state.selected_example_galaxy, example_data)
+                DistanceToolComponent(component_state.selected_example_galaxy, example_data, component_state.show_ruler)
                 DataTable(
                     title="Example Galaxy",
                     headers=common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }],
@@ -288,7 +300,7 @@ def Page():
                     value = galaxy["item"] if flag else None
                     component_state.selected_galaxy.set(value)
 
-                DistanceToolComponent(component_state.selected_galaxy, student_data)
+                DistanceToolComponent(component_state.selected_galaxy, student_data, component_state.show_ruler)
                 DataTable(
                     title="My Galaxies",
                     headers=common_headers,
@@ -355,10 +367,6 @@ def Page():
                 show=component_state.is_current_step(Marker.dot_seq7),
             )
 
-
         with rv.Col():
             solara.Markdown("blah blah")
-
-
-
 

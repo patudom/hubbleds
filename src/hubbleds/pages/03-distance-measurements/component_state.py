@@ -52,6 +52,7 @@ class ComponentState(BaseComponentState):
     )
     selected_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
     selected_example_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
+    show_ruler: Reactive[bool] = dataclasses.field(default=Reactive(False))
 
     def setup(self):
         pass
