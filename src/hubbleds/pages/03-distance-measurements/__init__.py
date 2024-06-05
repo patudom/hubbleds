@@ -24,28 +24,34 @@ gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
 component_state = ComponentState()
 
 
+def _update_angular_size(data, galaxy, angular_size, count):
+    if bool(galaxy) and angular_size is not None:
+        arcsec_value = int(angular_size.to(u.arcsec).value)
+        data.update(galaxy["id"], {"angular_size": arcsec_value})
+        count.value += 1
+
+
 @solara.component
-def DistanceToolComponent(galaxy, data, show_ruler):
+def DistanceToolComponent(galaxy, show_ruler, angular_size_callback):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
         widget = solara.get_widget(tool)
-        if galaxy.value:
-            widget.go_to_location(galaxy.value["ra"], galaxy.value["decl"], fov=GALAXY_FOV)
-        widget.measuring_allowed = bool(galaxy.value)
+        if galaxy:
+            widget.go_to_location(galaxy["ra"], galaxy["decl"], fov=GALAXY_FOV)
+        widget.measuring_allowed = bool(galaxy)
 
-    solara.use_effect(set_selected_galaxy, [galaxy.value])
+    solara.use_effect(set_selected_galaxy, [galaxy])
 
     def update_show_ruler():
         widget = solara.get_widget(tool)
-        widget.show_ruler = show_ruler.value
+        widget.show_ruler = show_ruler
 
-    solara.use_effect(update_show_ruler, [show_ruler.value])
+    solara.use_effect(update_show_ruler, [show_ruler])
 
     def update_angular_size(change):
         angle = change["new"]
-        if galaxy.value is not None and angle is not None:
-            data.update(galaxy.value["id"], {"angular_size": int(angle.to(u.arcsec).value)})
+        angular_size_callback(angle)
 
     def _define_callbacks():
         widget = solara.get_widget(tool)
@@ -279,20 +285,46 @@ def Page():
                 
             component_state.current_step.subscribe(update_show_ruler)
 
+            @solara.lab.computed
+            def on_example_galaxy_marker():
+                return component_state.current_step.value.value < Marker.rep_rem1.value
+
+
+            @solara.lab.computed
+            def current_galaxy():
+                galaxy = component_state.selected_galaxy.value
+                example_galaxy = component_state.selected_example_galaxy.value
+                return example_galaxy if on_example_galaxy_marker.value else galaxy
+
+            def _ang_size_cb(angle):
+                data = example_data if on_example_galaxy_marker.value else student_data
+                count = component_state.example_angular_sizes_total if on_example_galaxy_marker.value else component_state.angular_sizes_total
+                _update_angular_size(data, current_galaxy.value, angle, count)
+
+            DistanceToolComponent(
+                galaxy=current_galaxy.value,
+                show_ruler=component_state.show_ruler.value,
+                angular_size_callback=_ang_size_cb
+            )
+
             if component_state.current_step.value.value < Marker.rep_rem1.value:
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
                     value = galaxy["item"] if flag else None
                     component_state.selected_example_galaxy.set(value)
 
-                DistanceToolComponent(component_state.selected_example_galaxy, example_data, component_state.show_ruler)
-                DataTable(
-                    title="Example Galaxy",
-                    headers=common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }],
-                    items=example_data.dict(exclude={'measurements': {'__all__': 'spectrum'}})["measurements"],
-                    highlighted=False,  # TODO: Set the markers for this,
-                    event_on_row_selected=update_example_galaxy
-                )
+                @solara.lab.computed
+                def example_table_kwargs():
+                    ang_size_tot = component_state.example_angular_sizes_total.value
+                    return {
+                        "title": "Example Galaxy",
+                        "headers": common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }],
+                        "items": example_data.dict(exclude={'measurements': {'__all__': 'spectrum'}})["measurements"],
+                        "highlighted": False,  # TODO: Set the markers for this,
+                        "event_on_row_selected": update_example_galaxy
+                    }
+
+                DataTable(**example_table_kwargs.value)
 
             else:
                 def update_galaxy(galaxy):
@@ -300,14 +332,18 @@ def Page():
                     value = galaxy["item"] if flag else None
                     component_state.selected_galaxy.set(value)
 
-                DistanceToolComponent(component_state.selected_galaxy, student_data, component_state.show_ruler)
-                DataTable(
-                    title="My Galaxies",
-                    headers=common_headers,
-                    items=student_data.dict(exclude={'measurements': {'__all__': 'spectrum'}})["measurements"],
-                    highlighted=False,  # TODO: Set the markers for this,
-                    event_on_row_selected=update_galaxy
-                )
+                @solara.lab.computed
+                def table_kwargs():
+                    ang_size_tot = component_state.angular_sizes_total.value
+                    return {
+                        "title": "My Galaxies",
+                        "headers": common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }],
+                        "items": student_data.dict(exclude={'measurements': {'__all__': 'spectrum'}})["measurements"],
+                        "highlighted": False,  # TODO: Set the markers for this,
+                        "event_on_row_selected": update_galaxy
+                    }
+
+                DataTable(**table_kwargs.value)
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():

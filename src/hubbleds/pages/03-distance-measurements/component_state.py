@@ -44,9 +44,12 @@ class Marker(enum.Enum, MarkerBase):
 
 @dataclasses.dataclass
 class ComponentState(BaseComponentState):
+
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.ang_siz1)
     )
+    example_angular_sizes_total: Reactive[int] = dataclasses.field(default=Reactive(0))
+    angular_sizes_total: Reactive[int] = dataclasses.field(default=Reactive(0))
     dosdonts_tutorial_opened: Reactive[bool] = dataclasses.field(
         default=Reactive(False)
     )
