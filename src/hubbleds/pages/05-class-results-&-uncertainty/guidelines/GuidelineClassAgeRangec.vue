@@ -1,17 +1,13 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto angsize_alert"
-    max-width="800"
-    elevation="6"
-    header-text="Class Age Range"
+    title-text="All Classes Age Range"
     next-text="check"
     @back="back_callback()"
     @next="() => {
-      const expectedAnswers = [state_view.student_low_age, state_view.student_high_age];
+      const expectedAnswers = [state_view.class_low_age, state_view.class_high_age];
       if (validateAnswersJS(['low_age', 'high_age'], expectedAnswers)) {
         next_callback();
-      }
+      };
     }"
     :can-advance="can_advance"
   >
@@ -19,11 +15,18 @@
       class="mb-4"
       v-intersect="typesetMathJax"
     >
+    <v-card color="error" class="mb-4">
+        <v-card-text>
+          For now, enter<br> 
+          low age: {{ state_view.class_low_age }} <br>
+          high age: {{ state_view.class_high_age }} until we've properly wired up the student data.
+        </v-card-text>
+      </v-card>    
       <p>
-        Let's consider the range of age estimates for the universe obtained by you and your classmates.
+        Let's consider the range of age estimates for the universe obtained by all the classes who have completed this Data Story.
       </p>
       <p>
-        Enter the lowest and highest age estimates from your class here:
+        Enter the lowest and highest age estimates within the dataset here:
       </p>
       <div
         class="JaxEquation my-8"
@@ -43,7 +46,7 @@
       dense
       color="info darken-1"
     >
-      Not quite. Make sure you are entering the highest and lowest values for the entire class. Enter only whole integers.
+      Not quite. Make sure you are entering the highest and lowest values for the entire dataset. Enter only whole integers.
     </v-alert>
   </scaffold-alert> 
 </template>
@@ -109,7 +112,7 @@ export default {
         this.failedValidationAgeRange = (value != null && value === expectedAnswers[index]) ? false : true;
         console.log("expectedAnswer", expectedAnswers);
         console.log("entered value", value);
-        return value != null && value === expectedAnswers[index];
+        return value != null  && value === expectedAnswers[index];
       });
     },
 
@@ -121,3 +124,4 @@ export default {
   }
 };
 </script>
+

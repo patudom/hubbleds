@@ -9,7 +9,7 @@
       class="mb-4"
     >
       <p>
-        The <strong>Doppler equation</strong> looks like this:
+        The <b>Doppler equation</b> looks like this:
       </p>
       <v-card
         outlined

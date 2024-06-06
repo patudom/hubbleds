@@ -59,10 +59,10 @@
               <v-card-text>
                 <v-container>
                   <p>
-                    This <strong>dot plot</strong> displays&#8212;as a dot&#8212;every velocity measurement in our sample (excluding yours for now).
+                    This <b>dot plot</b> displays&#8212;as a dot&#8212;every velocity measurement in our sample (excluding yours for now).
                   </p>
                   <p>
-                    Dots are stacked within velocity <strong>ranges</strong> called <strong>bins</strong>.
+                    Dots are stacked within velocity <b>ranges</b> called <b>bins</b>.
                   </p>
                   <p>
                     The horizontal axis shows the measured velocity values.
@@ -110,7 +110,7 @@
                     You should see that the tall towers of dots have split into smaller towers. If not, zoom in closer by clicking and dragging again, or click <v-icon>mdi-cached</v-icon> to reset the view and try again.
                   </p>
                   <p>
-                    This happens because each tower of dots represents a <strong>range</strong> of velocity values. When you zoomed in, the data were rebinned across smaller velocity ranges.
+                    This happens because each tower of dots represents a <b>range</b> of velocity values. When you zoomed in, the data were rebinned across smaller velocity ranges.
                   </p>
                   <p>
                     That's all you need to know about dot plots for now. Click done to continue.  

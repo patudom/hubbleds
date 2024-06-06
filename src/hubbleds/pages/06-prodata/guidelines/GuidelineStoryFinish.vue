@@ -11,7 +11,7 @@
       Nice work! You have completed the Hubble Data Story and determined an age for our universe. Check out your total <v-icon>mdi-piggy-bank</v-icon> points in the upper right of the screen.
     </p>
     <p>
-      Now you may be wondering "So what's the <strong>right</strong> answer?"
+      Now you may be wondering "So what's the <b>right</b> answer?"
     </p>
   </div>
   </scaffold-alert>

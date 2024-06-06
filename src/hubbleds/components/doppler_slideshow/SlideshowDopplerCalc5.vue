@@ -62,7 +62,7 @@
               <div
                   class="font-weight-medium mt-3"
               >
-                Click <strong>CALCULATE</strong> to compute the value of the fraction you entered.
+                Click <b>CALCULATE</b> to compute the value of the fraction you entered.
               </div>
             </v-card>
             <v-divider role="presentation"></v-divider>
@@ -162,7 +162,7 @@
               &#8491;}}{\textcolor{black}{\colorbox{#DDD}{ {{ lambda_rest }} }} \text{ &#8491;}} - 1 \right) $$
             </v-card>
             <p>
-              Dividing the fraction gives you <strong>{{ (lambda_obs / lambda_rest).toFixed(4) }}</strong>.
+              Dividing the fraction gives you <b>{{ (lambda_obs / lambda_rest).toFixed(4) }}</b>.
               Now we have:
             </p>
             <v-card
@@ -175,7 +175,7 @@
               <div
                   class="font-weight-medium mt-3"
               >
-                Click <strong>CALCULATE</strong> to perform the subtraction.
+                Click <b>CALCULATE</b> to perform the subtraction.
               </div>
             </v-card>
             <v-divider role="presentation"></v-divider>
@@ -278,7 +278,7 @@
               {{ (lambda_obs / lambda_rest).toFixed(4) }} } } - 1 \right) $$
             </v-card>
             <p>
-              Subtracting 1 gives you <strong>{{ (lambda_obs / lambda_rest - 1).toFixed(4) }}</strong>. Now
+              Subtracting 1 gives you <b>{{ (lambda_obs / lambda_rest - 1).toFixed(4) }}</b>. Now
               we are left with:
             </p>
             <v-card
@@ -291,7 +291,7 @@
               <div
                   class="font-weight-medium mt-3"
               >
-                Click <strong>NEXT</strong> to continue.
+                Click <b>NEXT</b> to continue.
               </div>
             </v-card>
             <v-divider role="presentation"></v-divider>
@@ -508,7 +508,7 @@
               class="pt-8"
           >
             <p>
-              Now enter the <strong>speed of light</strong> in <strong>km/s</strong> in the empty box below.
+              Now enter the <b>speed of light</b> in <b>km/s</b> in the empty box below.
             </p>
             <v-card
                 class="JaxEquation pa-3"
@@ -522,7 +522,7 @@
               <div
                   class="font-weight-medium mt-3"
               >
-                Click <strong>CALCULATE</strong> to multiply through and obtain the speed of this galaxy.
+                Click <b>CALCULATE</b> to multiply through and obtain the speed of this galaxy.
               </div>
               <v-alert
                   v-if="failed_validation_5"
@@ -531,7 +531,7 @@
                   dense
                   style="font-size: 16px;"
               >
-                Try again. Check that you are using <strong>km/s</strong>, and make sure you have the correct number of
+                Try again. Check that you are using <b>km/s</b>, and make sure you have the correct number of
                 zeroes. The speed of light is highlighted in yellow below.
               </v-alert>
             </v-card>
@@ -659,7 +659,7 @@
               \textcolor{black}{\colorbox{#DDD}{ {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
             </v-card>
             <p>
-              Great work. Your galaxy's velocity is <strong>{{ student_vel.toFixed(0).toLocaleString() }}</strong>
+              Great work. Your galaxy's velocity is <b>{{ student_vel.toFixed(0).toLocaleString() }}</b>
               km/s.
             </p>
             <v-card
@@ -672,7 +672,7 @@
               <div
                   class="font-weight-medium mt-3"
               >
-                Click <strong>DONE</strong> to close this pop-up window. The velocity will be filled in in the table for this galaxy.
+                Click <b>DONE</b> to close this pop-up window. The velocity will be filled in in the table for this galaxy.
               </div>
             </v-card>
             <v-divider role="presentation"></v-divider>

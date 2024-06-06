@@ -9,3 +9,4 @@ from .grid_viewer.grid_viewer import GridViewer
 from .angsize_dosdonts_slideshow.angsize_dosdonts_slideshow import AngsizeDosDontsSlideshow
 from .hubble_exp_universe_slideshow.hubble_exp_universe_slideshow import HubbleExpUniverseSlideshow
 from .dotplot_viewer.dotplot_viewer import DotplotViewer
+from .uncertainty_slideshow.uncertainty_slideshow import UncertaintySlideshow

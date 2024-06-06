@@ -10,7 +10,7 @@
       v-intersect="typesetMathJax"
     >
       <p>
-        Recall, if we assume a galaxy is the <strong>same size as our Milky Way galaxy</strong>, the distance to the galaxy can be found using:
+        Recall, if we assume a galaxy is the <b>same size as our Milky Way galaxy</b>, the distance to the galaxy can be found using:
       </p>
       <v-card
         outlined

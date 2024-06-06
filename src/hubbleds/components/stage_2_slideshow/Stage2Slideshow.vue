@@ -259,7 +259,7 @@
                   We need a way to measure “how big” an object seems. We call this “apparent” or “angular” size.
                 </p>
                 <p>
-                  The apparent (or <strong>angular</strong>) size of objects in the sky is measured in degrees, or in fractions of a degree. 
+                  The apparent (or <b>angular</b>) size of objects in the sky is measured in degrees, or in fractions of a degree. 
                 </p>
                 <p>
                   To get a sense for how big 1 degree is, hold your pinky out at arm’s length. Your pinky fingernail at arm’s length covers about 1 degree of arc in the sky.
@@ -278,7 +278,7 @@
                     class="black-text"
                   >
                     <p>
-                      <strong>Bonus experiment</strong>: Do you think your pinky held at arm’s length would cover the moon? 
+                      <b>Bonus experiment</b>: Do you think your pinky held at arm’s length would cover the moon? 
                       Try it the next time you see the moon in the sky!
                     </p>
                   </v-card-text>
@@ -364,7 +364,7 @@
             <p
               class="mt-4"
             >
-              For galaxies that are the <strong>same physical size</strong>, the larger the distance, the smaller the galaxy will appear in angular size.   
+              For galaxies that are the <b>same physical size</b>, the larger the distance, the smaller the galaxy will appear in angular size.   
             </p>
           </v-container>
         </v-card-text>
@@ -408,7 +408,7 @@
                       <p
                         class="mt-4"
                       >
-                        Assume galaxies A and B in this image have the <strong>same physical size</strong>. What can you determine about their relative distances?
+                        Assume galaxies A and B in this image have the <b>same physical size</b>. What can you determine about their relative distances?
                       </p>
                       <!-- Whoops, is there any way to pass on the formatting info in the feedback responses without treating them as strings? -->
                       <mc-radiogroup
@@ -421,7 +421,7 @@
                         :feedbacks="[
                           'Try again. \n Think about the people on the beach. Did the closer person appear bigger or smaller than the farther person?',
                           'Try again. \n Think about the people on the beach. Did the closer person appear bigger or smaller than the farther person?',
-                          'That\'s right! The <strong>closer</strong> galaxy has a <strong>larger</strong> angular size in the sky.',
+                          'That\'s right! The <b>closer</b> galaxy has a <b>larger</b> angular size in the sky.',
                           'Try again. \n Think about the people on the beach. Did the closer person appear bigger or smaller than the farther person?'
                         ]"
                         :correct-answers="[2]"
@@ -489,10 +489,10 @@
                   </v-col>
                   <v-spacer></v-spacer>
                   <p>
-                    This relationship tells us: if two galaxies are the same size and one is <strong>2 times</strong> farther from us as the other, the far one will have 1/2 the angular size in our sky.
+                    This relationship tells us: if two galaxies are the same size and one is <b>2 times</b> farther from us as the other, the far one will have 1/2 the angular size in our sky.
                   </p>
                   <p>
-                    If one galaxy is <strong>50 times</strong> farther from us as the other, the far one will have <strong>1/50</strong> the angular size in our sky, and so on.
+                    If one galaxy is <b>50 times</b> farther from us as the other, the far one will have <b>1/50</b> the angular size in our sky, and so on.
                   </p>
                 </div>
               </v-col>
@@ -519,7 +519,7 @@
                       Reflect
                     </h3>                           
                     <p>
-                      Use the image to estimate <strong>how much</strong> closer Galaxy A is than Galaxy B. Assume galaxies A and B have the <strong>same physical size</strong>.
+                      Use the image to estimate <b>how much</b> closer Galaxy A is than Galaxy B. Assume galaxies A and B have the <b>same physical size</b>.
                     </p>
                     <v-card
                       class="mt-auto white--text"
@@ -599,7 +599,7 @@
                 </h3>
                 <div>
                   <p>
-                    Nice work! To estimate distances to <strong>your</strong> galaxies, we start with this same formula:
+                    Nice work! To estimate distances to <b>your</b> galaxies, we start with this same formula:
                   </p>
                   <div
                     class="JaxEquation"
@@ -670,8 +670,8 @@
                 <p>
                   This equation from the previous slide requires two pieces of information to determine the distance to a galaxy:
                   <ol>
-                    <li>the <strong>physical size</strong> of the galaxy</li>
-                    <li>the <strong>angular size</strong> of the galaxy</li> 
+                    <li>the <b>physical size</b> of the galaxy</li>
+                    <li>the <b>angular size</b> of the galaxy</li> 
                   </ol>
                 </p>
               </v-col>
@@ -681,7 +681,7 @@
                 cols="9"
               >
                 <p>
-                  In this data story, we are going to make an assumption that all galaxies are the <strong>same physical size as the Milky Way galaxy</strong>:
+                  In this data story, we are going to make an assumption that all galaxies are the <b>same physical size as the Milky Way galaxy</b>:
                 </p>
                 <v-card
                   class="mb-3 white--text"
@@ -699,7 +699,7 @@
                   </v-card-text>
                 </v-card>
                 <p>
-                  <strong>(You can ponder later whether you think this is a good or bad assumption!)</strong>
+                  <b>(You can ponder later whether you think this is a good or bad assumption!)</b>
                 </p>
               </v-col>
             </v-row>
@@ -754,7 +754,7 @@
             <v-row>
               <v-col>
                 <p>
-                  So, to measure the distance to a galaxy like the Milky Way, all you have to do is measure its <strong>angular size</strong> in arcseconds. Let’s get started.
+                  So, to measure the distance to a galaxy like the Milky Way, all you have to do is measure its <b>angular size</b> in arcseconds. Let’s get started.
                 </p>
               </v-col>
             </v-row> 
@@ -808,7 +808,7 @@
       <v-spacer></v-spacer>
 
       <v-btn
-        :disabled="!show_team_interface && step > max_step_completed"
+        :disabled="!debug && step > max_step_completed"
         v-if="step < length-1"
         class="black--text"
         color="accent"
@@ -820,12 +820,12 @@
 
       <!-- first button below just being used for testing, delete when using live with students -->
       <v-btn
-        v-if="step < 12 && show_team_interface"
+        v-if="step < 12 && debug"
         color="success"
         class="black--text"
         depressed
         @click="() => {
-          stage_2_complete = true;
+          on_slideshow_finished();
           step = 0;
           //this.$refs.synth.stopSpeaking();
         }"
@@ -840,7 +840,7 @@
         class="black--text"
         depressed
         @click="() => {
-          stage_2_complete = true;
+          on_slideshow_finished();
           step = 0;
           //this.$refs.synth.stopSpeaking();
         }"
@@ -871,12 +871,14 @@ module.exports = {
       if (intersecting) {
         MathJax.typesetPromise(entries.map(entry => entry.target));
       }
+    },
   },
 
   watch: {
     step(newStep, oldStep) {
       const isInteractStep = this.interact_steps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
+      // FIX: change this to a callback
       this.max_step_completed = Math.max(this.max_step_completed, newCompleted);
     },
   },
