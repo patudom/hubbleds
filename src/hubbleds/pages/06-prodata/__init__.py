@@ -177,7 +177,7 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.pro_dat9),
                 event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
-                state_view={'mc_score': mc_serialize_score(mc_scoring.get('pro-dat9')), 'score_tag': 'pro-dat'}
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('pro-dat9')), 'score_tag': 'pro-dat9'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineStoryFinish.vue",
