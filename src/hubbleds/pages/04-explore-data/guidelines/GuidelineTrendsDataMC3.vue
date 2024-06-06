@@ -3,7 +3,7 @@
     title-text="Trends in the Data"
     @back="back_callback()"
     @next="next_callback()"
-    :can-advance="question_completed && can_advance"
+    :can-advance="can_advance"
   >
     <template #before-next>
       Choose a response.
@@ -30,7 +30,6 @@
           ]"
           :correct-answers="[]"
           :neutral-answers='[0,1,2]'
-          @select="(status) => { if (status.neutral) { question_completed = true; } }"
           :score-tag="state_view.score_tag"
           @mc-emit="mc_callback($event)"
           :initialization="state_view.mc_score"
@@ -63,7 +62,6 @@ module.exports = {
   
   data() {
     return {
-      question_completed: false,
       define_trend: false,
     };
   },

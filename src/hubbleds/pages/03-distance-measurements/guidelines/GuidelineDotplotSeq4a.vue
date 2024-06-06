@@ -3,7 +3,7 @@
     title-text="Measurement Comparison"
     @back="back_callback()"
     @next="next_callback()"
-    :can-advance="question_completed && can_advance"
+    :can-advance="can_advance"
   >
     <template #before-next>
         Choose a response
@@ -30,7 +30,6 @@
             ]" 
           :correct-answers="[0]"
           :wrong-answers="[1,2]"
-          @select="(status) => { if (status.correct) { question_completed = true; } }"
           :score-tag="state_view.score_tag"
           @mc-emit="mc_callback($event)"
           :initialization="state_view.mc_score"
@@ -44,7 +43,6 @@
 module.exports = {
   data() {
     return {
-      question_completed: false,
     };
   },
 };

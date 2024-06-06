@@ -6,7 +6,7 @@ from ...component_state_base import BaseComponentState
 from ...decorators import computed_property
 import dataclasses
 from cosmicds.utils import API_URL
-from ...state import GLOBAL_STATE
+from ...state import GLOBAL_STATE, LOCAL_STATE
 from ...data_models.student import example_data, StudentMeasurement, SpectrumData
 from contextlib import closing
 from io import BytesIO
@@ -21,10 +21,10 @@ ELEMENT_REST = {
 
 class Marker(enum.Enum, MarkerBase):
     exp_dat1 = enum.auto()
-    tre_dat1 = enum.auto()
+    tre_dat1 = enum.auto() # MC tre-dat-mc1
     tre_dat2 = enum.auto()
-    tre_dat3 = enum.auto()
-    rel_vel1 = enum.auto()
+    tre_dat3 = enum.auto() # MC tre-dat-mc3
+    rel_vel1 = enum.auto() # MC galaxy-trend
     hub_exp1 = enum.auto()
     tre_lin1 = enum.auto()
     tre_lin2 = enum.auto()
@@ -60,6 +60,18 @@ class ComponentState(BaseComponentState):
 
     def setup(self):
         pass
+    
+    @computed_property
+    def tre_dat2_gate(self):
+        return LOCAL_STATE.question_completed("tre-dat-mc1")
+    
+    @computed_property
+    def rel_vel1_gate(self):
+        return LOCAL_STATE.question_completed("tre-dat-mc3")
+    
+    @computed_property
+    def hub_exp1_gate(self):
+        return LOCAL_STATE.question_completed("galaxy-trend")
 
     @computed_property
     def tre_lin1_gate(self):

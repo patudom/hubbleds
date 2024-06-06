@@ -6,7 +6,7 @@ from ...marker_base import MarkerBase
 import dataclasses
 from cosmicds.utils import API_URL
 from ...component_state_base import BaseComponentState
-from ...state import GLOBAL_STATE
+from ...state import GLOBAL_STATE, LOCAL_STATE
 from ...data_models.student import example_data, StudentMeasurement, SpectrumData
 from contextlib import closing
 from io import BytesIO
@@ -33,17 +33,17 @@ class Marker(enum.Enum, MarkerBase):
     est_dis3 = enum.auto()	
     est_dis4 = enum.auto()	
     dot_seq1 = enum.auto()	
-    dot_seq2 = enum.auto()	
+    dot_seq2 = enum.auto() # MC ang_meas_consensus
     dot_seq3 = enum.auto()	
     dot_seq4 = enum.auto()	
-    dot_seq4a = enum.auto()	
+    dot_seq4a = enum.auto()	 # MC ang_meas_dist_relation
     ang_siz5a  = enum.auto()	
     # ang_siz6  = enum.auto() We skipped this in the voila version
     dot_seq5  = enum.auto()	
     dot_seq5a = enum.auto()	
     dot_seq5b = enum.auto()	
     dot_seq5c = enum.auto()	
-    dot_seq6  = enum.auto()	
+    dot_seq6  = enum.auto()	# MC ang_meas_consensus_2
     dot_seq7 = enum.auto()	
     rep_rem1 = enum.auto()	
     fil_rem1 = enum.auto()
@@ -60,7 +60,19 @@ class ComponentState(BaseComponentState):
 
     def setup(self):
         pass
-
+    
+    @computed_property
+    def dot_seq3_gate(self):
+        return LOCAL_STATE.question_completed("ang_meas_consensus")
+    
+    @computed_property
+    def ang_siz5a_gate(self):
+        return LOCAL_STATE.question_completed("ang_meas_dist_relation")
+    
+    @computed_property
+    def dot_seq7_gate(self):
+        return LOCAL_STATE.question_completed("ang_meas_consensus_2")
+    
     @computed_property
     def dot_seq5_gate(self):
         return (

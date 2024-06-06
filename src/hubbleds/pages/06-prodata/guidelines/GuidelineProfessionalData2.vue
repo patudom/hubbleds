@@ -6,7 +6,7 @@
     elevation="6"
     @back="back_callback()"
     @next="next_callback()"
-    :can-advance="question_completed && can_advance"
+    :can-advance="can_advance"
     
   >
     <div
@@ -27,7 +27,6 @@
             'Remember, the slope of the trend in our data is shallower than the trend in Hubble\'s data, so our age estimate must be higher.'
           ]"
           :correct-answers="[0]"
-          @select="(status) => { if (status.correct) { question_completed = true; } }"
           :score-tag="state_view.score_tag"
           @mc-emit="mc_callback($event)"
           :initialization="state_view.mc_score"
@@ -42,7 +41,6 @@
 module.exports = {
   data() {
     return {
-      question_completed: false,
     };
   },
 };
