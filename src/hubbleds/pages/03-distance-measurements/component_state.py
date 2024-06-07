@@ -1,17 +1,14 @@
 from solara import Reactive
-import solara
 import enum
 from ...decorators import computed_property
 from ...marker_base import MarkerBase
 import dataclasses
-from cosmicds.utils import API_URL
 from ...component_state_base import BaseComponentState
 from ...state import GLOBAL_STATE, LOCAL_STATE
 from ...data_models.student import example_data, StudentMeasurement, SpectrumData
 from contextlib import closing
 from io import BytesIO
 from astropy.io import fits
-
 
 ELEMENT_REST = {
     'H-α': 6562.79,
@@ -51,12 +48,18 @@ class Marker(enum.Enum, MarkerBase):
 
 @dataclasses.dataclass
 class ComponentState(BaseComponentState):
+
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.ang_siz1)
     )
+    example_angular_sizes_total: Reactive[int] = dataclasses.field(default=Reactive(0))
+    angular_sizes_total: Reactive[int] = dataclasses.field(default=Reactive(0))
     dosdonts_tutorial_opened: Reactive[bool] = dataclasses.field(
         default=Reactive(False)
     )
+    selected_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
+    selected_example_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
+    show_ruler: Reactive[bool] = dataclasses.field(default=Reactive(False))
 
     def setup(self):
         pass
