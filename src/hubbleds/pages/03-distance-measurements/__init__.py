@@ -44,11 +44,11 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback):
 
     solara.use_effect(set_selected_galaxy, [galaxy])
 
-    def update_show_ruler():
+    def turn_ruler_on():
         widget = solara.get_widget(tool)
         widget.show_ruler = show_ruler
 
-    solara.use_effect(update_show_ruler, [show_ruler])
+    solara.use_effect(turn_ruler_on, [show_ruler])
 
     def update_angular_size(change):
         angle = change["new"]
@@ -280,11 +280,11 @@ def Page():
                     { "text": "Distance (Mpc)", "value": "distance" },
                 ]
             
-            def update_show_ruler(marker):
+            def show_ruler_range(marker):
                 component_state.show_ruler.value = Marker.is_between(marker, Marker.ang_siz3, Marker.est_dis4) or \
-                                                   Marker.is_between(marker, Marker.est_dis4, Marker.last())
+                Marker.is_between(marker, Marker.est_dis4, Marker.last())
                 
-            component_state.current_step.subscribe(update_show_ruler)
+            component_state.current_step.subscribe(show_ruler_range)
 
             @solara.lab.computed
             def on_example_galaxy_marker():
