@@ -17,20 +17,24 @@ from .tools import *
 @dataclasses.dataclass
 class MCScore:
     tag: str = dataclasses.field(init=True)
-    # Why are we using default_factory instead of default? 
-    # Because each instance of MCScore should have its own Reactive object.
-    score: Reactive[float] = dataclasses.field(default_factory = lambda: Reactive(None))
-    choice: Reactive[int] = dataclasses.field(default_factory = lambda: Reactive(None))
-    tries: Reactive[int] = dataclasses.field(default_factory = lambda: Reactive(0))
-    wrong_attempts: Reactive[int] = dataclasses.field(default_factory = lambda: Reactive(0))
+    _score_dict: Reactive[dict[str,int]] = dataclasses.field(default_factory = lambda: Reactive({}))
+    
+    def update(self, score, choice, tries, wrong_attempts):
+        print("updating", self.tag, score, choice, tries, wrong_attempts)
+        self._score_dict.set({
+            'score': score,
+            'choice': choice,
+            'tries': tries,
+            'wrong_attempts': wrong_attempts
+        })
     
     def toJSON(self):
         return {
             'tag': self.tag,
-            'score': self.score.value,
-            'choice': self.choice.value,
-            'tries': self.tries.value,
-            'wrong_attempts': self.wrong_attempts.value
+            'score': self._score_dict.value.get('score', None),
+            'choice': self._score_dict.value.get('choice', None),
+            'tries': self._score_dict.value.get('tries', 0),
+            'wrong_attempts': self._score_dict.value.get('wrong_attempts', 0)
         }
     
     def __repr__(self):
@@ -38,7 +42,7 @@ class MCScore:
     
     @computed_property
     def completed(self):
-        return self.score.value is not None
+        return self._score_dict.value.get('score', None) is not None
     
 @dataclasses.dataclass
 class LocalState:
@@ -100,10 +104,7 @@ def on_init_response(local_state: LocalState, tag: str, callback: Optional[Calla
 def on_mc_score(local_state, data, callback: Optional[Callable] = None):
     print("on_mc_score")
     mc_scoring = local_state.mc_scoring.value
-    mc_scoring[data['tag']].score.set(data['score'])
-    mc_scoring[data['tag']].choice.set(data['choice'])
-    mc_scoring[data['tag']].tries.set(data['tries'])
-    mc_scoring[data['tag']].wrong_attempts.set(data['wrong_attempts'])
+    mc_scoring[data['tag']].update(data['score'], data['choice'], data['tries'], data['wrong_attempts'])
     local_state.mc_scoring.set(mc_scoring)
     if callback is not None:
         callback(mc_scoring)
