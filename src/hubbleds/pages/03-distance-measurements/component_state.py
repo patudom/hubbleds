@@ -60,6 +60,7 @@ class ComponentState(BaseComponentState):
     selected_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
     selected_example_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
     show_ruler: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    meas_theta: Reactive[float] = dataclasses.field(default=Reactive(0.0))
 
     def setup(self):
         pass

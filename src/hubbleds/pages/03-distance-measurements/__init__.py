@@ -223,7 +223,7 @@ def Page():
                 show=component_state.is_current_step(Marker.est_dis3),
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
-                    "meas_theta": 10, # TODO pass student's value once we hook up angular size measurements
+                    "meas_theta": component_state.meas_theta.value,
                 },
             )
             ScaffoldAlert(
@@ -234,7 +234,7 @@ def Page():
                 show=component_state.is_current_step(Marker.est_dis4),
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
-                    "meas_theta": 10, # TODO pass student's value once we hook up angular size measurements
+                    "meas_theta": component_state.meas_theta.value,
                 },
             )
             ScaffoldAlert(
@@ -301,6 +301,9 @@ def Page():
                 data = example_data if on_example_galaxy_marker.value else student_data
                 count = component_state.example_angular_sizes_total if on_example_galaxy_marker.value else component_state.angular_sizes_total
                 _update_angular_size(data, current_galaxy.value, angle, count)
+                if on_example_galaxy_marker.value:
+                    value = int(angle.to(u.arcsec).value)
+                    component_state.meas_theta.set(value)
 
             DistanceToolComponent(
                 galaxy=current_galaxy.value,
