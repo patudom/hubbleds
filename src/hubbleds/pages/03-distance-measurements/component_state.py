@@ -64,7 +64,8 @@ class ComponentState(BaseComponentState):
 
     def setup(self):
         def _on_example_galaxy_selected(*args):
-            self.transition_to(Marker.ang_siz2)
+            if self.is_current_step(Marker.cho_row1):
+                self.transition_to(Marker.ang_siz2)
 
         self.selected_example_galaxy.subscribe(_on_example_galaxy_selected)
     
