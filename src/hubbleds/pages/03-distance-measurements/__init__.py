@@ -166,7 +166,7 @@ def Page():
         with rv.Col():
             def show_ruler_range(marker):
                 component_state.show_ruler.value = Marker.is_between(marker, Marker.ang_siz3, Marker.est_dis4) or \
-                Marker.is_between(marker, Marker.est_dis4, Marker.last())
+                Marker.is_between(marker, Marker.dot_seq5b, Marker.last())
                 
             component_state.current_step.subscribe(show_ruler_range)
 
@@ -194,7 +194,7 @@ def Page():
                 show_ruler=component_state.show_ruler.value,
                 angular_size_callback=_ang_size_cb
             )
-            
+
             with rv.Col(cols=6, offset=3):
                 if component_state.current_step_this_or_after(Marker.ang_siz5a):
                     AngsizeDosDontsSlideshow(
