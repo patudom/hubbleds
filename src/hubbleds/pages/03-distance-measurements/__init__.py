@@ -11,9 +11,10 @@ from hubbleds.widgets.distance_tool.distance_tool import DistanceTool
 
 from ...components import AngsizeDosDontsSlideshow, DataTable
 from ...data_management import *
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
 from ...utils import DISTANCE_CONSTANT, GALAXY_FOV
-from ...data_models.student import student_data, example_data
+from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
+from ...widgets.selection_tool import SelectionTool
+from ...data_models.student import student_data, StudentMeasurement, example_data
 from .component_state import ComponentState, Marker
 
 
@@ -360,8 +361,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq2),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('ang_meas_consensus'), 'score_tag': 'ang_meas_consensus'}
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('ang_meas_consensus')), 'score_tag': 'ang_meas_consensus'}
             )            
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq3.vue",
@@ -383,8 +384,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq4a),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('ang_meas_dist_relation'), 'score_tag': 'ang_meas_dist_relation'}
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('ang_meas_dist_relation')), 'score_tag': 'ang_meas_dist_relation'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq6.vue",
@@ -392,8 +393,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq6),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('ang_meas_consensus_2'), 'score_tag': 'ang_meas_consensus_2'}
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('ang_meas_consensus_2')), 'score_tag': 'ang_meas_consensus_2'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq7.vue",

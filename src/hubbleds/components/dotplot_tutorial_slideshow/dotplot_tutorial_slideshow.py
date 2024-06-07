@@ -8,5 +8,6 @@ def DotplotTutorialSlideshow(
     length,
     max_step_completed,
     dotplot_viewer,
+    event_tutorial_finished
 ):
     pass

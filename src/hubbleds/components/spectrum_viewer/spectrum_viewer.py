@@ -15,9 +15,10 @@ df = Table(
 
 @solara.component
 def SpectrumViewer(
-    data=pd.DataFrame(),
+    data,
     lambda_obs=None,
     spectrum_click_enabled=False,
+    on_wavelength_measured=None,
     on_lambda_clicked=None,
     on_zoom_clicked=None,
     on_spectrum_clicked=None,
@@ -34,7 +35,7 @@ def SpectrumViewer(
             solara.IconButton(icon_name="mdi-select-search", on_click=on_zoom_clicked)
             solara.IconButton(icon_name="mdi-lambda", on_click=on_lambda_clicked)
 
-        fig = px.line(data, x="wave", y="flux")
+        fig = px.line(data.value, x="wave", y="flux")
 
         fig.add_vline(
             x=lambda_obs.value,
@@ -43,7 +44,7 @@ def SpectrumViewer(
             # annotation_text="1BASE",
             # annotation_font_size=12,
             # annotation_position="top right",
-            visible=vertical_line_visible.value,
+            visible=vertical_line_visible.value and lambda_obs.value > 0.0,
         )
 
         fig.add_shape(
@@ -76,11 +77,12 @@ def SpectrumViewer(
         def _clicked(**kwargs):
             if spectrum_click_enabled:
                 vertical_line_visible.set(True)
-                lambda_obs.set(round(kwargs['points']['xs'][0]))
+                # lambda_obs.set(round(kwargs['points']['xs'][0]))
+                on_wavelength_measured(round(kwargs['points']['xs'][0]))
                 on_spectrum_clicked()
 
         solara.FigurePlotly(
             fig,
             on_click=lambda kwargs: _clicked(**kwargs),
-            dependencies=[lambda_obs.value, vertical_line_visible.value]
+            dependencies=[lambda_obs.value, vertical_line_visible.value, data.value]
         )

@@ -14,7 +14,7 @@ from astropy.table import Table
 
 from ...components import DataTable, HubbleExpUniverseSlideshow
 from ...data_management import *
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback
+from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
 from ...utils import AGE_CONSTANT
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
@@ -130,8 +130,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.tre_dat1),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('tre-dat-mc1'), 'score_tag': 'tre-dat-mc1'}                
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('tre-dat-mc1')), 'score_tag': 'tre-dat-mc1'}                
             )
             ScaffoldAlert(
                 # TODO This will need to be wired up once viewer is implemented
@@ -147,8 +147,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.tre_dat3),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('tre-dat-mc3'), 'score_tag': 'tre-dat-mc3'}   
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('tre-dat-mc3')), 'score_tag': 'tre-dat-mc3'}   
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRelationshipVelDistMC.vue",
@@ -156,8 +156,8 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.rel_vel1),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, set_score=set_mc_scoring),
-                state_view={'mc_score': mc_scoring.get('galaxy-trend'), 'score_tag': 'galaxy-trend'} 
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
+                state_view={'mc_score': mc_serialize_score(mc_scoring.get('galaxy-trend')), 'score_tag': 'galaxy-trend'} 
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineTrendLines1.vue",

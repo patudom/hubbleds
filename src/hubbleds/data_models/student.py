@@ -30,12 +30,30 @@ class StudentData(BaseModel):
     measurements: Optional[List[StudentMeasurement]]
 
     def update(self, id_: str, data: dict):
-        idx = next(i for i, x in enumerate(self.measurements) if x.id == id_)
+        idx = next(
+            iter(i for i, x in enumerate(self.measurements) if x.id == id_), None
+        )
 
         if idx is None:
             print(f"No data with id {id_} found.")
+            return
 
-        self.measurements[idx] = StudentMeasurement(**{**self.measurements[idx].dict(), **data})
+        self.measurements[idx] = StudentMeasurement(
+            **{**self.measurements[idx].dict(), **data}
+        )
+
+    def get_by_id(self, id_: str, exclude=None, asdict=False):
+        idx = next(
+            iter(i for i, x in enumerate(self.measurements) if x.id == id_), None
+        )
+
+        print(f"Found spectral data with id {id_} at index {idx}.")
+
+        if idx is None:
+            print(f"No data with id {id_} found.")
+            return None if not asdict else {}
+
+        return self.measurements[idx] if not asdict else self.measurements[idx].model_dump()
 
 
 student_data = StudentData(measurements=[])

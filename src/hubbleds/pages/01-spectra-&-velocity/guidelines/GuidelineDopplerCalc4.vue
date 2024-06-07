@@ -188,8 +188,7 @@ module.exports = {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
         console.log(id, index, value, expectedAnswers[index], value && value === expectedAnswers[index]);
-        // TODO: CHANGE THIS TO A CALLBACK
-        this.state_view.failed_validation_4 = (!(value && value === expectedAnswers[index]));
+        this.failed_validation_4_callback((!(value && value === expectedAnswers[index])));
         return value && value === expectedAnswers[index];
       });
     }
