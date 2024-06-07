@@ -63,8 +63,15 @@ class ComponentState(BaseComponentState):
     meas_theta: Reactive[float] = dataclasses.field(default=Reactive(0.0))
 
     def setup(self):
-        pass
+        def _on_example_galaxy_selected(*args):
+            self.transition_to(Marker.ang_siz2)
+
+        self.selected_example_galaxy.subscribe(_on_example_galaxy_selected)
     
+    @computed_property
+    def ang_siz2_gate(self):
+        return bool(self.selected_example_galaxy.value)
+
     @computed_property
     def dot_seq3_gate(self):
         return LOCAL_STATE.question_completed("ang_meas_consensus")
