@@ -52,4 +52,10 @@ class BaseComponentState:
    def current_step_between(self, start, end=None):
        end = end or self.current_step.value.last()
        return self.current_step.value.is_between(self.current_step.value, start, end)
+   
+   def current_step_this_or_before(self, end):
+       return self.current_step.value.is_this_or_before(self.current_step.value, end)
+   
+   def current_step_this_or_after(self, start):
+       return self.current_step.value.is_this_or_after(self.current_step.value, start)
 

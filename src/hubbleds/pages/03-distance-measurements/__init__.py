@@ -165,7 +165,7 @@ def Page():
 
         with rv.Col():
             with rv.Col(cols=6, offset=3):
-                if component_state.current_step.value.value >= Marker.ang_siz5a.value:
+                if component_state.current_step_this_or_after(Marker.ang_siz5a):
                     AngsizeDosDontsSlideshow(
                         event_on_dialog_opened=lambda *args: component_state.dosdonts_tutorial_opened.set(
                             True
@@ -288,7 +288,7 @@ def Page():
 
             @solara.lab.computed
             def on_example_galaxy_marker():
-                return component_state.current_step.value.value < Marker.rep_rem1.value
+                return component_state.current_step_this_or_before(Marker.dot_seq7)
 
 
             @solara.lab.computed
@@ -311,7 +311,7 @@ def Page():
                 angular_size_callback=_ang_size_cb
             )
 
-            if component_state.current_step.value.value < Marker.rep_rem1.value:
+            if component_state.current_step_this_or_before(Marker.dot_seq7):
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
                     value = galaxy["item"] if flag else None
