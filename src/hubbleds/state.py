@@ -18,7 +18,7 @@ from .free_response import * # imports FreeResponse, fr_init_response, fr_respon
 class MCScore:
     tag: str = dataclasses.field(init=True)
     _score_dict: Reactive[dict[str,int]] = dataclasses.field(default_factory = lambda: Reactive({}))
-    
+
     def update(self, score, choice, tries, wrong_attempts):
         print("updating", self.tag, score, choice, tries, wrong_attempts)
         self._score_dict.set({
@@ -27,7 +27,7 @@ class MCScore:
             'tries': tries,
             'wrong_attempts': wrong_attempts
         })
-    
+
     def toJSON(self):
         return {
             'tag': self.tag,
@@ -36,18 +36,19 @@ class MCScore:
             'tries': self._score_dict.value.get('tries', 0),
             'wrong_attempts': self._score_dict.value.get('wrong_attempts', 0)
         }
-    
+
     def __repr__(self):
         return f"MCScore({self.toJSON()})"
-    
+
     @computed_property
     def completed(self):
         return self._score_dict.value.get('score', None) is not None
-    
+
 @dataclasses.dataclass
 class LocalState:
     debug_mode: Reactive[bool] = dataclasses.field(default=Reactive(False))
     title: Reactive[str] = dataclasses.field(default=Reactive("Hubble's Law"))
+    stages: Reactive[list] = dataclasses.field(default=Reactive([]))
     measurements: Reactive[dict] = dataclasses.field(default=Reactive({}))
     calculations: Reactive[dict] = dataclasses.field(default=Reactive({}))
     validation_failure_counts: Reactive[dict] = dataclasses.field(default=Reactive({}))
@@ -63,30 +64,42 @@ class LocalState:
         if qtag in self.mc_scoring.value:
             return self.mc_scoring.value[qtag].completed().value #type: ignore
         return False
-    
-
-    
-    
 
 LOCAL_STATE = LocalState()
 
 # add a csv file to the data collection
 
+
 def add_link(from_dc_name, from_att, to_dc_name, to_att):
-        from_dc = GLOBAL_STATE.data_collection[from_dc_name]
-        to_dc = GLOBAL_STATE.data_collection[to_dc_name]
-        GLOBAL_STATE._glue_app.add_link(from_dc, from_att, to_dc, to_att)
+    from_dc = GLOBAL_STATE.data_collection[from_dc_name]
+    to_dc = GLOBAL_STATE.data_collection[to_dc_name]
+    GLOBAL_STATE._glue_app.add_link(from_dc, from_att, to_dc, to_att)
 
 
 data_dir = Path(__file__).parent / "data"
-GLOBAL_STATE.data_collection.append(load_data(data_dir / f"{HUBBLE_KEY_DATA_LABEL}.csv"))
-GLOBAL_STATE.data_collection.append(load_data(data_dir / f"{HUBBLE_1929_DATA_LABEL}.csv"))
 
-add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)')
-add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)')
+try:
+    GLOBAL_STATE.data_collection.append(
+        load_data(data_dir / f"{HUBBLE_KEY_DATA_LABEL}.csv")
+    )
+    GLOBAL_STATE.data_collection.append(
+        load_data(data_dir / f"{HUBBLE_1929_DATA_LABEL}.csv")
+    )
+
+    add_link(
+        HUBBLE_1929_DATA_LABEL, "Distance (Mpc)", HUBBLE_KEY_DATA_LABEL, "Distance (Mpc)"
+    )
+    add_link(
+        HUBBLE_1929_DATA_LABEL,
+        "Tweaked Velocity (km/s)",
+        HUBBLE_KEY_DATA_LABEL,
+        "Velocity (km/s)",
+    )
+except:
+    print("Data already loaded into Glue.")
 
 
-       
+
 # create handlers for mc_radiogroup
 def on_init_response(local_state: LocalState, tag: str, callback: Optional[Callable]= None):
     print("onInitResponse")
@@ -102,6 +115,7 @@ def on_init_response(local_state: LocalState, tag: str, callback: Optional[Calla
             callback(mc_scoring)
     else:
         print("tag already exists")
+
 
 def on_mc_score(local_state, data, callback: Optional[Callable] = None):
     print("on_mc_score")
@@ -128,15 +142,15 @@ def mc_serialize_score(mc_score = None):
         return mc_score.toJSON()
 
 
-    
+
 
 def fr_callback(event: Tuple[str,dict[str,str]], local_state: LocalState, response_callback: Optional[Callable] = None):
     """
     Free Response callback function
-    
+
     response_callback: Optional callback that takes in the response as an argument
-        An example would be to set a value 
-    
+        An example would be to set a value
+
     """
     print("fr_callback", event)
     if event[0] == 'fr-initialize':
