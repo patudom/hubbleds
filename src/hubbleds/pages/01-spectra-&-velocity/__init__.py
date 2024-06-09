@@ -10,6 +10,7 @@ from glue_jupyter.app import JupyterApplication
 from reacton import ipyvuetify as rv
 from pathlib import Path
 from astropy.table import Table
+from solara_enterprise import auth
 
 from hubbleds.components.dotplot_tutorial_slideshow import DotplotTutorialSlideshow
 from hubbleds.viewers.hubble_dotplot import HubbleDotPlotView
@@ -27,6 +28,7 @@ from ...state import GLOBAL_STATE, LOCAL_STATE
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
 from .component_state import ComponentState, Marker
+from ...remote import DatabaseAPI
 
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
@@ -68,12 +70,12 @@ def _on_galaxy_table_row_selected(row):
 def _on_wavelength_measured(value, update_example=False, update_student=False):
     if update_example:
         example_data.update(
-            component_state.selected_example_galaxy.value, {"measured_wave": value}
+            component_state.selected_example_galaxy.value, {"obs_wave": value}
         )
         component_state.lambda_obs.set(value)
     elif update_student:
         student_data.update(
-            component_state.selected_galaxy.value, {"measured_wave": value}
+            component_state.selected_galaxy.value, {"obs_wave": value}
         )
         component_state.lambda_obs.set(value)
         component_state.obswaves_total.value += 1
@@ -96,7 +98,7 @@ def _calculate_velocity(*args, **kwargs):
     for gal_id in component_state.selected_galaxies.value:
         galaxy = student_data.get_by_id(gal_id, exclude={"spectrum"})
         rest_wave = galaxy.rest_wave
-        obs_wave = galaxy.measured_wave
+        obs_wave = galaxy.obs_wave
         velocity = round((3 * (10**5) * (obs_wave / rest_wave - 1)), 0)
         student_data.update(galaxy.id, {"velocity": velocity})
         component_state.velocities_total.value += 1
@@ -137,6 +139,10 @@ def Page():
         f"Can advance: {component_state.can_transition(next=True)} "
         f"Student vel: {component_state.student_vel.value}"
     )
+
+    # solara.Text(f"{auth.user.value["userinfo"]} {GLOBAL_STATE.hashed_user}")
+    database_api = DatabaseAPI()
+    # solara.Text(f"{database_api.get_measurements()}")
 
     if LOCAL_STATE.debug_mode:
 
