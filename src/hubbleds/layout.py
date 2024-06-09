@@ -13,5 +13,5 @@ def Layout(children=[]):
 
     solara.use_memo(_load_math_jax, dependencies=[])
 
-    with BaseLayout(children=children, story_title="Hubble's Law"):
+    with BaseLayout(children=children, story_name="hubbles_law", story_title="Hubble's Law"):
         pass
