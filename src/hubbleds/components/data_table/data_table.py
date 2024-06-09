@@ -17,7 +17,7 @@ DEFAULT_HEADERS = [
         },
         {
             "text": "&lambda;<sub>obs</sub> (&Aring;)",
-            "value": "measured_wave",
+            "value": "obs_wave",
         },
         {"text": "Velocity (km/s)", "value": "velocity"},
     ]

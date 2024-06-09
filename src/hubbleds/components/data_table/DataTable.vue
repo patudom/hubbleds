@@ -50,9 +50,9 @@
         {{ item.rest_wave }}
       </template>
 
-      <template v-slot:item.measured_wave="{ item }">
-        <v-icon v-if="item.measured_wave < 1.0">mdi-alert</v-icon>
-        <span v-else>{{ item.measured_wave }}</span>
+      <template v-slot:item.obs_wave="{ item }">
+        <v-icon v-if="item.obs_wave < 1.0">mdi-alert</v-icon>
+        <span v-else>{{ item.obs_wave }}</span>
       </template>
 
       <template v-slot:item.velocity="{ item }">

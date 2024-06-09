@@ -9,21 +9,27 @@ class SpectrumData(BaseModel):
     ivar: list[float]
 
 
-class StudentMeasurement(BaseModel):
-    id: Optional[str]
+class GalaxyData(BaseModel):
+    id: Optional[int]
     name: Optional[str]
     ra: Optional[float]
     decl: Optional[float]
     z: Optional[float]
     type: Optional[str]
     element: Optional[str]
-    rest_wave: Optional[float] = None
-    measured_wave: Optional[float] = None
-    velocity: Optional[float] = None
     spectrum: Optional[SpectrumData] = None
     angular_size: Optional[int] = None
     distance: Optional[float] = None
     measurement_number: Optional[int] = 1
+
+
+class StudentMeasurement(BaseModel):
+    ang_size: Optional[float] = 0
+    est_dist: Optional[float] = 0
+    rest_wave: Optional[float] = 0.0
+    obs_wave: Optional[float] = 0.0
+    velocity: Optional[float] = 0.0
+    galaxy: Optional[GalaxyData] = None
 
 
 class StudentData(BaseModel):
