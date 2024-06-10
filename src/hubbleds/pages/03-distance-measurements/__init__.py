@@ -172,7 +172,7 @@ def Page():
 
             @solara.lab.computed
             def on_example_galaxy_marker():
-                return component_state.current_step_this_or_before(Marker.dot_seq7)
+                return component_state.current_step_at_or_before(Marker.dot_seq7)
 
 
             @solara.lab.computed
@@ -196,7 +196,7 @@ def Page():
             )
 
             with rv.Col(cols=6, offset=3):
-                if component_state.current_step_this_or_after(Marker.ang_siz5a):
+                if component_state.current_step_at_or_after(Marker.ang_siz5a):
                     AngsizeDosDontsSlideshow(
                         event_on_dialog_opened=lambda *args: component_state.dosdonts_tutorial_opened.set(
                             True
@@ -315,7 +315,7 @@ def Page():
 
 
 
-            if component_state.current_step_this_or_before(Marker.dot_seq7):
+            if component_state.current_step_at_or_before(Marker.dot_seq7):
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
                     value = galaxy["item"] if flag else None
