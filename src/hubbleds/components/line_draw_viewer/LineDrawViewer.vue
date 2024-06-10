@@ -3,46 +3,59 @@ export default {
   name: "LineDrawViewer",
   props: ["chart"],
   mounted() {
-    Plotly.plot(this.$refs[this.chart.uuid], this.chart.traces, this.chart.layout)
-      .then(function() {
+    Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, this.chart.layout)
+      .then(() => {
         const div = document.getElementById(this.chart.uuid);
         const chart = this.$refs[this.chart.uuid];
-        const layout = chart._fullLayout;
-        div.addEventListener("mousemove", function (event) {
-          const xWorld = layout.xaxis.p2c(event.x - layout.margin.l);
-          const yWorld = layout.yaxis.p2c(event.y - layout.margin.t);
-          const line = chart.data[0];
+        div.addEventListener("mousemove", (event) => {
+          console.log("mousemove");
+          const layout = chart._fullLayout;
+          const rect = div.getBoundingClientRect();
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+          const xWorld = layout.xaxis.p2c(x - layout.margin.l);
+          const yWorld = layout.yaxis.p2c(y - layout.margin.t);
+          const baseLine = this.chart.traces[0];
+          const baseLineData = baseLine.line;
+          const lineData = { color: baseLineData.color, shape: baseLineData.shape, width: baseLineData.width };
+          const line = { x: [...baseLine.x], y: [...baseLine.y], line: lineData };
+          const newLayout = { xaxis: layout.xaxis, yaxis: layout.yaxis };
           line.x[1] = xWorld;
           line.y[1] = yWorld;
-          Plotly.react(
+          console.log(chart);
+          console.log(newLayout);
+          Plotly.restyle(
             chart,
             [line],
-            chart.layout
+            newLayout,
           );
         });
       });
   },
-  data: () => ({
-    chart: {
-      uuid: "abcde",
-      traces: [
-        {
-          y: [],
-          line: {
-            color: "#5e9e7e",
-            width: 4,
-            shape: "line"
+  data() {
+    return {
+      chart: {
+        uuid: "abcde",
+        traces: [
+          {
+            x: [0, 1],
+            y: [0, 1],
+            line: {
+              color: "#5e9e7e",
+              width: 4,
+              shape: "line"
+            }
           }
-        }
-      ],
-      layout: {}
-    }
-  }),
+        ],
+        layout: {}
+      }
+    };
+  },
   watch: {
     chart: {
       handler: function() {
         Plotly.react(
-          this.$refs[this.chart.uuid],
+          this.$refs["chart"],
           this.chart.traces,
           this.chart.layout
         );
