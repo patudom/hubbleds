@@ -14,12 +14,12 @@ export default {
           const y = event.clientY - rect.top;
           const xWorld = layout.xaxis.p2c(x - layout.margin.l);
           const yWorld = layout.yaxis.p2c(y - layout.margin.t);
-          const line = { x: [0, xWorld], y: [0, yWorld], line: { color: "red" } };
           const newLayout = { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false } };
-          Plotly.react(
+          Plotly.update(
             this.chart.uuid,
-            [line],
-            newLayout,
+            { 'x.1': xWorld, 'y.1': yWorld },
+            {},
+            [0]
           );
         });
       });
@@ -51,8 +51,7 @@ export default {
           this.chart.traces,
           this.chart.layout
         );
-      },
-      deep: true
+      }
     }
   }
 }
