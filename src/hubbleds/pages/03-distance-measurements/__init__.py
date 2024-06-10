@@ -39,6 +39,7 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback):
     def set_selected_galaxy():
         widget = solara.get_widget(tool)
         if galaxy:
+            widget.measuring = False
             widget.go_to_location(galaxy["ra"], galaxy["decl"], fov=GALAXY_FOV)
         widget.measuring_allowed = bool(galaxy)
 
@@ -50,12 +51,14 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback):
 
     solara.use_effect(update_show_ruler, [show_ruler])
 
-    def update_angular_size(change):
-        angle = change["new"]
-        angular_size_callback(angle)
-
     def _define_callbacks():
         widget = solara.get_widget(tool)
+
+        def update_angular_size(change):
+            if widget.measuring:
+                angle = change["new"]
+                angular_size_callback(angle)
+
         widget.observe(update_angular_size, ["angular_size"])
 
     solara.use_effect(_define_callbacks, [])
