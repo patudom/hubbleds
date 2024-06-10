@@ -5,23 +5,9 @@ export default {
   mounted() {
     Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, this.chart.layout)
       .then(() => {
-        const div = document.getElementById(this.chart.uuid);
-        const chart = this.$refs[this.chart.uuid];
-        div.addEventListener("mousemove", (event) => {
-          const layout = chart._fullLayout;
-          const rect = div.getBoundingClientRect();
-          const x = event.clientX - rect.left;
-          const y = event.clientY - rect.top;
-          const xWorld = layout.xaxis.p2c(x - layout.margin.l);
-          const yWorld = layout.yaxis.p2c(y - layout.margin.t);
-          const newLayout = { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false } };
-          Plotly.update(
-            this.chart.uuid,
-            { 'x.1': xWorld, 'y.1': yWorld },
-            {},
-            [0]
-          );
-        });
+        this.element = document.getElementById(this.chart.uuid);
+        this.setupMouseHandlers(this.active);
+        this.element.on("plotly_click", this.plotlyClickHandler);
       });
   },
   data() {
@@ -39,19 +25,74 @@ export default {
             }
           }
         ],
-        layout: { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false } },
-      }
+        layout: { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false }, hovermode: "closest" },
+      },
+      active: true,
+      element: null,
     };
   },
-  watch: {
-    chart: {
-      handler: function() {
-        Plotly.react(
-          this.$refs["chart"],
-          this.chart.traces,
-          this.chart.layout
+  methods: {
+    screenToWorld(event) {
+      const layout = this.element._fullLayout;
+      const rect = this.element.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const xWorld = layout.xaxis.p2c(x - layout.margin.l);
+      const yWorld = layout.yaxis.p2c(y - layout.margin.t);
+      return [xWorld, yWorld];
+    },
+    mouseMoveHandler(event) {
+      const [xWorld, yWorld] = this.screenToWorld(event);
+      const newLayout = { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false } };
+      Plotly.update(
+        this.chart.uuid,
+        { 'x.1': xWorld, 'y.1': yWorld },
+        {},
+        [0]
+      );
+    },
+    clickHandler(event) {
+      if (this.active) {
+        this.active = false;
+        const [x, y] = this.screenToWorld(event);
+        Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 15, color: "red" }, meta: "endcap" });
+      }
+    },
+    plotlyClickHandler(event) {
+      console.log(event);
+      console.log(event.points.data);
+      if (!this.active && event.points[0].curveNumber === 1) {
+        this.active = true; 
+        Plotly.update(
+          this.chart.uuid,
+          {},
+          { hovermode: "closest" }
         );
       }
+    },
+    setupMouseHandlers(active) {
+      if (active) {
+        if (this.element.data.length > 1) {
+          Plotly.deleteTraces(this.chart.uuid, 1);
+        }
+        this.element.addEventListener("mousemove", this.mouseMoveHandler);
+        this.element.addEventListener("mousedown", this.clickHandler);
+      } else if (this.element != null) {
+        this.element.removeEventListener("mousemove", this.mouseMoveHandler);
+        this.element.removeEventListener("mousedown", this.clickHandler);
+      }
+    }
+  },
+  watch: {
+    chart() {
+      Plotly.react(
+        this.$refs["chart"],
+        this.chart.traces,
+        this.chart.layout
+      );
+    },
+    active(value) {
+      this.setupMouseHandlers(value);
     }
   }
 }
