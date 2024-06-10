@@ -45,11 +45,11 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback):
 
     solara.use_effect(set_selected_galaxy, [galaxy])
 
-    def update_show_ruler():
+    def turn_ruler_on():
         widget = solara.get_widget(tool)
         widget.show_ruler = show_ruler
 
-    solara.use_effect(update_show_ruler, [show_ruler])
+    solara.use_effect(turn_ruler_on, [show_ruler])
 
     def _define_callbacks():
         widget = solara.get_widget(tool)
@@ -167,8 +167,39 @@ def Page():
             )
 
         with rv.Col():
+            def show_ruler_range(marker):
+                component_state.show_ruler.value = Marker.is_between(marker, Marker.ang_siz3, Marker.est_dis4) or \
+                Marker.is_between(marker, Marker.dot_seq5b, Marker.last())
+                
+            component_state.current_step.subscribe(show_ruler_range)
+
+            @solara.lab.computed
+            def on_example_galaxy_marker():
+                return component_state.current_step_at_or_before(Marker.dot_seq7)
+
+
+            @solara.lab.computed
+            def current_galaxy():
+                galaxy = component_state.selected_galaxy.value
+                example_galaxy = component_state.selected_example_galaxy.value
+                return example_galaxy if on_example_galaxy_marker.value else galaxy
+
+            def _ang_size_cb(angle):
+                data = example_data if on_example_galaxy_marker.value else student_data
+                count = component_state.example_angular_sizes_total if on_example_galaxy_marker.value else component_state.angular_sizes_total
+                _update_angular_size(data, current_galaxy.value, angle, count)
+                if on_example_galaxy_marker.value:
+                    value = int(angle.to(u.arcsec).value)
+                    component_state.meas_theta.set(value)
+
+            DistanceToolComponent(
+                galaxy=current_galaxy.value,
+                show_ruler=component_state.show_ruler.value,
+                angular_size_callback=_ang_size_cb
+            )
+
             with rv.Col(cols=6, offset=3):
-                if component_state.current_step.value.value >= Marker.ang_siz5a.value:
+                if component_state.current_step_at_or_after(Marker.ang_siz5a):
                     AngsizeDosDontsSlideshow(
                         event_on_dialog_opened=lambda *args: component_state.dosdonts_tutorial_opened.set(
                             True
@@ -226,7 +257,7 @@ def Page():
                 show=component_state.is_current_step(Marker.est_dis3),
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
-                    "meas_theta": 10, # TODO pass student's value once we hook up angular size measurements
+                    "meas_theta": component_state.meas_theta.value,
                 },
             )
             ScaffoldAlert(
@@ -237,7 +268,7 @@ def Page():
                 show=component_state.is_current_step(Marker.est_dis4),
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
-                    "meas_theta": 10, # TODO pass student's value once we hook up angular size measurements
+                    "meas_theta": component_state.meas_theta.value,
                 },
             )
             ScaffoldAlert(
@@ -283,35 +314,11 @@ def Page():
                     { "text": "Distance (Mpc)", "value": "distance" },
                 ]
             
-            def update_show_ruler(marker):
-                component_state.show_ruler.value = Marker.is_between(marker, Marker.ang_siz3, Marker.est_dis4) or \
-                                                   Marker.is_between(marker, Marker.est_dis4, Marker.last())
-                
-            component_state.current_step.subscribe(update_show_ruler)
-
-            @solara.lab.computed
-            def on_example_galaxy_marker():
-                return component_state.current_step.value.value < Marker.rep_rem1.value
 
 
-            @solara.lab.computed
-            def current_galaxy():
-                galaxy = component_state.selected_galaxy.value
-                example_galaxy = component_state.selected_example_galaxy.value
-                return example_galaxy if on_example_galaxy_marker.value else galaxy
 
-            def _ang_size_cb(angle):
-                data = example_data if on_example_galaxy_marker.value else student_data
-                count = component_state.example_angular_sizes_total if on_example_galaxy_marker.value else component_state.angular_sizes_total
-                _update_angular_size(data, current_galaxy.value, angle, count)
 
-            DistanceToolComponent(
-                galaxy=current_galaxy.value,
-                show_ruler=component_state.show_ruler.value,
-                angular_size_callback=_ang_size_cb
-            )
-
-            if component_state.current_step.value.value < Marker.rep_rem1.value:
+            if component_state.current_step_at_or_before(Marker.dot_seq7):
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
                     value = galaxy["item"] if flag else None

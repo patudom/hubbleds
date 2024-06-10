@@ -60,10 +60,19 @@ class ComponentState(BaseComponentState):
     selected_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
     selected_example_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
     show_ruler: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    meas_theta: Reactive[float] = dataclasses.field(default=Reactive(0.0))
 
     def setup(self):
-        pass
+        def _on_example_galaxy_selected(*args):
+            if self.is_current_step(Marker.cho_row1):
+                self.transition_to(Marker.ang_siz2)
+
+        self.selected_example_galaxy.subscribe(_on_example_galaxy_selected)
     
+    @computed_property
+    def ang_siz2_gate(self):
+        return bool(self.selected_example_galaxy.value)
+
     @computed_property
     def dot_seq3_gate(self):
         return LOCAL_STATE.question_completed("ang_meas_consensus")

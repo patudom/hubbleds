@@ -17,11 +17,6 @@
       class="mb-4"
       v-intersect="typesetMathJax"
     >
-      <v-card color="error" class="mb-4">
-        <v-card-text>
-          For now, enter {{ state_view.meas_theta }} until we've properly wired up the galaxy measurements.
-        </v-card-text>
-      </v-card>
       <p>
         Enter the <b>angular size</b> of your galaxy in <b>arcseconds</b> in the box.
       </p>
