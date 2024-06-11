@@ -62,20 +62,24 @@ export default {
       }
     },
     mouseDownHandler(event) {
-      console.log("mousedown");
       this.mouseDown = true;
       if (this.movingLine) {
         this.movingLine = false;
         this.drawEndpoint(event);
         this.lineDrawn = true;
       }
-      if (this.hoveringEndpoint) {
-        this.movingLine = true;
-        this.clearEndpoint();
-      }
     },
     mouseUpHandler(_event) {
       this.mouseDown = false;
+    },
+    plotlyClickHandler(event) {
+      if (event.points[0].curveNumber === 1) {
+        if (this.hoveringEndpoint) {
+          this.hoveringEndpoint = false;
+          this.movingLine = true;
+          this.clearEndpoint();
+        }
+      }
     },
     plotlyHoverHandler(event) {
       if (event.points[0].curveNumber === 1) {
@@ -125,9 +129,11 @@ export default {
     },
     setupPlotlyHandlers(active) {
       if (active) {
+        this.element.on("plotly_click", this.plotlyClickHandler);
         this.element.on("plotly_hover", this.plotlyHoverHandler);
         this.element.on("plotly_unhover", this.plotlyUnhoverHandler);
       } else {
+        this.element.removeListener("plotly_click", this.plotlyClickHandler);
         this.element.removeListener("plotly_hover", this.plotlyHoverHandler);
         this.element.removeListener("plotly_unhover", this.plotlyUnhoverHandler);
       }
