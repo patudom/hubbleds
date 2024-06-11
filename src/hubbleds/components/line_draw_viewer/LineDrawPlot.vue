@@ -1,12 +1,16 @@
 <script>
 export default {
   name: "LineDrawPlot",
-  props: ["active", "line_drawn"],
+  props: ["active", "line_drawn", "plot_data"],
   mounted() {
     Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, this.chart.layout, this.chart.config)
       .then(() => {
         this.element = document.getElementById(this.chart.uuid);
         this.dragLayer = this.element.querySelector(".nsewdrag");
+        if (this.plot_data) {
+          this.plotDataCount = this.plot_data.length;
+          Plotly.addTraces(this.chart.uuid, this.plot_data);
+        }
         this.setupMouseHandlers(this.active);
         this.setupPlotlyHandlers(this.active);
       });
@@ -47,6 +51,7 @@ export default {
       mouseDown: false,
       movingLine: true,
       lastEndpoint: null,
+      plotDataCount: 0,
     };
   },
   methods: {
@@ -65,7 +70,7 @@ export default {
         this.chart.uuid,
         { 'x.1': xWorld, 'y.1': yWorld },
         {},
-        [0]
+        [this.lineTraceIndex]
       );
     },
     mouseMoveHandler(event) {
@@ -79,7 +84,6 @@ export default {
         this.movingLine = false;
         this.drawEndpoint(event);
         this.lineDrawn = true;
-        console.log(this.line_drawn);
         if (this.line_drawn) {
           this.line_drawn();
         }
@@ -89,7 +93,7 @@ export default {
       this.mouseDown = false;
     },
     plotlyClickHandler(event) {
-      if (event.points[0].curveNumber === 1) {
+      if (event.points[0].curveNumber === this.endpointTraceIndex) {
         if (this.hoveringEndpoint) {
           this.hoveringEndpoint = false;
           this.movingLine = true;
@@ -98,7 +102,7 @@ export default {
       }
     },
     plotlyHoverHandler(event) {
-      if (event.points[0].curveNumber === 1) {
+      if (event.points[0].curveNumber === this.endpointTraceIndex) {
         this.hoveringEndpoint = true;
         this.element.style.cursor = "move";
         this.dragLayer.style.cursor = "move";
@@ -106,7 +110,7 @@ export default {
       }
     },
     plotlyUnhoverHandler(event) {
-      if (event.points[0].curveNumber === 1) {
+      if (event.points[0].curveNumber === this.endpointTraceIndex) {
         this.hoveringEndpoint = false;
         this.element.style.cursor = "crosshair";
         this.dragLayer.style.cursor = "crosshair";
@@ -114,9 +118,10 @@ export default {
       }
     },
     clearEndpoint() {
-      if (this.element.data.length > 1) {
+      const dataTracesCount = this.plot_data?.length ?? 0;
+      if (this.element.data.length > dataTracesCount + 1) {
         try {
-          Plotly.deleteTraces(this.chart.uuid, 1);
+          Plotly.deleteTraces(this.chart.uuid, this.endpointTraceIndex);
         } catch (e) {
           console.warn(e);
         }
@@ -155,6 +160,14 @@ export default {
       }
     }
   },
+  computed: {
+    lineTraceIndex() {
+      return 0;
+    },
+    endpointTraceIndex() {
+      return (this.plot_data?.length ?? 0) + 1;
+    }
+  },
   watch: {
     chart() {
       Plotly.react(
@@ -175,7 +188,6 @@ export default {
 <div
   :ref="chart.uuid"
   :id="chart.uuid"
-  :class="active ? ['active'] : []"
 ></div>
 </template>
 

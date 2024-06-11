@@ -2,12 +2,12 @@ import reacton.ipyvuetify as rv
 import solara
 
 @solara.component_vue("LineDrawPlot.vue")
-def LineDrawPlot(active, event_line_drawn=None):
+def LineDrawPlot(active, event_line_drawn=None, plot_data=None):
     pass
 
 
 @solara.component
-def LineDrawViewer():
+def LineDrawViewer(plot_data=None):
 
     active = solara.use_reactive(False)
 
@@ -27,4 +27,4 @@ def LineDrawViewer():
             draw_button = solara.IconButton(icon_name="mdi-message-draw", on_click=on_draw_clicked)
             rv.BtnToggle(v_model="selected", children=[draw_button], background_color="primary", borderless=True)
 
-        LineDrawPlot(active=active.value, event_line_drawn=None)
+        LineDrawPlot(active=active.value, event_line_drawn=None, plot_data=plot_data)
