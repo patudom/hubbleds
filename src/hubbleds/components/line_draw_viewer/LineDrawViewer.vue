@@ -8,6 +8,8 @@ export default {
         this.element = document.getElementById(this.chart.uuid);
         this.setupMouseHandlers(this.active);
         this.element.on("plotly_click", this.plotlyClickHandler);
+        this.element.on("plotly_hover", this.plotlyHoverHandler);
+        this.element.on("plotly_unhover", this.plotlyUnhoverHandler);
       });
   },
   data() {
@@ -55,25 +57,44 @@ export default {
       if (this.active) {
         this.active = false;
         const [x, y] = this.screenToWorld(event);
-        Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 15, color: "red" }, meta: "endcap" });
+        Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 10, color: "red" }, meta: "endcap" });
       }
     },
     plotlyClickHandler(event) {
-      console.log(event);
-      console.log(event.points.data);
+      console.log(!this.active);
+      console.log(event.points[0].curveNumber === 1);
       if (!this.active && event.points[0].curveNumber === 1) {
+        console.log("HERE");
         this.active = true; 
         Plotly.update(
           this.chart.uuid,
           {},
-          { hovermode: "closest" }
+          { hovermode: "x" }
         );
+      }
+    },
+    plotlyHoverHandler(event) {
+      console.log("hover");
+      console.log(event.points[0].curveNumber);
+      if (!this.active && event.points[0].curveNumber === 1) {
+        this.element.style.cursor = "grab";
+      }
+    },
+    plotlyUnhoverHandler(event) {
+      console.log("unhover");
+      console.log(event.points[0].curveNumber);
+      if (!this.active && event.points[0].curveNumber === 1) {
+        this.element.style.cursor = "crosshair";
       }
     },
     setupMouseHandlers(active) {
       if (active) {
         if (this.element.data.length > 1) {
-          Plotly.deleteTraces(this.chart.uuid, 1);
+          try {
+            Plotly.deleteTraces(this.chart.uuid, 1);
+          } catch (e) {
+            console.log(e);
+          }
         }
         this.element.addEventListener("mousemove", this.mouseMoveHandler);
         this.element.addEventListener("mousedown", this.clickHandler);
@@ -99,5 +120,9 @@ export default {
 </script>
 
 <template>
-<div :ref="chart.uuid" :id="chart.uuid"></div>
+<div
+  :ref="chart.uuid"
+  :id="chart.uuid"
+  :class="active ? ['active'] : []"
+></div>
 </template>
