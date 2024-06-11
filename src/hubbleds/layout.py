@@ -1,6 +1,5 @@
-from cosmicds.layout import Layout as BaseLayout
+from cosmicds.layout import BaseLayout
 import solara
-from .state import GLOBAL_STATE
 from cosmicds.components import MathJaxSupport
 
 
@@ -13,5 +12,4 @@ def Layout(children=[]):
 
     solara.use_memo(_load_math_jax, dependencies=[])
 
-    with BaseLayout(children=children, story_name="hubbles_law", story_title="Hubble's Law"):
-        pass
+    BaseLayout(children=children, story_name="hubbles_law", story_title="Hubble's Law")
