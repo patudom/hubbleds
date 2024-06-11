@@ -20,14 +20,14 @@ export default {
             x: [0, 1],
             y: [0, 1],
             line: {
-              color: "#5e9e7e",
+              color: "#000000",
               width: 4,
               shape: "line"
             },
             hoverinfo: "skip"
           }
         ],
-        layout: { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false }, hovermode: "none", dragmode: false },
+        layout: { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false }, hovermode: "none", dragmode: false, showlegend: false },
       },
       active: true,
       element: null,
@@ -58,7 +58,6 @@ export default {
     },
     mouseMoveHandler(event) {
       if (this.movingLine) {
-        console.log("Updating line");
         this.updateLine(event);
       }
     },
@@ -79,11 +78,7 @@ export default {
       this.mouseDown = false;
     },
     plotlyHoverHandler(event) {
-      console.log("hover");
-      console.log(event.points[0].curveNumber);
       if (event.points[0].curveNumber === 1) {
-        console.log("Hovering");
-        console.log(this.dragLayer);
         this.hoveringEndpoint = true;
         this.element.style.cursor = "move";
         this.dragLayer.style.cursor = "move";
@@ -91,8 +86,6 @@ export default {
       }
     },
     plotlyUnhoverHandler(event) {
-      console.log("unhover");
-      console.log(event.points[0].curveNumber);
       if (event.points[0].curveNumber === 1) {
         this.hoveringEndpoint = false;
         this.element.style.cursor = "crosshair";
@@ -111,7 +104,7 @@ export default {
     },
     drawEndpoint(event) {
       const [x, y] = this.screenToWorld(event);
-      Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 10, color: "red" }, meta: "endcap" });
+      Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 10, color: "#000000" }, hoverinfo: "none" });
       this.lastEndpoint = [x, y];
     },
     setupMouseHandlers(active) {
