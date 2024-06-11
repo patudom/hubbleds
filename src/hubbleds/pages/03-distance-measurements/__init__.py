@@ -196,10 +196,10 @@ def Page():
                 if on_example_galaxy_marker.value:
                     value = int(angle.to(u.arcsec).value)
                     component_state.meas_theta.set(value)
+                    component_state.n_meas.set(component_state.n_meas.value + 1)
 
             def _get_ruler_clicks_cb(count):
                 component_state.ruler_click_count.set(count)
-                print("ruler_clicks", component_state.ruler_click_count.value)
 
             DistanceToolComponent(
                 galaxy=current_galaxy.value,
@@ -324,10 +324,6 @@ def Page():
                     { "text": "Distance (Mpc)", "value": "distance" },
                 ]
             
-
-
-
-
             if component_state.current_step_at_or_before(Marker.dot_seq7):
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
