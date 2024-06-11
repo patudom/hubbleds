@@ -33,8 +33,8 @@ export default {
         uuid: "abcde",
         traces: [
           {
-            x: [0, 1],
-            y: [0, 1],
+            x: [0, 0],
+            y: [0, 0],
             line: {
               color: "#000000",
               width: 4,
