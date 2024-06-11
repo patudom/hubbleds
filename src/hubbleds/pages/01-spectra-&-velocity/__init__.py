@@ -21,13 +21,13 @@ from ...components import (
     SpectrumSlideshow,
     DopplerSlideshow,
     ReflectVelocitySlideshow,
-    DotplotViewer
+    DotplotViewer,
 )
 
 from ...state import GLOBAL_STATE, LOCAL_STATE
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
-from .component_state import ComponentState, Marker
+from .component_state import ComponentState, Marker, ELEMENT_REST
 from ...remote import DatabaseAPI
 
 
@@ -38,13 +38,20 @@ component_state = ComponentState()
 
 def _on_galaxy_selected(galaxy):
     is_in = np.isin(
-        [x.name for x in student_data.measurements], galaxy["name"]
+        [x.galaxy.name for x in student_data.measurements], galaxy["name"]
     )  # Avoid duplicates
     already_present = is_in.size > 0 and is_in[0]
 
     if not already_present:
         galaxy["spectrum"] = component_state._load_spectrum_data(galaxy)
-        student_data.measurements.append(StudentMeasurement(**galaxy))
+        student_data.measurements.append(
+            StudentMeasurement(
+                **{
+                    "rest_wave": round(ELEMENT_REST[galaxy["element"]]),
+                    "galaxy": galaxy,
+                }
+            )
+        )
         component_state.total_galaxies.value += 1
         component_state.selected_galaxies.set(
             [*component_state.selected_galaxies.value, galaxy["id"]]
@@ -52,17 +59,21 @@ def _on_galaxy_selected(galaxy):
 
 
 def _on_example_galaxy_table_row_selected(row):
-    galaxy = example_data.get_by_id(row["item"]["id"])
-    component_state.selected_example_galaxy.set(galaxy.id)
-    component_state.lambda_rest.set(galaxy.rest_wave)
+    print("Example table row selected")
+    measurement = example_data.get_by_galaxy_id(row["item"]["galaxy"]["id"])
+    component_state.selected_example_galaxy.set(measurement.galaxy.id)
+    component_state.lambda_rest.set(measurement.rest_wave)
     component_state.lambda_obs.set(0.0)
     component_state.student_vel.set(0.0)
 
 
 def _on_galaxy_table_row_selected(row):
-    galaxy = student_data.get_by_id(row["item"]["id"], exclude={"spectrum"})
-    component_state.selected_galaxy.set(galaxy.id)
-    component_state.lambda_rest.set(galaxy.rest_wave)
+    print("Table row selected.")
+    measurement = student_data.get_by_galaxy_id(
+        row["item"]["galaxy"]["id"], exclude={"spectrum"}
+    )
+    component_state.selected_galaxy.set(measurement.galaxy.id)
+    component_state.lambda_rest.set(measurement.rest_wave)
     component_state.lambda_obs.set(0.0)
     component_state.student_vel.set(0.0)
 
@@ -74,9 +85,7 @@ def _on_wavelength_measured(value, update_example=False, update_student=False):
         )
         component_state.lambda_obs.set(value)
     elif update_student:
-        student_data.update(
-            component_state.selected_galaxy.value, {"obs_wave": value}
-        )
+        student_data.update(component_state.selected_galaxy.value, {"obs_wave": value})
         component_state.lambda_obs.set(value)
         component_state.obswaves_total.value += 1
 
@@ -96,11 +105,11 @@ def _on_velocity_calculated(value, update_example=False, update_student=False):
 
 def _calculate_velocity(*args, **kwargs):
     for gal_id in component_state.selected_galaxies.value:
-        galaxy = student_data.get_by_id(gal_id, exclude={"spectrum"})
-        rest_wave = galaxy.rest_wave
-        obs_wave = galaxy.obs_wave
+        measurement = student_data.get_by_galaxy_id(gal_id, exclude={"spectrum"})
+        rest_wave = measurement.rest_wave
+        obs_wave = measurement.obs_wave
         velocity = round((3 * (10**5) * (obs_wave / rest_wave - 1)), 0)
-        student_data.update(galaxy.id, {"velocity": velocity})
+        student_data.update(measurement.galaxy.id, {"velocity": velocity})
         component_state.velocities_total.value += 1
 
 
@@ -113,21 +122,22 @@ def transition_to_next_stage():
 
 @solara.component
 def Page():
+    def _component_setup():
+        # Solara's reactivity is often tied to the _context_ of the Page it's
+        #  being rendered in. Currently, in order to trigger subscribed
+        #  callbacks, state connections need to be initialized _inside_ a Page.
+        component_state.setup()
 
-    # Custom vue-only components have to be registered in the Page element
-    #  currently, otherwise they will not be available in the front-end
-    load_custom_vue_components()
+        # Custom vue-only components have to be registered in the Page element
+        #  currently, otherwise they will not be available in the front-end
+        load_custom_vue_components()
 
-    # Solara's reactivity is often tied to the _context_ of the Page it's
-    #  being rendered in. Currently, in order to trigger subscribed callbacks,
-    #  state connections need to be initialized _inside_ a Page.
-    component_state.setup()
+    solara.use_memo(_component_setup)
 
     # NOTE: use_memo has to be part of the main page render. Including it in
     #  a conditional will result in an error.
     def glue_setup():
-        gjapp = JupyterApplication(GLOBAL_STATE.data_collection,
-                                   GLOBAL_STATE.session)
+        gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
 
         return gjapp
 
@@ -141,7 +151,7 @@ def Page():
     )
 
     # solara.Text(f"{auth.user.value["userinfo"]} {GLOBAL_STATE.hashed_user}")
-    database_api = DatabaseAPI()
+    # database_api = DatabaseAPI()
     # solara.Text(f"{database_api.get_measurements()}")
 
     if LOCAL_STATE.debug_mode:
@@ -305,22 +315,29 @@ def Page():
             def _update_selected_position():
                 """When a data table row is selected, move to galaxy location."""
                 if component_state.selected_galaxy.value:
+                    print("Updating selected position.")
                     selection_tool_widget = solara.get_widget(selection_tool)
-                    galaxy = student_data.get_by_id(
+                    measurement = student_data.get_by_galaxy_id(
                         component_state.selected_galaxy.value, exclude={"spectrum"}
                     )
-                    if galaxy is not None:
-                        selection_tool_widget.go_to_location(galaxy.ra, galaxy.decl)
+                    if measurement is not None:
+                        selection_tool_widget.go_to_location(
+                            measurement.galaxy.ra, measurement.galaxy.decl
+                        )
 
             def _update_example_selected_position():
                 """When an example data table row is selected, move to galaxy location."""
                 if component_state.selected_example_galaxy.value:
+                    print("Updating example selected position.")
                     selection_tool_widget = solara.get_widget(selection_tool)
-                    galaxy = example_data.get_by_id(
-                        component_state.selected_example_galaxy.value, exclude={"spectrum"}
+                    measurement = example_data.get_by_galaxy_id(
+                        component_state.selected_example_galaxy.value,
+                        exclude={"spectrum"},
                     )
-                    if galaxy is not None:
-                        selection_tool_widget.go_to_location(galaxy.ra, galaxy.decl)
+                    if measurement is not None:
+                        selection_tool_widget.go_to_location(
+                            measurement.galaxy.ra, measurement.galaxy.decl
+                        )
 
             solara.use_effect(
                 _update_selection_tool, [component_state.current_step.value]
@@ -329,7 +346,8 @@ def Page():
                 _update_selected_position, [component_state.selected_galaxy.value]
             )
             solara.use_effect(
-                _update_example_selected_position, [component_state.selected_example_galaxy.value]
+                _update_example_selected_position,
+                [component_state.selected_example_galaxy.value],
             )
 
     with rv.Row():
@@ -400,10 +418,14 @@ def Page():
                     "obswaves_total": component_state.obswaves_total.value,
                     "has_bad_velocities": component_state.has_bad_velocities.value,
                     "has_multiple_bad_velocities": component_state.has_multiple_bad_velocities.value,
-                    "selected_galaxy": student_data.get_by_id(
-                        component_state.selected_galaxy.value,
-                        exclude={"spectrum"},
-                        asdict=True,
+                    "selected_galaxy": (
+                        student_data.get_by_galaxy_id(
+                            component_state.selected_galaxy.value,
+                            exclude={"spectrum"},
+                            asdict=True,
+                        ).get("galaxy")
+                        if component_state.selected_galaxy.value
+                        else None
                     ),
                 },
             )
@@ -621,7 +643,15 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.res_wav1),
                 state_view={
-                    "selected_example_galaxy": component_state.selected_example_galaxy.value,
+                    "selected_example_galaxy": (
+                        example_data.get_by_galaxy_id(
+                            component_state.selected_example_galaxy.value,
+                            exclude={"spectrum"},
+                            asdict=True,
+                        ).get("galaxy")
+                        if component_state.selected_example_galaxy.value
+                        else None
+                    ),
                     "lambda_on": component_state.lambda_on.value,
                     "lambda_used": component_state.lambda_used.value,
                 },
@@ -633,7 +663,15 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.obs_wav1),
                 state_view={
-                    "selected_example_galaxy": component_state.selected_example_galaxy.value,
+                    "selected_example_galaxy": (
+                        example_data.get_by_galaxy_id(
+                            component_state.selected_example_galaxy.value,
+                            exclude={"spectrum"},
+                            asdict=True,
+                        ).get("galaxy")
+                        if component_state.selected_example_galaxy.value
+                        else None
+                    ),
                 },
             )
             ScaffoldAlert(
@@ -643,7 +681,15 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.obs_wav2),
                 state_view={
-                    "selected_example_galaxy": component_state.selected_example_galaxy.value,
+                    "selected_example_galaxy": (
+                        example_data.get_by_galaxy_id(
+                            component_state.selected_example_galaxy.value,
+                            exclude={"spectrum"},
+                            asdict=True,
+                        ).get("galaxy")
+                        if component_state.selected_example_galaxy.value
+                        else None
+                    ),
                     "zoom_tool_activate": component_state.zoom_tool_activated.value,
                 },
             )
@@ -709,18 +755,18 @@ def Page():
                 data = {}
 
                 if show_example_galaxy_spec:
-                    data = example_data.measurements[0].spectrum.model_dump()
+                    data = example_data.measurements[0].galaxy.spectrum.model_dump()
                 elif show_galaxy_spec:
                     if component_state.selected_galaxy.value:
                         data = (
-                            student_data.get_by_id(
+                            student_data.get_by_galaxy_id(
                                 component_state.selected_galaxy.value
                             )
                             or {}
                         )
 
                         if data:
-                            data = data.spectrum.model_dump()
+                            data = data.galaxy.spectrum.model_dump()
 
                 return Table(
                     {
