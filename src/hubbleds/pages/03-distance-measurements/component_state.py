@@ -26,7 +26,6 @@ class Marker(enum.Enum, MarkerBase):
     ang_siz5 = enum.auto()	
     est_dis1 = enum.auto()	
     est_dis2 = enum.auto()	
-    cho_row2 = enum.auto()	
     est_dis3 = enum.auto()	
     est_dis4 = enum.auto()	
     dot_seq1 = enum.auto()	

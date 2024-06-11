@@ -251,14 +251,6 @@ def Page():
                 },
             )
             ScaffoldAlert(
-                # TODO This will need to be wired up once table is implemented
-                GUIDELINE_ROOT / "GuidelineChooseRow2.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
-                event_back_callback=lambda *args: component_state.transition_previous(),
-                can_advance=component_state.can_transition(next=True),
-                show=component_state.is_current_step(Marker.cho_row2),
-            )
-            ScaffoldAlert(
                 # TODO This will need to be wired up once measuring tool is implemented
                 GUIDELINE_ROOT / "GuidelineEstimateDistance3.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
