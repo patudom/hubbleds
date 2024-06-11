@@ -2,7 +2,8 @@
 export default {
   name: "LineDrawPlot",
   props: ["active", "line_drawn", "plot_data"],
-  mounted() {
+  async mounted() {
+    await window.plotlyPromise;
     Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, this.chart.layout, this.chart.config)
       .then(() => {
         this.element = document.getElementById(this.chart.uuid);
