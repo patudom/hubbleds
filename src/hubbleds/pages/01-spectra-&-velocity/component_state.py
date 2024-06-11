@@ -315,9 +315,6 @@ class ComponentState(BaseComponentState):
             self._example_galaxy_data["name"] = example_galaxy_data["name"].replace(
                 ".fits", ""
             )
-            self._example_galaxy_data["rest_wave"] = round(
-                ELEMENT_REST[example_galaxy_data["element"]]
-            )
 
             # Load the spectrum associated with the example data
             spec_data = self._load_spectrum_data(self._example_galaxy_data)
@@ -325,7 +322,14 @@ class ComponentState(BaseComponentState):
 
             # Explicitly add the example galaxy to the example measurements
             example_data.measurements.append(
-                StudentMeasurement(**self.example_galaxy_data)
+                StudentMeasurement(
+                    **{
+                        "rest_wave": round(
+                            ELEMENT_REST[example_galaxy_data["element"]]
+                        ),
+                        "galaxy": self.example_galaxy_data,
+                    }
+                )
             )
 
         return self._example_galaxy_data
