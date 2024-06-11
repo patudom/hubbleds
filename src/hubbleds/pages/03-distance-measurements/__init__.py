@@ -11,7 +11,7 @@ from hubbleds.widgets.distance_tool.distance_tool import DistanceTool
 
 from ...components import AngsizeDosDontsSlideshow, DataTable
 from ...data_management import *
-from ...utils import DISTANCE_CONSTANT, GALAXY_FOV
+from ...utils import DISTANCE_CONSTANT, GALAXY_FOV, distance_from_angular_size
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
@@ -30,7 +30,6 @@ def _update_angular_size(data, galaxy, angular_size, count):
         arcsec_value = int(angular_size.to(u.arcsec).value)
         data.update(galaxy["id"], {"angular_size": arcsec_value})
         count.value += 1
-
 
 @solara.component
 def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback):
