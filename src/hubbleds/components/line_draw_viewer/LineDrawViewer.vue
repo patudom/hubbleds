@@ -7,9 +7,7 @@ export default {
       .then(() => {
         this.element = document.getElementById(this.chart.uuid);
         this.setupMouseHandlers(this.active);
-        this.element.on("plotly_click", this.plotlyClickHandler);
-        this.element.on("plotly_hover", this.plotlyHoverHandler);
-        this.element.on("plotly_unhover", this.plotlyUnhoverHandler);
+        this.setupPlotlyHandlers(this.active);
       });
   },
   data() {
@@ -31,6 +29,8 @@ export default {
       },
       active: true,
       element: null,
+      lineDrawn: false,
+      mouseDown: false,
     };
   },
   methods: {
@@ -43,7 +43,7 @@ export default {
       const yWorld = layout.yaxis.p2c(y - layout.margin.t);
       return [xWorld, yWorld];
     },
-    mouseMoveHandler(event) {
+    updateLine(event) {
       const [xWorld, yWorld] = this.screenToWorld(event);
       const newLayout = { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false } };
       Plotly.update(
@@ -53,19 +53,30 @@ export default {
         [0]
       );
     },
-    clickHandler(event) {
-      if (this.active) {
-        this.active = false;
-        const [x, y] = this.screenToWorld(event);
-        Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 10, color: "red" }, meta: "endcap" });
+    mouseMoveHandler(event) {
+      console.log(this.lineDrawn, this.mouseDown);
+      if (!this.lineDrawn || this.mouseDown) {
+        this.updateLine(event);
       }
     },
+    mouseDownHandler(event) {
+      console.log("mousedown");
+      this.mouseDown = true;
+      if (this.lineDrawn && this.element.style.cursor === "grab") {
+        this.element.style.cursor = "grabbing";
+      }
+      const [x, y] = this.screenToWorld(event);
+      Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 10, color: "red" }, meta: "endcap" });
+      this.lineDrawn = true;
+    },
+    mouseUpHandler(event) {
+      console.log("mouseup");
+      this.mouseDown = false;
+      this.element.style.cursor = "crosshair";
+    },
     plotlyClickHandler(event) {
-      console.log(!this.active);
-      console.log(event.points[0].curveNumber === 1);
-      if (!this.active && event.points[0].curveNumber === 1) {
-        console.log("HERE");
-        this.active = true; 
+      if (event.points[0].curveNumber === 1) {
+        this.mouseDown = true;
         Plotly.update(
           this.chart.uuid,
           {},
@@ -76,14 +87,14 @@ export default {
     plotlyHoverHandler(event) {
       console.log("hover");
       console.log(event.points[0].curveNumber);
-      if (!this.active && event.points[0].curveNumber === 1) {
+      if (event.points[0].curveNumber === 1) {
         this.element.style.cursor = "grab";
       }
     },
     plotlyUnhoverHandler(event) {
       console.log("unhover");
       console.log(event.points[0].curveNumber);
-      if (!this.active && event.points[0].curveNumber === 1) {
+      if (event.points[0].curveNumber === 1) {
         this.element.style.cursor = "crosshair";
       }
     },
@@ -97,10 +108,23 @@ export default {
           }
         }
         this.element.addEventListener("mousemove", this.mouseMoveHandler);
-        this.element.addEventListener("mousedown", this.clickHandler);
+        this.element.addEventListener("mousedown", this.mouseDownHandler);
+        this.element.addEventListener("mouseup", this.mouseUpHandler);
       } else if (this.element != null) {
         this.element.removeEventListener("mousemove", this.mouseMoveHandler);
-        this.element.removeEventListener("mousedown", this.clickHandler);
+        this.element.removeEventListener("mousedown", this.mouseDownHandler);
+        this.element.removeEventListener("mouseup", this.mouseUpHandler);
+      }
+    },
+    setupPlotlyHandlers(active) {
+      if (active) {
+        this.element.on("plotly_click", this.plotlyClickHandler);
+        this.element.on("plotly_hover", this.plotlyHoverHandler);
+        this.element.on("plotly_unhover", this.plotlyUnhoverHandler);
+      } else {
+        this.element.removeListener("plotly_click", this.plotlyClickHandler);
+        this.element.removeListener("plotly_hover", this.plotlyHoverHandler);
+        this.element.removeListener("plotly_unhover", this.plotlyUnhoverHandler);
       }
     }
   },
@@ -114,6 +138,7 @@ export default {
     },
     active(value) {
       this.setupMouseHandlers(value);
+      this.setupPlotlyHandlers(value);
     }
   }
 }
