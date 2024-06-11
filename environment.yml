@@ -201,5 +201,4 @@ dependencies:
   - xlrd==2.0.1
   - zarr==2.18.2
   - zipp==3.19.2
-  - git+https://github.com/cosmicds/cosmicds.git
   - git+https://github.com/nmearl/ipywwt.git
