@@ -4,7 +4,23 @@ export default {
   props: ["active", "line_drawn", "plot_data"],
   async mounted() {
     await window.plotlyPromise;
-    Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, this.chart.layout, this.chart.config)
+
+    let xmin = 0;
+    let xmax = 0;
+    let ymin = 0;
+    let ymax = 0;
+    this.plot_data?.forEach(trace => {
+      // NB: We can't call e.g. Math.min.apply because of the observer object that Vue puts into the array
+      xmin = Math.min(xmin, Math.min(...trace.x));
+      ymin = Math.min(ymin, Math.min(...trace.y));
+      xmax = Math.max(xmax, Math.max(...trace.x));
+      ymax = Math.max(ymax, Math.max(...trace.y));
+    });
+    const layout = this.chart.layout;
+    layout.xaxis.range = [xmin, xmax];
+    layout.yaxis.range = [ymin, ymax];
+
+    Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, layout, this.chart.config)
       .then(() => {
         this.element = document.getElementById(this.chart.uuid);
         this.dragLayer = this.element.querySelector(".nsewdrag");
@@ -28,6 +44,7 @@ export default {
       autorange: false,
       automargin: true,
     };
+
     const xaxis = { ...baseAxis, range: [0, 1] };
     const yaxis = { ...baseAxis, range: [0, 1] };
     return {
@@ -42,6 +59,7 @@ export default {
               width: 4,
               shape: "line"
             },
+            visible: false,
             hoverinfo: "skip"
           }
         ],
@@ -54,6 +72,7 @@ export default {
       movingLine: true,
       lastEndpoint: null,
       plotDataCount: 0,
+      lineTraceIndex: 0,
     };
   },
   methods: {
@@ -171,9 +190,6 @@ export default {
     }
   },
   computed: {
-    lineTraceIndex() {
-      return 0;
-    },
     endpointTraceIndex() {
       return (this.plot_data?.length ?? 0) + 1;
     }
@@ -187,6 +203,7 @@ export default {
       );
     },
     active(value) {
+      Plotly.update(this.chart.uuid, { visible: true }, {}, [this.lineTraceIndex]);
       this.setupMouseHandlers(value);
       this.setupPlotlyHandlers(value);
     }

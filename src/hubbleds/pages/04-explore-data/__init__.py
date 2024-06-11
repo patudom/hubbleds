@@ -74,7 +74,7 @@ def Page():
     StateEditor(Marker, component_state)
     
     x = [0.1 * i for i in range(1, 11)]
-    plot_data = [{ "x": x, "y": [1 / (1 + ((1-t)/t)**2) for t in x], "color": "red", "hoverinfo": "none" }]
+    plot_data = [{ "x": x, "y": [1 / (1 + ((1-t)/t)**2) for t in x], "line": { "color": "red" }, "hoverinfo": "none" }]
     LineDrawViewer(plot_data)
 
     # if LOCAL_STATE.debug_mode:
