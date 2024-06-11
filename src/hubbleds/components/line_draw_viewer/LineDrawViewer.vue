@@ -6,6 +6,7 @@ export default {
     Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, this.chart.layout)
       .then(() => {
         this.element = document.getElementById(this.chart.uuid);
+        this.dragLayer = this.element.querySelector(".nsewdrag");
         this.setupMouseHandlers(this.active);
         this.setupPlotlyHandlers(this.active);
       });
@@ -22,15 +23,18 @@ export default {
               color: "#5e9e7e",
               width: 4,
               shape: "line"
-            }
+            },
+            hoverinfo: "skip"
           }
         ],
-        layout: { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false }, hovermode: "closest" },
+        layout: { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false }, hovermode: "none", dragmode: false },
       },
       active: true,
       element: null,
       lineDrawn: false,
       mouseDown: false,
+      movingLine: true,
+      lastEndpoint: null,
     };
   },
   methods: {
@@ -45,7 +49,6 @@ export default {
     },
     updateLine(event) {
       const [xWorld, yWorld] = this.screenToWorld(event);
-      const newLayout = { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false } };
       Plotly.update(
         this.chart.uuid,
         { 'x.1': xWorld, 'y.1': yWorld },
@@ -54,75 +57,84 @@ export default {
       );
     },
     mouseMoveHandler(event) {
-      console.log(this.lineDrawn, this.mouseDown);
-      if (!this.lineDrawn || this.mouseDown) {
+      if (this.movingLine) {
+        console.log("Updating line");
         this.updateLine(event);
       }
     },
     mouseDownHandler(event) {
       console.log("mousedown");
       this.mouseDown = true;
-      if (this.lineDrawn && this.element.style.cursor === "grab") {
-        this.element.style.cursor = "grabbing";
+      if (this.movingLine) {
+        this.movingLine = false;
+        this.drawEndpoint(event);
+        this.lineDrawn = true;
       }
-      const [x, y] = this.screenToWorld(event);
-      Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 10, color: "red" }, meta: "endcap" });
-      this.lineDrawn = true;
+      if (this.hoveringEndpoint) {
+        this.movingLine = true;
+        this.clearEndpoint();
+      }
     },
-    mouseUpHandler(event) {
-      console.log("mouseup");
+    mouseUpHandler(_event) {
       this.mouseDown = false;
-      this.element.style.cursor = "crosshair";
-    },
-    plotlyClickHandler(event) {
-      if (event.points[0].curveNumber === 1) {
-        this.mouseDown = true;
-        Plotly.update(
-          this.chart.uuid,
-          {},
-          { hovermode: "x" }
-        );
-      }
     },
     plotlyHoverHandler(event) {
       console.log("hover");
       console.log(event.points[0].curveNumber);
       if (event.points[0].curveNumber === 1) {
-        this.element.style.cursor = "grab";
+        console.log("Hovering");
+        console.log(this.dragLayer);
+        this.hoveringEndpoint = true;
+        this.element.style.cursor = "move";
+        this.dragLayer.style.cursor = "move";
+        this.dragLayer.classList.remove("cursor-crosshair");
       }
     },
     plotlyUnhoverHandler(event) {
       console.log("unhover");
       console.log(event.points[0].curveNumber);
       if (event.points[0].curveNumber === 1) {
+        this.hoveringEndpoint = false;
         this.element.style.cursor = "crosshair";
+        this.dragLayer.style.cursor = "crosshair";
+        this.dragLayer.classList.add("cursor-crosshair");
       }
     },
-    setupMouseHandlers(active) {
-      if (active) {
-        if (this.element.data.length > 1) {
-          try {
-            Plotly.deleteTraces(this.chart.uuid, 1);
-          } catch (e) {
-            console.log(e);
-          }
+    clearEndpoint() {
+      if (this.element.data.length > 1) {
+        try {
+          Plotly.deleteTraces(this.chart.uuid, 1);
+        } catch (e) {
+          console.warn(e);
         }
+      }
+    },
+    drawEndpoint(event) {
+      const [x, y] = this.screenToWorld(event);
+      Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 10, color: "red" }, meta: "endcap" });
+      this.lastEndpoint = [x, y];
+    },
+    setupMouseHandlers(active) {
+      // Using document as the event listener for mouseup is intentional
+      // See this thread here: https://community.plotly.com/t/plotly-onmousedown-and-onmouseup/4812
+      // For some reason, mousedown works fine on the Plotly graph, but not mouseup
+      // Any ideas on how to not need to do this would be great!
+      if (active) {
+        this.clearEndpoint();
         this.element.addEventListener("mousemove", this.mouseMoveHandler);
         this.element.addEventListener("mousedown", this.mouseDownHandler);
-        this.element.addEventListener("mouseup", this.mouseUpHandler);
+        document.addEventListener("mouseup", this.mouseUpHandler);
       } else if (this.element != null) {
         this.element.removeEventListener("mousemove", this.mouseMoveHandler);
         this.element.removeEventListener("mousedown", this.mouseDownHandler);
-        this.element.removeEventListener("mouseup", this.mouseUpHandler);
+        document.removeEventListener("mouseup", this.mouseUpHandler);
       }
     },
     setupPlotlyHandlers(active) {
       if (active) {
-        this.element.on("plotly_click", this.plotlyClickHandler);
         this.element.on("plotly_hover", this.plotlyHoverHandler);
         this.element.on("plotly_unhover", this.plotlyUnhoverHandler);
       } else {
-        this.element.removeListener("plotly_click", this.plotlyClickHandler);
         this.element.removeListener("plotly_hover", this.plotlyHoverHandler);
         this.element.removeListener("plotly_unhover", this.plotlyUnhoverHandler);
       }
