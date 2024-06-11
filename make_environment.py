@@ -15,8 +15,9 @@ def pip_filter(d):
     return isinstance(d, dict) and "pip" in d
 
 def dep_filter(d):
+    keep_deps = ["pip", "python"]
     return pip_filter(d) or \
-           (isinstance(d, str) and d.startswith("pip=")) 
+           (isinstance(d, str) and any(d.startswith(f"{dep}=") for dep in keep_deps))
 
 env["dependencies"] = [d for d in env["dependencies"] if dep_filter(d)]
 
