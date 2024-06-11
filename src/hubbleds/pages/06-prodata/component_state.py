@@ -31,7 +31,7 @@ class Marker(enum.Enum, MarkerBase):
     
 @dataclasses.dataclass
 class ComponentState(BaseComponentState):
-    current_step: Reactive[Marker] = dataclasses.field(default=Reactive(Marker.pro_dat0))
+    current_step: Reactive[Marker] = dataclasses.field(default=Reactive(Marker.pro_dat7))
     
     hst_age: float = dataclasses.field(default=HST_KEY_AGE) # a constant value
     

@@ -9,11 +9,11 @@ from hubbleds.decorators import computed_property
 # glue_settings.BACKGROUND_COLOR = 'white'
 # glue_settings.FOREGROUND_COLOR= 'black'
 
-from typing import Optional, Callable, Any
+from typing import Optional, Callable, Any, Tuple, List
 
 from .data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
 from .tools import *
-
+from .free_response import * # imports FreeResponse, fr_init_response, fr_response
 @dataclasses.dataclass
 class MCScore:
     tag: str = dataclasses.field(init=True)
@@ -56,14 +56,17 @@ class LocalState:
     started: Reactive[bool] = dataclasses.field(default=Reactive(False))
     class_data_students: Reactive[list] = dataclasses.field(default=Reactive([]))
     class_data_info: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    mc_scoring : Reactive[dict[str, MCScore]]  = dataclasses.field(default=Reactive({
-        # 'pro-dat1': {'tag': 'pro-dat1', 'score': 0.0, 'choice': 1, 'tries': 1, 'wrong_attempts': 0},
-    }))
+    mc_scoring : Reactive[dict[str, MCScore]]  = dataclasses.field(default=Reactive({}))
+    free_responses: Reactive[FreeResponseDict] = dataclasses.field(default=Reactive(FreeResponseDict()))
     
     def question_completed(self, qtag: str):
         if qtag in self.mc_scoring.value:
-            return self.mc_scoring.value[qtag].completed().value
+            return self.mc_scoring.value[qtag].completed().value #type: ignore
         return False
+    
+
+    
+    
 
 GLOBAL_STATE = GlobalState()
 LOCAL_STATE = LocalState()
@@ -124,3 +127,17 @@ def mc_serialize_score(mc_score = None):
         if mc_score is None:
             return None
         return mc_score.toJSON()
+
+
+    
+
+def fr_callback(event: Tuple[str,dict[str,str]], local_state: LocalState, callback: Optional[Callable] = None):
+    print("fr_callback", event)
+    if event[0] == 'fr-initialize':
+        # by using get_free_response in the Page, we can avoid separetely initializing the free response
+        # initialize_free_response(local_state.free_responses, tag=event[1]['tag'])
+        pass
+    elif event[0] == 'fr-update':
+        return update_free_response(local_state.free_responses, tag=event[1]['tag'], response=event[1]['response'])
+    else:
+        raise ValueError(f"Unknown event in fr_callback: <<{event}>> ")
