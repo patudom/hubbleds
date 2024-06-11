@@ -35,22 +35,22 @@ class StudentMeasurement(BaseModel):
 class StudentData(BaseModel):
     measurements: Optional[List[StudentMeasurement]]
 
-    def update(self, id_: str, data: dict):
+    def update(self, id_: str | int, data: dict):
         idx = next(
-            iter(i for i, x in enumerate(self.measurements) if x.id == id_), None
+            iter(i for i, x in enumerate(self.measurements) if x.galaxy.id == int(id_)), None
         )
 
         if idx is None:
-            print(f"No data with id {id_} found.")
+            # print(f"No data with id {id_} found.")
             return
 
         self.measurements[idx] = StudentMeasurement(
             **{**self.measurements[idx].dict(), **data}
         )
 
-    def get_by_id(self, id_: str, exclude=None, asdict=False):
+    def get_by_galaxy_id(self, id_: str | int, exclude=None, asdict=False):
         idx = next(
-            iter(i for i, x in enumerate(self.measurements) if x.id == id_), None
+            iter(i for i, x in enumerate(self.measurements) if x.galaxy.id == int(id_)), None
         )
 
         print(f"Found spectral data with id {id_} at index {idx}.")
