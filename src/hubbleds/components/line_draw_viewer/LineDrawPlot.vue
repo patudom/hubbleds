@@ -26,6 +26,7 @@ export default {
       showgrid: false,
       showticklabels: true,
       autorange: false,
+      automargin: true,
     };
     const xaxis = { ...baseAxis, range: [0, 1] };
     const yaxis = { ...baseAxis, range: [0, 1] };
@@ -45,7 +46,7 @@ export default {
           }
         ],
         layout: { xaxis, yaxis, hovermode: "none", dragmode: false, showlegend: false },
-        config: { displayModeBar: false },
+        config: { displayModeBar: false, responsive: true },
       },
       element: null,
       lineDrawn: false,
@@ -85,6 +86,7 @@ export default {
         this.movingLine = false;
         this.drawEndpoint(event);
         this.lineDrawn = true;
+        this.setCursor("move");
         if (this.line_drawn) {
           this.line_drawn();
         }
@@ -105,17 +107,24 @@ export default {
     plotlyHoverHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
         this.hoveringEndpoint = true;
-        this.element.style.cursor = "move";
-        this.dragLayer.style.cursor = "move";
-        this.dragLayer.classList.remove("cursor-crosshair");
+        this.setCursor("move");
       }
     },
     plotlyUnhoverHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
         this.hoveringEndpoint = false;
-        this.element.style.cursor = "crosshair";
-        this.dragLayer.style.cursor = "crosshair";
+        this.setCursor("crosshair");
+      }
+    },
+    setCursor(type) {
+      this.element.style.cursor = type;
+      this.dragLayer.style.cursor = type;
+      // This class sets the cursor to be the crosshair on Plotly
+      // so we need a bit of special handling here
+      if (type === "crosshair") {
         this.dragLayer.classList.add("cursor-crosshair");
+      } else {
+        this.dragLayer.classList.remove("cursor-crosshair");
       }
     },
     clearEndpoint() {
@@ -193,7 +202,13 @@ export default {
 </template>
 
 <style>
-div.js-plotly-plot {
-  width: 100%;
+.svg-container {
+  width: 100% !important;
+}
+
+.main-svg {
+  width: 100% !important;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 </style>
