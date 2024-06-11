@@ -1,6 +1,8 @@
 <template>
   <v-card color="info"
-          :class="highlighted ? 'pa-1' : ''">
+          :class="highlighted ? 'pa-1' : ''"
+          rounded="5"
+  >
     <v-data-table
         :headers="headers"
         :items="items"
@@ -11,7 +13,6 @@
         single-select
         show-select
         @item-selected="on_row_selected"
-        v-model="selected"
     >
       <template
           v-slot:top
@@ -46,6 +47,14 @@
         </thead>
       </template>
 
+      <template v-slot:item.name="{ item }">
+        {{ item.galaxy.name }}
+      </template>
+
+      <template v-slot:item.element="{ item }">
+        {{ item.galaxy.element }}
+      </template>
+
       <template v-slot:item.rest_wave="{ item }">
         {{ item.rest_wave }}
       </template>
@@ -67,3 +76,5 @@
 <style scoped>
 
 </style>
+<script setup>
+</script>
