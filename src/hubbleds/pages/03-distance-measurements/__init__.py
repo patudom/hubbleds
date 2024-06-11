@@ -33,7 +33,7 @@ def _update_angular_size(data, galaxy, angular_size, count):
 
 
 @solara.component
-def DistanceToolComponent(galaxy, show_ruler, angular_size_callback):
+def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -61,8 +61,13 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback):
 
         widget.observe(update_angular_size, ["angular_size"])
 
-    solara.use_effect(_define_callbacks, [])
+        def get_ruler_click_count(change):
+            count = change["new"]
+            ruler_count_callback(count)
 
+        widget.observe(get_ruler_click_count, ["ruler_click_count"])
+
+    solara.use_effect(_define_callbacks, [])
 
 @solara.component
 def Page():
@@ -192,10 +197,15 @@ def Page():
                     value = int(angle.to(u.arcsec).value)
                     component_state.meas_theta.set(value)
 
+            def _get_ruler_clicks_cb(count):
+                component_state.ruler_click_count.set(count)
+                print("ruler_clicks", component_state.ruler_click_count.value)
+
             DistanceToolComponent(
                 galaxy=current_galaxy.value,
                 show_ruler=component_state.show_ruler.value,
-                angular_size_callback=_ang_size_cb
+                angular_size_callback=_ang_size_cb,
+                ruler_count_callback=_get_ruler_clicks_cb,
             )
 
             with rv.Col(cols=6, offset=3):
