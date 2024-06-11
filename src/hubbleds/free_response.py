@@ -38,6 +38,10 @@ class FreeResponse:
 class FreeResponseDict:
     responses: Reactive[Dict[str, FreeResponse]] = dataclasses.field(default_factory=lambda: Reactive({}))
     
+    def __repr__(self) -> str:
+        formatted_responses = {tag: response.toJsonSerializable() for tag, response in self.responses.value.items()}
+        return f"FreeResponseDict({formatted_responses})"
+    
     def add_free_response_question(self, tag):
         """Add a new free response question with the given tag."""
         if tag in self.responses.value:
