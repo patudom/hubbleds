@@ -73,7 +73,7 @@ def Page():
 
     StateEditor(Marker, component_state)
     
-    ldv = LineDrawViewer()
+    LineDrawViewer()
 
     # if LOCAL_STATE.debug_mode:
 

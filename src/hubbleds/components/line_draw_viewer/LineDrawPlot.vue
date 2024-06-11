@@ -1,9 +1,9 @@
 <script>
 export default {
-  name: "LineDrawViewer",
-  props: ["chart"],
+  name: "LineDrawPlot",
+  props: ["active", "line_drawn"],
   mounted() {
-    Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, this.chart.layout)
+    Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, this.chart.layout, this.chart.config)
       .then(() => {
         this.element = document.getElementById(this.chart.uuid);
         this.dragLayer = this.element.querySelector(".nsewdrag");
@@ -12,6 +12,18 @@ export default {
       });
   },
   data() {
+    const baseAxis = {
+      showspikes: false,
+      zeroline: false,
+      mirror: true,
+      ticks: "outside",
+      showline: true,
+      showgrid: false,
+      showticklabels: true,
+      autorange: false,
+    };
+    const xaxis = { ...baseAxis, range: [0, 1] };
+    const yaxis = { ...baseAxis, range: [0, 1] };
     return {
       chart: {
         uuid: "abcde",
@@ -27,9 +39,9 @@ export default {
             hoverinfo: "skip"
           }
         ],
-        layout: { xaxis: { range: [0, 1], autorange: false }, yaxis: { range: [0, 1], autorange: false }, hovermode: "none", dragmode: false, showlegend: false },
+        layout: { xaxis, yaxis, hovermode: "none", dragmode: false, showlegend: false },
+        config: { displayModeBar: false },
       },
-      active: true,
       element: null,
       lineDrawn: false,
       mouseDown: false,
@@ -67,6 +79,10 @@ export default {
         this.movingLine = false;
         this.drawEndpoint(event);
         this.lineDrawn = true;
+        console.log(this.line_drawn);
+        if (this.line_drawn) {
+          this.line_drawn();
+        }
       }
     },
     mouseUpHandler(_event) {
@@ -162,3 +178,9 @@ export default {
   :class="active ? ['active'] : []"
 ></div>
 </template>
+
+<style>
+div.js-plotly-plot {
+  width: 100%;
+}
+</style>
