@@ -21,12 +21,12 @@ def dep_filter(d):
 env["dependencies"] = [d for d in env["dependencies"] if dep_filter(d)]
 
 git_repos = {
-    "cosmicds": "https://github.com/cosmicds/cosmicds.git",
     "ipywwt": "https://github.com/nmearl/ipywwt.git",
 }
+want_dev_install = ["hubbleds", "cosmicds"]
 pip_installs = next(filter(pip_filter, env["dependencies"]))
 deps = [dep for dep in pip_installs["pip"] if not any(dep.startswith(f"{repo}=") for repo in git_repos)]
-deps = [dep for dep in deps if not dep.startswith("hubbleds=")]
+deps = [dep for dep in deps if not any(dep.startswith(f"{p}=") for p in want_dev_install)]
 deps.extend(f"git+{url}" for url in git_repos.values())
 pip_installs["pip"] = deps
 
