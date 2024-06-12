@@ -17,10 +17,13 @@ from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
 from .component_state import ComponentState, Marker
 
+from ...viewers.hubble_dotplot import HubbleDotPlotView, HubbleDotPlotViewer
+
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
 gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
+
 
 component_state = ComponentState()
 
@@ -30,6 +33,13 @@ def _update_angular_size(data, galaxy, angular_size, count):
         arcsec_value = int(angular_size.to(u.arcsec).value)
         data.update(galaxy["id"], {"angular_size": arcsec_value})
         count.value += 1
+
+def _update_distance_measurement(data, galaxy, theta):
+    print('setting distance', data, galaxy, theta)
+    if bool(galaxy) and theta is not None:
+        distance = distance_from_angular_size(theta)
+        data.update(galaxy["id"], {"distance": distance})
+
 
 @solara.component
 def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback):
@@ -187,6 +197,10 @@ def Page():
                 galaxy = component_state.selected_galaxy.value
                 example_galaxy = component_state.selected_example_galaxy.value
                 return example_galaxy if on_example_galaxy_marker.value else galaxy
+            
+            @solara.lab.computed
+            def current_data():
+                return example_data if on_example_galaxy_marker.value else student_data
 
             def _ang_size_cb(angle):
                 data = example_data if on_example_galaxy_marker.value else student_data
@@ -256,6 +270,7 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.est_dis3),
+                event_set_distance=lambda theta: _update_distance_measurement(current_data.value, current_galaxy.value, theta),
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
                     "meas_theta": component_state.meas_theta.value,
