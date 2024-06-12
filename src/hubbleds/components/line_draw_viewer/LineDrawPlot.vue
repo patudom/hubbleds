@@ -69,7 +69,7 @@ export default {
       element: null,
       lineDrawn: false,
       mouseDown: false,
-      movingLine: true,
+      movingLine: false,
       lastEndpoint: null,
       plotDataCount: 0,
       lineTraceIndex: 0,
@@ -105,7 +105,6 @@ export default {
         this.movingLine = false;
         this.drawEndpoint(event);
         this.lineDrawn = true;
-        this.setCursor("move");
         if (this.line_drawn) {
           this.line_drawn();
         }
@@ -132,7 +131,8 @@ export default {
     plotlyUnhoverHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
         this.hoveringEndpoint = false;
-        this.setCursor("crosshair");
+        const cursor = this.movingLine ? "grabbing" : "crosshair";
+        this.setCursor(cursor);
       }
     },
     setCursor(type) {
@@ -202,9 +202,14 @@ export default {
       );
     },
     active(value) {
+      this.movingLine = value && this.lastEndpoint === null;
       Plotly.update(this.chart.uuid, { visible: true }, {}, [this.lineTraceIndex]);
       this.setupMouseHandlers(value);
       this.setupPlotlyHandlers(value);
+    },
+    movingLine(value) {
+      const cursor = value ? "grabbing" : "move";
+      this.setCursor(cursor);
     }
   }
 }
