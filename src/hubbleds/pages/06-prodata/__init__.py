@@ -20,7 +20,7 @@ from pathlib import Path
 from ...data_management import *
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 # import for type definitions
-from typing import cast
+from typing import cast, Tuple
 
 from .component_state import ComponentState, Marker
 
@@ -54,14 +54,14 @@ def Page():
     component_state.setup()
     
     # create glue app with the global data collection and session
-    def glue_setup() -> JupyterApplication:
+    def glue_setup() -> Tuple[JupyterApplication, HubbleFitView]:
         gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
         viewer = gjapp.new_data_viewer(HubbleFitView, show=False)
         viewer.state.title = "Professional Data"
         viewer.figure.update_xaxes(showline=True, mirror=False)
         viewer.figure.update_yaxes(showline=True, mirror=False)
-        return gjapp, viewer
-    gjapp, viewer = cast(JupyterApplication, solara.use_memo(glue_setup,[]))
+        return gjapp, cast(HubbleFitView, viewer)
+    gjapp, viewer = solara.use_memo(glue_setup,[])
     
     # TODO: Should viewer creation happen somewhere else?
     

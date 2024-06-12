@@ -12,6 +12,8 @@ from solara import Reactive
 from pathlib import Path
 from astropy.table import Table
 
+from hubbleds.components.line_draw_viewer.line_draw_viewer import LineDrawViewer
+
 from ...components import DataTable, HubbleExpUniverseSlideshow
 from ...data_management import *
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
@@ -57,6 +59,7 @@ def _on_galaxy_table_row_selected(row):
 
 @solara.component
 def Page():
+
     # Custom vue-only components have to be registered in the Page element
     #  currently, otherwise they will not be available in the front-end
     load_custom_vue_components()
@@ -69,6 +72,10 @@ def Page():
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
 
     StateEditor(Marker, component_state)
+    
+    x = [0.1 * i for i in range(1, 11)]
+    plot_data = [{ "x": x, "y": [1 / (1 + ((1-t)/t)**2) for t in x], "mode": "markers", "marker": { "color": "red", "size": 12 }, "hoverinfo": "none" }]
+    LineDrawViewer(plot_data)
 
     # if LOCAL_STATE.debug_mode:
 
