@@ -131,7 +131,12 @@ export default {
     plotlyUnhoverHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
         this.hoveringEndpoint = false;
-        const cursor = this.movingLine ? "grabbing" : "crosshair";
+        let cursor;
+        if (this.movingLine) {
+          cursor = this.lineDrawn ? "grabbing" : "default";
+        } else {
+          cursor = "crosshair";
+        }
         this.setCursor(cursor);
       }
     },
@@ -208,7 +213,12 @@ export default {
       this.setupPlotlyHandlers(value);
     },
     movingLine(value) {
-      const cursor = value ? "grabbing" : "move";
+      let cursor;
+      if (value) {
+        cursor = this.lineDrawn ? "grabbing" : "default";
+      } else {
+        cursor = "move";
+      }
       this.setCursor(cursor);
     }
   }
