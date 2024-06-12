@@ -131,13 +131,23 @@ def mc_serialize_score(mc_score = None):
 
     
 
-def fr_callback(event: Tuple[str,dict[str,str]], local_state: LocalState, callback: Optional[Callable] = None):
+def fr_callback(event: Tuple[str,dict[str,str]], local_state: LocalState, response_callback: Optional[Callable] = None):
+    """
+    Free Response callback function
+    
+    response_callback: Optional callback that takes in the response as an argument
+        An example would be to set a value 
+    
+    """
     print("fr_callback", event)
     if event[0] == 'fr-initialize':
         # by using get_free_response in the Page, we can avoid separetely initializing the free response
         # initialize_free_response(local_state.free_responses, tag=event[1]['tag'])
         pass
     elif event[0] == 'fr-update':
-        return update_free_response(local_state.free_responses, tag=event[1]['tag'], response=event[1]['response'])
+        update_free_response(local_state.free_responses, tag=event[1]['tag'], response=event[1]['response'])
+        if response_callback is not None:
+            if (len(event)> 1) and ('response' in event[1]):
+                response_callback(event[1]['response'])
     else:
         raise ValueError(f"Unknown event in fr_callback: <<{event}>> ")
