@@ -167,7 +167,6 @@ export default {
       // For some reason, mousedown works fine on the Plotly graph, but not mouseup
       // Any ideas on how to not need to do this would be great!
       if (active) {
-        this.clearEndpoint();
         this.element.addEventListener("mousemove", this.mouseMoveHandler);
         this.element.addEventListener("mousedown", this.mouseDownHandler);
         document.addEventListener("mouseup", this.mouseUpHandler);
