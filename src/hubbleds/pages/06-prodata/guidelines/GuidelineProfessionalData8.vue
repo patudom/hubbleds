@@ -28,7 +28,7 @@
         :tag="state_view.free_response_a.tag"
         :initial-response="state_view.free_response_a.response"
         :initialized="state_view.free_response_a.initialized"
-        @fr-update="fr_callback(['fr-update',$event])"
+        @fr-emit="fr_callback($event)"
       ></free-response>
       
       <p>What age of the universe can be obtained from Edwin Hubble's data (in Gyr)?</p>
@@ -42,7 +42,7 @@
         :tag="state_view.free_response_b.tag"
         :initial-response="state_view.free_response_b.response"
         :initialized="state_view.free_response_b.initialized"
-        @fr-update="fr_callback(['fr-update',$event])"
+        @fr-emit="fr_callback($event)"
       ></free-response>
       
     <p>What age of the universe can be obtained from the HST Key project's data (in Gyr)?</p>
@@ -56,7 +56,7 @@
         :tag="state_view.free_response_c.tag"
         :initial-response="state_view.free_response_c.response"
         :initialized="state_view.free_response_c.initialized"
-        @fr-update="fr_callback(['fr-update',$event])"
+        @fr-emit="fr_callback($event)"
       ></free-response>
       </v-container>
     </div>

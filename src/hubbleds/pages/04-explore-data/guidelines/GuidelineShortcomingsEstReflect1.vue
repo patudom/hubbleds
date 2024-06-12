@@ -17,6 +17,9 @@
         rows="2"
         label="Shortcoming #1"
         tag="shortcoming-1"
+        :initial-response="state_view.free_response_a.response"
+        :initialized="state_view.free_response_a.initialized"
+        @fr-emit="fr_callback($event)"
       ></free-response>
       <free-response
         outlined
@@ -24,6 +27,9 @@
         rows="2"
         label="Shortcoming #2"
         tag="shortcoming-2"
+        :initial-response="state_view.free_response_b.response"
+        :initialized="state_view.free_response_b.initialized"
+        @fr-emit="fr_callback($event)"
       ></free-response>
       <free-response
         outlined
@@ -32,8 +38,13 @@
         label="Other Shortcomings"
         hint="(if you can think of any more)"
         tag="other-shortcomings"
+        :initial-response="state_view.free_response_c.response"
+        :initialized="state_view.free_response_c.initialized"
+        @fr-emit="fr_callback($event)"
         allow-empty="true"
       ></free-response>
     </div>
   </scaffold-alert>
 </template>
+<script>
+</script>

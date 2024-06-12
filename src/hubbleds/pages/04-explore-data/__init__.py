@@ -14,7 +14,7 @@ from astropy.table import Table
 
 from ...components import DataTable, HubbleExpUniverseSlideshow
 from ...data_management import *
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
+from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 from ...utils import AGE_CONSTANT
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
@@ -237,6 +237,12 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.sho_est1),
+                event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                state_view={
+                    'free_response_a': get_free_response(LOCAL_STATE.free_responses,'shortcoming-1'),
+                    'free_response_b': get_free_response(LOCAL_STATE.free_responses,'shortcoming-2'),
+                    'free_response_c': get_free_response(LOCAL_STATE.free_responses,'other-shortcomings'),
+                }
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",

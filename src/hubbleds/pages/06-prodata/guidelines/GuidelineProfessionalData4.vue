@@ -40,7 +40,7 @@
         :tag="state_view.free_response.tag"
         :initial-response="state_view.free_response.response"
         :initialized="state_view.free_response.initialized"
-        @fr-update="fr_callback(['fr-update',$event])"
+        @fr-emit="fr_callback($event)"
         v-if="question_completed"
       ></free-response>
     </div>

@@ -12,7 +12,7 @@ from hubbleds.components.id_slider import IdSlider
 from hubbleds.marker_base import MarkerBase
 from ...components import UncertaintySlideshow
 
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
+from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 from .component_state import ComponentState, Marker
 
 
@@ -366,8 +366,11 @@ def Page():
         event_back_callback=transition_previous,
         can_advance=component_state.can_transition(next=True),
         show=component_state.is_current_step(Marker.mos_lik4),
+        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
         state_view={
-            "hint1_dialog": component_state.age_calc_state.hint1_dialog.value
+            "hint1_dialog": component_state.age_calc_state.hint1_dialog.value,
+            'free_response_a': get_free_response(LOCAL_STATE.free_responses,'best-guess-age'),
+            'free_response_b': get_free_response(LOCAL_STATE.free_responses,'my-reasoning')
         }
     )
 
@@ -377,8 +380,12 @@ def Page():
         event_back_callback=transition_previous,
         can_advance=component_state.can_transition(next=True),
         show=component_state.is_current_step(Marker.con_int3),
+        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
         state_view={
-            "hint2_dialog": component_state.age_calc_state.hint2_dialog.value
+            "hint2_dialog": component_state.age_calc_state.hint2_dialog.value,
+            'free_response_a': get_free_response(LOCAL_STATE.free_responses,'likely-low-age'),
+            'free_response_b': get_free_response(LOCAL_STATE.free_responses,'likely-high-age'),
+            'free_response_c': get_free_response(LOCAL_STATE.free_responses,'my-reasoning-2'),
         }
     )
 
@@ -440,6 +447,10 @@ def Page():
                     event_back_callback=transition_previous,
                     can_advance=component_state.can_transition(next=True),
                     show=component_state.is_current_step(Marker.two_his5),
+                    event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                    state_view={
+                        'free_response': get_free_response(LOCAL_STATE.free_responses,'unc-range-change-reasoning'),
+                    }
                 )
                 ScaffoldAlert(
                     # TODO: event_next_callback should go to next stage but I don't know how to set that up.
@@ -463,11 +474,16 @@ def Page():
             event_back_callback=transition_previous,
             can_advance=component_state.can_transition(next=True),
             show=component_state.is_current_step(Marker.con_int2c),
+            event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
             state_view={
                 "hint1_dialog": component_state.age_calc_state.hint1_dialog.value,
                 "hint2_dialog": component_state.age_calc_state.hint2_dialog.value,
                 "low_guess": component_state.age_calc_state.low_guess.value,
                 "high_guess": component_state.age_calc_state.high_guess.value,
                 "best_guess": component_state.age_calc_state.best_guess.value,
+                'free_response_a': get_free_response(LOCAL_STATE.free_responses,'new-most-likely-age'),
+                'free_response_b': get_free_response(LOCAL_STATE.free_responses,'new-likely-low-age'),
+                'free_response_c': get_free_response(LOCAL_STATE.free_responses,'new-likely-high-age'),
+                'free_response_d': get_free_response(LOCAL_STATE.free_responses,'my-updated-reasoning'),
             }
         )       
