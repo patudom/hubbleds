@@ -91,13 +91,16 @@
           <p class="StudentResponses">
             add free response box
           </p>
-          <!-- <free-response
+          <free-response
             outlined
             rows="1"
             label="Likely Low Age"
             tag="likely-low-age"
             type="float"
-          ></free-response> -->
+            :initial-response="state_view.free_response_a.response"
+            :initialized="state_view.free_response_a.initialized"
+            @fr-emit="fr_callback($event)"
+          ></free-response>
         </v-col>
         <v-col
           lg="2">
@@ -109,13 +112,16 @@
           <p class="StudentResponses">
             TODO: add free response box
           </p>
-          <!-- <free-response
+          <free-response
             outlined
             rows="1"
             label="Likely High Age"
             tag="likely-high-age"
             type="float"
-          ></free-response> -->
+            :initial-response="state_view.free_response_b.response"
+            :initialized="state_view.free_response_b.initialized"
+            @fr-emit="fr_callback($event)"
+          ></free-response>
         </v-col>
         <v-col
           lg="2">
@@ -137,13 +143,16 @@
           <p class="StudentResponses">
             TODO: add free response box
           </p>
-          <!-- <free-response
+          <free-response
             outlined
             auto-grow
             rows="2"
             label="My Reasoning"
             tag="my-reasoning-2"
-          ></free-response> -->
+            :initial-response="state_view.free_response_c.response"
+            :initialized="state_view.free_response_c.initialized"
+            @fr-emit="fr_callback($event)"
+          ></free-response>
         </v-col>
       </v-row>
 

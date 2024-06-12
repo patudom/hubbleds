@@ -11,6 +11,8 @@ def UncertaintySlideshow(
     dialog=False,
     image_location=f"{IMAGE_BASE_URL}/stage_five",
     event_on_slideshow_finished=None,
+    event_fr_callback=None,
+    free_responses=[],
     titles = [
                 'What is the true age of the universe?',
                 "Shortcomings in our measurements",

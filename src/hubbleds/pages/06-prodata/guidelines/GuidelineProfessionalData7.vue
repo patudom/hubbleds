@@ -31,9 +31,12 @@
       <free-response
         outlined
         auto-grow
-        rows="2"
+        :rows="2"
         label="Why?"
-        tag="prodata-free-7"
+        :tag="state_view.free_response.tag"
+        :initial-response="state_view.free_response.response"
+        :initialized="state_view.free_response.initialized"
+        @fr-emit="fr_callback($event)"
         v-if="question_completed"
       ></free-response>
     </div>

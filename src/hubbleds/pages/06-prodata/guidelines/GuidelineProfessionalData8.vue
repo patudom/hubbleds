@@ -25,6 +25,10 @@
         rows="2"
         label="Reflection #1"
         tag="prodata-reflect-8a"
+        :tag="state_view.free_response_a.tag"
+        :initial-response="state_view.free_response_a.response"
+        :initialized="state_view.free_response_a.initialized"
+        @fr-emit="fr_callback($event)"
       ></free-response>
       
       <p>What age of the universe can be obtained from Edwin Hubble's data (in Gyr)?</p>
@@ -35,6 +39,10 @@
         label="Age from Edwin Hubble"
         tag="prodata-reflect-8b"
         type="float"
+        :tag="state_view.free_response_b.tag"
+        :initial-response="state_view.free_response_b.response"
+        :initialized="state_view.free_response_b.initialized"
+        @fr-emit="fr_callback($event)"
       ></free-response>
       
     <p>What age of the universe can be obtained from the HST Key project's data (in Gyr)?</p>
@@ -45,6 +53,10 @@
         label="Age from HST Key Project"
         tag="prodata-reflect-8c"
         type="float"
+        :tag="state_view.free_response_c.tag"
+        :initial-response="state_view.free_response_c.response"
+        :initialized="state_view.free_response_c.initialized"
+        @fr-emit="fr_callback($event)"
       ></free-response>
       </v-container>
     </div>

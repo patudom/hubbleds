@@ -83,13 +83,16 @@
         <p class="StudentResponses">
             TODO: add free response box
         </p>
-        <!-- <free-response
+        <free-response
             outlined
             rows="1"
             label="Most Likely Age"
             tag="best-guess-age"
             type="float"
-          ></free-response> -->
+            :initial-response="state_view.free_response_a.response"
+            :initialized="state_view.free_response_a.initialized"
+            @fr-emit="fr_callback($event)"
+          ></free-response>
         </v-col>
         <v-col>
           Gyr
@@ -112,13 +115,16 @@
             TODO: add free response box
           </p>
 
-          <!-- <free-response
+          <free-response
             outlined
             auto-grow
             rows="2"
             label="My Reasoning"
             tag="my-reasoning"
-          ></free-response> -->
+            :initial-response="state_view.free_response_b.response"
+            :initialized="state_view.free_response_b.initialized"
+            @fr-emit="fr_callback($event)"
+          ></free-response>
         </v-col>
       </v-row>
     </div>

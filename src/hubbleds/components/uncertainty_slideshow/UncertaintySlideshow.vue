@@ -136,15 +136,18 @@
                   <p class="StudentResponses">
                     TODO: add free response box
                 </p>
-                  <!-- <free-response
+                  <free-response
                     outlined
                     auto-grow
                     rows="2"
                     label="Shortcoming #4"
                     hint="(if you can think of any more)"
                     tag="shortcoming-4"
-                    allow-empty="true"
-                  ></free-response> -->
+                    :allow-empty="true"
+                    :initial-response="free_responses[0]?.response"
+                    :initialized="free_responses[0]?.initialized"
+                    @fr-emit="fr_callback($event)"
+                  ></free-response>
                 </v-col>
               </v-row>
             </v-container>
@@ -252,14 +255,17 @@
                   <p class="StudentResponses">
                     TODO: add free response box
                   </p>
-                  <!-- <free-response
+                  <free-response
                     outlined
                     auto-grow
                     rows="2"
                     label="Problems in Our Methods"
                     hint="(problems that might lead to systematic uncertainty)"
                     tag="systematic-uncertainty"
-                  ></free-response> -->
+                    :initial-response="free_responses[1]?.response"
+                    :initialized="free_responses[1]?.initialized"
+                    @fr-emit="fr_callback($event)"
+                  ></free-response>
                 </v-col>
                 <v-col
                   cols="5"
@@ -407,6 +413,7 @@
     </v-card>
   </v-dialog>
 </template>
+
 
 <style>
   .StudentResponses {

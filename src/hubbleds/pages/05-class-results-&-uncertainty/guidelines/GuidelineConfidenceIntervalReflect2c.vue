@@ -79,13 +79,16 @@
           <p class="StudentResponses">
             TODO: add free response box
           </p>
-          <!-- <free-response
+          <free-response
             outlined
             rows="1"
             label="New Most Likely Age"
             tag="new-most-likely-age"
             type="float"
-          ></free-response> -->
+            :initial-response="state_view.free_response_a.response"
+            :initialized="state_view.free_response_a.initialized"
+            @fr-emit="fr_callback($event)"
+          ></free-response>
         </v-col>
         <v-col>
           Gyr
@@ -160,13 +163,16 @@
           <p class="StudentResponses">
             TODO: add free response box
           </p>
-          <!-- <free-response
+          <free-response
             outlined
             rows="1"
             label="New Likely Low Age"
             tag="new-likely-low-age"
             type="float"
-          ></free-response> -->
+            :initial-response="state_view.free_response_b.response"
+            :initialized="state_view.free_response_b.initialized"
+            @fr-emit="fr_callback($event)"
+          ></free-response>
         </v-col>
         <v-col
           lg="2">
@@ -178,13 +184,16 @@
           <p class="StudentResponses">
             TODO: add free response box
           </p>
-          <!-- <free-response
+          <free-response
             outlined
             rows="1"
             label="New Likely High Age"
             tag="new-likely-high-age"
             type="float"
-          ></free-response> -->
+            :initial-response="state_view.free_response_c.response"
+            :initialized="state_view.free_response_c.initialized"
+            @fr-emit="fr_callback($event)"
+          ></free-response>
         </v-col>
         <v-col
           lg="2">
@@ -198,13 +207,17 @@
       <p class="StudentResponses">
             TODO: add free response box
           </p>
-      <!-- <free-response
+      <free-response
         outlined
         rows="1"
         label="My Updated Reasoning"
         tag="my-updated-reasoning"
-      ></free-response> -->
+        :initial-response="state_view.free_response_d.response"
+        :initialized="state_view.free_response_d.initialized"
+        @fr-emit="fr_callback($event)"
+      ></free-response>
     </div>
   </scaffold-alert>
 </template>
-
+<script>
+</script>
