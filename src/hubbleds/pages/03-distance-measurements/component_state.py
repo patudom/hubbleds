@@ -26,7 +26,6 @@ class Marker(enum.Enum, MarkerBase):
     ang_siz5 = enum.auto()	
     est_dis1 = enum.auto()	
     est_dis2 = enum.auto()	
-    cho_row2 = enum.auto()	
     est_dis3 = enum.auto()	
     est_dis4 = enum.auto()	
     dot_seq1 = enum.auto()	
@@ -61,6 +60,8 @@ class ComponentState(BaseComponentState):
     selected_example_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
     show_ruler: Reactive[bool] = dataclasses.field(default=Reactive(False))
     meas_theta: Reactive[float] = dataclasses.field(default=Reactive(0.0))
+    ruler_click_count: Reactive[int] = dataclasses.field(default=Reactive(0))
+    n_meas: Reactive[int] = dataclasses.field(default=Reactive(0))
 
     def setup(self):
         def _on_example_galaxy_selected(*args):
@@ -68,10 +69,30 @@ class ComponentState(BaseComponentState):
                 self.transition_to(Marker.ang_siz2)
 
         self.selected_example_galaxy.subscribe(_on_example_galaxy_selected)
+
+        def _on_ruler_clicked_first_time(*args):
+            if self.is_current_step(Marker.ang_siz3) and self.ruler_click_count.value == 1:
+                self.transition_to(Marker.ang_siz4)
+
+        self.ruler_click_count.subscribe(_on_ruler_clicked_first_time)
+
+        def _on_measurement_added(*args):
+            if self.is_current_step(Marker.ang_siz4) and self.n_meas.value == 1:
+                self.transition_to(Marker.ang_siz5)
+
+        self.n_meas.subscribe(_on_measurement_added)
     
     @computed_property
     def ang_siz2_gate(self):
         return bool(self.selected_example_galaxy.value)
+    
+    @computed_property
+    def ang_siz4_gate(self):
+        return self.ruler_click_count.value == 1
+    
+    @computed_property
+    def ang_siz5_gate(self):
+        return self.n_meas.value > 0
 
     @computed_property
     def dot_seq3_gate(self):
