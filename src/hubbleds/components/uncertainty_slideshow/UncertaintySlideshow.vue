@@ -143,7 +143,7 @@
                     label="Shortcoming #4"
                     hint="(if you can think of any more)"
                     tag="shortcoming-4"
-                    allow-empty="true"
+                    :allow-empty="true"
                     :initial-response="free_responses[0].response"
                     :initialized="free_responses[0].initialized"
                     @fr-emit="fr_callback($event)"

@@ -41,7 +41,7 @@
         :initial-response="state_view.free_response_c.response"
         :initialized="state_view.free_response_c.initialized"
         @fr-emit="fr_callback($event)"
-        allow-empty="true"
+        :allow-empty="true"
       ></free-response>
     </div>
   </scaffold-alert>
