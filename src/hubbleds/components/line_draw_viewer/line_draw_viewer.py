@@ -1,6 +1,7 @@
 import reacton.ipyvuetify as rv
 import solara
 
+
 @solara.component_vue("LineDrawPlot.vue")
 def LineDrawPlot(active, event_line_drawn=None, plot_data=None):
     pass
@@ -14,6 +15,8 @@ def LineDrawViewer(plot_data=None):
     def on_draw_clicked():
         active.set(not active.value)
 
+    # If we want to disable the tool after finishing a line draw
+    # pass this function to `LineDrawPlot` as `event_line_drawn`
     # def disable(*args):
     #     active.set(False)
 
