@@ -144,8 +144,8 @@
                     hint="(if you can think of any more)"
                     tag="shortcoming-4"
                     allow-empty="true"
-                    :initial-response="state_view.free_response_a.response"
-                    :initialized="state_view.free_response_a.initialized"
+                    :initial-response="free_responses[0].response"
+                    :initialized="free_responses[0].initialized"
                     @fr-emit="fr_callback($event)"
                   ></free-response>
                 </v-col>
@@ -262,8 +262,8 @@
                     label="Problems in Our Methods"
                     hint="(problems that might lead to systematic uncertainty)"
                     tag="systematic-uncertainty"
-                    :initial-response="state_view.free_response_b.response"
-                    :initialized="state_view.free_response_b.initialized"
+                    :initial-response="free_responses[1].response"
+                    :initialized="free_responses[1].initialized"
                     @fr-emit="fr_callback($event)"
                   ></free-response>
                 </v-col>

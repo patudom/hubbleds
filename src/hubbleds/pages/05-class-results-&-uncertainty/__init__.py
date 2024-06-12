@@ -302,7 +302,10 @@ def Page():
                     step=component_state.uncertainty_state.step.value,
                     age_calc_short1=component_state.age_calc_state.short_one.value,
                     age_calc_short2=component_state.age_calc_state.short_two.value,
-                    age_calc_short_other=component_state.age_calc_state.short_other.value,                    
+                    age_calc_short_other=component_state.age_calc_state.short_other.value,  
+                    event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                    free_responses=[get_free_response(LOCAL_STATE.free_responses,'shortcoming-4'),
+                                    get_free_response(LOCAL_STATE.free_responses,'systematic-uncertainty')]               
                 )
 
     
