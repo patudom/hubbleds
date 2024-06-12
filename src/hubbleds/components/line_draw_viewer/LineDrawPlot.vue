@@ -125,7 +125,7 @@ export default {
     plotlyHoverHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
         this.hoveringEndpoint = true;
-        this.setCursor("move");
+        this.setCursor("grab");
       }
     },
     plotlyUnhoverHandler(event) {
@@ -217,7 +217,7 @@ export default {
       if (value) {
         cursor = this.lineDrawn ? "grabbing" : "default";
       } else {
-        cursor = "move";
+        cursor = "grab";
       }
       this.setCursor(cursor);
     }
