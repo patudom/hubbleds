@@ -8,6 +8,7 @@ from reacton import ipyvuetify as rv
 from pathlib import Path
 from astropy.table import Table
 import time
+from cosmicds.components import MathJaxSupport, PlotlySupport
 
 from hubbleds.components.dotplot_tutorial_slideshow import DotplotTutorialSlideshow
 
@@ -192,6 +193,15 @@ def Page():
 
     solara.use_thread(_load_db_state)
 
+    # TODO: This should not be here! This should be loaded in the top-level
+    #  layout. However, some very recent change causes the top-level memo
+    #  to not actually load. Seems to be something with the threading.
+    def _load_math_jax():
+        MathJaxSupport()
+        PlotlySupport()
+
+    solara.use_memo(_load_math_jax, dependencies=[])
+
     def _component_setup():
         # Solara's reactivity is often tied to the _context_ of the Page it's
         #  being rendered in. Currently, in order to trigger subscribed
@@ -346,9 +356,9 @@ def Page():
                 """Whenever the step changes, check to see if we need to update
                 the highlighting or show/hide the green dots."""
                 selection_tool_widget = solara.get_widget(selection_tool)
-                focus_view = (
-                        component_state.is_current_step(Marker.sel_gal2) or
-                        component_state.is_current_step(Marker.sel_gal3))
+                focus_view = component_state.is_current_step(
+                    Marker.sel_gal2
+                ) or component_state.is_current_step(Marker.sel_gal3)
 
                 selection_tool_widget.show_galaxies(focus_view)
 
@@ -386,7 +396,8 @@ def Page():
 
             solara.use_effect(_define_selection_tool_callbacks)
             solara.use_effect(
-                _update_selection_tool, [component_state.current_step.value, show_selection_tool]
+                _update_selection_tool,
+                [component_state.current_step.value, show_selection_tool],
             )
             solara.use_effect(
                 _update_selected_position, [component_state.selected_galaxy.value]
