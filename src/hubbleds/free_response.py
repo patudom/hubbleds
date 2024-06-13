@@ -36,7 +36,7 @@ class FreeResponse:
     
 @dataclasses.dataclass
 class FreeResponseDict:
-    responses: Reactive[Dict[str, FreeResponse]] = dataclasses.field(default_factory=lambda: Reactive({}))
+    responses: Reactive[Dict[str, FreeResponse]] = dataclasses.field(default = Reactive({}))
     
     def __repr__(self) -> str:
         formatted_responses = {tag: response.toJsonSerializable() for tag, response in self.responses.value.items()}
