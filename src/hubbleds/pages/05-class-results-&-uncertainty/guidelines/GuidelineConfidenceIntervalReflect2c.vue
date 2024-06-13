@@ -76,9 +76,6 @@
           cols="12"
           lg="3"
         >
-          <p class="StudentResponses">
-            TODO: add free response box
-          </p>
           <free-response
             outlined
             rows="1"
@@ -160,9 +157,6 @@
         <v-col
           cols="12"
           lg="3">
-          <p class="StudentResponses">
-            TODO: add free response box
-          </p>
           <free-response
             outlined
             rows="1"
@@ -181,9 +175,6 @@
               <v-col
           cols="12"
           lg="3">
-          <p class="StudentResponses">
-            TODO: add free response box
-          </p>
           <free-response
             outlined
             rows="1"
@@ -204,9 +195,6 @@
       <p class="mt-4">
         3. Explain why you chose these new values based on the All Classes data:
       </p>
-      <p class="StudentResponses">
-            TODO: add free response box
-          </p>
       <free-response
         outlined
         rows="1"
