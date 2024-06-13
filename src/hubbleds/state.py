@@ -1,5 +1,5 @@
 import dataclasses
-from cosmicds.state import GLOBAL_STATE
+from cosmicds.state import GLOBAL_STATE, BaseState
 from solara import Reactive
 from glue.core.data_factories import load_data
 from pathlib import Path
@@ -52,7 +52,7 @@ class MCScore:
 
 
 @dataclasses.dataclass
-class LocalState:
+class LocalState(BaseState):
     debug_mode: Reactive[bool] = dataclasses.field(default=Reactive(False))
     title: Reactive[str] = dataclasses.field(default=Reactive("Hubble's Law"))
     stages: Reactive[list] = dataclasses.field(default=Reactive([]))
