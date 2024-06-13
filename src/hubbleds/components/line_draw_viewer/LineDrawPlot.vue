@@ -101,17 +101,19 @@ export default {
     },
     mouseDownHandler(event) {
       this.mouseDown = true;
+    },
+    mouseUpHandler(event) {
+      this.mouseDown = false;
       if (this.movingLine) {
         this.movingLine = false;
         this.drawEndpoint(event);
         this.lineDrawn = true;
+        // When we draw the endpoint, the mouse is going to be right over it
+        this.hoveringEndpoint = true;
         if (this.line_drawn) {
           this.line_drawn();
         }
       }
-    },
-    mouseUpHandler(_event) {
-      this.mouseDown = false;
     },
     plotlyClickHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
