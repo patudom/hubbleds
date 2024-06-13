@@ -185,11 +185,14 @@ def spec_data():
 
 @solara.component
 def Page():
-    def _component_setup():
+    def _load_db_state():
         # Load stored component state from database, measurement data is
         #   considered higher-level and is loaded when the story starts.
         DatabaseAPI.get_story_state(component_state)
 
+    solara.use_thread(_load_db_state)
+
+    def _component_setup():
         # Solara's reactivity is often tied to the _context_ of the Page it's
         #  being rendered in. Currently, in order to trigger subscribed
         #  callbacks, state connections need to be initialized _inside_ a Page.
@@ -199,7 +202,8 @@ def Page():
         #  currently, otherwise they will not be available in the front-end
         load_custom_vue_components()
 
-        # Setup database write listeners
+        # Setup database write listeners. TODO: put writers into a separate
+        #  thread so they are never blocking the render.
         GLOBAL_STATE._setup_database_write_listener(
             lambda: DatabaseAPI.put_story_state(component_state)
         )
