@@ -56,7 +56,7 @@ class StudentData(BaseModel):
         )
 
         if idx is None:
-            print(f"No data with id {id_} found.")
+            # print(f"No data with id {id_} found.")
             return {}
 
         print(f"Found spectral data with id {id_} at index {idx}.")
