@@ -72,10 +72,6 @@ class AgeCalcState:
     best_guess: Reactive[int] = dataclasses.field(default=Reactive(0))
     low_guess: Reactive[int] = dataclasses.field(default=Reactive(0))
     high_guess: Reactive[int] = dataclasses.field(default=Reactive(0))
-    short_one: Reactive[str] = dataclasses.field(default=Reactive("dummy shortcoming 1"))
-    short_two: Reactive[str] = dataclasses.field(default=Reactive("dummy shortcoming 2"))
-    short_other: Reactive[str] = dataclasses.field(default=Reactive("dummy shortcoming other"))
-
 
 @dataclasses.dataclass
 class ComponentState(BaseComponentState):
