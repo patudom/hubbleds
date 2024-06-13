@@ -11,19 +11,19 @@ from typing import Union, Dict
 @dataclasses.dataclass
 class FreeResponse:
     tag: str = dataclasses.field(init=True)
-    _response: Reactive[str] = dataclasses.field(default_factory = lambda: Reactive(""))
-    _initialized: Reactive[bool] = dataclasses.field(default_factory = lambda: Reactive(True))
+    _response: str = dataclasses.field(default = "")
+    _initialized: bool = dataclasses.field(default = True)
     
     def update(self, response: str = ''):
         # self._response.set(response)
-        self._response.value = response
+        self._response = response
     
     def toJsonSerializable(self):
         """Convert FreeResponse to a JSON-serializable dictionary."""
         return {
             'tag': self.tag,
-            'response': self._response.value,
-            'initialized': self._initialized.value
+            'response': self._response,
+            'initialized': self._initialized
         }
     
     def __repr__(self):
@@ -31,12 +31,12 @@ class FreeResponse:
     
     @computed_property
     def completed(self):
-        return self._response.value is not None
+        return self._response is not ""
     
     
 @dataclasses.dataclass
 class FreeResponseDict:
-    responses: Reactive[Dict[str, FreeResponse]] = dataclasses.field(default_factory=lambda: Reactive({}))
+    responses: Reactive[Dict[str, FreeResponse]] = dataclasses.field(default = Reactive({}))
     
     def __repr__(self) -> str:
         formatted_responses = {tag: response.toJsonSerializable() for tag, response in self.responses.value.items()}
