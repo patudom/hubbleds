@@ -108,8 +108,6 @@ export default {
         this.movingLine = false;
         this.drawEndpoint(event);
         this.lineDrawn = true;
-        // When we draw the endpoint, the mouse is going to be right over it
-        this.hoveringEndpoint = true;
         if (this.line_drawn) {
           this.line_drawn();
         }
@@ -117,22 +115,17 @@ export default {
     },
     plotlyClickHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
-        if (this.hoveringEndpoint) {
-          this.hoveringEndpoint = false;
-          this.movingLine = true;
-          this.clearEndpoint();
-        }
+        this.movingLine = true;
+        this.clearEndpoint();
       }
     },
     plotlyHoverHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
-        this.hoveringEndpoint = true;
         this.setCursor("grab");
       }
     },
     plotlyUnhoverHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
-        this.hoveringEndpoint = false;
         let cursor;
         if (this.movingLine) {
           cursor = this.lineDrawn ? "grabbing" : "default";
