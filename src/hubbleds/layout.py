@@ -1,7 +1,7 @@
 from cosmicds.layout import BaseLayout
 from cosmicds.state import GLOBAL_STATE
 import solara
-from cosmicds.components import MathJaxSupport
+from cosmicds.components import MathJaxSupport, PlotlySupport
 from .data_models.student import student_data, StudentMeasurement
 from .remote import DatabaseAPI
 
@@ -15,6 +15,7 @@ def Layout(children=[]):
         # Mount external javascript libraries
         def _load_math_jax():
             MathJaxSupport()
+            PlotlySupport()
 
         solara.use_memo(_load_math_jax, dependencies=[])
 
