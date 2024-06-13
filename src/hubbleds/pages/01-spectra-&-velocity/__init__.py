@@ -120,6 +120,69 @@ def transition_to_next_stage():
     set_location_path(solara.resolve_path(routes[index + 1]))
 
 
+@solara.lab.computed
+def selected_galaxy_measurement():
+    return student_data.get_by_galaxy_id(
+        component_state.selected_galaxy.value,
+        # exclude={"galaxy": {"spectrum"}},
+    )
+
+
+@solara.lab.computed
+def selected_example_galaxy_measurement():
+    return example_data.get_by_galaxy_id(
+        component_state.selected_example_galaxy.value,
+        # exclude={"galaxy": {"spectrum"}},
+    )
+
+
+@solara.lab.computed
+def table_data():
+    vel_tot = component_state.velocities_total.value
+
+    is_example_data = (
+        Marker.cho_row1.value
+        <= component_state.current_step.value.value
+        < Marker.rem_gal1.value
+    )
+
+    tab_data = student_data.get_measurements(is_example=is_example_data)
+
+    return tab_data
+
+
+@solara.lab.computed
+def spec_data():
+    print("Getting spec data...")
+
+    # TODO: find a way to get rid of this; it's the same as below to show/hide
+    #  the spectrum viewer and tutorial, shouldn't need it twice...
+    show_example_galaxy_spec = (
+        (component_state.current_step.value.value >= Marker.mee_spe1.value)
+        and (component_state.current_step.value.value < Marker.int_dot1.value)
+    ) or (
+        Marker.dot_seq4.value
+        <= component_state.current_step.value.value
+        < Marker.rem_gal1.value
+    )
+
+    show_galaxy_spec = component_state.current_step.value.value >= Marker.rem_gal1.value
+
+    if show_example_galaxy_spec and selected_example_galaxy_measurement.value:
+        data = selected_example_galaxy_measurement.value["galaxy"]["spectrum"]
+    elif show_galaxy_spec and selected_galaxy_measurement.value:
+        data = selected_galaxy_measurement.value["galaxy"]["spectrum"]
+    else:
+        data = {}
+
+    return Table(
+        {
+            "wave": data.get("wave", []),
+            "flux": data.get("flux", []),
+        }
+    ).to_pandas()
+
+
 @solara.component
 def Page():
     def _component_setup():
