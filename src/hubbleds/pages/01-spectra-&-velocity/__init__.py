@@ -51,6 +51,7 @@ def _on_galaxy_selected(galaxy):
         component_state.selected_galaxies.set(
             [*component_state.selected_galaxies.value, galaxy["id"]]
         )
+        DatabaseAPI.put_measurements()
 
 
 def _on_example_galaxy_table_row_selected(row):
@@ -77,10 +78,12 @@ def _on_wavelength_measured(value, update_example=False, update_student=False):
             component_state.selected_example_galaxy.value, {"obs_wave": value}
         )
         component_state.lambda_obs.set(value)
+        DatabaseAPI.put_measurements(samples=True)
     elif update_student:
         student_data.update(component_state.selected_galaxy.value, {"obs_wave": value})
         component_state.lambda_obs.set(value)
         component_state.obswaves_total.value += 1
+        DatabaseAPI.put_measurements()
 
 
 def _on_velocity_calculated(value, update_example=False, update_student=False):
@@ -89,11 +92,13 @@ def _on_velocity_calculated(value, update_example=False, update_student=False):
             component_state.selected_example_galaxy.value, {"velocity": round(value)}
         )
         component_state.student_vel.set(round(value))
+        DatabaseAPI.put_measurements(samples=True)
     elif update_student:
         student_data.update(
             component_state.selected_galaxy.value, {"velocity": round(value)}
         )
         component_state.student_vel.set(round(value))
+        DatabaseAPI.put_measurements()
 
 
 def _calculate_velocity(*args, **kwargs):
@@ -104,6 +109,7 @@ def _calculate_velocity(*args, **kwargs):
         velocity = round((3 * (10**5) * (obs_wave / rest_wave - 1)), 0)
         student_data.update(measurement["galaxy"]["id"], {"velocity": velocity})
         component_state.velocities_total.value += 1
+        DatabaseAPI.put_measurements()
 
 
 def transition_to_next_stage():
@@ -179,6 +185,10 @@ def spec_data():
 @solara.component
 def Page():
     def _component_setup():
+        # Load stored component state from database, measurement data is
+        #   considered higher-level and is loaded when the story starts.
+        DatabaseAPI.get_story_state(component_state)
+
         # Solara's reactivity is often tied to the _context_ of the Page it's
         #  being rendered in. Currently, in order to trigger subscribed
         #  callbacks, state connections need to be initialized _inside_ a Page.
@@ -187,6 +197,17 @@ def Page():
         # Custom vue-only components have to be registered in the Page element
         #  currently, otherwise they will not be available in the front-end
         load_custom_vue_components()
+
+        # Setup database write listeners
+        GLOBAL_STATE._setup_database_write_listener(
+            lambda: DatabaseAPI.put_story_state(component_state)
+        )
+        LOCAL_STATE._setup_database_write_listener(
+            lambda: DatabaseAPI.put_story_state(component_state)
+        )
+        component_state._setup_database_write_listener(
+            lambda: DatabaseAPI.put_story_state(component_state)
+        )
 
     solara.use_memo(_component_setup)
 
@@ -197,19 +218,13 @@ def Page():
 
         return gjapp
 
-    gjapp = solara.use_memo(glue_setup, [])
-
-    # Load stored component state from database, measurement data is considered
-    #  higher-level and is loaded when the story starts.
-    def _load_stage_state_from_database():
-        DatabaseAPI.get_story_state(component_state)
-
-    solara.use_memo(_load_stage_state_from_database)
+    gjapp = solara.use_memo(glue_setup)
 
     solara.Text(
         f"Current step: {component_state.current_step.value} <|> "
         f"Next step: {Marker(component_state.current_step.value.value + 1)} <|> "
         f"Can advance: {component_state.can_transition(next=True)} <|> "
+        f"Can regress: {component_state.can_transition(prev=True)} <|> "
         f"Student vel: {component_state.student_vel.value}"
     )
 
@@ -234,11 +249,16 @@ def Page():
             DatabaseAPI.put_story_state(component_state)
             DatabaseAPI.put_measurements()
 
-        solara.Text(f"{component_state.as_dict()}")
+        def _delete_measurements():
+            DatabaseAPI.delete_all_measurements()
+            DatabaseAPI.delete_all_measurements(samples=True)
+
+        # solara.Text(f"{component_state.as_dict()}")
 
         with solara.Row():
             solara.Button("Load State", on_click=_load_state)
             solara.Button("Write State", on_click=_write_state)
+            solara.Button("Delete Measurements", on_click=_delete_measurements)
 
     with rv.Row():
         with rv.Col(cols=4):
