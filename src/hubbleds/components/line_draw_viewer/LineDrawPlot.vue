@@ -71,8 +71,10 @@ export default {
       mouseDown: false,
       movingLine: false,
       lastEndpoint: null,
+      hoveringEndpoint: false,
       plotDataCount: 0,
       lineTraceIndex: 0,
+      endpointSize: 10,
     };
   },
   methods: {
@@ -84,6 +86,13 @@ export default {
       const xWorld = layout.xaxis.p2c(x - layout.margin.l);
       const yWorld = layout.yaxis.p2c(y - layout.margin.t);
       return [xWorld, yWorld];
+    },
+    worldToScreen(worldX, worldY) {
+      const layout = this.element._fullLayout;
+      const rect = this.element.getBoundingClientRect();
+      const xScreen = layout.xaxis.c2p(worldX) + layout.margin.l + rect.left;
+      const yScreen = layout.yaxis.c2p(worldY) + layout.margin.t + rect.top;
+      return [xScreen, yScreen];
     },
     updateLine(event) {
       const [xWorld, yWorld] = this.screenToWorld(event);
@@ -101,36 +110,33 @@ export default {
     },
     mouseDownHandler(event) {
       this.mouseDown = true;
+    },
+    mouseUpHandler(event) {
+      this.mouseDown = false;
       if (this.movingLine) {
         this.movingLine = false;
         this.drawEndpoint(event);
         this.lineDrawn = true;
+        const cursor = this.overEndpoint(event) ? "grab" : "default";
+        this.setCursor(cursor);
         if (this.line_drawn) {
           this.line_drawn();
         }
       }
     },
-    mouseUpHandler(_event) {
-      this.mouseDown = false;
-    },
     plotlyClickHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
-        if (this.hoveringEndpoint) {
-          this.hoveringEndpoint = false;
-          this.movingLine = true;
-          this.clearEndpoint();
-        }
+        this.movingLine = true;
+        this.clearEndpoint();
       }
     },
     plotlyHoverHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
-        this.hoveringEndpoint = true;
         this.setCursor("grab");
       }
     },
     plotlyUnhoverHandler(event) {
       if (event.points[0].curveNumber === this.endpointTraceIndex) {
-        this.hoveringEndpoint = false;
         let cursor;
         if (this.movingLine) {
           cursor = this.lineDrawn ? "grabbing" : "default";
@@ -161,9 +167,27 @@ export default {
         }
       }
     },
+    overEndpoint(event) {
+      if (this.lastEndpoint === null) {
+        return false;
+      }
+      const layout = this.element._fullLayout;
+      const rect = this.element.getBoundingClientRect();
+      const x = event.clientX;
+      const y = event.clientY;
+      const endpointScreen = this.worldToScreen(...this.lastEndpoint);
+      const relX = x - endpointScreen[0];
+      const relY = y - endpointScreen[1];
+      return Math.pow(relX, 2) + Math.pow(relY, 2) <= Math.pow(this.endpointSize / 2, 2);
+    },
     drawEndpoint(event) {
-      const [x, y] = this.screenToWorld(event);
-      Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 10, color: "#000000" }, hoverinfo: "none" });
+      // If the mouse is moving quickly, it's possible for the endpoint to be
+      // a bit off from the line if we just use the screen coordinates of the event.
+      // So instead, just draw the endpoint at the end of the line
+      const line = this.element.data[this.lineTraceIndex];
+      const x = line.x[1];
+      const y = line.y[1];
+      Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: this.endpointSize, color: "#000000" }, hoverinfo: "none" });
       this.lastEndpoint = [x, y];
     },
     setupMouseHandlers(active) {
@@ -213,13 +237,10 @@ export default {
       this.setupPlotlyHandlers(value);
     },
     movingLine(value) {
-      let cursor;
       if (value) {
-        cursor = this.lineDrawn ? "grabbing" : "default";
-      } else {
-        cursor = "grab";
+        const cursor = this.lineDrawn ? "grabbing" : "default";
+        this.setCursor(cursor);
       }
-      this.setCursor(cursor);
     }
   }
 }
