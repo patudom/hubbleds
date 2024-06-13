@@ -7,6 +7,7 @@ from glue_jupyter.app import JupyterApplication
 from reacton import ipyvuetify as rv
 from pathlib import Path
 from astropy.table import Table
+import time
 
 from hubbleds.components.dotplot_tutorial_slideshow import DotplotTutorialSlideshow
 
@@ -229,6 +230,7 @@ def Page():
     )
 
     if LOCAL_STATE.debug_mode:
+
         def _on_select_galaxies_clicked():
             gal_tab = Table(component_state.galaxy_data)
             gal_tab["id"] = [str(x) for x in gal_tab["id"]]
@@ -259,6 +261,17 @@ def Page():
             solara.Button("Load State", on_click=_load_state)
             solara.Button("Write State", on_click=_write_state)
             solara.Button("Delete Measurements", on_click=_delete_measurements)
+
+    # Flag to show/hide the selection tool. TODO: we shouldn't need to be
+    #  doing this here; revisit in the future and implement proper handling
+    #  in the ipywwt package itself.
+    show_selection_tool, set_show_selection_tool = solara.use_state(False)
+
+    def _delay_selection_tool():
+        time.sleep(2)
+        set_show_selection_tool(True)
+
+    solara.use_thread(_delay_selection_tool)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -325,30 +338,26 @@ def Page():
                     ["current_galaxy"],
                 )
 
-            solara.use_effect(_define_selection_tool_callbacks)
-
             def _update_selection_tool():
                 """Whenever the step changes, check to see if we need to update
                 the highlighting or show/hide the green dots."""
                 selection_tool_widget = solara.get_widget(selection_tool)
-                selection_tool_widget.show_galaxies(
-                    component_state.is_current_step(Marker.sel_gal2)
-                    or component_state.is_current_step(Marker.sel_gal3)
-                )
-                if component_state.is_current_step(
-                    Marker.sel_gal2
-                ) or component_state.is_current_step(Marker.sel_gal3):
+                focus_view = (
+                        component_state.is_current_step(Marker.sel_gal2) or
+                        component_state.is_current_step(Marker.sel_gal3))
+
+                selection_tool_widget.show_galaxies(focus_view)
+
+                if focus_view:
                     selection_tool_widget.center_on_start_coordinates()
-                selection_tool_widget.highlighted = component_state.is_current_step(
-                    Marker.sel_gal2
-                ) or component_state.is_current_step(Marker.sel_gal3)
+
+                selection_tool_widget.highlighted = focus_view
 
             def _update_selected_position():
                 """
                 When a data table row is selected, move to galaxy location.
                 """
                 if selected_galaxy_measurement.value:
-                    print("Updating selected position.")
                     selection_tool_widget = solara.get_widget(selection_tool)
                     measurement = selected_galaxy_measurement.value
 
@@ -363,7 +372,6 @@ def Page():
                 location.
                 """
                 if selected_example_galaxy_measurement.value:
-                    print("Updating example selected position.")
                     selection_tool_widget = solara.get_widget(selection_tool)
                     measurement = selected_example_galaxy_measurement.value
 
@@ -372,8 +380,9 @@ def Page():
                             measurement["galaxy"]["ra"], measurement["galaxy"]["decl"]
                         )
 
+            solara.use_effect(_define_selection_tool_callbacks)
             solara.use_effect(
-                _update_selection_tool, [component_state.current_step.value]
+                _update_selection_tool, [component_state.current_step.value, show_selection_tool]
             )
             solara.use_effect(
                 _update_selected_position, [component_state.selected_galaxy.value]
