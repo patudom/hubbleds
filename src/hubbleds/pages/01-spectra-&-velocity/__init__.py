@@ -1,19 +1,14 @@
-from random import randint
-
 import numpy as np
 import solara
 from cosmicds.widgets.table import Table
 from cosmicds.components import ScaffoldAlert, ViewerLayout
 from cosmicds import load_custom_vue_components
-from glue.core import Data
 from glue_jupyter.app import JupyterApplication
 from reacton import ipyvuetify as rv
 from pathlib import Path
 from astropy.table import Table
-from solara_enterprise import auth
 
 from hubbleds.components.dotplot_tutorial_slideshow import DotplotTutorialSlideshow
-from hubbleds.viewers.hubble_dotplot import HubbleDotPlotView
 
 from ...components import (
     DataTable,
@@ -59,21 +54,19 @@ def _on_galaxy_selected(galaxy):
 
 
 def _on_example_galaxy_table_row_selected(row):
-    print("Example table row selected")
     measurement = example_data.get_by_galaxy_id(row["item"]["galaxy"]["id"])
-    component_state.selected_example_galaxy.set(measurement.galaxy.id)
-    component_state.lambda_rest.set(measurement.rest_wave)
+    component_state.selected_example_galaxy.set(measurement["galaxy"]["id"])
+    component_state.lambda_rest.set(measurement["rest_wave"])
     component_state.lambda_obs.set(0.0)
     component_state.student_vel.set(0.0)
 
 
 def _on_galaxy_table_row_selected(row):
-    print("Table row selected.")
     measurement = student_data.get_by_galaxy_id(
         row["item"]["galaxy"]["id"], exclude={"spectrum"}
     )
-    component_state.selected_galaxy.set(measurement.galaxy.id)
-    component_state.lambda_rest.set(measurement.rest_wave)
+    component_state.selected_galaxy.set(measurement["galaxy"]["id"])
+    component_state.lambda_rest.set(measurement["rest_wave"])
     component_state.lambda_obs.set(0.0)
     component_state.student_vel.set(0.0)
 
@@ -106,10 +99,10 @@ def _on_velocity_calculated(value, update_example=False, update_student=False):
 def _calculate_velocity(*args, **kwargs):
     for gal_id in component_state.selected_galaxies.value:
         measurement = student_data.get_by_galaxy_id(gal_id, exclude={"spectrum"})
-        rest_wave = measurement.rest_wave
-        obs_wave = measurement.obs_wave
+        rest_wave = measurement["rest_wave"]
+        obs_wave = measurement["obs_wave"]
         velocity = round((3 * (10**5) * (obs_wave / rest_wave - 1)), 0)
-        student_data.update(measurement.galaxy.id, {"velocity": velocity})
+        student_data.update(measurement["galaxy"]["id"], {"velocity": velocity})
         component_state.velocities_total.value += 1
 
 
@@ -308,7 +301,7 @@ def Page():
                     lambda gal: _on_galaxy_selected(gal)
                 )
                 selection_tool_widget.observe(
-                    lambda gal: component_state.selected_galaxy.set(gal["new"]),
+                    lambda v: component_state.selected_galaxy.set(v["new"].get("id")),
                     ["current_galaxy"],
                 )
 
@@ -331,30 +324,32 @@ def Page():
                 ) or component_state.is_current_step(Marker.sel_gal3)
 
             def _update_selected_position():
-                """When a data table row is selected, move to galaxy location."""
-                if component_state.selected_galaxy.value:
+                """
+                When a data table row is selected, move to galaxy location.
+                """
+                if selected_galaxy_measurement.value:
                     print("Updating selected position.")
                     selection_tool_widget = solara.get_widget(selection_tool)
-                    measurement = student_data.get_by_galaxy_id(
-                        component_state.selected_galaxy.value, exclude={"spectrum"}
-                    )
+                    measurement = selected_galaxy_measurement.value
+
                     if measurement is not None:
                         selection_tool_widget.go_to_location(
-                            measurement.galaxy.ra, measurement.galaxy.decl
+                            measurement["galaxy"]["ra"], measurement["galaxy"]["decl"]
                         )
 
             def _update_example_selected_position():
-                """When an example data table row is selected, move to galaxy location."""
-                if component_state.selected_example_galaxy.value:
+                """
+                When an example data table row is selected, move to galaxy
+                location.
+                """
+                if selected_example_galaxy_measurement.value:
                     print("Updating example selected position.")
                     selection_tool_widget = solara.get_widget(selection_tool)
-                    measurement = example_data.get_by_galaxy_id(
-                        component_state.selected_example_galaxy.value,
-                        exclude={"spectrum"},
-                    )
+                    measurement = selected_example_galaxy_measurement.value
+
                     if measurement is not None:
                         selection_tool_widget.go_to_location(
-                            measurement.galaxy.ra, measurement.galaxy.decl
+                            measurement["galaxy"]["ra"], measurement["galaxy"]["decl"]
                         )
 
             solara.use_effect(
@@ -398,6 +393,9 @@ def Page():
                 event_failed_validation_4_callback=lambda v: component_state.doppler_calc_state.failed_validation_4.set(
                     v
                 ),
+                event_show_doppler_slideshow=lambda v: component_state.doppler_calc_dialog.set(
+                    v
+                ),
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
@@ -436,15 +434,7 @@ def Page():
                     "obswaves_total": component_state.obswaves_total.value,
                     "has_bad_velocities": component_state.has_bad_velocities.value,
                     "has_multiple_bad_velocities": component_state.has_multiple_bad_velocities.value,
-                    "selected_galaxy": (
-                        student_data.get_by_galaxy_id(
-                            component_state.selected_galaxy.value,
-                            exclude={"spectrum"},
-                            asdict=True,
-                        ).get("galaxy")
-                        if component_state.selected_galaxy.value
-                        else None
-                    ),
+                    "selected_galaxy": selected_galaxy_measurement.value,
                 },
             )
             ScaffoldAlert(
@@ -490,7 +480,7 @@ def Page():
 
                 if show_example_data_table:
                     tab_data = example_data.dict(
-                        exclude={"measurements": {"__all__": "spectrum"}}
+                        exclude={"measurements": {"__all__": {"galaxy": {"spectrum"}}}}
                     )["measurements"]
 
                     tab_kwargs = {
@@ -501,7 +491,7 @@ def Page():
                     }
                 else:
                     tab_data = student_data.dict(
-                        exclude={"measurements": {"__all__": "spectrum"}}
+                        exclude={"measurements": {"__all__": {"galaxy": {"spectrum"}}}}
                     )["measurements"]
 
                     tab_kwargs = {
@@ -591,11 +581,18 @@ def Page():
             if (component_state.current_step.value.value >= Marker.mee_spe1.value) and (
                 component_state.current_step.value.value < Marker.int_dot1.value
             ):
-                # TODO: this probably doesn't need to be an extra reactive
-                #  variable since we're just tracking the step.
-                component_state.doppler_calc_dialog.value = (
-                    component_state.is_current_step(Marker.dop_cal5)
-                )
+
+                def _set_student_c(light_speed):
+                    component_state.doppler_calc_state.student_c.set(light_speed)
+                    _on_velocity_calculated(
+                        component_state.doppler_calc_state.student_c.value
+                        * (
+                            component_state.lambda_obs.value
+                            / component_state.lambda_rest.value
+                            - 1
+                        ),
+                        update_example=True,
+                    )
 
                 DopplerSlideshow(
                     dialog=component_state.doppler_calc_dialog.value,
@@ -609,13 +606,23 @@ def Page():
                     interact_steps_5=component_state.doppler_calc_state.interact_steps_5.value,
                     student_vel=component_state.student_vel.value,
                     student_c=component_state.doppler_calc_state.student_c.value,
+                    event_set_dialog=lambda v: component_state.doppler_calc_dialog.set(
+                        v
+                    ),
+                    event_set_step=lambda v: component_state.doppler_calc_state.step.set(
+                        v
+                    ),
+                    event_set_failed_validation_5=lambda v: component_state.doppler_calc_state.failed_validation_5.set(
+                        v
+                    ),
+                    event_set_max_step_completed_5=lambda v: component_state.doppler_calc_state.max_step_completed_5.set(
+                        v
+                    ),
                     event_set_student_vel_calc=lambda *args: component_state.doppler_calc_state.student_vel_calc.set(
                         True
                     ),
+                    event_set_student_c=_set_student_c,
                     event_next_callback=lambda *args: component_state.transition_next(),
-                    event_student_vel_callback=lambda v: _on_velocity_calculated(
-                        v, update_example=True
-                    ),
                 )
 
             if (component_state.current_step.value.value >= Marker.int_dot1.value) and (
@@ -661,15 +668,7 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.res_wav1),
                 state_view={
-                    "selected_example_galaxy": (
-                        example_data.get_by_galaxy_id(
-                            component_state.selected_example_galaxy.value,
-                            exclude={"spectrum"},
-                            asdict=True,
-                        ).get("galaxy")
-                        if component_state.selected_example_galaxy.value
-                        else None
-                    ),
+                    "selected_example_galaxy": selected_example_galaxy_measurement.value,
                     "lambda_on": component_state.lambda_on.value,
                     "lambda_used": component_state.lambda_used.value,
                 },
@@ -681,15 +680,7 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.obs_wav1),
                 state_view={
-                    "selected_example_galaxy": (
-                        example_data.get_by_galaxy_id(
-                            component_state.selected_example_galaxy.value,
-                            exclude={"spectrum"},
-                            asdict=True,
-                        ).get("galaxy")
-                        if component_state.selected_example_galaxy.value
-                        else None
-                    ),
+                    "selected_example_galaxy": selected_galaxy_measurement.value,
                 },
             )
             ScaffoldAlert(
@@ -699,15 +690,7 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.obs_wav2),
                 state_view={
-                    "selected_example_galaxy": (
-                        example_data.get_by_galaxy_id(
-                            component_state.selected_example_galaxy.value,
-                            exclude={"spectrum"},
-                            asdict=True,
-                        ).get("galaxy")
-                        if component_state.selected_example_galaxy.value
-                        else None
-                    ),
+                    "selected_example_galaxy": selected_galaxy_measurement.value,
                     "zoom_tool_activate": component_state.zoom_tool_activated.value,
                 },
             )
@@ -767,31 +750,6 @@ def Page():
             show_galaxy_spec = (
                 component_state.current_step.value.value >= Marker.rem_gal1.value
             )
-
-            @solara.lab.computed
-            def spec_data():
-                data = {}
-
-                if show_example_galaxy_spec:
-                    data = example_data.measurements[0].galaxy.spectrum.model_dump()
-                elif show_galaxy_spec:
-                    if component_state.selected_galaxy.value:
-                        data = (
-                            student_data.get_by_galaxy_id(
-                                component_state.selected_galaxy.value
-                            )
-                            or {}
-                        )
-
-                        if data:
-                            data = data.galaxy.spectrum.model_dump()
-
-                return Table(
-                    {
-                        "wave": data.get("wave", []),
-                        "flux": data.get("flux", []),
-                    }
-                ).to_pandas()
 
             if show_example_galaxy_spec or show_galaxy_spec:
                 with solara.Column():
