@@ -157,7 +157,12 @@ export default {
       }
     },
     drawEndpoint(event) {
-      const [x, y] = this.screenToWorld(event);
+      // If the mouse is moving quickly, it's possible for the endpoint to be
+      // a bit off from the line if we just use the screen coordinates of the event.
+      // So instead, just draw the endpoint at the end of the line
+      const line = this.element.data[this.lineTraceIndex];
+      const x = line.x[1];
+      const y = line.y[1];
       Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: 10, color: "#000000" }, hoverinfo: "none" });
       this.lastEndpoint = [x, y];
     },
