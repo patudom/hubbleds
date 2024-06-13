@@ -5,14 +5,16 @@
   >
     <v-data-table
         :headers="headers"
-        :items="items"
+        :items="indexedItems"
         :items-per-page="5"
+        item-key="id"
         class="elevation-1"
         hide-default-header
         hide-default-footer
         single-select
         show-select
         @item-selected="on_row_selected"
+        v-model="selected"
     >
       <template
           v-slot:top
@@ -77,4 +79,14 @@
 
 </style>
 <script setup>
+module.exports = {
+  computed: {
+    indexedItems () {
+      return this.items.map((item, index) => ({
+        id: item.galaxy.name,
+        ...item
+      }))
+    }
+  }
+}
 </script>

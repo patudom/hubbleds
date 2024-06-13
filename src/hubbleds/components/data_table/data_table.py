@@ -28,6 +28,7 @@ def DataTable(
     title="",
     headers=DEFAULT_HEADERS,
     items=[],
+    selected=[],
     highlighted=None,
     event_on_row_selected=lambda: None,
     show_velocity_button=False,
