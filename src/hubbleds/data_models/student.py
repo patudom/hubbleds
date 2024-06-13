@@ -10,7 +10,7 @@ class SpectrumData(BaseModel):
 
 
 class GalaxyData(BaseModel):
-    id: Optional[int]
+    id: Optional[str]
     name: Optional[str]
     ra: Optional[float]
     decl: Optional[float]
@@ -35,9 +35,10 @@ class StudentMeasurement(BaseModel):
 class StudentData(BaseModel):
     measurements: Optional[List[StudentMeasurement]]
 
-    def update(self, id_: str | int, data: dict):
+    def update(self, id_: str, data: dict):
         idx = next(
-            iter(i for i, x in enumerate(self.measurements) if x.galaxy.id == int(id_)), None
+            iter(i for i, x in enumerate(self.measurements) if x.galaxy.id == id_),
+            None,
         )
 
         if idx is None:
@@ -48,18 +49,24 @@ class StudentData(BaseModel):
             **{**self.measurements[idx].dict(), **data}
         )
 
-    def get_by_galaxy_id(self, id_: str | int, exclude=None, asdict=False):
+    def get_by_galaxy_id(self, id_: str | int, exclude=None):
         idx = next(
-            iter(i for i, x in enumerate(self.measurements) if x.galaxy.id == int(id_)), None
+            iter(i for i, x in enumerate(self.measurements) if x.galaxy.id == id_),
+            None,
         )
-
-        print(f"Found spectral data with id {id_} at index {idx}.")
 
         if idx is None:
             print(f"No data with id {id_} found.")
-            return None if not asdict else {}
+            return {}
 
-        return self.measurements[idx] if not asdict else self.measurements[idx].model_dump()
+        print(f"Found spectral data with id {id_} at index {idx}.")
+
+        return self.measurements[idx].dict(exclude=exclude)
+
+    def get_spectrum_by_galaxy_id(self, id_: str):
+        measurement = self.get_by_galaxy_id(id_)
+
+        return measurement['galaxy']['spectrum']
 
 
 student_data = StudentData(measurements=[])
