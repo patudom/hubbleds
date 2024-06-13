@@ -206,19 +206,21 @@ def Page():
 
     gjapp = solara.use_memo(glue_setup, [])
 
+    # Load stored component state from database, measurement data is considered
+    #  higher-level and is loaded when the story starts.
+    def _load_stage_state_from_database():
+        DatabaseAPI.get_story_state(component_state)
+
+    solara.use_memo(_load_stage_state_from_database)
+
     solara.Text(
-        f"Current step: {component_state.current_step.value}, "
-        f"Next step: {Marker(component_state.current_step.value.value + 1)} "
-        f"Can advance: {component_state.can_transition(next=True)} "
+        f"Current step: {component_state.current_step.value} <|> "
+        f"Next step: {Marker(component_state.current_step.value.value + 1)} <|> "
+        f"Can advance: {component_state.can_transition(next=True)} <|> "
         f"Student vel: {component_state.student_vel.value}"
     )
 
-    # solara.Text(f"{auth.user.value["userinfo"]} {GLOBAL_STATE.hashed_user}")
-    # database_api = DatabaseAPI()
-    # solara.Text(f"{database_api.get_measurements()}")
-
     if LOCAL_STATE.debug_mode:
-
         def _on_select_galaxies_clicked():
             gal_tab = Table(component_state.galaxy_data)
             gal_tab["id"] = [str(x) for x in gal_tab["id"]]
@@ -233,64 +235,17 @@ def Page():
             solara.Button("Select 5 Galaxies", on_click=_on_select_galaxies_clicked)
 
         def _load_state():
-            component_state.from_dict(
-                {
-                    "current_step": Marker.int_dot1,
-                    "database_changes": 0,
-                    "total_galaxies": 5,
-                    "selected_galaxy": "",
-                    "selected_galaxies": ["1", "2", "3", "4", "5"],
-                    "show_example_galaxy": False,
-                    "selected_example_galaxy": "1576",
-                    "spectrum_tutorial_opened": True,
-                    "lambda_on": False,
-                    "lambda_used": True,
-                    "spectrum_clicked": True,
-                    "zoom_tool_activated": True,
-                    "doppler_calc_reached": False,
-                    "lambda_obs": 6834,
-                    "lambda_rest": 6563.0,
-                    "doppler_calc_dialog": False,
-                    "doppler_calc_state": {
-                        "step": 0,
-                        "length": 6,
-                        "current_title": "Doppler Calculation",
-                        "failed_validation_4": False,
-                        "failed_validation_5": False,
-                        "interact_steps_5": [3, 4],
-                        "max_step_completed_5": 0,
-                        "student_c": 0,
-                        "student_vel_calc": True,
-                        "complete": False,
-                        "titles": [
-                            "Doppler Calculation",
-                            "Doppler Calculation",
-                            "Doppler Calculation",
-                            "Reflect on Your Result",
-                            "Enter Speed of Light",
-                            "Your Galaxy's Velocity",
-                        ],
-                        "mj_inputs": [],
-                    },
-                    "student_vel": 12388,
-                    "dotplot_tutorial_dialog": False,
-                    "dotplot_tutorial_state": {
-                        "step": 0,
-                        "length": 4,
-                        "max_step_completed": 0,
-                        "current_title": "",
-                    },
-                    "dotplot_tutorial_finished": False,
-                    "has_bad_velocities": False,
-                    "has_multiple_bad_velocities": False,
-                    "obswaves_total": 0,
-                    "velocities_total": 0,
-                    "reflection_complete": False,
-                }
-            )
+            DatabaseAPI.get_story_state(component_state)
+
+        def _write_state():
+            DatabaseAPI.put_story_state(component_state)
+            DatabaseAPI.put_measurements()
 
         solara.Text(f"{component_state.as_dict()}")
-        solara.Button("Load State", on_click=_load_state)
+
+        with solara.Row():
+            solara.Button("Load State", on_click=_load_state)
+            solara.Button("Write State", on_click=_write_state)
 
     with rv.Row():
         with rv.Col(cols=4):
