@@ -11,8 +11,8 @@ from typing import Union, Dict
 @dataclasses.dataclass
 class FreeResponse:
     tag: str = dataclasses.field(init=True)
-    _response: str = dataclasses.field(default_factory = lambda: "")
-    _initialized: bool = dataclasses.field(default_factory = lambda: True)
+    _response: str = dataclasses.field(default = "")
+    _initialized: bool = dataclasses.field(default = True)
     
     def update(self, response: str = ''):
         # self._response.set(response)
