@@ -18,8 +18,13 @@ def DopplerSlideshow(
     student_vel,
     student_c,
     student_vel_calc,
+    event_set_dialog,
+    event_set_step,
+    event_set_failed_validation_5,
+    event_set_max_step_completed_5,
     event_set_student_vel_calc,
+    event_set_student_c,
     event_next_callback,
-    event_student_vel_callback
+    event_set_student_vel
 ):
     pass

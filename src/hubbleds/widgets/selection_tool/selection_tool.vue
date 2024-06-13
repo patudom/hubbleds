@@ -104,7 +104,7 @@
                       class="pt-2"
                     >
                       <b>click + drag</b><br>
-                      (or use <strong class="codeFont">I-J-K-L</b> keys)
+                      (or use <b class="codeFont">I-J-K-L</b> keys)
                     </v-col>
                   </v-row>
                   <v-row>
@@ -125,7 +125,7 @@
                       class="pt-2"
                     >
                       <b>scroll in and out</b><br>
-                      (or use <strong class="codeFont">Z-X</b> keys)
+                      (or use <b class="codeFont">Z-X</b> keys)
                     </v-col>
                   </v-row>
                 </v-col>

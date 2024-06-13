@@ -19,7 +19,7 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <span
-            @click="() => { dialog = false; if (step === length-1)  {step = 0}; }"
+            @click="() => { set_dialog(false); if (step === length-1)  {set_step(0)}; }"
         >
           <v-btn
               icon
@@ -410,7 +410,7 @@
                       'The galaxy\’s velocity is a fraction of the speed of light. ',
                       'The galaxy\’s velocity is greater than the speed of light.'
                     ]"
-                      @select="(_state) => { if (_state.correct) { max_step_completed_5 = Math.max(max_step_completed_5, 3); } }"
+                      @select="(_state) => { if (_state.correct) { set_max_step_completed_5(Math.max(max_step_completed_5, 3)); } }"
                       score-tag="interpret-velocity"
                   >
                   </mc-radiogroup>
@@ -765,7 +765,7 @@
             :disabled="step === 0"
             class="black--text"
             color="accent"
-            @click="step--"
+            @click="set_step(step - 1)"
         >
           Back
         </v-btn>
@@ -800,7 +800,7 @@
             :disabled="step > max_step_completed_5"
             class="black--text"
             color="accent"
-            @click="step++;"
+            @click="set_step(step + 1);"
         >
           {{ (step < 2) ? 'calculate' : 'next' }}
         </v-btn>
@@ -811,9 +811,9 @@
             elevation="2"
             @click="() => {
               const lambdas = [lambda_obs, lambda_rest];
-              validateLightSpeed(['speed_light']) ? step++ : null;
-              storestudent_c(['speed_light']);
-              student_vel_callback(storeStudentVel(student_c, lambdas))
+              validateLightSpeed(['speed_light']) ? set_step(step + 1) : null;
+              storeStudentC(['speed_light']);
+              // storeStudentVel(student_c, lambdas);
           }"
         >
           calculate
@@ -826,8 +826,8 @@
             depressed
             @click="() => {
               $emit('submit');
-              dialog = false;
-              step = 0;
+              set_dialog(false);
+              set_step(0);
               set_student_vel_calc();
               next_callback();
             }"
@@ -896,19 +896,21 @@ module.exports = {
       return parseFloat(this.getValue(inputID).replace(/,/g, ''));
     },
 
-    storestudent_c(inputID) {
-      return this.student_c = this.parseAnswer(inputID);
+    storeStudentC(inputID) {
+      console.log("Storing student c");
+      console.log(this.parseAnswer(inputID));
+      return this.set_student_c(this.parseAnswer(inputID));
     },
 
-    storeStudentVel(student_c, lambdas) {
-      return student_c * (lambdas[0] / lambdas[1] - 1);
-    },
+    // storeStudentVel(student_c, lambdas) {
+    //   console.log(student_c, lambdas, student_c * (lambdas[0] / lambdas[1] - 1));
+    //   return this.set_student_vel(student_c * (lambdas[0] / lambdas[1] - 1));
+    // },
 
     validateLightSpeed(inputIDs) {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
-        // TODO: CHANGE THIS TO A CALLBACK
-        this.failed_validation_5 = (value <= 3e5 && value >= 299790) ? false : true;
+        this.set_failed_validation_5((!(value <= 3e5 && value >= 299790)));
         return value <= 3e5 && value >= 299790;
       });
     }
@@ -922,8 +924,7 @@ module.exports = {
     step(newStep, oldStep) {
       const isInteractStep = this.interact_steps_5.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
-      // TODO: CHANGE THIS TO A CALLBACK
-      this.max_step_completed_5 = Math.max(this.max_step_completed_5, newCompleted)
+      this.set_max_step_completed_5(Math.max(this.max_step_completed_5, newCompleted));
     }
   }
 };

@@ -6,7 +6,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from solara import Reactive
 
-from cosmicds.layout import Layout
+from ..layout import Layout
 
 
 @solara.component

@@ -13,9 +13,7 @@ from ...data_models.student import example_data, StudentMeasurement, SpectrumDat
 from contextlib import closing
 from io import BytesIO
 from astropy.io import fits
-
-
-ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
+from ...remote import DatabaseAPI, ELEMENT_REST
 
 
 class Marker(enum.Enum, MarkerBase):
@@ -102,6 +100,9 @@ class ComponentState(BaseComponentState):
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.mee_gui1)
     )
+    stage_name: Reactive[str] = dataclasses.field(
+        default=Reactive("spectra_&_velocity")
+    )
     database_changes: Reactive[int] = dataclasses.field(default=Reactive(0))
     total_galaxies: Reactive[int] = dataclasses.field(default=Reactive(0))
     selected_galaxy: Reactive[str] = dataclasses.field(default=Reactive(""))
@@ -144,35 +145,6 @@ class ComponentState(BaseComponentState):
         self._example_galaxy_data = None
 
         self._load_galaxies()
-        self._load_example_galaxy()
-
-    def as_dict(self):
-        def _inner_dict(sub_comp):
-            if dataclasses.is_dataclass(sub_comp):
-                return {
-                    f.name: _inner_dict(getattr(sub_comp, f.name))
-                    for f in dataclasses.fields(sub_comp)
-                }
-
-            return (
-                sub_comp.value
-                if isinstance(sub_comp, solara.toestand.Reactive)
-                else sub_comp
-            )
-
-        return _inner_dict(self)
-
-    def from_dict(self, d):
-        def _inner_dict(dd, parent):
-            for k, v in dd.items():
-                attr = getattr(parent, k)
-
-                if isinstance(attr, solara.toestand.Reactive):
-                    attr.set(v)
-                elif dataclasses.is_dataclass(attr):
-                    _inner_dict(v, attr)
-
-        _inner_dict(d, self)
 
     def setup(self):
         # Set up a forced transition. I don't think this should occur this way,
@@ -197,20 +169,12 @@ class ComponentState(BaseComponentState):
         )
 
     @computed_property
-    def sel_gal1_gate(self):
-        return self.total_galaxies.value == 0 and not self.selected_galaxy.value
-
-    @computed_property
-    def sel_gal2_gate(self):
-        return self.total_galaxies.value == 0 and not self.selected_galaxy.value
-
-    @computed_property
     def not_gal_tab_gate(self):
         return self.total_galaxies.value == 1
 
     @computed_property
     def sel_gal3_gate(self):
-        return self.total_galaxies.value == 1
+        return self.total_galaxies.value >= 1
 
     @computed_property
     def sel_gal4_gate(self):
@@ -282,10 +246,6 @@ class ComponentState(BaseComponentState):
     def galaxy_data(self):
         return self._galaxy_data
 
-    @property
-    def example_galaxy_data(self):
-        return self._example_galaxy_data
-
     def _load_galaxies(self):
         if self._galaxy_data is None:
             galaxies = GLOBAL_STATE.request_session.get(
@@ -301,34 +261,6 @@ class ComponentState(BaseComponentState):
             ]
 
         return self._galaxy_data
-
-    def _load_example_galaxy(self):
-        if self._example_galaxy_data is None:
-            example_galaxy_data = GLOBAL_STATE.request_session.get(
-                f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-galaxy"
-            ).json()
-
-            self._example_galaxy_data = {
-                k: example_galaxy_data[k] for k in example_galaxy_data
-            }
-            self._example_galaxy_data["id"] = str(self._example_galaxy_data["id"])
-            self._example_galaxy_data["name"] = example_galaxy_data["name"].replace(
-                ".fits", ""
-            )
-            self._example_galaxy_data["rest_wave"] = round(
-                ELEMENT_REST[example_galaxy_data["element"]]
-            )
-
-            # Load the spectrum associated with the example data
-            spec_data = self._load_spectrum_data(self._example_galaxy_data)
-            self._example_galaxy_data["spectrum"] = spec_data
-
-            # Explicitly add the example galaxy to the example measurements
-            example_data.measurements.append(
-                StudentMeasurement(**self.example_galaxy_data)
-            )
-
-        return self._example_galaxy_data
 
     @staticmethod
     def _load_spectrum_data(gal_info):

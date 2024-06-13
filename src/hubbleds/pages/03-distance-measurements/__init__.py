@@ -184,7 +184,7 @@ def Page():
             def show_ruler_range(marker):
                 component_state.show_ruler.value = Marker.is_between(marker, Marker.ang_siz3, Marker.est_dis4) or \
                 Marker.is_between(marker, Marker.dot_seq5b, Marker.last())
-                
+
             component_state.current_step.subscribe(show_ruler_range)
 
             @solara.lab.computed
@@ -318,7 +318,7 @@ def Page():
 
         with rv.Col():
             with rv.Card(class_="pa-0 ma-0", elevation=0):
-            
+
                 common_headers = [
                     {
                         "text": "Galaxy Name",
