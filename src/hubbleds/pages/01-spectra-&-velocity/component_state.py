@@ -102,6 +102,7 @@ class ComponentState(BaseComponentState):
     current_step: Reactive[Marker] = dataclasses.field(
         default=Reactive(Marker.mee_gui1)
     )
+    stage_name: Reactive[str] = dataclasses.field(default=Reactive("spectra_&_velocity"))
     database_changes: Reactive[int] = dataclasses.field(default=Reactive(0))
     total_galaxies: Reactive[int] = dataclasses.field(default=Reactive(0))
     selected_galaxy: Reactive[str] = dataclasses.field(default=Reactive(""))
@@ -145,34 +146,6 @@ class ComponentState(BaseComponentState):
 
         self._load_galaxies()
         self._load_example_galaxy()
-
-    def as_dict(self):
-        def _inner_dict(sub_comp):
-            if dataclasses.is_dataclass(sub_comp):
-                return {
-                    f.name: _inner_dict(getattr(sub_comp, f.name))
-                    for f in dataclasses.fields(sub_comp)
-                }
-
-            return (
-                sub_comp.value
-                if isinstance(sub_comp, solara.toestand.Reactive)
-                else sub_comp
-            )
-
-        return _inner_dict(self)
-
-    def from_dict(self, d):
-        def _inner_dict(dd, parent):
-            for k, v in dd.items():
-                attr = getattr(parent, k)
-
-                if isinstance(attr, solara.toestand.Reactive):
-                    attr.set(v)
-                elif dataclasses.is_dataclass(attr):
-                    _inner_dict(v, attr)
-
-        _inner_dict(d, self)
 
     def setup(self):
         # Set up a forced transition. I don't think this should occur this way,

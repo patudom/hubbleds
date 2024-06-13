@@ -1,11 +1,11 @@
 import dataclasses
 
+from cosmicds.state import BaseState
+from hubbleds.marker_base import MarkerBase
 from solara import Reactive
 
-from hubbleds.marker_base import MarkerBase
 
-
-class BaseComponentState:
+class BaseComponentState(BaseState):
 
     current_step: Reactive[MarkerBase] = dataclasses.field()
 
