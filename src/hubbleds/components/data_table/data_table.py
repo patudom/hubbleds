@@ -17,18 +17,19 @@ DEFAULT_HEADERS = [
         },
         {
             "text": "&lambda;<sub>obs</sub> (&Aring;)",
-            "value": "measured_wave",
+            "value": "obs_wave",
         },
         {"text": "Velocity (km/s)", "value": "velocity"},
     ]
+
 
 @solara.component_vue("DataTable.vue")
 def DataTable(
     title="",
     headers=DEFAULT_HEADERS,
     items=[],
-    highlighted=None,
     selected=[],
+    highlighted=None,
     event_on_row_selected=lambda: None,
     show_velocity_button=False,
     event_calculate_velocity=lambda: None,

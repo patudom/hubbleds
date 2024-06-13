@@ -1,10 +1,13 @@
 <template>
   <v-card color="info"
-          :class="highlighted ? 'pa-1' : ''">
+          :class="highlighted ? 'pa-1' : ''"
+          rounded="5"
+  >
     <v-data-table
         :headers="headers"
-        :items="items"
+        :items="indexedItems"
         :items-per-page="5"
+        item-key="id"
         class="elevation-1"
         hide-default-header
         hide-default-footer
@@ -46,13 +49,21 @@
         </thead>
       </template>
 
+      <template v-slot:item.name="{ item }">
+        {{ item.galaxy.name }}
+      </template>
+
+      <template v-slot:item.element="{ item }">
+        {{ item.galaxy.element }}
+      </template>
+
       <template v-slot:item.rest_wave="{ item }">
         {{ item.rest_wave }}
       </template>
 
-      <template v-slot:item.measured_wave="{ item }">
-        <v-icon v-if="item.measured_wave < 1.0">mdi-alert</v-icon>
-        <span v-else>{{ item.measured_wave }}</span>
+      <template v-slot:item.obs_wave="{ item }">
+        <v-icon v-if="item.obs_wave < 1.0">mdi-alert</v-icon>
+        <span v-else>{{ item.obs_wave }}</span>
       </template>
 
       <template v-slot:item.velocity="{ item }">
@@ -67,3 +78,15 @@
 <style scoped>
 
 </style>
+<script setup>
+module.exports = {
+  computed: {
+    indexedItems () {
+      return this.items.map((item, index) => ({
+        id: item.galaxy.name,
+        ...item
+      }))
+    }
+  }
+}
+</script>

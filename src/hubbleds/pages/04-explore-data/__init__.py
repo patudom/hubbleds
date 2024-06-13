@@ -46,7 +46,7 @@ def _on_example_galaxy_table_row_selected(row):
     component_state.selected_example_galaxy.set(galaxy)
     component_state.lambda_rest.set(galaxy['rest_wave'])
     component_state.lambda_obs.subscribe(
-        lambda *args: example_data.update(galaxy['id'], {'measured_wave': args[0]}))
+        lambda *args: example_data.update(galaxy['id'], {'obs_wave': args[0]}))
 
 
 def _on_galaxy_table_row_selected(row):
@@ -54,7 +54,7 @@ def _on_galaxy_table_row_selected(row):
     component_state.selected_galaxy.set(galaxy)
     component_state.lambda_rest.set(galaxy['rest_wave'])
     component_state.lambda_obs.subscribe(
-        lambda *args: student_data.update(galaxy['id'], {'measured_wave': args[0]}))
+        lambda *args: student_data.update(galaxy['id'], {'obs_wave': args[0]}))
 
 
 @solara.component

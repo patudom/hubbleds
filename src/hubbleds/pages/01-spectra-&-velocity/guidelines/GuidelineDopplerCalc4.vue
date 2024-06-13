@@ -10,8 +10,8 @@
       @next="() =>
       {
         const expectedAnswers = [state_view.lambda_obs, state_view.lambda_rest];
-        state_view.doppler_calc_dialog = !!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers);
-        validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? next_callback() : force_transition();
+        show_doppler_slideshow(!!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers));
+        // validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? next_callback() : force_transition();
       }"
   >
     <div
