@@ -13,7 +13,7 @@ from typing import Optional, Callable, Any, Tuple, List
 
 from .data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
 from .tools import *
-from .free_response import * # imports FreeResponse, fr_init_response, fr_response
+from .free_response import *  # imports FreeResponse, fr_init_response, fr_response
 
 
 @dataclasses.dataclass
@@ -64,12 +64,14 @@ class LocalState(BaseState):
     started: Reactive[bool] = dataclasses.field(default=Reactive(False))
     class_data_students: Reactive[list] = dataclasses.field(default=Reactive([]))
     class_data_info: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    mc_scoring : Reactive[dict[str, MCScore]]  = dataclasses.field(default=Reactive({}))
-    free_responses: Reactive[FreeResponseDict] = dataclasses.field(default=Reactive(FreeResponseDict()))
+    mc_scoring: Reactive[dict[str, MCScore]] = dataclasses.field(default=Reactive({}))
+    free_responses: Reactive[FreeResponseDict] = dataclasses.field(
+        default=Reactive(FreeResponseDict())
+    )
 
     def question_completed(self, qtag: str):
         if qtag in self.mc_scoring.value:
-            return self.mc_scoring.value[qtag].completed().value #type: ignore
+            return self.mc_scoring.value[qtag].completed().value  # type: ignore
         return False
 
 
@@ -152,31 +154,38 @@ def mc_callback(event, local_state, callback: Optional[Callable] = None):
     else:
         print(f"Unknown event in mc_callback: <<{event}>> ")
 
-def mc_serialize_score(mc_score = None):
-        if mc_score is None:
-            return None
-        return mc_score.toJSON()
+
+def mc_serialize_score(mc_score=None):
+    if mc_score is None:
+        return None
+    return mc_score.toJSON()
 
 
-
-
-def fr_callback(event: Tuple[str,dict[str,str]], local_state: LocalState, response_callback: Optional[Callable] = None):
+def fr_callback(
+    event: Tuple[str, dict[str, str]],
+    local_state: LocalState,
+    response_callback: Optional[Callable] = None,
+):
     """
     Free Response callback function
 
     response_callback: Optional callback that takes in the response as an argument
         An example would be to set a value
-
     """
     print("fr_callback", event)
-    if event[0] == 'fr-initialize':
-        # by using get_free_response in the Page, we can avoid separetely initializing the free response
-        # initialize_free_response(local_state.free_responses, tag=event[1]['tag'])
+    if event[0] == "fr-initialize":
+        # by using get_free_response in the Page, we can avoid separately
+        # initializing the free response initialize_free_
+        # response(local_state.free_responses, tag=event[1]['tag'])
         pass
-    elif event[0] == 'fr-update':
-        update_free_response(local_state.free_responses, tag=event[1]['tag'], response=event[1]['response'])
+    elif event[0] == "fr-update":
+        update_free_response(
+            local_state.free_responses,
+            tag=event[1]["tag"],
+            response=event[1]["response"],
+        )
         if response_callback is not None:
-            if (len(event)> 1) and ('response' in event[1]):
-                response_callback(event[1]['response'])
+            if (len(event) > 1) and ("response" in event[1]):
+                response_callback(event[1]["response"])
     else:
         raise ValueError(f"Unknown event in fr_callback: <<{event}>> ")

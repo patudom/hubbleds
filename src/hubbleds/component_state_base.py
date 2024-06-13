@@ -45,12 +45,12 @@ class BaseComponentState(BaseState):
         previous_marker = self.current_step.value.previous(self.current_step.value)
         self.transition_to(previous_marker, force=True)
 
-   def current_step_between(self, start, end=None):
-       end = end or self.current_step.value.last()
-       return self.current_step.value.is_between(self.current_step.value, start, end)
+    def current_step_between(self, start, end=None):
+        end = end or self.current_step.value.last()
+        return self.current_step.value.is_between(self.current_step.value, start, end)
 
-   def current_step_at_or_before(self, end):
-       return self.current_step.value.is_at_or_before(self.current_step.value, end)
+    def current_step_at_or_before(self, end):
+        return self.current_step.value.is_at_or_before(self.current_step.value, end)
 
-   def current_step_at_or_after(self, start):
-       return self.current_step.value.is_at_or_after(self.current_step.value, start)
+    def current_step_at_or_after(self, start):
+        return self.current_step.value.is_at_or_after(self.current_step.value, start)
