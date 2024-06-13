@@ -35,6 +35,6 @@ def Layout(children=[]):
                 )]
                 DatabaseAPI.put_measurements(True)
 
-        solara.use_memo(
+        solara.use_thread(
             _load_student_measurements, dependencies=[GLOBAL_STATE.student.id.value]
         )
