@@ -12,9 +12,11 @@ from solara import Reactive
 from pathlib import Path
 from astropy.table import Table
 
+from hubbleds.components.line_draw_viewer.line_draw_viewer import LineDrawViewer
+
 from ...components import DataTable, HubbleExpUniverseSlideshow
 from ...data_management import *
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
+from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 from ...utils import AGE_CONSTANT
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
@@ -57,6 +59,7 @@ def _on_galaxy_table_row_selected(row):
 
 @solara.component
 def Page():
+
     # Custom vue-only components have to be registered in the Page element
     #  currently, otherwise they will not be available in the front-end
     load_custom_vue_components()
@@ -69,6 +72,10 @@ def Page():
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
 
     StateEditor(Marker, component_state)
+    
+    x = [0.1 * i for i in range(1, 11)]
+    plot_data = [{ "x": x, "y": [1 / (1 + ((1-t)/t)**2) for t in x], "mode": "markers", "marker": { "color": "red", "size": 12 }, "hoverinfo": "none" }]
+    LineDrawViewer(plot_data)
 
     # if LOCAL_STATE.debug_mode:
 
@@ -237,6 +244,12 @@ def Page():
                 event_back_callback=lambda *args: component_state.transition_previous(),
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.sho_est1),
+                event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                state_view={
+                    'free_response_a': get_free_response(LOCAL_STATE.free_responses,'shortcoming-1'),
+                    'free_response_b': get_free_response(LOCAL_STATE.free_responses,'shortcoming-2'),
+                    'free_response_c': get_free_response(LOCAL_STATE.free_responses,'other-shortcomings'),
+                }
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",
