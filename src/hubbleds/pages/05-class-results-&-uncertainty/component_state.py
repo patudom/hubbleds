@@ -69,9 +69,6 @@ class AgeCalcState:
     hint1_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
     hint2_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
     hint3_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    best_guess: Reactive[int] = dataclasses.field(default=Reactive(0))
-    low_guess: Reactive[int] = dataclasses.field(default=Reactive(0))
-    high_guess: Reactive[int] = dataclasses.field(default=Reactive(0))
 
 @dataclasses.dataclass
 class ComponentState(BaseComponentState):

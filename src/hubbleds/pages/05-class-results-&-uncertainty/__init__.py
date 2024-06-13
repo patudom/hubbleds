@@ -133,9 +133,9 @@ def Page():
                     can_advance=component_state.can_transition(next=True),
                     show=component_state.is_current_step(Marker.you_age1c),
                     state_view={
-                        "low_guess": component_state.age_calc_state.low_guess.value,
-                        "high_guess": component_state.age_calc_state.high_guess.value,
-                        "best_guess": component_state.age_calc_state.best_guess.value,
+                        "low_guess": get_free_response(LOCAL_STATE.free_responses, "likely-low-age").get("response"),
+                        "high_guess": get_free_response(LOCAL_STATE.free_responses, "likely-high-age").get("response"),
+                        "best_guess": get_free_response(LOCAL_STATE.free_responses, "best-guess-age").get("response"),
                     }                    
                 )
 
@@ -486,9 +486,9 @@ def Page():
             state_view={
                 "hint1_dialog": component_state.age_calc_state.hint1_dialog.value,
                 "hint2_dialog": component_state.age_calc_state.hint2_dialog.value,
-                "low_guess": component_state.age_calc_state.low_guess.value,
-                "high_guess": component_state.age_calc_state.high_guess.value,
-                "best_guess": component_state.age_calc_state.best_guess.value,
+                "low_guess": get_free_response(LOCAL_STATE.free_responses, "likely-low-age").get("response"),
+                "high_guess": get_free_response(LOCAL_STATE.free_responses, "likely-high-age").get("response"),
+                "best_guess": get_free_response(LOCAL_STATE.free_responses, "best-guess-age").get("response"),
                 'free_response_a': get_free_response(LOCAL_STATE.free_responses,'new-most-likely-age'),
                 'free_response_b': get_free_response(LOCAL_STATE.free_responses,'new-likely-low-age'),
                 'free_response_c': get_free_response(LOCAL_STATE.free_responses,'new-likely-high-age'),
