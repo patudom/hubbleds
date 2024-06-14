@@ -68,10 +68,6 @@ def Page():
 
     StateEditor(Marker, component_state)
 
-    ViewerLayout(hist_viewer)
-    StatisticsSelector([hist_viewer], glue_data=[test_data], units=["counts"], transform=round)
-    PercentageSelector([hist_viewer], glue_data=[test_data])
-
     # solara.Text(
     #     f"Current step: {component_state.current_step.value}, "
     #     f"Next step: {Marker(component_state.current_step.value.value + 1)}"
@@ -323,10 +319,10 @@ def Page():
             with rv.Col():
                 if component_state.current_step_between(Marker.mos_lik2, Marker.con_int3):
                     with solara.Card(style="background-color: #F06292;"):
-                        solara.Markdown("my class statistics selector component goes here")
+                        StatisticsSelector([hist_viewer], glue_data=[test_data], units=["counts"], transform=round)
                 if component_state.current_step_between(Marker.con_int2, Marker.con_int3):
                     with solara.Card(style="background-color: #F06292;"):
-                        solara.Markdown("my class percentage selector component goes here")
+                        PercentageSelector([hist_viewer], glue_data=[test_data])
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
@@ -367,7 +363,7 @@ def Page():
 
             with rv.Col():
                 with solara.Card(style="background-color: #F06292;"):
-                    solara.Markdown("Our class data histogram goes here")
+                    ViewerLayout(hist_viewer)
 
     ScaffoldAlert(
         GUIDELINE_ROOT / "GuidelineMostLikelyValueReflect4.vue",
