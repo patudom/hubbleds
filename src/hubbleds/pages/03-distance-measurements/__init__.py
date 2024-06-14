@@ -333,7 +333,7 @@ def Page():
             if component_state.current_step_at_or_before(Marker.dot_seq7):
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
-                    value = galaxy["item"] if flag else None
+                    value = galaxy["item"]["galaxy"] if flag else None
                     component_state.selected_example_galaxy.set(value)
 
                 @solara.lab.computed
@@ -352,7 +352,7 @@ def Page():
             else:
                 def update_galaxy(galaxy):
                     flag = galaxy.get("value", True)
-                    value = galaxy["item"] if flag else None
+                    value = galaxy["item"]["galaxy"] if flag else None
                     component_state.selected_galaxy.set(value)
 
                 @solara.lab.computed
