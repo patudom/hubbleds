@@ -400,10 +400,10 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with solara.Card(style="background-color: #F06292;"):
-                    solara.Markdown("all statistics selector component goes here")
+                    StatisticsSelector([hist_viewer], glue_data=[test_data], units=["counts"], transform=round)
 
                 with solara.Card(style="background-color: #F06292;"):
-                    solara.Markdown("allpercentage selector component goes here")
+                    PercentageSelector([hist_viewer], glue_data=[test_data])
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistributionc.vue",
@@ -468,7 +468,7 @@ def Page():
             with rv.Col():
                 if component_state.current_step_between(Marker.two_his1):
                     with solara.Card(style="background-color: #F06292;"):
-                        solara.Markdown("all data student histogram goes here")
+                        ViewerLayout(hist_viewer)
 
                 with solara.Card(style="background-color: #F06292;"):
                     solara.Markdown("all data class histogram goes here")
