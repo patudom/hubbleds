@@ -360,8 +360,7 @@ def Page():
                 )
 
             with rv.Col():
-                with solara.Card(style="background-color: #F06292;"):
-                    ViewerLayout(hist_viewer)
+                ViewerLayout(hist_viewer)
 
     ScaffoldAlert(
         GUIDELINE_ROOT / "GuidelineMostLikelyValueReflect4.vue",
