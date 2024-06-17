@@ -31,34 +31,34 @@ class FreeResponse:
     
     @computed_property
     def completed(self):
-        return self._response is not ""
+        return self._response != ""
     
     
 @dataclasses.dataclass
 class FreeResponseDict:
-    responses: Reactive[Dict[str, FreeResponse]] = dataclasses.field(default = Reactive({}))
+    responses: Dict[str, FreeResponse] = dataclasses.field(default_factory = dict)
     
     def __repr__(self) -> str:
-        formatted_responses = {tag: response.toJsonSerializable() for tag, response in self.responses.value.items()}
+        formatted_responses = {tag: response.toJsonSerializable() for tag, response in self.responses.items()}
         return f"FreeResponseDict({formatted_responses})"
     
     def add_free_response_question(self, tag):
         """Add a new free response question with the given tag."""
-        if tag in self.responses.value:
+        if tag in self.responses:
             raise ValueError(f"Question with tag {tag} already exists")
         
         print(f"Adding free response question with tag {tag}")
-        old_responses = self.responses.value
+        old_responses = self.responses
         old_responses[tag] = FreeResponse(tag)
         # self.responses.set(old_responses)
 
             
     
     def update_free_response_question(self, tag: str, response: str):
-        if tag not in self.responses.value:
+        if tag not in self.responses:
             raise ValueError(f"Question with tag {tag} does not exist")
         else:
-            old_responses = self.responses.value
+            old_responses = self.responses
             # calling update should cause a render as it sets a new value
             old_responses[tag].update(response = response)
             
@@ -102,11 +102,11 @@ def get_free_response(free_responses: Union[FreeResponseDict, Reactive[FreeRespo
     if isinstance(free_responses, Reactive):
         free_responses = free_responses.value
     
-    if tag not in free_responses.responses.value:
+    if tag not in free_responses.responses:
         print("Need to create it now!")
         free_responses.add_free_response_question(tag)
         
-    return free_responses.responses.value[tag].toJsonSerializable()
+    return free_responses.responses[tag].toJsonSerializable()
     
     
 def update_free_response(free_responses: Union[FreeResponseDict, Reactive[FreeResponseDict]], tag: str, response: str):
@@ -127,7 +127,7 @@ def update_free_response(free_responses: Union[FreeResponseDict, Reactive[FreeRe
     if isinstance(free_responses, Reactive):
         free_responses = free_responses.value
     
-    if tag not in free_responses.responses.value:
+    if tag not in free_responses.responses:
         raise ValueError(f"Free response question with tag {tag} does not exist")
     
     # this will trigger a render from within the FreeResponse class
