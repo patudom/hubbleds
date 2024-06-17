@@ -183,11 +183,14 @@ def Page():
             #     can_advance=component_state.can_transition(next=True),
             #     show=component_state.is_current_step(Marker.ang_siz6),
             # )
+            
+            # NOTE: We are skipping the 2nd measurement for now
+            # So we want to skip forward to rep_rem1.
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq5.vue",
-                event_next_callback=lambda *args: component_state.transition_next(),
+                # event_next_callback=lambda *args: component_state.transition_next(),
                 event_back_callback=lambda *args: component_state.transition_previous(),
-                event_force_transition=lambda *args: component_state.transition_to(Marker.rep_rem1),
+                event_next_callback=lambda *args: component_state.transition_to(Marker.rep_rem1), # 
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.dot_seq5),
             )
