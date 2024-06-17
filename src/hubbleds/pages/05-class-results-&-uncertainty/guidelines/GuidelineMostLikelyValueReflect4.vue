@@ -80,10 +80,7 @@
           cols="12"
           lg="3"
         >
-        <p class="StudentResponses">
-            TODO: add free response box
-        </p>
-        <free-response
+          <free-response
             outlined
             rows="1"
             label="Most Likely Age"
@@ -111,10 +108,6 @@
         v-if="revealIter >= 1"
       >
         <v-col>
-          <p class="StudentResponses">
-            TODO: add free response box
-          </p>
-
           <free-response
             outlined
             auto-grow

@@ -14,20 +14,16 @@
       <p>
         Explain why you think this might be true.
       </p>
-      <p class="StudentResponses">
-          TODO: add free response box
-      </p>
-
-          <free-response
-            outlined
-            auto-grow
-            rows="2"
-            label="My Reasoning"
-            :tag="state_view.free_response.tag"
-            :initial-response="state_view.free_response.response"
-            :initialized="state_view.free_response.initialized"
-            @fr-emit="fr_callback($event)"
-          ></free-response>
+      <free-response
+        outlined
+        auto-grow
+        rows="2"
+        label="My Reasoning"
+        :tag="state_view.free_response.tag"
+        :initial-response="state_view.free_response.response"
+        :initialized="state_view.free_response.initialized"
+        @fr-emit="fr_callback($event)"
+      ></free-response>
     </div>
     <v-btn
       color="secondary lighten-1"
