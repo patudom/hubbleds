@@ -15,6 +15,9 @@ from ...components import UncertaintySlideshow
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 from .component_state import ComponentState, Marker
 
+from cosmicds.components import MathJaxSupport, PlotlySupport
+
+
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
@@ -50,6 +53,13 @@ def Page():
 
 
     gjapp, viewer, test_data, test_subset = solara.use_memo(glue_setup, [])
+    
+    # Mount external javascript libraries
+    def _load_math_jax():
+        MathJaxSupport()
+        PlotlySupport()
+
+    solara.use_memo(_load_math_jax, dependencies=[])
 
     mc_scoring, set_mc_scoring = solara.use_state(LOCAL_STATE.mc_scoring.value)
 
