@@ -2,7 +2,8 @@
   <scaffold-alert
     title-text="Measurement Comparison"
     @back="back_callback()"
-    @next="next_callback"
+    @next="next_callback()"
+    :can-advance="can_advance"
     :can-advance=false
   >
     <div
