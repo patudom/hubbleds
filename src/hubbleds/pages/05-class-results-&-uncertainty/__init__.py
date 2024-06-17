@@ -3,10 +3,12 @@ from cosmicds import load_custom_vue_components
 from cosmicds.components import ScaffoldAlert, ViewerLayout, StateEditor, StatisticsSelector, PercentageSelector
 from cosmicds.viewers import CDSHistogramView, CDSScatterView
 from glue.core import Data
+from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
 from pathlib import Path
 from reacton import component, ipyvuetify as rv
+from echo import delay_callback
 
 from hubbleds.components.id_slider import IdSlider
 from hubbleds.marker_base import MarkerBase
@@ -29,7 +31,7 @@ def Page():
 
     def glue_setup():
         gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
-        test_data = Data(x=[1,2,3,4,5], y=[1,4,9,16,25], label="Stage 5 Test Data")
+        test_data = Data(x=[1,2,3,4,5,1,4], y=[1,4,9,16,25,3,7], label="Stage 5 Test Data")
         test_data.style.color = "green"
         test_data.style.alpha = 0.5
     
@@ -48,6 +50,22 @@ def Page():
         viewer.add_subset(test_subset)
 
         hist_viewer = gjapp.new_data_viewer(CDSHistogramView, data=test_data, show=False)
+        def _update_bins(*args):
+            props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
+            with delay_callback(hist_viewer.state, *props):
+                layer = hist_viewer.layers[0] # only works cuz there is only one layer 
+                component = hist_viewer.state.x_att                   
+                xmin = round(layer.layer.data[component].min(),0) - 0.5
+                xmax = round(layer.layer.data[component].max(),0) + 0.5
+                print(xmin, xmax)
+                hist_viewer.state.hist_n_bin = int(xmax - xmin)
+                hist_viewer.state.hist_x_min = xmin
+                hist_viewer.state.hist_x_max = xmax
+        
+        _update_bins()
+        
+        gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
+                           handler=_update_bins)
         return gjapp, viewer, test_data, test_subset, hist_viewer
 
 
