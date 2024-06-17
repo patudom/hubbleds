@@ -8,7 +8,7 @@ from reacton import ipyvuetify as rv
 from pathlib import Path
 from astropy.table import Table
 import time
-from cosmicds.components import MathJaxSupport, PlotlySupport
+from cosmicds.components import MathJaxSupport, PlotlySupport, StateEditor
 
 from hubbleds.components.dotplot_tutorial_slideshow import DotplotTutorialSlideshow
 
@@ -235,14 +235,15 @@ def Page():
 
     gjapp = solara.use_memo(glue_setup)
 
-    solara.Text(
-        f"Current step: {component_state.current_step.value} <|> "
-        f"Next step: {Marker(component_state.current_step.value.value + 1)} <|> "
-        f"Can advance: {component_state.can_transition(next=True)} <|> "
-        f"Can regress: {component_state.can_transition(prev=True)} <|> "
-        f"Student vel: {component_state.student_vel.value}"
-    )
-
+    # solara.Text(
+    #     f"Current step: {component_state.current_step.value} <|> "
+    #     f"Next step: {Marker(component_state.current_step.value.value + 1)} <|> "
+    #     f"Can advance: {component_state.can_transition(next=True)} <|> "
+    #     f"Can regress: {component_state.can_transition(prev=True)} <|> "
+    #     f"Student vel: {component_state.student_vel.value}"
+    # )
+    StateEditor(Marker, component_state=component_state)
+    
     if LOCAL_STATE.debug_mode:
 
         def _on_select_galaxies_clicked():

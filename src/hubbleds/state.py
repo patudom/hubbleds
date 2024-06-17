@@ -53,7 +53,7 @@ class MCScore:
 
 @dataclasses.dataclass
 class LocalState(BaseState):
-    debug_mode: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    debug_mode: Reactive[bool] = dataclasses.field(default=Reactive(True))
     title: Reactive[str] = dataclasses.field(default=Reactive("Hubble's Law"))
     stages: Reactive[list] = dataclasses.field(default=Reactive([]))
     measurements: Reactive[dict] = dataclasses.field(default=Reactive({}))

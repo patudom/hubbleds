@@ -5,16 +5,6 @@ from ...marker_base import MarkerBase
 import dataclasses
 from ...component_state_base import BaseComponentState
 from ...state import GLOBAL_STATE, LOCAL_STATE
-from ...data_models.student import example_data, StudentMeasurement, SpectrumData
-from contextlib import closing
-from io import BytesIO
-from astropy.io import fits
-
-ELEMENT_REST = {
-    'H-α': 6562.79,
-    'Mg-I': 5176.7
-}
-
 
 class Marker(enum.Enum, MarkerBase):
     ang_siz1 = enum.auto()	
@@ -111,3 +101,4 @@ class ComponentState(BaseComponentState):
         return (
             bool(self.dosdonts_tutorial_opened.value)
         )
+    

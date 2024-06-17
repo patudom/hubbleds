@@ -1,6 +1,6 @@
 import solara
 from cosmicds.widgets.table import Table
-from cosmicds.components import ScaffoldAlert, StateEditor
+from cosmicds.components import ScaffoldAlert, StateEditor, MathJaxSupport, PlotlySupport
 import astropy.units as u
 from cosmicds import load_custom_vue_components
 from glue_jupyter.app import JupyterApplication
@@ -14,7 +14,7 @@ from ...data_management import *
 from ...utils import DISTANCE_CONSTANT, GALAXY_FOV, distance_from_angular_size
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
 from ...widgets.selection_tool import SelectionTool
-from ...data_models.student import student_data, StudentMeasurement, example_data
+from ...data_models.student import student_data, StudentMeasurement, example_data, StudentData
 from .component_state import ComponentState, Marker
 
 from ...viewers.hubble_dotplot import HubbleDotPlotView, HubbleDotPlotViewer
@@ -31,14 +31,16 @@ component_state = ComponentState()
 def _update_angular_size(data, galaxy, angular_size, count):
     if bool(galaxy) and angular_size is not None:
         arcsec_value = int(angular_size.to(u.arcsec).value)
-        data.update(galaxy["id"], {"angular_size": arcsec_value})
+        galaxy["angular_size"] = arcsec_value
+        data.update(galaxy["id"], {"ang_size": arcsec_value, 'galaxy': galaxy})
         count.value += 1
 
 def _update_distance_measurement(data, galaxy, theta):
-    print('setting distance', data, galaxy, theta)
     if bool(galaxy) and theta is not None:
         distance = distance_from_angular_size(theta)
-        data.update(galaxy["id"], {"distance": distance})
+        # galaxy = data.get_by_galaxy_id(galaxy["id"]).model_dump()
+        galaxy["distance"] = distance
+        data.update(galaxy["id"], {"est_dist": distance, 'galaxy': galaxy})
 
 
 @solara.component
@@ -80,6 +82,13 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
 
 @solara.component
 def Page():
+    # Mount external javascript libraries
+    def _load_math_jax():
+        MathJaxSupport()
+        PlotlySupport()
+
+    solara.use_memo(_load_math_jax, dependencies=[])
+    
     # Custom vue-only components have to be registered in the Page element
     #  currently, otherwise they will not be available in the front-end
     load_custom_vue_components()
@@ -92,6 +101,17 @@ def Page():
     mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
 
     StateEditor(Marker, component_state) 
+    # This will print the tables 
+    # need to > from pandas import DataFrame
+    # def meas_to_df(meas):
+    #     meas = meas.model_dump()
+    #     gal = meas.pop('galaxy')
+    #     # gal = gal.model_dump(exclude={'spectrum'})
+    #     gal = {k:v for k,v in gal.items() if k != 'spectrum'}
+    #     return {**gal, **meas}
+    
+    # solara.HTML(unsafe_innerHTML=DataFrame([meas_to_df(s) for s in student_data.measurements or []]).to_html())
+    # solara.HTML(unsafe_innerHTML=DataFrame([meas_to_df(s) for s in example_data.measurements or []]).to_html())
 
     # if LOCAL_STATE.debug_mode:
 
@@ -318,6 +338,28 @@ def Page():
 
         with rv.Col():
             with rv.Card(class_="pa-0 ma-0", elevation=0):
+                
+                def fill_galaxy_distances(dataset: StudentData):
+                    print('Filling galaxy distances')
+                    if dataset.measurements:
+                        print('There are measurements')
+                        count = 0
+                        has_ang_size = all(measurement.ang_size is not None for measurement in dataset.measurements)
+                        if not has_ang_size:
+                            print("\n ======= Not all galaxies have angular sizes ======= \n")
+                        for measurement in dataset.measurements:
+                            if measurement.galaxy is not None:
+                                count += 1
+                                _update_distance_measurement(student_data, measurement.galaxy.model_dump(), measurement.ang_size)
+                        print(f"Filled {count} distances")
+                    else:
+                        print("No measurements to fill")
+                        raise ValueError("No measurements to fill")
+
+                
+                if component_state.current_step_at_or_after(Marker.fil_rem1):
+                    solara.Button("Fill Galaxy Distances", on_click=lambda *args: fill_galaxy_distances(student_data))
+                    
 
                 common_headers = [
                     {
@@ -326,8 +368,8 @@ def Page():
                         "sortable": False,
                         "value": "name"
                     },
-                    { "text": "&theta; (arcsec)", "value": "angular_size" },
-                    { "text": "Distance (Mpc)", "value": "distance" },
+                    { "text": "&theta; (arcsec)", "value": "ang_size" },
+                    { "text": "Distance (Mpc)", "value": "est_dist" },
                 ]
             
             if component_state.current_step_at_or_before(Marker.dot_seq7):
@@ -339,10 +381,13 @@ def Page():
                 @solara.lab.computed
                 def example_table_kwargs():
                     ang_size_tot = component_state.example_angular_sizes_total.value
+                    tab = example_data.dict(exclude={'measurements': {'__all__': 'spectrum'}})["measurements"]
+                    for i, row in enumerate(tab):
+                        row["measurement_number"] = example_data.model_dump()["measurements"][i]["galaxy"]["measurement_number"]
                     return {
                         "title": "Example Galaxy",
-                        "headers": common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }],
-                        "items": example_data.dict(exclude={'measurements': {'__all__': 'spectrum'}})["measurements"],
+                        "headers": common_headers, # + [{ "text": "Measurement Number", "value": "measurement_number" }], # we will be skipping the 2nd measurement for now
+                        "items": tab,
                         "highlighted": False,  # TODO: Set the markers for this,
                         "event_on_row_selected": update_example_galaxy
                     }
