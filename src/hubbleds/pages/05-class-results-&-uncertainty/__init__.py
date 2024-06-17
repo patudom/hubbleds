@@ -15,6 +15,9 @@ from ...components import UncertaintySlideshow
 from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 from .component_state import ComponentState, Marker
 
+from cosmicds.components import MathJaxSupport, PlotlySupport
+
+
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
@@ -50,6 +53,13 @@ def Page():
 
 
     gjapp, viewer, test_data, test_subset = solara.use_memo(glue_setup, [])
+    
+    # Mount external javascript libraries
+    def _load_math_jax():
+        MathJaxSupport()
+        PlotlySupport()
+
+    solara.use_memo(_load_math_jax, dependencies=[])
 
     mc_scoring, set_mc_scoring = solara.use_state(LOCAL_STATE.mc_scoring.value)
 
@@ -133,9 +143,9 @@ def Page():
                     can_advance=component_state.can_transition(next=True),
                     show=component_state.is_current_step(Marker.you_age1c),
                     state_view={
-                        "low_guess": component_state.age_calc_state.low_guess.value,
-                        "high_guess": component_state.age_calc_state.high_guess.value,
-                        "best_guess": component_state.age_calc_state.best_guess.value,
+                        "low_guess": get_free_response(LOCAL_STATE.free_responses, "likely-low-age").get("response"),
+                        "high_guess": get_free_response(LOCAL_STATE.free_responses, "likely-high-age").get("response"),
+                        "best_guess": get_free_response(LOCAL_STATE.free_responses, "best-guess-age").get("response"),
                     }                    
                 )
 
@@ -257,15 +267,22 @@ def Page():
                         )
                     solara.Button("test slider viewer", on_click=toggle_viewer)
 
-                if component_state.current_step_between(Marker.lea_unc1, Marker.you_age1c):
+    if component_state.current_step_between(Marker.lea_unc1, Marker.you_age1c):
+        with solara.ColumnsResponsive(12, large=[5,7]):
+            with rv.Col():
+                pass
+            with rv.Col():
+                with rv.Col(cols=10, offset=1):
                     UncertaintySlideshow(
                         event_on_slideshow_finished=lambda *args: component_state.uncertainty_slideshow_finished.set(
                             True
                         ),
                         step=component_state.uncertainty_state.step.value,
-                        age_calc_short1=component_state.age_calc_state.short_one.value,
-                        age_calc_short2=component_state.age_calc_state.short_two.value,
-                        age_calc_short_other=component_state.age_calc_state.short_other.value,                    
+                        age_calc_short1=get_free_response(LOCAL_STATE.free_responses, "shortcoming-1").get("response"),
+                        age_calc_short2=get_free_response(LOCAL_STATE.free_responses, "shortcoming-2").get("response"),
+                        age_calc_short_other=get_free_response(LOCAL_STATE.free_responses, "other-shortcomings").get("response"),    
+                        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                        free_responses=[get_free_response(LOCAL_STATE.free_responses,'shortcoming-4'), get_free_response(LOCAL_STATE.free_responses,'systematic-uncertainty')]   
                     )
 
     #--------------------- Row 3: ALL DATA HUBBLE VIEWER - during class sequence -----------------------
@@ -295,20 +312,18 @@ def Page():
                 with solara.Card(style="background-color: #F06292;"):
                     solara.Markdown("All viewer with slider goes here")
 
-                UncertaintySlideshow(
-                    event_on_slideshow_finished=lambda *args: component_state.uncertainty_slideshow_finished.set(
-                        True
-                    ),
-                    step=component_state.uncertainty_state.step.value,
-                    age_calc_short1=component_state.age_calc_state.short_one.value,
-                    age_calc_short2=component_state.age_calc_state.short_two.value,
-                    age_calc_short_other=component_state.age_calc_state.short_other.value,  
-                    event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
-                    free_responses=[get_free_response(LOCAL_STATE.free_responses,'shortcoming-4'),
-                                    get_free_response(LOCAL_STATE.free_responses,'systematic-uncertainty')]               
-                )
-
-    
+                with rv.Col(cols=10, offset=1):
+                    UncertaintySlideshow(
+                        event_on_slideshow_finished=lambda *args: component_state.uncertainty_slideshow_finished.set(
+                            True
+                        ),
+                        step=component_state.uncertainty_state.step.value,
+                        age_calc_short1=get_free_response(LOCAL_STATE.free_responses, "shortcoming-1").get("response"),
+                        age_calc_short2=get_free_response(LOCAL_STATE.free_responses, "shortcoming-2").get("response"),
+                        age_calc_short_other=get_free_response(LOCAL_STATE.free_responses, "other-shortcomings").get("response"),  
+                        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                        free_responses=[get_free_response(LOCAL_STATE.free_responses,'shortcoming-4'), get_free_response(LOCAL_STATE.free_responses,'systematic-uncertainty')]               
+                    )
 
     #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------
 
@@ -481,9 +496,9 @@ def Page():
             state_view={
                 "hint1_dialog": component_state.age_calc_state.hint1_dialog.value,
                 "hint2_dialog": component_state.age_calc_state.hint2_dialog.value,
-                "low_guess": component_state.age_calc_state.low_guess.value,
-                "high_guess": component_state.age_calc_state.high_guess.value,
-                "best_guess": component_state.age_calc_state.best_guess.value,
+                "low_guess": get_free_response(LOCAL_STATE.free_responses, "likely-low-age").get("response"),
+                "high_guess": get_free_response(LOCAL_STATE.free_responses, "likely-high-age").get("response"),
+                "best_guess": get_free_response(LOCAL_STATE.free_responses, "best-guess-age").get("response"),
                 'free_response_a': get_free_response(LOCAL_STATE.free_responses,'new-most-likely-age'),
                 'free_response_b': get_free_response(LOCAL_STATE.free_responses,'new-likely-low-age'),
                 'free_response_c': get_free_response(LOCAL_STATE.free_responses,'new-likely-high-age'),

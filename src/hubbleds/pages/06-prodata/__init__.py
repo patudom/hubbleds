@@ -81,7 +81,7 @@ def Page():
 
         mc-scoring: {mc_scoring}  
 
-        free-responses: {LOCAL_STATE.free_responses.value}
+        free-responses: {LOCAL_STATE.free_responses}
 
         """
     )

@@ -88,9 +88,6 @@
         <v-col
           cols="12"
           lg="3">
-          <p class="StudentResponses">
-            add free response box
-          </p>
           <free-response
             outlined
             rows="1"
@@ -109,9 +106,6 @@
               <v-col
           cols="12"
           lg="3">
-          <p class="StudentResponses">
-            TODO: add free response box
-          </p>
           <free-response
             outlined
             rows="1"
@@ -140,9 +134,6 @@
         v-if="revealIter >= 1"
       >
         <v-col>
-          <p class="StudentResponses">
-            TODO: add free response box
-          </p>
           <free-response
             outlined
             auto-grow
