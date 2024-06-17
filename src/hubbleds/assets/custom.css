@@ -20,17 +20,14 @@
     font-weight: bold !important;
     padding-inline: 20px;
 }
-footer .col {
-    padding-block: 0;
-}
 
 .no-padding {
     padding: 0;
 }
 
-/* .col {
-    padding: 0;
-} */
+footer .col {
+    padding-block: 0;
+}
 
 footer .row {
     align-items: center;

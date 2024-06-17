@@ -1,4 +1,5 @@
 import solara
+import reacton.ipyvuetify as rv
 
 @solara.component
 def ToolBar(viewer):
@@ -25,7 +26,7 @@ def GridViewer(viewer):
         style={},
         classes=["elevation-2"],
     )
-    with solara.Card(
+    with rv.Card(
         children=[layout]
     ):
         pass
