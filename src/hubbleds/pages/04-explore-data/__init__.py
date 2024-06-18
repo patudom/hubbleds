@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import solara
 from cosmicds.widgets.table import Table
-from cosmicds.components import ScaffoldAlert, StateEditor
+from cosmicds.components import ScaffoldAlert, StateEditor, MathJaxSupport, PlotlySupport
 from cosmicds import load_custom_vue_components
 from glue_jupyter.app import JupyterApplication
 from reacton import ipyvuetify as rv
@@ -59,6 +59,13 @@ def _on_galaxy_table_row_selected(row):
 
 @solara.component
 def Page():
+
+    # Mount external javascript libraries
+    def _load_math_jax():
+        MathJaxSupport()
+        PlotlySupport()
+
+    solara.use_memo(_load_math_jax, dependencies=[])
 
     # Custom vue-only components have to be registered in the Page element
     #  currently, otherwise they will not be available in the front-end
