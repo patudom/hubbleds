@@ -9,7 +9,11 @@
     @back="back_callback()"
     @next="() => {
       const expectedAnswers = [state_view.meas_theta];
-      validateAnswersJS(['gal_ang_size'], expectedAnswers) ? next_callback() : null;
+      
+      if (validateAnswersJS(['gal_ang_size'], expectedAnswers)) {
+        set_distance(state_view.meas_theta);
+        next_callback();
+      }
     }"
     :can-advance="can_advance"
   >

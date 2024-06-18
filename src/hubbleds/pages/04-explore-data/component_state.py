@@ -11,12 +11,7 @@ from ...data_models.student import example_data, StudentMeasurement, SpectrumDat
 from contextlib import closing
 from io import BytesIO
 from astropy.io import fits
-
-
-ELEMENT_REST = {
-    'H-α': 6562.79,
-    'Mg-I': 5176.7
-}
+from ...data_management import ELEMENT_REST
 
 
 class Marker(enum.Enum, MarkerBase):

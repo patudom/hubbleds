@@ -131,3 +131,6 @@ UNITS_TO_STATE = {
     DB_VELOCITY_UNIT_FIELD: "km / s",
     DB_ANGSIZE_UNIT_FIELD: "arcsecond",
 }
+
+
+ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
