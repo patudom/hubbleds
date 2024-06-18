@@ -86,6 +86,8 @@ class ComponentState(BaseComponentState):
     age_calc_state: AgeCalcState = dataclasses.field(default_factory=AgeCalcState)
     percentage_selection: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
     statistics_selection: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
+    percentage_selection_class: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
+    statistics_selection_class: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
 
     @computed_property
     def mos_lik1_gate(self):
