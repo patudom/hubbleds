@@ -1,12 +1,14 @@
 import solara
 from cosmicds import load_custom_vue_components
-from cosmicds.components import ScaffoldAlert, ViewerLayout, StateEditor
-from cosmicds.viewers import CDSScatterView
+from cosmicds.components import ScaffoldAlert, ViewerLayout, StateEditor, StatisticsSelector, PercentageSelector
+from cosmicds.viewers import CDSHistogramView, CDSScatterView
 from glue.core import Data
+from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
 from pathlib import Path
 from reacton import component, ipyvuetify as rv
+from echo import delay_callback
 
 from hubbleds.components.id_slider import IdSlider
 from hubbleds.marker_base import MarkerBase
@@ -32,7 +34,7 @@ def Page():
 
     def glue_setup():
         gjapp = JupyterApplication(GLOBAL_STATE.data_collection, GLOBAL_STATE.session)
-        test_data = Data(x=[1,2,3,4,5], y=[1,4,9,16,25], label="Stage 5 Test Data")
+        test_data = Data(x=[1,2,3,4,5,1,4], y=[1,4,9,16,25,3,7], label="Stage 5 Test Data")
         test_data.style.color = "green"
         test_data.style.alpha = 0.5
     
@@ -49,10 +51,27 @@ def Page():
         layer.state.size = 25
         layer.state.visible = False
         viewer.add_subset(test_subset)
-        return gjapp, viewer, test_data, test_subset 
 
+        hist_viewer = gjapp.new_data_viewer(CDSHistogramView, data=test_data, show=False)
+        def _update_bins(*args):
+            props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
+            with delay_callback(hist_viewer.state, *props):
+                layer = hist_viewer.layers[0] # only works cuz there is only one layer 
+                component = hist_viewer.state.x_att                   
+                xmin = round(layer.layer.data[component].min(),0) - 0.5
+                xmax = round(layer.layer.data[component].max(),0) + 0.5
+                print(xmin, xmax)
+                hist_viewer.state.hist_n_bin = int(xmax - xmin)
+                hist_viewer.state.hist_x_min = xmin
+                hist_viewer.state.hist_x_max = xmax
+        
+        _update_bins()
+        
+        gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
+                           handler=_update_bins)
+        return gjapp, viewer, test_data, test_subset, hist_viewer
 
-    gjapp, viewer, test_data, test_subset = solara.use_memo(glue_setup, [])
+    gjapp, viewer, test_data, test_subset, hist_viewer = solara.use_memo(glue_setup, [])
     
     # Mount external javascript libraries
     def _load_math_jax():
@@ -331,11 +350,15 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 if component_state.current_step_between(Marker.mos_lik2, Marker.con_int3):
-                    with solara.Card(style="background-color: #F06292;"):
-                        solara.Markdown("my class statistics selector component goes here")
+                    StatisticsSelector(viewers=[hist_viewer],
+                                       glue_data=[test_data],
+                                       units=["counts"],
+                                       transform=round,
+                                       selected=component_state.statistics_selection)
                 if component_state.current_step_between(Marker.con_int2, Marker.con_int3):
-                    with solara.Card(style="background-color: #F06292;"):
-                        solara.Markdown("my class percentage selector component goes here")
+                    PercentageSelector(viewers=[hist_viewer],
+                                       glue_data=[test_data],
+                                       selected=component_state.percentage_selection)
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
@@ -375,8 +398,7 @@ def Page():
                 )
 
             with rv.Col():
-                with solara.Card(style="background-color: #F06292;"):
-                    solara.Markdown("Our class data histogram goes here")
+                ViewerLayout(hist_viewer)
 
     ScaffoldAlert(
         GUIDELINE_ROOT / "GuidelineMostLikelyValueReflect4.vue",
@@ -413,10 +435,16 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with solara.Card(style="background-color: #F06292;"):
-                    solara.Markdown("all statistics selector component goes here")
+                    StatisticsSelector(viewers=[hist_viewer],
+                                       glue_data=[test_data],
+                                       units=["counts"],
+                                       transform=round,
+                                       selected=component_state.statistics_selection_class)
 
                 with solara.Card(style="background-color: #F06292;"):
-                    solara.Markdown("allpercentage selector component goes here")
+                    PercentageSelector(viewers=[hist_viewer],
+                                       glue_data=[test_data],
+                                       selected=component_state.percentage_selection_class)
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistributionc.vue",
@@ -481,7 +509,7 @@ def Page():
             with rv.Col():
                 if component_state.current_step_between(Marker.two_his1):
                     with solara.Card(style="background-color: #F06292;"):
-                        solara.Markdown("all data student histogram goes here")
+                        ViewerLayout(hist_viewer)
 
                 with solara.Card(style="background-color: #F06292;"):
                     solara.Markdown("all data class histogram goes here")
