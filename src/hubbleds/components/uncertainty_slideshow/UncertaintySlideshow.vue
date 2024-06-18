@@ -133,9 +133,6 @@
                   <p class="mt-10">
                     Is there anything more you would like to add now that you’ve seen more data? (It’s OK if not.)
                   </p>
-                  <p class="StudentResponses">
-                    TODO: add free response box
-                </p>
                   <free-response
                     outlined
                     auto-grow
@@ -251,9 +248,6 @@
                   </p>
                   <p>
                     Can you think of any problems in our methods that could bias everyone’s results in the same direction?
-                  </p>
-                  <p class="StudentResponses">
-                    TODO: add free response box
                   </p>
                   <free-response
                     outlined

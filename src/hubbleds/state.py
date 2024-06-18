@@ -65,9 +65,7 @@ class LocalState(BaseState):
     class_data_students: Reactive[list] = dataclasses.field(default=Reactive([]))
     class_data_info: Reactive[dict] = dataclasses.field(default=Reactive({}))
     mc_scoring: Reactive[dict[str, MCScore]] = dataclasses.field(default=Reactive({}))
-    free_responses: Reactive[FreeResponseDict] = dataclasses.field(
-        default=Reactive(FreeResponseDict())
-    )
+    free_responses: FreeResponseDict = dataclasses.field(default_factory=FreeResponseDict)
 
     def question_completed(self, qtag: str):
         if qtag in self.mc_scoring.value:
