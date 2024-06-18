@@ -336,9 +336,9 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 if component_state.current_step_between(Marker.mos_lik2, Marker.con_int3):
-                    StatisticsSelector([hist_viewer], glue_data=[test_data], units=["counts"], transform=round)
+                    StatisticsSelector([hist_viewer], glue_data=[test_data], units=["counts"], transform=round, selected=component_state.statistics_selection)
                 if component_state.current_step_between(Marker.con_int2, Marker.con_int3):
-                    PercentageSelector([hist_viewer], glue_data=[test_data])
+                    PercentageSelector([hist_viewer], glue_data=[test_data], selected=component_state.percentage_selection)
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
