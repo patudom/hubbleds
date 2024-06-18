@@ -5,8 +5,7 @@ from cosmicds.components import ScaffoldAlert
 from cosmicds import load_custom_vue_components
 
 from cosmicds.components import LayerToggle, StateEditor
-# from cosmicds.components import ViewerLayout
-from ...components import GridViewer
+from cosmicds.components import ViewerLayout
 from ...viewers import HubbleFitView
 
 from glue_jupyter.app import JupyterApplication
@@ -220,5 +219,5 @@ def Page():
                     # TODO: LayerToggle should refresh when the data changes
                     LayerToggle(viewer)
                 with rv.Col(class_="no-padding"):
-                    GridViewer(viewer)
+                    ViewerLayout(viewer)
     
