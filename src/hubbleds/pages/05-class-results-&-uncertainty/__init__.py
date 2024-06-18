@@ -47,6 +47,7 @@ def Page():
         viewer = gjapp.new_data_viewer(CDSScatterView, data=test_data, show=False)
         viewer.state.x_att = test_data.id['x']
         viewer.state.y_att = test_data.id['y']
+        viewer.state.title = "Stage 5 Test Data Viewer"
         layer = viewer.layers[0]
         layer.state.size = 25
         layer.state.visible = False
@@ -64,6 +65,7 @@ def Page():
                 hist_viewer.state.hist_n_bin = int(xmax - xmin)
                 hist_viewer.state.hist_x_min = xmin
                 hist_viewer.state.hist_x_max = xmax
+                hist_viewer.state.title = "My class ages (5 galaxies each)" # This is title for viewer on age_dis1 - con_int3
         
         _update_bins()
         
