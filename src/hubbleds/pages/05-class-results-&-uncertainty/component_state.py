@@ -3,6 +3,7 @@ from hubbleds.component_state_base import BaseComponentState
 from hubbleds.decorators import computed_property
 from solara import Reactive
 import enum
+from typing import Union
 
 from hubbleds.state import LOCAL_STATE
 from hubbleds.marker_base import MarkerBase
@@ -90,6 +91,8 @@ class ComponentState(BaseComponentState):
     )
     mmm_state: MMMState = dataclasses.field(default_factory=MMMState)
     age_calc_state: AgeCalcState = dataclasses.field(default_factory=AgeCalcState)
+    percentage_selection: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
+    statistics_selection: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
 
     @computed_property
     def mos_lik1_gate(self):
