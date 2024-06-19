@@ -1,17 +1,10 @@
 from solara import Reactive
-import solara
 import enum
 from ...marker_base import MarkerBase
 from ...component_state_base import BaseComponentState
 from ...decorators import computed_property
 import dataclasses
-from cosmicds.utils import API_URL
-from ...state import GLOBAL_STATE, LOCAL_STATE
-from ...data_models.student import example_data, StudentMeasurement, SpectrumData
-from contextlib import closing
-from io import BytesIO
-from astropy.io import fits
-from ...data_management import ELEMENT_REST
+from hubbleds.pages.state import LOCAL_STATE
 
 
 class Marker(enum.Enum, MarkerBase):

@@ -1,7 +1,7 @@
 import numpy as np
 import solara
 from cosmicds.widgets.table import Table
-from cosmicds.components import ScaffoldAlert, ViewerLayout
+from cosmicds.components import ScaffoldAlert
 from cosmicds import load_custom_vue_components
 from glue_jupyter.app import JupyterApplication
 from reacton import ipyvuetify as rv
@@ -21,7 +21,7 @@ from ...components import (
     DotplotViewer,
 )
 
-from ...state import GLOBAL_STATE, LOCAL_STATE
+from ..state import GLOBAL_STATE, LOCAL_STATE
 from ...widgets.selection_tool import SelectionTool
 from ...data_models.student import student_data, StudentMeasurement, example_data
 from .component_state import ComponentState, Marker, ELEMENT_REST
@@ -283,7 +283,7 @@ def Page():
     show_selection_tool, set_show_selection_tool = solara.use_state(False)
 
     def _delay_selection_tool():
-        time.sleep(2)
+        time.sleep(3)
         set_show_selection_tool(True)
 
     solara.use_thread(_delay_selection_tool)

@@ -7,14 +7,13 @@ from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
 from pathlib import Path
-from reacton import component, ipyvuetify as rv
+from reacton import ipyvuetify as rv
 from echo import delay_callback
 
 from hubbleds.components.id_slider import IdSlider
-from hubbleds.marker_base import MarkerBase
 from ...components import UncertaintySlideshow
 
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
+from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 from .component_state import ComponentState, Marker
 
 from cosmicds.components import MathJaxSupport, PlotlySupport

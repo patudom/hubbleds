@@ -4,7 +4,8 @@ from ...decorators import computed_property
 from ...marker_base import MarkerBase
 import dataclasses
 from ...component_state_base import BaseComponentState
-from ...state import GLOBAL_STATE, LOCAL_STATE
+from hubbleds.pages.state import LOCAL_STATE
+
 
 class Marker(enum.Enum, MarkerBase):
     ang_siz1 = enum.auto()	

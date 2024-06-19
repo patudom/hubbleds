@@ -1,24 +1,18 @@
 import solara
-from cosmicds.widgets.table import Table
 from cosmicds.components import ScaffoldAlert, StateEditor, MathJaxSupport, PlotlySupport
 import astropy.units as u
 from cosmicds import load_custom_vue_components
 from glue_jupyter.app import JupyterApplication
-from reacton import component, ipyvuetify as rv
+from reacton import ipyvuetify as rv
 from pathlib import Path
 
 from hubbleds.widgets.distance_tool.distance_tool import DistanceTool
 
 from ...components import AngsizeDosDontsSlideshow, DataTable
-from ...data_management import *
 from ...utils import DISTANCE_CONSTANT, GALAXY_FOV, distance_from_angular_size
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
-from ...widgets.selection_tool import SelectionTool
-from ...data_models.student import student_data, StudentMeasurement, example_data, StudentData
+from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
+from ...data_models.student import student_data, example_data, StudentData
 from .component_state import ComponentState, Marker
-
-from ...viewers.hubble_dotplot import HubbleDotPlotView, HubbleDotPlotViewer
-
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 

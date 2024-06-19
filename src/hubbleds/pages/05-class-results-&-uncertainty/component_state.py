@@ -5,7 +5,7 @@ from solara import Reactive
 import enum
 from typing import Union
 
-from hubbleds.state import LOCAL_STATE
+from hubbleds.pages.state import LOCAL_STATE
 from hubbleds.marker_base import MarkerBase
 
 __all__ = ["Marker", "ComponentState"]

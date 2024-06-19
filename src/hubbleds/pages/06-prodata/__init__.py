@@ -13,12 +13,10 @@ from glue_jupyter.app import JupyterApplication
 
 
 from reacton import ipyvuetify as rv
-from solara import Reactive
 
 from pathlib import Path
 
-from ...data_management import *
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
+from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 # import for type definitions
 from typing import cast, Tuple
 

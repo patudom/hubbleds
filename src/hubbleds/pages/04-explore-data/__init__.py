@@ -1,25 +1,16 @@
-import dataclasses
-
-import numpy as np
-import pandas as pd
 import solara
-from cosmicds.widgets.table import Table
 from cosmicds.components import ScaffoldAlert, StateEditor
 from cosmicds import load_custom_vue_components
 from glue_jupyter.app import JupyterApplication
 from reacton import ipyvuetify as rv
-from solara import Reactive
 from pathlib import Path
-from astropy.table import Table
 
 from hubbleds.components.line_draw_viewer.line_draw_viewer import LineDrawViewer
 
-from ...components import DataTable, HubbleExpUniverseSlideshow
-from ...data_management import *
-from ...state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
+from ...components import HubbleExpUniverseSlideshow
+from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 from ...utils import AGE_CONSTANT
-from ...widgets.selection_tool import SelectionTool
-from ...data_models.student import student_data, StudentMeasurement, example_data
+from ...data_models.student import student_data, example_data
 from .component_state import ComponentState, Marker
 
 

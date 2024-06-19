@@ -1,19 +1,18 @@
-import solara.toestand
-from solara import Reactive
-import enum
-
-from ...component_state_base import BaseComponentState
-from ...marker_base import MarkerBase
-from ...utils import HUBBLE_ROUTE_PATH
-from ...decorators import computed_property
 import dataclasses
-from cosmicds.utils import API_URL
-from ...state import GLOBAL_STATE
-from ...data_models.student import example_data, StudentMeasurement, SpectrumData
+import enum
 from contextlib import closing
 from io import BytesIO
+
 from astropy.io import fits
-from ...remote import DatabaseAPI, ELEMENT_REST
+from cosmicds.utils import API_URL
+from hubbleds.pages.state import GLOBAL_STATE
+from solara import Reactive
+
+from ...component_state_base import BaseComponentState
+from ...decorators import computed_property
+from ...marker_base import MarkerBase
+from ...remote import ELEMENT_REST
+from ...utils import HUBBLE_ROUTE_PATH
 
 
 class Marker(enum.Enum, MarkerBase):

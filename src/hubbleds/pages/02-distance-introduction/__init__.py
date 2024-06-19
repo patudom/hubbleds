@@ -1,11 +1,9 @@
 import solara
 from cosmicds import load_custom_vue_components
-from glue_jupyter.app import JupyterApplication
-from reacton import ipyvuetify as rv
 
 from ...components import Stage2Slideshow
 
-from ...state import GLOBAL_STATE, LOCAL_STATE
+from hubbleds.pages.state import LOCAL_STATE
 from .component_state import ComponentState
 from ...utils import IMAGE_BASE_URL, DISTANCE_CONSTANT
 
