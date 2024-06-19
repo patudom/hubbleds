@@ -18,14 +18,10 @@ class DatabaseAPI:
         file_name = f"{gal_info['name'].replace('.fits', '')}.fits"
         gal_type = gal_info["type"]
 
-        print(file_name)
-
         type_folders = {"Sp": "spiral", "E": "elliptical", "Ir": "irregular"}
         folder = type_folders[gal_type]
         url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{file_name}"
         response = GLOBAL_STATE.request_session.get(url)
-
-        print(response)
 
         with closing(BytesIO(response.content)) as f:
             f.name = gal_info["name"]
