@@ -1,16 +1,16 @@
 from cosmicds.layout import BaseLayout
-from cosmicds.state import GLOBAL_STATE
+from .state import GLOBAL_STATE
 import solara
 from cosmicds.components import MathJaxSupport, PlotlySupport
-from .data_models.student import student_data, StudentMeasurement, example_data
-from .remote import DatabaseAPI
+from hubbleds.data_models.student import student_data, StudentMeasurement, example_data
+from hubbleds.remote import DatabaseAPI
 
 
 @solara.component
 def Layout(children=[]):
 
     with BaseLayout(
-        children=children, story_name="hubbles_law", story_title="Hubble's Law"
+        children=children, global_state=GLOBAL_STATE, story_name="hubbles_law", story_title="Hubble's Law"
     ):
         # Mount external javascript libraries
         def _load_math_jax():
