@@ -1,15 +1,16 @@
-from cosmicds.utils import API_URL
+from cosmicds.utils import API_URL, debounce
 from cosmicds.state import GLOBAL_STATE
 from .utils import HUBBLE_ROUTE_PATH
 from .data_models.student import student_data, StudentMeasurement, example_data
 from contextlib import closing
 from io import BytesIO
 from astropy.io import fits
-from .state import LOCAL_STATE
+from hubbleds.pages.state import LOCAL_STATE
 import datetime
 
 
 ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
+DEBOUNCE_TIMEOUT = 1
 
 
 class DatabaseAPI:
@@ -87,6 +88,7 @@ class DatabaseAPI:
         return measurements
 
     @staticmethod
+    @debounce(DEBOUNCE_TIMEOUT)
     def put_measurements(samples=False):
         url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample' if samples else 'submit'}-measurement/"
         data = example_data if samples else student_data
@@ -133,6 +135,7 @@ class DatabaseAPI:
         return measurement
 
     @staticmethod
+    @debounce(DEBOUNCE_TIMEOUT)
     def delete_all_measurements(samples=False):
         url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample-' if samples else ''}measurements/{GLOBAL_STATE.student.id.value}"
         r = GLOBAL_STATE.request_session.get(url)
@@ -196,6 +199,7 @@ class DatabaseAPI:
         component_state.from_dict(stage_state)
 
     @staticmethod
+    @debounce(DEBOUNCE_TIMEOUT)
     def put_story_state(component_state):
         print("Serializing state into DB.")
         comp_state_dict = component_state.as_dict()
