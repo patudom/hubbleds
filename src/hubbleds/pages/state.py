@@ -1,9 +1,6 @@
-import dataclasses
-from cosmicds.state import GLOBAL_STATE, BaseState
-from solara import Reactive
+from cosmicds.state import GlobalState, BaseState
 from glue.core.data_factories import load_data
 from pathlib import Path
-from hubbleds.decorators import computed_property
 
 # from glue.config import settings as glue_settings
 # glue_settings.BACKGROUND_COLOR = 'white'
@@ -11,9 +8,8 @@ from hubbleds.decorators import computed_property
 
 from typing import Optional, Callable, Any, Tuple, List
 
-from .data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
-from .tools import *
-from .free_response import *  # imports FreeResponse, fr_init_response, fr_response
+from hubbleds.data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
+from hubbleds.free_response import *  # imports FreeResponse, fr_init_response, fr_response
 
 
 @dataclasses.dataclass
@@ -73,6 +69,7 @@ class LocalState(BaseState):
         return False
 
 
+GLOBAL_STATE = GlobalState()
 LOCAL_STATE = LocalState()
 
 # add a csv file to the data collection

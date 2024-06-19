@@ -6,7 +6,7 @@ from cosmicds.utils import API_URL
 from cosmicds.utils import load_template
 from ipywidgets import DOMWidget, widget_serialization
 from pandas import DataFrame, concat
-from ...state import GLOBAL_STATE
+from hubbleds.pages.state import GLOBAL_STATE
 
 # from pywwt.jupyter import WWTJupyterWidget
 from ipywwt import WWTWidget
