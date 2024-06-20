@@ -37,9 +37,9 @@ class BaseComponentState(BaseState):
                 f"{self.current_step.value.name} to {step.name}."
             )
 
-    def transition_next(self):
+    def transition_next(self, force=False):
         next_marker = self.current_step.value.next(self.current_step.value)
-        self.transition_to(next_marker)
+        self.transition_to(next_marker, force=force)
 
     def transition_previous(self):
         previous_marker = self.current_step.value.previous(self.current_step.value)

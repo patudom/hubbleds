@@ -812,23 +812,21 @@
             @click="() => {
               const lambdas = [lambda_obs, lambda_rest];
               validateLightSpeed(['speed_light']) ? set_step(step + 1) : null;
-              storeStudentC(['speed_light']);
-              // storeStudentVel(student_c, lambdas);
+              let tempStudentC = storeStudentC(['speed_light']);
+              storeStudentVel(tempStudentC, lambdas);
           }"
         >
           calculate
         </v-btn>
         <v-btn
             v-if="step === 5"
-            v-model="student_vel_calc"
             class="black--text"
             color="accent"
             depressed
             @click="() => {
-              $emit('submit');
               set_dialog(false);
               set_step(0);
-              set_student_vel_calc();
+              set_student_vel_calc(true);
               next_callback();
             }"
         >
@@ -898,14 +896,16 @@ module.exports = {
 
     storeStudentC(inputID) {
       console.log("Storing student c");
-      console.log(this.parseAnswer(inputID));
-      return this.set_student_c(this.parseAnswer(inputID));
+      let tempStudentC = this.parseAnswer(inputID);
+      console.log(tempStudentC);
+      this.set_student_c(tempStudentC);
+      return tempStudentC;
     },
 
-    // storeStudentVel(student_c, lambdas) {
-    //   console.log(student_c, lambdas, student_c * (lambdas[0] / lambdas[1] - 1));
-    //   return this.set_student_vel(student_c * (lambdas[0] / lambdas[1] - 1));
-    // },
+    storeStudentVel(student_c, lambdas) {
+      console.log(student_c, lambdas, student_c * (lambdas[0] / lambdas[1] - 1));
+      this.set_student_vel(student_c * (lambdas[0] / lambdas[1] - 1));
+    },
 
     validateLightSpeed(inputIDs) {
       return inputIDs.every((id, index) => {

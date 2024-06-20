@@ -135,7 +135,6 @@ class DatabaseAPI:
         return measurement
 
     @staticmethod
-    @debounce(DEBOUNCE_TIMEOUT)
     def delete_all_measurements(samples=False):
         url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample-' if samples else ''}measurements/{GLOBAL_STATE.student.id.value}"
         r = GLOBAL_STATE.request_session.get(url)

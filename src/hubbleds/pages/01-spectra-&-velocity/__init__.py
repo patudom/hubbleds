@@ -624,19 +624,6 @@ def Page():
             if (component_state.current_step.value.value >= Marker.mee_spe1.value) and (
                 component_state.current_step.value.value < Marker.int_dot1.value
             ):
-
-                def _set_student_c(light_speed):
-                    component_state.doppler_calc_state.student_c.set(light_speed)
-                    _on_velocity_calculated(
-                        component_state.doppler_calc_state.student_c.value
-                        * (
-                            component_state.lambda_obs.value
-                            / component_state.lambda_rest.value
-                            - 1
-                        ),
-                        update_example=True,
-                    )
-
                 DopplerSlideshow(
                     dialog=component_state.doppler_calc_dialog.value,
                     titles=component_state.doppler_calc_state.titles.value,
@@ -649,23 +636,20 @@ def Page():
                     interact_steps_5=component_state.doppler_calc_state.interact_steps_5.value,
                     student_vel=component_state.student_vel.value,
                     student_c=component_state.doppler_calc_state.student_c.value,
-                    event_set_dialog=lambda v: component_state.doppler_calc_dialog.set(
-                        v
+                    student_vel_calc=component_state.doppler_calc_state.student_vel_calc.value,
+                    event_set_dialog=component_state.doppler_calc_dialog.set,
+                    event_set_step=component_state.doppler_calc_state.step.set,
+                    event_set_failed_validation_5=component_state.doppler_calc_state.failed_validation_5.set,
+                    event_set_max_step_completed_5=component_state.doppler_calc_state.max_step_completed_5.set,
+                    event_set_student_vel_calc=component_state.doppler_calc_state.student_vel_calc.set,
+                    event_set_student_c=component_state.doppler_calc_state.student_c.set,
+                    event_set_student_vel=lambda v: _on_velocity_calculated(
+                        v,
+                        update_example=True,
                     ),
-                    event_set_step=lambda v: component_state.doppler_calc_state.step.set(
-                        v
+                    event_next_callback=lambda *args: component_state.transition_next(
+                        force=False
                     ),
-                    event_set_failed_validation_5=lambda v: component_state.doppler_calc_state.failed_validation_5.set(
-                        v
-                    ),
-                    event_set_max_step_completed_5=lambda v: component_state.doppler_calc_state.max_step_completed_5.set(
-                        v
-                    ),
-                    event_set_student_vel_calc=lambda *args: component_state.doppler_calc_state.student_vel_calc.set(
-                        True
-                    ),
-                    event_set_student_c=_set_student_c,
-                    event_next_callback=lambda *args: component_state.transition_next(),
                 )
 
             if (component_state.current_step.value.value >= Marker.int_dot1.value) and (
