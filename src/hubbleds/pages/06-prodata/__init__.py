@@ -5,8 +5,7 @@ from cosmicds.components import ScaffoldAlert
 from cosmicds import load_custom_vue_components
 
 from cosmicds.components import LayerToggle, StateEditor
-# from cosmicds.components import ViewerLayout
-from ...components import GridViewer
+from cosmicds.components import ViewerLayout
 from ...viewers import HubbleFitView
 
 from glue_jupyter.app import JupyterApplication
@@ -89,8 +88,8 @@ def Page():
     
         
     
-    with rv.Row():
-        with rv.Col(cols=4):
+    with solara.ColumnsResponsive(12, large=[4,8]):
+        with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData0.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
@@ -214,9 +213,11 @@ def Page():
                 show=component_state.is_current_step(Marker.sto_fin3),
             )
         
-        with rv.Col(cols=8):
-            # TODO: LayerToggle should refresh when the data changes
-            if component_state.current_step.value.value >= Marker.pro_dat1.value:
-                LayerToggle(viewer)
-            GridViewer(viewer)
-        
+        with rv.Col(class_="no-padding"):
+            with solara.Columns([3,9], classes=["no-padding"]):
+                with rv.Col(class_="no-padding"):
+                    # TODO: LayerToggle should refresh when the data changes
+                    LayerToggle(viewer)
+                with rv.Col(class_="no-padding"):
+                    ViewerLayout(viewer)
+    
