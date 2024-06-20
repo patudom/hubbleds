@@ -67,7 +67,3 @@ class StudentData(BaseModel):
         measurement = self.get_by_galaxy_id(id_)
 
         return measurement['galaxy']['spectrum']
-
-
-student_data = StudentData(measurements=[])
-example_data = StudentData(measurements=[])

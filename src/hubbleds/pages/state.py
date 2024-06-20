@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Optional, Callable, Any, Tuple, List
 
 from hubbleds.data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
+from hubbleds.data_models.student import StudentData
 from hubbleds.free_response import *  # imports FreeResponse, fr_init_response, fr_response
 
 
@@ -61,7 +62,21 @@ class LocalState(BaseState):
     class_data_students: Reactive[list] = dataclasses.field(default=Reactive([]))
     class_data_info: Reactive[dict] = dataclasses.field(default=Reactive({}))
     mc_scoring: Reactive[dict[str, MCScore]] = dataclasses.field(default=Reactive({}))
-    free_responses: FreeResponseDict = dataclasses.field(default_factory=FreeResponseDict)
+    free_responses: FreeResponseDict = dataclasses.field(
+        default_factory=FreeResponseDict
+    )
+
+    def __post_init__(self):
+        self._student_data = StudentData(measurements=[])
+        self._example_data = StudentData(measurements=[])
+
+    @property
+    def student_data(self):
+        return self._student_data
+
+    @property
+    def example_data(self):
+        return self._example_data
 
     def question_completed(self, qtag: str):
         if qtag in self.mc_scoring.value:

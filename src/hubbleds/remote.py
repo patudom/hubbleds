@@ -94,6 +94,8 @@ class DatabaseAPI:
         data = example_data if samples else student_data
 
         for measurement in data.measurements:
+            print(f"{GLOBAL_STATE.student_id.value} created galaxy {measurement.galaxy.id}")
+
             sub_dict = {
                 "student_id": GLOBAL_STATE.student.id.value,
                 "galaxy_id": int(measurement.galaxy.id),

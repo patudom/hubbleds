@@ -25,7 +25,7 @@ from ...components import (
 
 from ..state import GLOBAL_STATE, LOCAL_STATE
 from ...widgets.selection_tool import SelectionTool
-from ...data_models.student import student_data, StudentMeasurement, example_data
+from ...data_models.student import StudentMeasurement
 from .component_state import ComponentState, Marker, ELEMENT_REST
 from ...remote import DatabaseAPI
 
@@ -37,13 +37,13 @@ component_state = ComponentState()
 
 def _on_galaxy_selected(galaxy):
     is_in = np.isin(
-        [x.galaxy.name for x in student_data.measurements], galaxy["name"]
+        [x.galaxy.name for x in LOCAL_STATE.student_data.measurements], galaxy["name"]
     )  # Avoid duplicates
     already_present = is_in.size > 0 and is_in[0]
 
     if not already_present:
         galaxy["spectrum"] = component_state._load_spectrum_data(galaxy)
-        student_data.measurements.append(
+        LOCAL_STATE.student_data.measurements.append(
             StudentMeasurement(
                 **{
                     "rest_wave": round(ELEMENT_REST[galaxy["element"]]),
@@ -59,7 +59,7 @@ def _on_galaxy_selected(galaxy):
 
 
 def _on_example_galaxy_table_row_selected(row):
-    measurement = example_data.get_by_galaxy_id(row["item"]["galaxy"]["id"])
+    measurement = LOCAL_STATE.example_data.get_by_galaxy_id(row["item"]["galaxy"]["id"])
     component_state.selected_example_galaxy.set(measurement["galaxy"]["id"])
     component_state.lambda_rest.set(measurement["rest_wave"])
     component_state.lambda_obs.set(0.0)
@@ -70,7 +70,7 @@ def _on_galaxy_table_row_selected(row):
     if not row['value']:
         return
 
-    measurement = student_data.get_by_galaxy_id(
+    measurement = LOCAL_STATE.student_data.get_by_galaxy_id(
         row["item"]["galaxy"]["id"], exclude={"galaxy": {"spectrum"}}
     )
     component_state.selected_galaxy.set(measurement["galaxy"]["id"])
@@ -81,13 +81,13 @@ def _on_galaxy_table_row_selected(row):
 
 def _on_wavelength_measured(value, update_example=False, update_student=False):
     if update_example:
-        example_data.update(
+        LOCAL_STATE.example_data.update(
             component_state.selected_example_galaxy.value, {"obs_wave": value}
         )
         component_state.lambda_obs.set(value)
         DatabaseAPI.put_measurements(samples=True)
     elif update_student:
-        student_data.update(component_state.selected_galaxy.value, {"obs_wave": value})
+        LOCAL_STATE.student_data.update(component_state.selected_galaxy.value, {"obs_wave": value})
         component_state.lambda_obs.set(value)
         component_state.obswaves_total.value += 1
         DatabaseAPI.put_measurements()
@@ -95,13 +95,13 @@ def _on_wavelength_measured(value, update_example=False, update_student=False):
 
 def _on_velocity_calculated(value, update_example=False, update_student=False):
     if update_example:
-        example_data.update(
+        LOCAL_STATE.example_data.update(
             component_state.selected_example_galaxy.value, {"velocity": round(value)}
         )
         component_state.student_vel.set(round(value))
         DatabaseAPI.put_measurements(samples=True)
     elif update_student:
-        student_data.update(
+        LOCAL_STATE.student_data.update(
             component_state.selected_galaxy.value, {"velocity": round(value)}
         )
         component_state.student_vel.set(round(value))
@@ -110,11 +110,11 @@ def _on_velocity_calculated(value, update_example=False, update_student=False):
 
 def _calculate_velocity(*args, **kwargs):
     for gal_id in component_state.selected_galaxies.value:
-        measurement = student_data.get_by_galaxy_id(gal_id, exclude={"spectrum"})
+        measurement = LOCAL_STATE.student_data.get_by_galaxy_id(gal_id, exclude={"spectrum"})
         rest_wave = measurement["rest_wave"]
         obs_wave = measurement["obs_wave"]
         velocity = round((3 * (10**5) * (obs_wave / rest_wave - 1)), 0)
-        student_data.update(measurement["galaxy"]["id"], {"velocity": velocity})
+        LOCAL_STATE.student_data.update(measurement["galaxy"]["id"], {"velocity": velocity})
         component_state.velocities_total.value += 1
         DatabaseAPI.put_measurements()
 
@@ -128,7 +128,7 @@ def transition_to_next_stage():
 
 @solara.lab.computed
 def selected_galaxy_measurement():
-    return student_data.get_by_galaxy_id(
+    return LOCAL_STATE.student_data.get_by_galaxy_id(
         component_state.selected_galaxy.value,
         # exclude={"galaxy": {"spectrum"}},
     )
@@ -136,7 +136,7 @@ def selected_galaxy_measurement():
 
 @solara.lab.computed
 def selected_example_galaxy_measurement():
-    return example_data.get_by_galaxy_id(
+    return LOCAL_STATE.example_data.get_by_galaxy_id(
         component_state.selected_example_galaxy.value,
         # exclude={"galaxy": {"spectrum"}},
     )
@@ -152,7 +152,7 @@ def table_data():
         < Marker.rem_gal1.value
     )
 
-    tab_data = student_data.get_measurements(is_example=is_example_data)
+    tab_data = LOCAL_STATE.student_data.get_measurements(is_example=is_example_data)
 
     return tab_data
 
@@ -522,7 +522,7 @@ def Page():
                 vel_tot = component_state.velocities_total.value
 
                 if show_example_data_table:
-                    tab_data = example_data.dict(
+                    tab_data = LOCAL_STATE.example_data.dict(
                         exclude={"measurements": {"__all__": {"galaxy": {"spectrum"}}}}
                     )["measurements"]
 
@@ -533,7 +533,7 @@ def Page():
                         "event_on_row_selected": _on_example_galaxy_table_row_selected,
                     }
                 else:
-                    tab_data = student_data.dict(
+                    tab_data = LOCAL_STATE.student_data.dict(
                         exclude={"measurements": {"__all__": {"galaxy": {"spectrum"}}}}
                     )["measurements"]
 
