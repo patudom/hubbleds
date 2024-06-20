@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import solara
 from cosmicds.widgets.table import Table
@@ -65,8 +67,11 @@ def _on_example_galaxy_table_row_selected(row):
 
 
 def _on_galaxy_table_row_selected(row):
+    if not row['value']:
+        return
+
     measurement = student_data.get_by_galaxy_id(
-        row["item"]["galaxy"]["id"], exclude={"spectrum"}
+        row["item"]["galaxy"]["id"], exclude={"galaxy": {"spectrum"}}
     )
     component_state.selected_galaxy.set(measurement["galaxy"]["id"])
     component_state.lambda_rest.set(measurement["rest_wave"])
@@ -154,8 +159,6 @@ def table_data():
 
 @solara.lab.computed
 def spec_data():
-    print("Getting spec data...")
-
     # TODO: find a way to get rid of this; it's the same as below to show/hide
     #  the spectrum viewer and tutorial, shouldn't need it twice...
     show_example_galaxy_spec = (
@@ -243,7 +246,7 @@ def Page():
     #     f"Student vel: {component_state.student_vel.value}"
     # )
     StateEditor(Marker, component_state=component_state)
-    
+
     if LOCAL_STATE.debug_mode:
 
         def _on_select_galaxies_clicked():
@@ -251,7 +254,7 @@ def Page():
             gal_tab["id"] = [str(x) for x in gal_tab["id"]]
 
             for i in range(5 - component_state.total_galaxies.value):
-                gal = dict(gal_tab[i])
+                gal = dict(gal_tab[random.randint(0, len(gal_tab) - 1)])
                 _on_galaxy_selected(gal)
 
             component_state.transition_to(Marker.sel_gal3, force=True)
