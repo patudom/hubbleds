@@ -196,15 +196,6 @@ def Page():
 
     solara.use_thread(_load_db_state)
 
-    # TODO: This should not be here! This should be loaded in the top-level
-    #  layout. However, some very recent change causes the top-level memo
-    #  to not actually load. Seems to be something with the threading.
-    def _load_math_jax():
-        MathJaxSupport()
-        PlotlySupport()
-
-    solara.use_memo(_load_math_jax, dependencies=[])
-
     def _component_setup():
         # Solara's reactivity is often tied to the _context_ of the Page it's
         #  being rendered in. Currently, in order to trigger subscribed

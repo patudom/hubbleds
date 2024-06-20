@@ -8,6 +8,12 @@ from hubbleds.remote import DatabaseAPI
 
 @solara.component
 def Layout(children=[]):
+    # Mount external javascript libraries
+    def _mount_external():
+        MathJaxSupport()
+        PlotlySupport()
+
+    solara.use_memo(_mount_external)
 
     with BaseLayout(
         children=children, global_state=GLOBAL_STATE, story_name="hubbles_law", story_title="Hubble's Law"
