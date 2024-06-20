@@ -5,7 +5,7 @@ from ...data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
 
 from ...decorators import computed_property
 from ...marker_base import MarkerBase
-from ...component_state_base import BaseComponentState
+from ...base_component_state import BaseComponentState
 import dataclasses
 from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE
 

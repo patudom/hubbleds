@@ -1,29 +1,15 @@
 <template>
   <v-card color="info"
-          :class="highlighted ? 'pa-1' : ''"
+          :style="highlighted ? 'border-width: 4px' : ''"
           rounded="5"
+          :outlined="highlighted"
   >
-    <v-data-table
-        :headers="headers"
-        :items="indexedItems"
-        :items-per-page="5"
-        item-key="id"
-        class="elevation-1"
-        hide-default-header
-        hide-default-footer
-        single-select
-        show-select
-        @item-selected="on_row_selected"
-        v-model="selected"
-    >
-      <template
-          v-slot:top
-      >
-        <v-toolbar
+    <v-toolbar
             color="primary"
             dense
             dark
             rounded
+            flat
         >
           <v-toolbar-title
               class="text-h6 text-uppercase font-weight-regular"
@@ -35,8 +21,21 @@
             <v-icon>mdi-run-fast</v-icon>
           </v-btn>
         </v-toolbar>
-      </template>
 
+    <v-data-table
+        :headers="headers"
+        :items="indexedItems"
+        :items-per-page="5"
+        item-key="id"
+        class="elevation-0"
+        hide-default-header
+        hide-default-footer
+        single-select
+        show-select
+        @item-selected="on_row_selected"
+        v-model="selected"
+        style="border-radius: 0 !important;"
+    >
       <template
           v-slot:header="{ props: { headers } }"
       >

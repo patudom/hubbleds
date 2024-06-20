@@ -1,7 +1,7 @@
 from solara import Reactive
 import enum
 from ...marker_base import MarkerBase
-from ...component_state_base import BaseComponentState
+from ...base_component_state import BaseComponentState
 from ...decorators import computed_property
 import dataclasses
 from hubbleds.pages.state import LOCAL_STATE

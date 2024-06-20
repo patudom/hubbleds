@@ -1,5 +1,5 @@
 import dataclasses
-from hubbleds.component_state_base import BaseComponentState
+from hubbleds.base_component_state import BaseComponentState
 from hubbleds.decorators import computed_property
 from solara import Reactive
 import enum

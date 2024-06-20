@@ -3,7 +3,7 @@ import enum
 from ...decorators import computed_property
 from ...marker_base import MarkerBase
 import dataclasses
-from ...component_state_base import BaseComponentState
+from ...base_component_state import BaseComponentState
 from hubbleds.pages.state import LOCAL_STATE
 
 

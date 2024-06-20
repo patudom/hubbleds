@@ -8,7 +8,7 @@ from cosmicds.utils import API_URL
 from hubbleds.pages.state import GLOBAL_STATE
 from solara import Reactive
 
-from ...component_state_base import BaseComponentState
+from ...base_component_state import BaseComponentState
 from ...decorators import computed_property
 from ...marker_base import MarkerBase
 from ...remote import ELEMENT_REST
