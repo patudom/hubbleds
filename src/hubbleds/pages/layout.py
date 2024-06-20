@@ -6,6 +6,17 @@ from hubbleds.data_models.student import student_data, StudentMeasurement, examp
 from hubbleds.remote import DatabaseAPI
 
 
+@solara.lab.task
+async def _load_student_measurements():
+    print("Loading student measurements...")
+    stored_measurements = DatabaseAPI.get_measurements()
+    student_data.measurements = stored_measurements
+
+    stored_example_measurements = DatabaseAPI.get_measurements(samples=True)
+
+    return stored_measurements, stored_example_measurements
+
+
 @solara.component
 def Layout(children=[]):
     # Mount external javascript libraries
@@ -16,31 +27,25 @@ def Layout(children=[]):
     solara.use_memo(_mount_external)
 
     with BaseLayout(
-        children=children, global_state=GLOBAL_STATE, story_name="hubbles_law", story_title="Hubble's Law"
+        children=children,
+        global_state=GLOBAL_STATE,
+        story_name="hubbles_law",
+        story_title="Hubble's Law",
     ):
-        # Mount external javascript libraries
-        def _load_math_jax():
-            MathJaxSupport()
-            PlotlySupport()
+        GLOBAL_STATE.student.id.subscribe_change(
+            lambda *arg: _load_student_measurements()
+        )
 
-        solara.use_memo(_load_math_jax, dependencies=[])
-
-        # Load student data measurements
-        def _load_student_measurements():
-            stored_measurements = DatabaseAPI.get_measurements()
-            student_data.measurements = stored_measurements
-
-            stored_example_measurements = DatabaseAPI.get_measurements(samples=True)
+        if _load_student_measurements.finished:
+            stored_measurements, stored_example_measurements = (
+                _load_student_measurements.value
+            )
 
             if len(stored_example_measurements) > 0:
                 example_data.measurements = stored_example_measurements
             else:
                 print("No stored sample measurements; creating new one...")
-                example_data.measurements = [StudentMeasurement(
-                    **DatabaseAPI.get_sample_galaxy()
-                )]
+                example_data.measurements = [
+                    StudentMeasurement(**DatabaseAPI.get_sample_galaxy())
+                ]
                 DatabaseAPI.put_measurements(True)
-
-        solara.use_thread(
-            _load_student_measurements, dependencies=[GLOBAL_STATE.student.id.value]
-        )
