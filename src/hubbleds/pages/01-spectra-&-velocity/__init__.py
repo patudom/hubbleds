@@ -418,6 +418,13 @@ def Page():
                 can_advance=component_state.can_transition(next=True),
                 show=component_state.is_current_step(Marker.cho_row1),
             )
+
+            def _on_validated_transition(validated):
+                if validated:
+                    component_state.transition_next()
+
+                component_state.doppler_calc_dialog.set(validated)
+
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc4.vue",
                 event_next_callback=lambda *args: component_state.transition_next(),
@@ -430,12 +437,8 @@ def Page():
                     "lambda_rest": component_state.lambda_rest.value,
                     "failed_validation_4": component_state.doppler_calc_state.failed_validation_4.value,
                 },
-                event_failed_validation_4_callback=lambda v: component_state.doppler_calc_state.failed_validation_4.set(
-                    v
-                ),
-                event_show_doppler_slideshow=lambda v: component_state.doppler_calc_dialog.set(
-                    v
-                ),
+                event_failed_validation_4_callback=component_state.doppler_calc_state.failed_validation_4.set,
+                event_on_validated_transition=_on_validated_transition,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
