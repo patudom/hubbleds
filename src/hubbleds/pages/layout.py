@@ -1,8 +1,8 @@
 from cosmicds.layout import BaseLayout
-from .state import GLOBAL_STATE
+from .state import GLOBAL_STATE, LOCAL_STATE
 import solara
 from cosmicds.components import MathJaxSupport, PlotlySupport
-from hubbleds.data_models.student import student_data, StudentMeasurement, example_data
+from hubbleds.data_models.student import StudentMeasurement
 from hubbleds.remote import DatabaseAPI
 
 
@@ -10,7 +10,7 @@ from hubbleds.remote import DatabaseAPI
 async def _load_student_measurements():
     print("Loading student measurements...")
     stored_measurements = DatabaseAPI.get_measurements()
-    student_data.measurements = stored_measurements
+    LOCAL_STATE.student_data.measurements = stored_measurements
 
     stored_example_measurements = DatabaseAPI.get_measurements(samples=True)
 
@@ -42,10 +42,10 @@ def Layout(children=[]):
             )
 
             if len(stored_example_measurements) > 0:
-                example_data.measurements = stored_example_measurements
+                LOCAL_STATE.example_data.measurements = stored_example_measurements
             else:
                 print("No stored sample measurements; creating new one...")
-                example_data.measurements = [
+                LOCAL_STATE.example_data.measurements = [
                     StudentMeasurement(**DatabaseAPI.get_sample_galaxy())
                 ]
                 DatabaseAPI.put_measurements(True)

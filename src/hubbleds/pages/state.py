@@ -67,15 +67,21 @@ class LocalState(BaseState):
     )
 
     def __post_init__(self):
-        self._student_data = StudentData(measurements=[])
-        self._example_data = StudentData(measurements=[])
+        self._student_data = None
+        self._example_data = None
 
     @property
     def student_data(self):
+        if self._student_data is None:
+            self._student_data = StudentData(measurements=[])
+
         return self._student_data
 
     @property
     def example_data(self):
+        if self._example_data is None:
+            self._example_data = StudentData(measurements=[])
+
         return self._example_data
 
     def question_completed(self, qtag: str):

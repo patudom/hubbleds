@@ -10,7 +10,6 @@ from hubbleds.components.line_draw_viewer.line_draw_viewer import LineDrawViewer
 from ...components import HubbleExpUniverseSlideshow
 from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
 from ...utils import AGE_CONSTANT
-from ...data_models.student import student_data, example_data
 from .component_state import ComponentState, Marker
 
 
@@ -37,7 +36,7 @@ def _on_example_galaxy_table_row_selected(row):
     component_state.selected_example_galaxy.set(galaxy)
     component_state.lambda_rest.set(galaxy['rest_wave'])
     component_state.lambda_obs.subscribe(
-        lambda *args: example_data.update(galaxy['id'], {'obs_wave': args[0]}))
+        lambda *args: LOCAL_STATE.example_data.update(galaxy['id'], {'obs_wave': args[0]}))
 
 
 def _on_galaxy_table_row_selected(row):
@@ -45,7 +44,7 @@ def _on_galaxy_table_row_selected(row):
     component_state.selected_galaxy.set(galaxy)
     component_state.lambda_rest.set(galaxy['rest_wave'])
     component_state.lambda_obs.subscribe(
-        lambda *args: student_data.update(galaxy['id'], {'obs_wave': args[0]}))
+        lambda *args: LOCAL_STATE.student_data.update(galaxy['id'], {'obs_wave': args[0]}))
 
 
 @solara.component

@@ -1,11 +1,10 @@
 from cosmicds.utils import API_URL, debounce
-from cosmicds.state import GLOBAL_STATE
 from .utils import HUBBLE_ROUTE_PATH
-from .data_models.student import student_data, StudentMeasurement, example_data
+from .data_models.student import StudentMeasurement
 from contextlib import closing
 from io import BytesIO
 from astropy.io import fits
-from hubbleds.pages.state import LOCAL_STATE
+from hubbleds.pages.state import LOCAL_STATE, GLOBAL_STATE
 import datetime
 
 
@@ -91,10 +90,10 @@ class DatabaseAPI:
     @debounce(DEBOUNCE_TIMEOUT)
     def put_measurements(samples=False):
         url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample' if samples else 'submit'}-measurement/"
-        data = example_data if samples else student_data
+        data = LOCAL_STATE.example_data if samples else LOCAL_STATE.student_data
 
         for measurement in data.measurements:
-            print(f"{GLOBAL_STATE.student_id.value} created galaxy {measurement.galaxy.id}")
+            print(f"{GLOBAL_STATE.student.id.value} created galaxy {measurement.galaxy.id}")
 
             sub_dict = {
                 "student_id": GLOBAL_STATE.student.id.value,

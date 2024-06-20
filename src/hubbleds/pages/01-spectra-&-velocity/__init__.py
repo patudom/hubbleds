@@ -36,12 +36,14 @@ component_state = ComponentState()
 
 
 def _on_galaxy_selected(galaxy):
+    print("GALAXY SELECTED")
     is_in = np.isin(
         [x.galaxy.name for x in LOCAL_STATE.student_data.measurements], galaxy["name"]
     )  # Avoid duplicates
     already_present = is_in.size > 0 and is_in[0]
 
     if not already_present:
+        print("Adding galaxy...")
         galaxy["spectrum"] = component_state._load_spectrum_data(galaxy)
         LOCAL_STATE.student_data.measurements.append(
             StudentMeasurement(
@@ -237,10 +239,12 @@ def Page():
     #     f"Student vel: {component_state.student_vel.value}"
     # )
     StateEditor(Marker, component_state=component_state)
+    solara.Text(f"User id: {GLOBAL_STATE.student.id.value}")
 
     if LOCAL_STATE.debug_mode:
 
         def _on_select_galaxies_clicked():
+            print("Auto choosing 5 galaxies...")
             gal_tab = Table(component_state.galaxy_data)
             gal_tab["id"] = [str(x) for x in gal_tab["id"]]
 

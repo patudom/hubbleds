@@ -11,7 +11,7 @@ from hubbleds.widgets.distance_tool.distance_tool import DistanceTool
 from ...components import AngsizeDosDontsSlideshow, DataTable
 from ...utils import DISTANCE_CONSTANT, GALAXY_FOV, distance_from_angular_size
 from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score
-from ...data_models.student import student_data, example_data, StudentData
+from ...data_models.student import StudentData
 from .component_state import ComponentState, Marker
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
