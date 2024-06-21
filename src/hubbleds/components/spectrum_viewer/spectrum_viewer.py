@@ -26,7 +26,7 @@ def SpectrumViewer(
     vertical_line_visible = solara.use_reactive(False)
 
     with rv.Card():
-        with rv.Toolbar(color="primary", dense=True):
+        with rv.Toolbar(class_="toolbar", dense=True):
             with rv.ToolbarTitle():
                 solara.Text("SPECTRUM VIEWER")
 
