@@ -1,68 +1,78 @@
 :root {
-    /* define light material desing them */
-    --primary-light: #1565C0 ;
-    --secondary-light: #006064 ;
-    --accent-light: #FFD740 ;
-    --error-light: #F06292 ;
-    --info-light: #FF7043 ;
-    --success-light: #388E3C  ;
-    --warning-light: #DD2C00 ;
+    --primary-dark: #0D47A1;
+    --secondary-dark: #00838F;
+    --accent-dark: #FFC400;
+    --error-dark: #D81B60;
+    --info-dark: #BF360C;
+    --success-dark: #00E676;
+    --warning-dark: #DD2C00;
     
-    /* define dark material desing them */
-    --primary-dark: #0D47A1 ;
-    --secondary-dark: #00838F ;
-    --accent-dark: #FFC400 ;
-    --error-dark: #D81B60 ;
-    --info-dark: #BF360C ;
-    --success-dark: #00E676 ;
-    --warning-dark: #DD2C00 ;
+    --primary-light: #1565C0;
+    --secondary-light: #006064;
+    --accent-light: #FFD740;
+    --error-light: #F06292;
+    --info-light: #FF7043;
+    --success-light: #388E3C;
+    --warning-light: #DD2C00;
     
-    --cosmic-red: #e60001 ;
-    --cosmic-blue: #0e397e ;
-    
-    --cosmic-red-lighter: #ff4d4d ;
-    --cosmic-blue-lighter: #1861d8 ;
-    
-    --cosmic-red-darker: #800000 ;
-    --cosmic-blue-darker: #09234e ;
-    
-    
+    --cosmicds-red: #E60001;
+    --cosmicds-blue: #0F3A7E;
+
+    --cosmicds-red-lighter: #ff4e4e;
+    --cosmicds-blue-lighter: #1a63d9;
 }
 
-/* media query preferes light color scheme */
-@media (prefers-color-scheme: light) {
-    :root {
-        --primary: var(--primary-light);
-        --secondary: var(--secondary-light);
-        --accent: var(--accent-light);
-        --error: var(--error-light);
-        --info: var(--info-light);
-        --success: var(--success-light);
-        --warning: var(--warning-light);
-    }
-}
-
-/* media query prefers dark color scheme */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --primary: var(--primary-dark);
-        --secondary: var(--secondary-dark);
-        --accent: var(--accent-dark);
-        --error: var(--error-dark);
-        --info: var(--info-dark);
-        --success: var(--success-dark);
-        --warning: var(--warning-dark);
-    }
-}
-
-
-.theme--dark.v-sheet {
+.theme--dark .v-sheet {
+    color: white;
     background-color: #121212;
 }
 
+.theme--light .v-sheet {
+    color: black;
+    background-color: #FAFAFA;
+}
+
+/* This removes the solara watermark */
 .v-application--wrap > div:nth-child(2) > div:nth-child(2){
     display: none !important;
 }
+
+.theme--dark .toolbar {
+    background-color: var(--primary-dark) !important;    
+}
+.theme--light .toolbar {
+    color: white !important;
+    background-color: var(--primary-light) !important;    
+}
+
+.theme--dark .tutorial {
+    background-color: var(--secondary-dark) !important;
+}
+
+.theme--light .tutorial {
+    background-color: var(--secondary-light) !important;
+}
+
+.inline-guideline-button {
+    color:white !important;
+    border-radius: 5px; 
+    padding: 3px; 
+}
+
+
+/* TODO: For some reason, the .v-application .legend css only works when it's placed in a vue file. Don't know why; and it won't honor the light/dark theme, so I've left this redundantly in all the vue files where it is relevant. (If the user starts at a later guideline, the css won't have loaded, so it needs to be on every vue file). */
+
+/* .theme--dark .v-application .legend {
+    border: 1px solid white !important;
+}
+.theme--light .v-application .legend {
+    border: 1px solid black !important;
+}
+.v-application .legend {
+    max-width: 300px;
+    margin: 0 auto 0;
+    font-size: 15px !important;   
+} */
 
 .toolbar-title {
     text-transform: uppercase;
@@ -96,9 +106,15 @@ footer .v-card__text {
     padding: 6px;
 }
 
-.cosmicds-footer {
-    background-color: #003186 !important; 
+.theme--dark .cosmicds-footer {
+    background-color: var(--cosmicds-blue) !important; 
     color: #BDBDBD !important; 
+    padding-block: 0;
+}
+
+.theme--light .cosmicds-footer {
+    background-color: var(--cosmicds-blue-lighter) !important; 
+    color: #F5f5f5 !important; 
     padding-block: 0;
 }
 
@@ -129,6 +145,8 @@ footer .v-card__text {
 .v-alert .v-input--radio-group+.v-alert, .v-dialog .v-input--radio-group+.v-alert {
     background-color: #000b !important;
 }
+
+
 
 /*.solara-container-main {*/
 /*    max-width: 1264px;*/
