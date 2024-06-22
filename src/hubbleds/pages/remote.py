@@ -1,6 +1,6 @@
 from cosmicds.utils import API_URL, debounce
-from .utils import HUBBLE_ROUTE_PATH
-from .data_models.student import StudentMeasurement
+from hubbleds.utils import HUBBLE_ROUTE_PATH
+from hubbleds.data_models.student import StudentMeasurement
 from contextlib import closing
 from io import BytesIO
 from astropy.io import fits
@@ -72,6 +72,7 @@ class DatabaseAPI:
 
     @staticmethod
     def get_measurements(samples=False):
+        print(f"Retrieving measurements for student {GLOBAL_STATE.student.id.value}...")
         url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample-' if samples else ''}measurements/{GLOBAL_STATE.student.id.value}"
         r = GLOBAL_STATE.request_session.get(url)
         res_json = r.json()
@@ -89,11 +90,16 @@ class DatabaseAPI:
     @staticmethod
     @debounce(DEBOUNCE_TIMEOUT)
     def put_measurements(samples=False):
+        print(
+            f"Storing measurements for student {GLOBAL_STATE.student.id.value}."
+        )
         url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample' if samples else 'submit'}-measurement/"
-        data = LOCAL_STATE.example_data if samples else LOCAL_STATE.student_data
+        data = LOCAL_STATE.example_data.value if samples else LOCAL_STATE.student_data.value
 
         for measurement in data.measurements:
-            print(f"{GLOBAL_STATE.student.id.value} created galaxy {measurement.galaxy.id}")
+            print(
+                f"{GLOBAL_STATE.student.id.value} created galaxy {measurement.galaxy.id}"
+            )
 
             sub_dict = {
                 "student_id": GLOBAL_STATE.student.id.value,
@@ -125,6 +131,7 @@ class DatabaseAPI:
 
     @staticmethod
     def get_measurement(galaxy_id, samples=False):
+        print(f"Retrieving measurements for student {GLOBAL_STATE.student.id.value}...")
         url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample-' if samples else ''}measurements/{GLOBAL_STATE.student.id.value}/{galaxy_id}"
         r = GLOBAL_STATE.request_session.get(url)
         res_json = r.json()
@@ -168,32 +175,39 @@ class DatabaseAPI:
         }
 
     @staticmethod
-    def get_story_state(component_state):
+    def _get_story_state(component_state):
         r = GLOBAL_STATE.request_session.get(
             f"{API_URL}/story-state/{GLOBAL_STATE.student.id.value}/hubbles_law"
         )
         res_json = r.json()
 
+        # print(res_json)
+
         try:
-            app_state = res_json["state"]["app"]
-            story_state = res_json["state"]["story"]
-            stage_state = res_json["state"]["stage"][
-                f"{component_state.stage_name.value}"
-            ]
+            app_state = res_json["state"].get("app", {})
+            story_state = res_json["state"].get("story", {})
+            stage_state = res_json["state"]["stage"].get(
+                f"{component_state.stage_name.value}", {})
         except Exception as e:
-            print(f"Stored DB state is malformed; failed to load.\n{e}")
-            return
+            print(f"Stored DB state is malformed or this is a new user.\n{e}")
+            return {}, {}, {}
 
         # NOTE: the way the loading from a dict works, solara with trigger
         #  the reactive variables one after another, as there are loaded from
         #  the database. It is possible that `current_step` will be set early,
         #  and that some other event will cause it to revert to an early step.
         #  To avoid this, remove `current_step` and re-add it as the last one.
-        stage_step = stage_state.pop("current_step")
-        stage_state.update(
-            {"current_step": component_state.current_step.value.__class__(stage_step)}
-        )
+        if 'current_step' in stage_state:
+            stage_step = stage_state.pop("current_step")
+            stage_state.update(
+                {"current_step": component_state.current_step.value.__class__(stage_step)}
+            )
 
+        return app_state, story_state, stage_state
+
+    @staticmethod
+    def get_story_state(component_state):
+        app_state, story_state, stage_state = DatabaseAPI._get_story_state(component_state)
         GLOBAL_STATE.from_dict(app_state)
         LOCAL_STATE.from_dict(story_state)
         component_state.from_dict(stage_state)

@@ -1,4 +1,4 @@
-import dataclasses
+from dataclasses import dataclass, field
 import enum
 from contextlib import closing
 from io import BytesIO
@@ -11,7 +11,7 @@ from solara import Reactive
 from ...base_component_state import BaseComponentState
 from ...decorators import computed_property
 from ...marker_base import MarkerBase
-from ...remote import ELEMENT_REST
+from hubbleds.pages.remote import ELEMENT_REST
 from ...utils import HUBBLE_ROUTE_PATH
 
 
@@ -57,21 +57,21 @@ class Marker(enum.Enum, MarkerBase):
     nxt_stg = enum.auto()
 
 
-@dataclasses.dataclass
+@dataclass
 class DopplerCalculation:
-    step: Reactive[int] = dataclasses.field(default=Reactive(0))
-    length: Reactive[int] = dataclasses.field(default=Reactive(6))
-    current_title: Reactive[str] = dataclasses.field(
+    step: Reactive[int] = field(default=Reactive(0))
+    length: Reactive[int] = field(default=Reactive(6))
+    current_title: Reactive[str] = field(
         default=Reactive("Doppler Calculation")
     )
-    failed_validation_4: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    failed_validation_5: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    interact_steps_5: Reactive[list] = dataclasses.field(default=Reactive([3, 4]))
-    max_step_completed_5: Reactive[int] = dataclasses.field(default=Reactive(0))
-    student_c: Reactive[int] = dataclasses.field(default=Reactive(0))
-    student_vel_calc: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    complete: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    titles: Reactive[list] = dataclasses.field(
+    failed_validation_4: Reactive[bool] = field(default=Reactive(False))
+    failed_validation_5: Reactive[bool] = field(default=Reactive(False))
+    interact_steps_5: Reactive[list] = field(default=Reactive([3, 4]))
+    max_step_completed_5: Reactive[int] = field(default=Reactive(0))
+    student_c: Reactive[int] = field(default=Reactive(0))
+    student_vel_calc: Reactive[bool] = field(default=Reactive(False))
+    complete: Reactive[bool] = field(default=Reactive(False))
+    titles: Reactive[list] = field(
         default=Reactive(
             [
                 "Doppler Calculation",
@@ -83,61 +83,61 @@ class DopplerCalculation:
             ]
         )
     )
-    mj_inputs: Reactive[list] = dataclasses.field(default=Reactive([]))
+    mj_inputs: Reactive[list] = field(default=Reactive([]))
 
 
-@dataclasses.dataclass
+@dataclass
 class DotPlotTutorialState:
-    step: Reactive[int] = dataclasses.field(default=Reactive(0))
-    length: Reactive[int] = dataclasses.field(default=Reactive(4))
-    max_step_completed: Reactive[int] = dataclasses.field(default=Reactive(0))
-    current_title: Reactive[str] = dataclasses.field(default=Reactive(""))
+    step: Reactive[int] = field(default=Reactive(0))
+    length: Reactive[int] = field(default=Reactive(4))
+    max_step_completed: Reactive[int] = field(default=Reactive(0))
+    current_title: Reactive[str] = field(default=Reactive(""))
 
 
-@dataclasses.dataclass
+@dataclass
 class ComponentState(BaseComponentState):
-    current_step: Reactive[Marker] = dataclasses.field(
+    current_step: Reactive[Marker] = field(
         default=Reactive(Marker.mee_gui1)
     )
-    stage_name: Reactive[str] = dataclasses.field(
+    stage_name: Reactive[str] = field(
         default=Reactive("spectra_&_velocity")
     )
-    database_changes: Reactive[int] = dataclasses.field(default=Reactive(0))
-    total_galaxies: Reactive[int] = dataclasses.field(default=Reactive(0))
-    selected_galaxy: Reactive[str] = dataclasses.field(default=Reactive(""))
-    selected_galaxies: Reactive[list] = dataclasses.field(default=Reactive([]))
-    show_example_galaxy: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    selected_example_galaxy: Reactive[str] = dataclasses.field(default=Reactive(""))
-    spectrum_tutorial_opened: Reactive[bool] = dataclasses.field(
+    database_changes: Reactive[int] = field(default=Reactive(0))
+    total_galaxies: Reactive[int] = field(default=Reactive(0))
+    selected_galaxy: Reactive[str] = field(default=Reactive(""))
+    selected_galaxies: Reactive[list] = field(default=Reactive([]))
+    show_example_galaxy: Reactive[bool] = field(default=Reactive(False))
+    selected_example_galaxy: Reactive[str] = field(default=Reactive(""))
+    spectrum_tutorial_opened: Reactive[bool] = field(
         default=Reactive(False)
     )
-    lambda_on: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    lambda_used: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    spectrum_clicked: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    zoom_tool_activated: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    doppler_calc_reached: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    lambda_obs: Reactive[float] = dataclasses.field(default=Reactive(0.0))
-    lambda_rest: Reactive[float] = dataclasses.field(default=Reactive(0.0))
-    doppler_calc_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    doppler_calc_state: DopplerCalculation = dataclasses.field(
+    lambda_on: Reactive[bool] = field(default=Reactive(False))
+    lambda_used: Reactive[bool] = field(default=Reactive(False))
+    spectrum_clicked: Reactive[bool] = field(default=Reactive(False))
+    zoom_tool_activated: Reactive[bool] = field(default=Reactive(False))
+    doppler_calc_reached: Reactive[bool] = field(default=Reactive(False))
+    lambda_obs: Reactive[float] = field(default=Reactive(0.0))
+    lambda_rest: Reactive[float] = field(default=Reactive(0.0))
+    doppler_calc_dialog: Reactive[bool] = field(default=Reactive(False))
+    doppler_calc_state: DopplerCalculation = field(
         default_factory=DopplerCalculation
     )
-    student_vel: Reactive[float] = dataclasses.field(default=Reactive(0))
-    dotplot_tutorial_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    dotplot_tutorial_state: DotPlotTutorialState = dataclasses.field(
+    student_vel: Reactive[float] = field(default=Reactive(0))
+    dotplot_tutorial_dialog: Reactive[bool] = field(default=Reactive(False))
+    dotplot_tutorial_state: DotPlotTutorialState = field(
         default_factory=DotPlotTutorialState
     )
-    dotplot_tutorial_finished: Reactive[bool] = dataclasses.field(
+    dotplot_tutorial_finished: Reactive[bool] = field(
         default=Reactive(False)
     )
 
-    has_bad_velocities: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    has_multiple_bad_velocities: Reactive[bool] = dataclasses.field(
+    has_bad_velocities: Reactive[bool] = field(default=Reactive(False))
+    has_multiple_bad_velocities: Reactive[bool] = field(
         default=Reactive(False)
     )
-    obswaves_total: Reactive[int] = dataclasses.field(default=Reactive(0))
-    velocities_total: Reactive[int] = dataclasses.field(default=Reactive(0))
-    reflection_complete: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    obswaves_total: Reactive[int] = field(default=Reactive(0))
+    velocities_total: Reactive[int] = field(default=Reactive(0))
+    reflection_complete: Reactive[bool] = field(default=Reactive(False))
 
     def __post_init__(self):
         self._galaxy_data = None
