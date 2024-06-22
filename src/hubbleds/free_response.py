@@ -1,18 +1,18 @@
 
 # ==== Free Response State ====
 
-import dataclasses
+from dataclasses import dataclass, field
 from solara import Reactive
 from hubbleds.decorators import computed_property
 
 from typing import Union, Dict
 
 
-@dataclasses.dataclass
+@dataclass
 class FreeResponse:
-    tag: str = dataclasses.field(init=True)
-    _response: str = dataclasses.field(default = "")
-    _initialized: bool = dataclasses.field(default = True)
+    tag: str = field(init=True)
+    _response: str = field(default = "")
+    _initialized: bool = field(default = True)
     
     def update(self, response: str = ''):
         # self._response.set(response)
@@ -34,9 +34,9 @@ class FreeResponse:
         return self._response != ""
     
     
-@dataclasses.dataclass
+@dataclass
 class FreeResponseDict:
-    responses: Dict[str, FreeResponse] = dataclasses.field(default_factory = dict)
+    responses: Dict[str, FreeResponse] = field(default_factory = dict)
     
     def __repr__(self) -> str:
         formatted_responses = {tag: response.toJsonSerializable() for tag, response in self.responses.items()}

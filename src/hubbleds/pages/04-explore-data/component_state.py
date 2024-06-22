@@ -3,7 +3,7 @@ import enum
 from ...marker_base import MarkerBase
 from ...base_component_state import BaseComponentState
 from ...decorators import computed_property
-import dataclasses
+from dataclasses import dataclass, field
 from hubbleds.pages.state import LOCAL_STATE
 
 
@@ -28,21 +28,21 @@ class Marker(enum.Enum, MarkerBase):
     sho_est2 = enum.auto()
 
 
-@dataclasses.dataclass
+@dataclass
 class HubbleSlideshowState:
-    step: Reactive[int] = dataclasses.field(default=Reactive(0))
-    max_step_completed: Reactive[int] = dataclasses.field(default=Reactive(0))
+    step: Reactive[int] = field(default=Reactive(0))
+    max_step_completed: Reactive[int] = field(default=Reactive(0))
 
-@dataclasses.dataclass
+@dataclass
 class ComponentState(BaseComponentState):
-    current_step: Reactive[Marker] = dataclasses.field(
+    current_step: Reactive[Marker] = field(
         default=Reactive(Marker.exp_dat1)
     )
-    hubble_slideshow_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    hubble_slideshow_finished: Reactive[bool] = dataclasses.field(
+    hubble_slideshow_dialog: Reactive[bool] = field(default=Reactive(False))
+    hubble_slideshow_finished: Reactive[bool] = field(
         default=Reactive(False)
     )
-    hubble_slideshow_state: HubbleSlideshowState = dataclasses.field(
+    hubble_slideshow_state: HubbleSlideshowState = field(
         default_factory=HubbleSlideshowState
     )
 

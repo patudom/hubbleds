@@ -2,7 +2,7 @@ from solara import Reactive
 import enum
 from ...decorators import computed_property
 from ...marker_base import MarkerBase
-import dataclasses
+from dataclasses import dataclass, field
 from ...base_component_state import BaseComponentState
 from hubbleds.pages.state import LOCAL_STATE
 
@@ -36,23 +36,23 @@ class Marker(enum.Enum, MarkerBase):
     fil_rem1 = enum.auto()
 
 
-@dataclasses.dataclass
+@dataclass
 class ComponentState(BaseComponentState):
 
-    current_step: Reactive[Marker] = dataclasses.field(
+    current_step: Reactive[Marker] = field(
         default=Reactive(Marker.ang_siz1)
     )
-    example_angular_sizes_total: Reactive[int] = dataclasses.field(default=Reactive(0))
-    angular_sizes_total: Reactive[int] = dataclasses.field(default=Reactive(0))
-    dosdonts_tutorial_opened: Reactive[bool] = dataclasses.field(
+    example_angular_sizes_total: Reactive[int] = field(default=Reactive(0))
+    angular_sizes_total: Reactive[int] = field(default=Reactive(0))
+    dosdonts_tutorial_opened: Reactive[bool] = field(
         default=Reactive(False)
     )
-    selected_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    selected_example_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    show_ruler: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    meas_theta: Reactive[float] = dataclasses.field(default=Reactive(0.0))
-    ruler_click_count: Reactive[int] = dataclasses.field(default=Reactive(0))
-    n_meas: Reactive[int] = dataclasses.field(default=Reactive(0))
+    selected_galaxy: Reactive[dict] = field(default=Reactive({}))
+    selected_example_galaxy: Reactive[dict] = field(default=Reactive({}))
+    show_ruler: Reactive[bool] = field(default=Reactive(False))
+    meas_theta: Reactive[float] = field(default=Reactive(0.0))
+    ruler_click_count: Reactive[int] = field(default=Reactive(0))
+    n_meas: Reactive[int] = field(default=Reactive(0))
 
     def setup(self):
         def _on_example_galaxy_selected(*args):

@@ -1,16 +1,16 @@
 from solara import Reactive
-import dataclasses
+from dataclasses import dataclass, field
 
 
-@dataclasses.dataclass
+@dataclass
 class DistanceSlideshow:
-    step_dist: Reactive[int] = dataclasses.field(default=Reactive(0))
-    max_step_completed: Reactive[int] = dataclasses.field(default=Reactive(0)) 
-    complete: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    step_dist: Reactive[int] = field(default=Reactive(0))
+    max_step_completed: Reactive[int] = field(default=Reactive(0))
+    complete: Reactive[bool] = field(default=Reactive(False))
 
 
-@dataclasses.dataclass
+@dataclass
 class ComponentState:
-    distance_slideshow_state: DistanceSlideshow = dataclasses.field(
+    distance_slideshow_state: DistanceSlideshow = field(
         default_factory=DistanceSlideshow
     )

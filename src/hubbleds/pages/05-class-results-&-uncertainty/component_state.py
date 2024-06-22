@@ -1,4 +1,4 @@
-import dataclasses
+from dataclasses import dataclass, field
 from hubbleds.base_component_state import BaseComponentState
 from hubbleds.decorators import computed_property
 from solara import Reactive
@@ -46,15 +46,15 @@ class Marker(enum.Enum, MarkerBase):
     mor_dat1 = enum.auto()
 
 
-@dataclasses.dataclass
+@dataclass
 class UncertaintyState:
-    step: Reactive[int] = dataclasses.field(default=Reactive(0))
+    step: Reactive[int] = field(default=Reactive(0))
 
-@dataclasses.dataclass
+@dataclass
 class MMMState:
-    step: Reactive[int] = dataclasses.field(default=Reactive(0))
-    length: Reactive[int] = dataclasses.field(default=Reactive(3))
-    titles: Reactive[list] = dataclasses.field(
+    step: Reactive[int] = field(default=Reactive(0))
+    length: Reactive[int] = field(default=Reactive(3))
+    titles: Reactive[list] = field(
         default=Reactive(
             [
                 "Mean",
@@ -65,29 +65,29 @@ class MMMState:
     )
 
 
-@dataclasses.dataclass
+@dataclass
 class AgeCalcState:
-    hint1_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    hint2_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    hint3_dialog: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    hint1_dialog: Reactive[bool] = field(default=Reactive(False))
+    hint2_dialog: Reactive[bool] = field(default=Reactive(False))
+    hint3_dialog: Reactive[bool] = field(default=Reactive(False))
 
-@dataclasses.dataclass
+@dataclass
 class ComponentState(BaseComponentState):
-    current_step: Reactive[Marker] = dataclasses.field(default=Reactive(Marker.ran_var1))
-    student_low_age: Reactive[int] = dataclasses.field(default=Reactive(0))
-    student_high_age: Reactive[int] = dataclasses.field(default=Reactive(0))
-    class_low_age: Reactive[int] = dataclasses.field(default=Reactive(0))
-    class_high_age: Reactive[int] = dataclasses.field(default=Reactive(0))
-    uncertainty_state: UncertaintyState = dataclasses.field(default_factory=UncertaintyState)
-    uncertainty_slideshow_finished: Reactive[bool] = dataclasses.field(
+    current_step: Reactive[Marker] = field(default=Reactive(Marker.ran_var1))
+    student_low_age: Reactive[int] = field(default=Reactive(0))
+    student_high_age: Reactive[int] = field(default=Reactive(0))
+    class_low_age: Reactive[int] = field(default=Reactive(0))
+    class_high_age: Reactive[int] = field(default=Reactive(0))
+    uncertainty_state: UncertaintyState = field(default_factory=UncertaintyState)
+    uncertainty_slideshow_finished: Reactive[bool] = field(
         default=Reactive(False)
     )
-    mmm_state: MMMState = dataclasses.field(default_factory=MMMState)
-    age_calc_state: AgeCalcState = dataclasses.field(default_factory=AgeCalcState)
-    percentage_selection: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
-    statistics_selection: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
-    percentage_selection_class: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
-    statistics_selection_class: Reactive[Union[str, None]] = dataclasses.field(default=Reactive(None))
+    mmm_state: MMMState = field(default_factory=MMMState)
+    age_calc_state: AgeCalcState = field(default_factory=AgeCalcState)
+    percentage_selection: Reactive[Union[str, None]] = field(default=Reactive(None))
+    statistics_selection: Reactive[Union[str, None]] = field(default=Reactive(None))
+    percentage_selection_class: Reactive[Union[str, None]] = field(default=Reactive(None))
+    statistics_selection_class: Reactive[Union[str, None]] = field(default=Reactive(None))
 
     @computed_property
     def mos_lik1_gate(self):

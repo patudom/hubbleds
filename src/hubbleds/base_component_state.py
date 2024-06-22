@@ -1,4 +1,4 @@
-import dataclasses
+from dataclasses import dataclass, field
 
 from cosmicds.state import BaseState
 from hubbleds.marker_base import MarkerBase
@@ -7,7 +7,7 @@ from solara import Reactive
 
 class BaseComponentState(BaseState):
 
-    current_step: Reactive[MarkerBase] = dataclasses.field()
+    current_step: Reactive[MarkerBase] = field()
 
     def is_current_step(self, step):
         return self.current_step.value.value == step.value

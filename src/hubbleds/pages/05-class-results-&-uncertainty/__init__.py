@@ -13,7 +13,8 @@ from echo import delay_callback
 from hubbleds.components.id_slider import IdSlider
 from ...components import UncertaintySlideshow
 
-from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
+from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, fr_callback
+from hubbleds.free_response import get_free_response
 from .component_state import ComponentState, Marker
 
 from cosmicds.components import MathJaxSupport, PlotlySupport

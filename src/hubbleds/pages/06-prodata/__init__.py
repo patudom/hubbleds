@@ -16,8 +16,8 @@ from reacton import ipyvuetify as rv
 
 from pathlib import Path
 
-from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, get_free_response, fr_callback
-# import for type definitions
+from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE, mc_callback, mc_serialize_score, fr_callback
+from hubbleds.free_response import get_free_response
 from typing import cast, Tuple
 
 from .component_state import ComponentState, Marker

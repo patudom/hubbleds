@@ -1,9 +1,9 @@
 from cosmicds.state import GlobalState
 
-import dataclasses
+from dataclasses import dataclass, field
 from dataclasses import dataclass
 import solara
-import dataclasses
+from dataclasses import dataclass, field
 from typing import Optional, cast, Dict, Union
 from solara import Reactive
 
@@ -45,26 +45,26 @@ from .utils import (
 
 @dataclass
 class LocalState(HubListener):
-    inputs: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    name: Reactive[str] = dataclasses.field(default=Reactive("Hubble's Law"))
-    stage_index: Reactive[int] = dataclasses.field(default=Reactive(0))
-    step_index: Reactive[int] = dataclasses.field(default=Reactive(0))
-    step_complete: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    max_stage_index: Reactive[int] = dataclasses.field(default=Reactive(0))
-    mc_scoring: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    total_score: Reactive[int] = dataclasses.field(default=Reactive(0))
-    has_scoring: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    responses: Reactive[dict] = dataclasses.field(default=Reactive({}))
+    inputs: Reactive[dict] = field(default=Reactive({}))
+    name: Reactive[str] = field(default=Reactive("Hubble's Law"))
+    stage_index: Reactive[int] = field(default=Reactive(0))
+    step_index: Reactive[int] = field(default=Reactive(0))
+    step_complete: Reactive[bool] = field(default=Reactive(False))
+    max_stage_index: Reactive[int] = field(default=Reactive(0))
+    mc_scoring: Reactive[dict] = field(default=Reactive({}))
+    total_score: Reactive[int] = field(default=Reactive(0))
+    has_scoring: Reactive[bool] = field(default=Reactive(False))
+    responses: Reactive[dict] = field(default=Reactive({}))
 
-    title: Reactive[str] = dataclasses.field(default=Reactive("Hubble's Law"))
-    measurements: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    calculations: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    validation_failure_counts: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    has_best_fit_galaxy: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    enough_students_ready: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    started: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    class_data_students: Reactive[list] = dataclasses.field(default=Reactive([]))
-    class_data_info: Reactive[dict] = dataclasses.field(default=Reactive({}))
+    title: Reactive[str] = field(default=Reactive("Hubble's Law"))
+    measurements: Reactive[dict] = field(default=Reactive({}))
+    calculations: Reactive[dict] = field(default=Reactive({}))
+    validation_failure_counts: Reactive[dict] = field(default=Reactive({}))
+    has_best_fit_galaxy: Reactive[bool] = field(default=Reactive(False))
+    enough_students_ready: Reactive[bool] = field(default=Reactive(False))
+    started: Reactive[bool] = field(default=Reactive(False))
+    class_data_students: Reactive[list] = field(default=Reactive([]))
+    class_data_info: Reactive[dict] = field(default=Reactive({}))
 
     name_ext = ".fits"
 

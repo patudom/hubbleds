@@ -6,7 +6,7 @@ from ...data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
 from ...decorators import computed_property
 from ...marker_base import MarkerBase
 from ...base_component_state import BaseComponentState
-import dataclasses
+from dataclasses import dataclass, field
 from hubbleds.pages.state import GLOBAL_STATE, LOCAL_STATE
 
 
@@ -26,20 +26,20 @@ class Marker(enum.Enum, MarkerBase):
     sto_fin3 = enum.auto()
     
     
-@dataclasses.dataclass
+@dataclass
 class ComponentState(BaseComponentState):
-    current_step: Reactive[Marker] = dataclasses.field(default=Reactive(Marker.pro_dat0))
+    current_step: Reactive[Marker] = field(default=Reactive(Marker.pro_dat0))
     
-    hst_age: float = dataclasses.field(default=HST_KEY_AGE) # a constant value
+    hst_age: float = field(default=HST_KEY_AGE) # a constant value
     
     # TODO: I don't think our_age is used anywhere
-    our_age: Reactive[float] = dataclasses.field(default=Reactive(0.0))
-    class_age: Reactive[float] = dataclasses.field(default=Reactive(0.0))
+    our_age: Reactive[float] = field(default=Reactive(0.0))
+    class_age: Reactive[float] = field(default=Reactive(0.0))
     
-    ages_within: Reactive[float] = dataclasses.field(default=Reactive(0.15))
-    allow_too_close_correct: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    ages_within: Reactive[float] = field(default=Reactive(0.15))
+    allow_too_close_correct: Reactive[bool] = field(default=Reactive(False))
     
-    fit_line_shown: Reactive[bool] = dataclasses.field(default=Reactive(False))
+    fit_line_shown: Reactive[bool] = field(default=Reactive(False))
     
     def setup(self):
         pass
