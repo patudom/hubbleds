@@ -2,21 +2,20 @@ from cosmicds.state import GlobalState, BaseState
 from glue.core.data_factories import load_data
 from pathlib import Path
 
-# from glue.config import settings as glue_settings
-# glue_settings.BACKGROUND_COLOR = 'white'
-# glue_settings.FOREGROUND_COLOR= 'black'
-
 from typing import Optional, Callable, Any, Tuple, List
 
 from hubbleds.data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
 from hubbleds.data_models.student import StudentData
-from hubbleds.free_response import *  # imports FreeResponse, fr_init_response, fr_response
+from hubbleds.free_response import FreeResponseDict, update_free_response
+from solara import Reactive
+from dataclasses import dataclass, field, is_dataclass
+from hubbleds.decorators import computed_property
 
 
-@dataclasses.dataclass
+@dataclass
 class MCScore:
-    tag: str = dataclasses.field(init=True)
-    _score_dict: Reactive[dict[str, int]] = dataclasses.field(
+    tag: str = field(init=True)
+    _score_dict: Reactive[dict[str, int]] = field(
         default_factory=lambda: Reactive({})
     )
 
@@ -48,46 +47,52 @@ class MCScore:
         return self._score_dict.value.get("score", None) is not None
 
 
-@dataclasses.dataclass
+@dataclass
 class LocalState(BaseState):
-    debug_mode: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    title: Reactive[str] = dataclasses.field(default=Reactive("Hubble's Law"))
-    stages: Reactive[list] = dataclasses.field(default=Reactive([]))
-    measurements: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    calculations: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    validation_failure_counts: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    has_best_fit_galaxy: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    enough_students_ready: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    started: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    class_data_students: Reactive[list] = dataclasses.field(default=Reactive([]))
-    class_data_info: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    mc_scoring: Reactive[dict[str, MCScore]] = dataclasses.field(default=Reactive({}))
-    free_responses: FreeResponseDict = dataclasses.field(
+    debug_mode: Reactive[bool] = field(default=Reactive(False))
+    title: Reactive[str] = field(default=Reactive("Hubble's Law"))
+    stages: Reactive[list] = field(default=Reactive([]))
+    measurements: Reactive[dict] = field(default=Reactive({}))
+    calculations: Reactive[dict] = field(default=Reactive({}))
+    validation_failure_counts: Reactive[dict] = field(default=Reactive({}))
+    has_best_fit_galaxy: Reactive[bool] = field(default=Reactive(False))
+    enough_students_ready: Reactive[bool] = field(default=Reactive(False))
+    started: Reactive[bool] = field(default=Reactive(False))
+    class_data_students: Reactive[list] = field(default=Reactive([]))
+    class_data_info: Reactive[dict] = field(default=Reactive({}))
+    mc_scoring: Reactive[dict[str, MCScore]] = field(default=Reactive({}))
+    free_responses: FreeResponseDict = field(
         default_factory=FreeResponseDict
     )
-
-    def __post_init__(self):
-        self._student_data = None
-        self._example_data = None
-
-    @property
-    def student_data(self):
-        if self._student_data is None:
-            self._student_data = StudentData(measurements=[])
-
-        return self._student_data
-
-    @property
-    def example_data(self):
-        if self._example_data is None:
-            self._example_data = StudentData(measurements=[])
-
-        return self._example_data
+    student_data: Reactive[StudentData] = field(
+        default=Reactive(StudentData(measurements=[]))
+    )
+    example_data: Reactive[StudentData] = field(
+        default=Reactive(StudentData(measurements=[]))
+    )
 
     def question_completed(self, qtag: str):
         if qtag in self.mc_scoring.value:
             return self.mc_scoring.value[qtag].completed().value  # type: ignore
         return False
+
+    def from_dict(self, d):
+        # TODO: We're overriding the base class method here, this needs to be
+        #  revisited once we've figured out serialization of pydantic annotated
+        #  types (ask Nick).
+        def _inner_dict(dd, parent):
+            for k, v in dd.items():
+                attr = getattr(parent, k)
+
+                if k in ['example_data', 'student_data']:
+                    v = StudentData(**v)
+
+                if isinstance(attr, Reactive):
+                    attr.set(v)
+                elif is_dataclass(attr):
+                    _inner_dict(v, attr)
+
+        _inner_dict(d, self)
 
 
 GLOBAL_STATE = GlobalState()
