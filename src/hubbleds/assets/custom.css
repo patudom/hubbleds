@@ -171,3 +171,16 @@ footer .v-card__text {
 /*    max-height: 100%;*/
 /*    overflow: auto*/
 /*}*/
+
+
+/***** 
+    ================================
+    Solara/Vuetify default overrides 
+    ================================
+*****/
+
+/* buttons should remain white, even in dark mode. 
+    as the toolbar is still #1565C0 */
+.theme--light.v-btn-toggle:not(.v-btn-toggle--group) .v-btn.v-btn .v-icon {
+    color: #fff !important;
+}
