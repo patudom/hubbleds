@@ -65,10 +65,10 @@ class LocalState(BaseState):
         default_factory=FreeResponseDict
     )
     student_data: Reactive[StudentData] = field(
-        default=Reactive(StudentData(measurements=[]))
+        default_factory=lambda: Reactive(StudentData(measurements=[]))
     )
     example_data: Reactive[StudentData] = field(
-        default=Reactive(StudentData(measurements=[]))
+        default_factory=lambda: Reactive(StudentData(measurements=[]))
     )
 
     def question_completed(self, qtag: str):
