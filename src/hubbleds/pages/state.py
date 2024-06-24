@@ -85,7 +85,8 @@ class LocalState(BaseState):
                 attr = getattr(parent, k)
 
                 if k in ['example_data', 'student_data']:
-                    v = StudentData(**v)
+                    # v = StudentData(**v)
+                    return {}
 
                 if isinstance(attr, Reactive):
                     attr.set(v)
