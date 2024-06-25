@@ -65,12 +65,8 @@
     background-color: var(--primary-light) !important;    
 }
 
-.theme--dark .tutorial {
-    background-color: var(--secondary-dark) !important;
-}
-
-.theme--light .tutorial {
-    background-color: var(--secondary-light) !important;
+.tutorial {
+    background-color: var(--secondary) !important;
 }
 
 .inline-guideline-button {
