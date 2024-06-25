@@ -136,6 +136,9 @@ def on_mc_score(local_state, data, callback: Optional[Callable] = None):
         data["score"], data["choice"], data["tries"], data["wrong_attempts"]
     )
     local_state.mc_scoring.set(mc_scoring)
+
+    GLOBAL_STATE.piggybank_total.value += data["score"]
+
     if callback is not None:
         callback(mc_scoring)
 
