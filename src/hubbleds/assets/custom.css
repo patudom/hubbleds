@@ -75,8 +75,6 @@
     padding: 3px; 
 }
 
-
-/* TODO: For some reason, the .v-application .legend css only works when it's placed in a vue file. Don't know why; and it won't honor the light/dark theme, so I've left this redundantly in all the vue files where it is relevant. (If the user starts at a later guideline, the css won't have loaded, so it needs to be on every vue file). */
 /* NOTE: .v-application based selectors will work, but often will need to be either !important or (also) have a higher specificity selector than the default Vuetify css. */
 /* Note that theme--dark and theme--light are defined on the *same* element as v-application, so .v-application should not be a descendent of .theme--[dark/light] */
 .theme--dark.v-application .legend {
