@@ -11,11 +11,10 @@
     }"
   >
     <v-toolbar
-      color="primary"
       height="40px"
       dense
       dark
-      class="text-uppercase"
+      class="text-uppercase toolbar"
     >
       <v-toolbar-title>Cosmic Sky Viewer</v-toolbar-title>
       <v-spacer></v-spacer>          

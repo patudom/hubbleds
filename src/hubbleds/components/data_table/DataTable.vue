@@ -20,7 +20,7 @@
           v-slot:top
       >
         <v-toolbar
-            color="primary"
+            class="toolbar"
             dense
             dark
             rounded
