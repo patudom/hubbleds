@@ -1,7 +1,7 @@
 import solara
 from ..components import IntroSlideshow
 
-from hubbleds.pages.layout import Layout
+from hubbleds.layout import Layout
 
 
 @solara.component

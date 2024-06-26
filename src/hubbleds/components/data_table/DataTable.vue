@@ -31,7 +31,7 @@
         hide-default-header
         hide-default-footer
         single-select
-        show-select
+        :show-select="show_select"
         @item-selected="on_row_selected"
         v-model="selected"
         style="border-radius: 0 !important;"
@@ -57,17 +57,17 @@
       </template>
 
       <template v-slot:item.rest_wave="{ item }">
-        {{ item.rest_wave }}
+        {{ item.rest_wave_value }}
       </template>
 
       <template v-slot:item.obs_wave="{ item }">
-        <v-icon v-if="item.obs_wave < 1.0">mdi-alert</v-icon>
-        <span v-else>{{ item.obs_wave }}</span>
+        <v-icon v-if="item.obs_wave_value < 1.0">mdi-alert</v-icon>
+        <span v-else>{{ item.obs_wave_value }}</span>
       </template>
 
       <template v-slot:item.velocity="{ item }">
-        <v-icon v-if="item.velocity < 1.0">mdi-alert</v-icon>
-        <span v-else>{{ item.velocity }}</span>
+        <v-icon v-if="item.velocity_value < 1.0">mdi-alert</v-icon>
+        <span v-else>{{ item.velocity_value }}</span>
       </template>
 
     </v-data-table>

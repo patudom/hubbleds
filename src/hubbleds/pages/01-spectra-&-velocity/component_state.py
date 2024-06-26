@@ -1,21 +1,14 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel, field_validator
+from cosmicds.state import BaseState
+from hubbleds.base_marker import BaseMarker
 import enum
-from contextlib import closing
-from io import BytesIO
-
-from astropy.io import fits
-from cosmicds.utils import API_URL
-from hubbleds.pages.state import GLOBAL_STATE
-from solara import Reactive
-
-from ...base_component_state import BaseComponentState
-from ...decorators import computed_property
-from ...marker_base import MarkerBase
-from hubbleds.pages.remote import ELEMENT_REST
-from ...utils import HUBBLE_ROUTE_PATH
+from functools import cached_property
+from hubbleds.base_component_state import BaseComponentState
+import solara
+from typing import Any
 
 
-class Marker(enum.Enum, MarkerBase):
+class Marker(enum.Enum, BaseMarker):
     mee_gui1 = enum.auto()
     sel_gal1 = enum.auto()
     sel_gal2 = enum.auto()
@@ -57,235 +50,141 @@ class Marker(enum.Enum, MarkerBase):
     nxt_stg = enum.auto()
 
 
-@dataclass
-class DopplerCalculation:
-    step: Reactive[int] = field(default=Reactive(0))
-    length: Reactive[int] = field(default=Reactive(6))
-    current_title: Reactive[str] = field(
-        default=Reactive("Doppler Calculation")
-    )
-    failed_validation_4: Reactive[bool] = field(default=Reactive(False))
-    failed_validation_5: Reactive[bool] = field(default=Reactive(False))
-    interact_steps_5: Reactive[list] = field(default=Reactive([3, 4]))
-    max_step_completed_5: Reactive[int] = field(default=Reactive(0))
-    student_c: Reactive[int] = field(default=Reactive(0))
-    student_vel_calc: Reactive[bool] = field(default=Reactive(False))
-    complete: Reactive[bool] = field(default=Reactive(False))
-    titles: Reactive[list] = field(
-        default=Reactive(
-            [
-                "Doppler Calculation",
-                "Doppler Calculation",
-                "Doppler Calculation",
-                "Reflect on Your Result",
-                "Enter Speed of Light",
-                "Your Galaxy's Velocity",
-            ]
-        )
-    )
-    mj_inputs: Reactive[list] = field(default=Reactive([]))
+class DopplerCalculation(BaseModel):
+    step: int = 0
+    length: int = 6
+    current_title: str = ""
+    validation_4_failed: bool = False
+    validation_5_failed: bool = False
+    interact_steps_5: list[int] = [3, 4]
+    max_step_completed_5: int = 0
+    light_speed: float = 0
+    velocity_calculated: bool = False
+    completed: bool = False
+
+    @cached_property
+    def titles(self) -> list[str]:
+        return [
+            "Doppler Calculation",
+            "Doppler Calculation",
+            "Doppler Calculation",
+            "Reflect on Your Result",
+            "Enter Speed of Light",
+            "Your Galaxy's Velocity",
+        ]
 
 
-@dataclass
-class DotPlotTutorialState:
-    step: Reactive[int] = field(default=Reactive(0))
-    length: Reactive[int] = field(default=Reactive(4))
-    max_step_completed: Reactive[int] = field(default=Reactive(0))
-    current_title: Reactive[str] = field(default=Reactive(""))
+class DotPlotTutorial(BaseModel):
+    step: int = 0
+    length: int = 4
+    max_step_completed: int = 0
+    current_title: str = ""
 
 
-@dataclass
-class ComponentState(BaseComponentState):
-    current_step: Reactive[Marker] = field(
-        default=Reactive(Marker.mee_gui1)
-    )
-    stage_name: Reactive[str] = field(
-        default=Reactive("spectra_&_velocity")
-    )
-    database_changes: Reactive[int] = field(default=Reactive(0))
-    total_galaxies: Reactive[int] = field(default=Reactive(0))
-    selected_galaxy: Reactive[str] = field(default=Reactive(""))
-    selected_galaxies: Reactive[list] = field(default=Reactive([]))
-    show_example_galaxy: Reactive[bool] = field(default=Reactive(False))
-    selected_example_galaxy: Reactive[str] = field(default=Reactive(""))
-    spectrum_tutorial_opened: Reactive[bool] = field(
-        default=Reactive(False)
-    )
-    lambda_on: Reactive[bool] = field(default=Reactive(False))
-    lambda_used: Reactive[bool] = field(default=Reactive(False))
-    spectrum_clicked: Reactive[bool] = field(default=Reactive(False))
-    zoom_tool_activated: Reactive[bool] = field(default=Reactive(False))
-    doppler_calc_reached: Reactive[bool] = field(default=Reactive(False))
-    lambda_obs: Reactive[float] = field(default=Reactive(0.0))
-    lambda_rest: Reactive[float] = field(default=Reactive(0.0))
-    doppler_calc_dialog: Reactive[bool] = field(default=Reactive(False))
-    doppler_calc_state: DopplerCalculation = field(
-        default_factory=DopplerCalculation
-    )
-    student_vel: Reactive[float] = field(default=Reactive(0))
-    dotplot_tutorial_dialog: Reactive[bool] = field(default=Reactive(False))
-    dotplot_tutorial_state: DotPlotTutorialState = field(
-        default_factory=DotPlotTutorialState
-    )
-    dotplot_tutorial_finished: Reactive[bool] = field(
-        default=Reactive(False)
-    )
+class ComponentState(BaseComponentState, BaseState):
+    current_step: Marker = Marker.mee_gui1
+    stage_id: str = "spectra_&_velocity"
+    show_example_galaxy: bool = False
+    selected_galaxy: int = 0
+    selected_galaxies: list[int] = []
+    selected_example_galaxy: int = 0
+    total_galaxies: int = 0
+    spectrum_tutorial_opened: bool = False
+    obs_wave_tool_activated: bool = False
+    obs_wave_tool_used: bool = False
+    spectrum_clicked: bool = False
+    zoom_tool_activated: bool = False
+    doppler_calc_reached: bool = False
+    obs_wave: float = 0
+    velocity: float = 0
+    show_doppler_dialog: bool = False
+    doppler_state: DopplerCalculation = DopplerCalculation()
+    show_dotplot_tutorial_dialog: bool = False
+    dotplot_tutorial_state: DotPlotTutorial = DotPlotTutorial()
+    dotplot_tutorial_finished: bool = False
+    has_bad_velocities: bool = False
+    has_multiple_bad_velocities: bool = False
+    obs_wave_total: int = 0
+    velocities_total: int = 0
+    reflection_complete: bool = False
 
-    has_bad_velocities: Reactive[bool] = field(default=Reactive(False))
-    has_multiple_bad_velocities: Reactive[bool] = field(
-        default=Reactive(False)
-    )
-    obswaves_total: Reactive[int] = field(default=Reactive(0))
-    velocities_total: Reactive[int] = field(default=Reactive(0))
-    reflection_complete: Reactive[bool] = field(default=Reactive(False))
-
-    def __post_init__(self):
-        self._galaxy_data = None
-        self._example_galaxy_data = None
-
-        self._load_galaxies()
-
-    def setup(self):
-        # Set up a forced transition. I don't think this should occur this way,
-        #  but this works best without altering the guidelines too much.
-        def _on_total_galaxies_changed(*args):
-            if self.total_galaxies.value == 1:
-                self.transition_to(Marker.not_gal_tab)
-
-        self.total_galaxies.subscribe_change(_on_total_galaxies_changed)
-
-        def _on_example_galaxy_selected(*args):
-            self.transition_to(Marker.mee_spe1)
-
-        self.selected_example_galaxy.subscribe(_on_example_galaxy_selected)
-
-    @computed_property
-    def mee_gui1_gate(self):
-        return (
-            self.current_step.value == Marker.mee_gui1
-            and self.total_galaxies.value == 0
-            and not self.selected_galaxy.value
-        )
-
-    @computed_property
-    def not_gal_tab_gate(self):
-        return self.total_galaxies.value == 1
-
-    @computed_property
-    def sel_gal3_gate(self):
-        return self.total_galaxies.value >= 1
-
-    @computed_property
-    def sel_gal4_gate(self):
-        return self.total_galaxies.value == 5
-
-    @computed_property
-    def cho_row1_gate(self):
-        return self.total_galaxies.value == 5
-
-    @computed_property
-    def mee_spe1_gate(self):
-        return bool(self.selected_example_galaxy.value)
-
-    @computed_property
-    def spe_tut1_gate(self):
-        return (
-            bool(self.selected_example_galaxy.value)
-            and self.spectrum_tutorial_opened.value
-        )
-
-    @computed_property
-    def res_wav1_gate(self):
-        return (
-            bool(self.selected_example_galaxy.value)
-            and self.spectrum_tutorial_opened.value
-        )
-
-    @computed_property
-    def obs_wav1_gate(self):
-        return self.lambda_used.value
-
-    @computed_property
-    def obs_wav2_gate(self):
-        return self.spectrum_clicked.value
-
-    @computed_property
-    def obs_wav2_gate(self):
-        return self.spectrum_clicked.value
-
-    @computed_property
-    def dop_cal0_gate(self):
-        return self.zoom_tool_activated.value
-
-    @computed_property
-    def che_mea1_gate(self):
-        return self.doppler_calc_state.student_vel_calc.value
-
-    @computed_property
-    def dot_seq1_gate(self):
-        return self.dotplot_tutorial_finished.value
-
-    @computed_property
-    def ref_dat1_gate(self):
-        return self.obswaves_total.value >= 5
-
-    @computed_property
-    def dop_cal6_gate(self):
-        return self.reflection_complete.value
-
-    @computed_property
-    def ref_vel1_gate(self):
-        return self.velocities_total.value >= 5
-
-    @computed_property
-    def nxt_stg_gate(self):
-        return not (self.has_bad_velocities.value or self.has_multiple_bad_velocities)
+    @field_validator("current_step", mode="before")
+    def convert_int_to_enum(cls, v: Any) -> Marker:
+        if isinstance(v, int):
+            return Marker(v)
+        return v
 
     @property
-    def galaxy_data(self):
-        return self._galaxy_data
-
-    def _load_galaxies(self):
-        if self._galaxy_data is None:
-            galaxies = GLOBAL_STATE.request_session.get(
-                f"{API_URL}/{HUBBLE_ROUTE_PATH}/galaxies?types=Sp"
-            ).json()
-
-            self._galaxy_data = {k: [x[k] for x in galaxies] for k in galaxies[0]}
-            self._galaxy_data["name"] = [
-                x[: -len(".fits")] for x in self._galaxy_data["name"]
-            ]
-            self._galaxy_data["rest_wave"] = [
-                round(ELEMENT_REST[x["element"]]) for x in galaxies
-            ]
-
-        return self._galaxy_data
-
-    @staticmethod
-    def _load_spectrum_data(gal_info):
-        file_name = f"{gal_info['name']}.fits"
-        gal_type = gal_info["type"]
-
-        type_folders = {"Sp": "spiral", "E": "elliptical", "Ir": "irregular"}
-        folder = type_folders[gal_type]
-        url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{file_name}"
-        response = GLOBAL_STATE.request_session.get(url)
-
-        with closing(BytesIO(response.content)) as f:
-            f.name = gal_info["name"]
-
-            with fits.open(f) as hdulist:
-                data = hdulist["COADD"].data if "COADD" in hdulist else None
-
-        if data is None:
-            print("No extension named 'COADD' in spectrum fits file.")
-            return
-
-        spec_data = dict(
-            name=gal_info["name"],
-            wave=10 ** data["loglam"],
-            flux=data["flux"],
-            ivar=data["ivar"],
+    def mee_gui1_gate(self) -> bool:
+        return (
+            self.current_step == Marker.mee_gui1
+            and self.total_galaxies == 0
+            and not self.selected_galaxy
         )
 
-        return spec_data
+    @property
+    def not_gal_tab_gate(self) -> bool:
+        return self.total_galaxies >= 1
+
+    @property
+    def sel_gal3_gate(self) -> bool:
+        return self.total_galaxies >= 1
+
+    @property
+    def sel_gal4_gate(self) -> bool:
+        return self.total_galaxies == 5
+
+    @property
+    def cho_row1_gate(self) -> bool:
+        return self.total_galaxies == 5
+
+    @property
+    def mee_spe1_gate(self) -> bool:
+        return bool(self.selected_example_galaxy)
+
+    @property
+    def spe_tut1_gate(self) -> bool:
+        return bool(self.selected_example_galaxy) and self.spectrum_tutorial_opened
+
+    @property
+    def res_wav1_gate(self) -> bool:
+        return bool(self.selected_example_galaxy) and self.spectrum_tutorial_opened
+
+    @property
+    def obs_wav1_gate(self) -> bool:
+        return self.obs_wave_tool_activated
+
+    @property
+    def obs_wav2_gate(self) -> bool:
+        return self.obs_wave_tool_used
+
+    @property
+    def dop_cal0_gate(self) -> bool:
+        return self.zoom_tool_activated
+
+    @property
+    def che_mea1_gate(self) -> bool:
+        return self.doppler_state.velocity_calculated
+
+    @property
+    def dot_seq1_gate(self) -> bool:
+        return self.dotplot_tutorial_finished
+
+    @property
+    def ref_dat1_gate(self) -> bool:
+        return self.obs_wave_total >= 5
+
+    @property
+    def dop_cal6_gate(self) -> bool:
+        return self.reflection_complete
+
+    @property
+    def ref_vel1_gate(self) -> bool:
+        return self.velocities_total >= 5
+
+    @property
+    def nxt_stg_gate(self) -> bool:
+        return not (self.has_bad_velocities or self.has_multiple_bad_velocities)
+
+
+COMPONENT_STATE = solara.reactive(ComponentState())

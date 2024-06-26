@@ -55,7 +55,7 @@
       </p>
     </div>
     <div
-        v-if="state_view.total_galaxies < 5 && state_view.selected_galaxy"
+        v-if="state_view.selected_galaxy"
     >
       <p>
         If this galaxy looks good to you, click
