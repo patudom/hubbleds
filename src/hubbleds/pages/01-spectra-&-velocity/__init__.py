@@ -140,9 +140,9 @@ def Page():
         dependencies=[COMPONENT_STATE.value.selected_galaxy],
     )
 
-    solara.Text(f"{GLOBAL_STATE.value.dict()}")
-    solara.Text(f"{LOCAL_STATE.value.dict()}")
-    solara.Text(f"{COMPONENT_STATE.value.dict()}")
+    # solara.Text(f"{GLOBAL_STATE.value.dict()}")
+    # solara.Text(f"{LOCAL_STATE.value.dict()}")
+    # solara.Text(f"{COMPONENT_STATE.value.dict()}")
 
     # Flag to show/hide the selection tool. TODO: we shouldn't need to be
     #  doing this here; revisit in the future and implement proper handling
