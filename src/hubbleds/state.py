@@ -113,6 +113,8 @@ class LocalState(BaseState):
     mc_scoring: dict[str, MCScore] = {}
     show_snackbar: bool = False
     snackbar_message: str = ""
+    stage_4_class_data_students: list[int] = []
+    stage_5_class_data_students: list[int] = []
 
     @cached_property
     def galaxies(self) -> list[GalaxyData]:

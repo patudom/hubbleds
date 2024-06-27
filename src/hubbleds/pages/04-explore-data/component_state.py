@@ -1,0 +1,50 @@
+import enum
+from pydantic import BaseModel, field_validator
+import solara
+from typing import Any
+
+from cosmicds.state import BaseState
+from hubbleds.base_marker import BaseMarker
+from hubbleds.base_component_state import BaseComponentState
+
+
+class Marker(enum.Enum, BaseMarker):
+    exp_dat1 = enum.auto()
+    tre_dat1 = enum.auto() # MC tre-dat-mc1
+    tre_dat2 = enum.auto()
+    tre_dat3 = enum.auto() # MC tre-dat-mc3
+    rel_vel1 = enum.auto() # MC galaxy-trend
+    hub_exp1 = enum.auto()
+    tre_lin1 = enum.auto()
+    tre_lin2 = enum.auto()
+    bes_fit1 = enum.auto()
+    age_uni1 = enum.auto()
+    hyp_gal1 = enum.auto()
+    age_rac1 = enum.auto()
+    age_uni2 = enum.auto()
+    age_uni3 = enum.auto()
+    age_uni4 = enum.auto()
+    you_age1 = enum.auto()
+    sho_est1 = enum.auto()
+    sho_est2 = enum.auto()
+
+
+class HubbleSlideshow(BaseModel):
+    step: int = 0
+    max_step_completed: int = 0
+
+
+class ComponentState(BaseComponentState, BaseState):
+    current_step: Marker = Marker.exp_dat1
+    show_hubble_slideshow_dialog: bool = False
+    hubble_slideshow_finished: bool = False
+    hubble_slideshow_state: HubbleSlideshow = HubbleSlideshow()
+
+    @field_validator("current_step", mode="before")
+    def convert_int_to_enum(cls, v: Any) -> Marker:
+        if isinstance(v, int):
+            return Marker(v)
+        return v
+
+
+COMPONENT_STATE = solara.reactive(ComponentState())
