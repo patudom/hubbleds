@@ -44,6 +44,7 @@ class GalaxyData(BaseModel):
 
 class StudentMeasurement(BaseModel):
     student_id: int
+    class_id: int | None = None
     rest_wave_unit: str = "angstrom"
     obs_wave_value: float | None = None
     obs_wave_unit: str = "angstrom"
@@ -73,6 +74,14 @@ class StudentMeasurement(BaseModel):
         return f"{datetime.datetime.now(datetime.UTC)}"
 
 
+class Summary(BaseModel):
+    id: int
+    fit_value: float
+    fit_unit: str
+    age_value: float
+    age_unit: str
+
+
 class MCScore(BaseModel):
     tag: str = ""
 
@@ -83,6 +92,10 @@ class LocalState(BaseState):
     story_id: str = "hubbles_law"
     measurements: list[StudentMeasurement] = []
     example_measurements: list[StudentMeasurement] = []
+    class_measurements: list[StudentMeasurement] = []
+    all_measurements: list[StudentMeasurement] = []
+    student_summaries: list[Summary] = []
+    class_summaries: list[Summary] = []
     calculations: dict = {}
     validation_failure_counts: dict = {}
     has_best_fit_galaxy: bool = False
