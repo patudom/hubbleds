@@ -74,12 +74,20 @@ class StudentMeasurement(BaseModel):
         return f"{datetime.datetime.now(datetime.UTC)}"
 
 
-class Summary(BaseModel):
-    id: int
-    fit_value: float
-    fit_unit: str
+class BaseSummary(BaseModel):
+    hubble_fit_value: float
+    hubble_fit_unit: str
     age_value: float
     age_unit: str
+    last_data_update: datetime.datetime
+
+
+class StudentSummary(BaseSummary):
+    student_id: int
+
+
+class ClassSummary(BaseSummary):
+    class_id: int
 
 
 class MCScore(BaseModel):
@@ -94,8 +102,8 @@ class LocalState(BaseState):
     example_measurements: list[StudentMeasurement] = []
     class_measurements: list[StudentMeasurement] = []
     all_measurements: list[StudentMeasurement] = []
-    student_summaries: list[Summary] = []
-    class_summaries: list[Summary] = []
+    student_summaries: list[StudentSummary] = []
+    class_summaries: list[ClassSummary] = []
     calculations: dict = {}
     validation_failure_counts: dict = {}
     has_best_fit_galaxy: bool = False
