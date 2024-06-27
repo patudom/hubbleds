@@ -1,5 +1,5 @@
 from cosmicds.utils import debounce
-from hubbleds.state import StudentMeasurement
+from hubbleds.state import ClassSummary, StudentMeasurement, StudentSummary
 from contextlib import closing
 from io import BytesIO
 from astropy.io import fits
@@ -241,6 +241,67 @@ class LocalAPI(BaseAPI):
         galaxy_data = GalaxyData(**galaxy_json)
 
         return galaxy_data
+
+    def get_class_measurements(
+        self,
+        global_state: Reactive[GlobalState],
+        local_state: Reactive[LocalState],
+    ) -> list[StudentMeasurement]:
+        url = (
+            f"{self.API_URL}/{local_state.value.story_id}/class-measurements/"
+            f"{global_state.value.student.id}/{global_state.value.classroom.class_info['id']}"
+        )
+        r = self.request_session.get(url)
+        measurement_json = r.json()
+
+        measurements = Ref(local_state.fields.class_measurements)
+        parsed_measurements = []
+
+        for measurement in measurement_json["measurements"]:
+            measurement = StudentMeasurement(**measurement)
+            parsed_measurements.append(measurement)
+
+        measurements.set(parsed_measurements)
+
+        logger.info("Loaded class measurements from database.")
+
+        return measurements.value
+
+    def get_all_data(
+        self,
+        local_state: Reactive[LocalState],
+    ) -> tuple[list[StudentMeasurement], list[StudentSummary], list[ClassSummary]]:
+        url = f"{self.API_URL}/{local_state.value.story_id}/all-data"
+        r = self.request_session.get(url)
+        res_json = r.json()
+
+        measurements = Ref(local_state.fields.all_measurements)
+        parsed_measurements = []
+        for measurement in res_json["measurements"]:
+            measurement = StudentMeasurement(**measurement)
+            parsed_measurements.append(measurement)
+
+        measurements.set(parsed_measurements)
+
+        student_summaries = Ref(local_state.fields.student_summaries)
+        parsed_student_summaries = []
+        for summary in res_json["studentData"]:
+            summary = StudentSummary(**summary)
+            parsed_student_summaries.append(summary)
+
+        student_summaries.set(parsed_student_summaries)
+
+        class_summaries = Ref(local_state.fields.class_summaries)
+        parsed_class_summaries = []
+        for summary in res_json["classData"]:
+            summary = StudentSummary(**summary)
+            parsed_class_summaries.append(summary)
+
+        class_summaries.set(parsed_class_summaries)
+
+        logger.info("Loaded all measurements and summary data from database.")
+
+        return measurements.value, student_summaries.value, class_summaries.value
 
     def get_stage_state(
         self,
