@@ -145,7 +145,7 @@ def get_free_response(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary
     # also initializes the question by using get_or_create method
     free_responses = local_state.value.free_responses
-    return free_responses.get_model_dump(tag)
+    return  free_responses.get_or_create(tag).model_dump()
         
 def get_multiple_choice(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary
