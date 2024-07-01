@@ -58,7 +58,7 @@ def Page():
         class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
         measurements = Ref(LOCAL_STATE.fields.class_measurements)
         student_ids = Ref(LOCAL_STATE.fields.stage_4_class_data_students)
-        if class_measurements and not student_ids:
+        if class_measurements and not student_ids.value:
             ids = [id for id in np.unique([m.student_id for m in class_measurements])]
             student_ids.set(ids)
         measurements.set(class_measurements)
