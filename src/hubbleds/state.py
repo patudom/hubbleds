@@ -196,23 +196,23 @@ def fr_callback(
     Free Response callback function
     """
     
-    free_responses = local_state.value.free_responses
-    # new = free_responses.model_copy(deep=True)
+    free_responses = Ref(local_state.fields.free_responses)
+    new = free_responses.value.model_copy(deep=True)
     
     logger.info(f"Free Response Callback Event: {event[0]}")
     logger.info(f"Current fr_response value: {free_responses}")
     if event[0] == "fr-initialize":
-        if event[1]["tag"] not in free_responses:
-            free_responses.add(event[1]["tag"])
-            # free_responses.set(new)
+        if event[1]["tag"] not in free_responses.value:
+            new.add(event[1]["tag"])
+            free_responses.set(new)
             if callback is not None:
-                callback(free_responses)
+                callback(new)
 
     elif event[0] == "fr-update":
-        free_responses.update(event[1]["tag"], response=event[1]["response"])
-        # free_responses.set(new)
+        new.update(event[1]["tag"], response=event[1]["response"])
+        free_responses.set(new)
         if callback is not None:
             if (len(event) > 1) and ("response" in event[1]):
-                callback(free_responses)
+                callback(new)
     else:
         raise ValueError(f"Unknown event in fr_callback: <<{event}>> ")
