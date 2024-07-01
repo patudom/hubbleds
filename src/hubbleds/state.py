@@ -1,4 +1,4 @@
-from pydantic import BaseModel, computed_field, field_validator
+from pydantic import BaseModel, computed_field, field_validator, Field
 from solara import Reactive
 from cosmicds.state import BaseState, GLOBAL_STATE
 from typing import Optional
@@ -7,6 +7,13 @@ import datetime
 from functools import cached_property
 from astropy.table import Table
 from pydantic import Field
+
+from solara.toestand import Ref
+
+from .free_response import FreeResponses
+from .mc_score import MCScoring
+
+from typing import Callable, Tuple
 
 ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
 
@@ -73,10 +80,6 @@ class StudentMeasurement(BaseModel):
         return f"{datetime.datetime.now(datetime.UTC)}"
 
 
-class MCScore(BaseModel):
-    tag: str = ""
-
-
 class LocalState(BaseState):
     debug_mode: bool = False
     title: str = "Hubble's law"
@@ -89,7 +92,8 @@ class LocalState(BaseState):
     enough_students_ready: bool = False
     class_data_students: list = []
     class_data_info: dict = {}
-    mc_scoring: dict[str, MCScore] = {}
+    mc_scoring: MCScoring = Field(default_factory=MCScoring)
+    free_responses: FreeResponses = Field(default_factory=FreeResponses)
     show_snackbar: bool = False
     snackbar_message: str = ""
 
@@ -122,6 +126,85 @@ class LocalState(BaseState):
             ),
             None,
         )
-
+    
+    def question_completed(self, tag: str) -> bool:
+        if tag in self.free_responses:
+            return self.free_responses[tag].completed
+        elif tag in self.mc_scoring:
+            return self.mc_scoring[tag].completed
+        
+        return False
 
 LOCAL_STATE = solara.reactive(LocalState())
+
+
+def get_free_response(local_state: Reactive[LocalState], tag: str):
+    # get question as serializable dictionary
+    # also initializes the question by using get_or_create method
+    free_responses = local_state.value.free_responses
+    return free_responses.get_or_create(tag).model_dump()
+        
+def get_multiple_choice(local_state: Reactive[LocalState], tag: str):
+    # get question as serializable dictionary
+    # also initializes the question by using get_or_create method
+    multiple_choices = local_state.value.mc_scoring
+    return multiple_choices.get_or_create(tag).model_dump()
+
+
+
+def mc_callback(
+        event, 
+        local_state: Reactive[LocalState], 
+        callback: Optional[Callable[[MCScoring], None]] = None):
+    """
+    Multiple Choice callback function
+    """
+    
+    mc_scoring = Ref(local_state.fields.mc_scoring)    
+    new = mc_scoring.value.model_copy(deep=True)
+    
+
+    # mc-initialize-callback returns data which is a string
+    if event[0] == "mc-initialize-response" and event[1] not in new:
+        new.add(event[1])
+        mc_scoring.set(new)
+        if callback is not None:
+            callback(new)
+            
+    # mc-score event returns a data which is an mc-score dictionary (includes tag)
+    elif event[0] == "mc-score":
+        new.update_mc_score(**event[1])
+        mc_scoring.set(new)
+        if callback is not None:
+            callback(new)
+
+    else:
+        raise ValueError(f"Unknown event in mc_callback: <<{event}>> ")
+
+
+def fr_callback(
+    event: Tuple[str, dict[str, str]],
+    local_state: Reactive[LocalState],
+    callback: Optional[Callable[[FreeResponses], None]] = None,
+):
+    """
+    Free Response callback function
+    """
+    
+    free_responses = local_state.value.free_responses
+    # new = free_responses.model_copy(deep=True)
+    
+    if event[0] == "fr-initialize" and event[1]["tag"] not in free_responses:
+        free_responses.add(event[1]["tag"])
+        # free_responses.set(new)
+        if callback is not None:
+            callback(free_responses)
+
+    elif event[0] == "fr-update":
+        free_responses.update(event[1]["tag"], response=event[1]["response"])
+        # free_responses.set(new)
+        if callback is not None:
+            if (len(event) > 1) and ("response" in event[1]):
+                callback(free_responses)
+    else:
+        raise ValueError(f"Unknown event in fr_callback: <<{event}>> ")
