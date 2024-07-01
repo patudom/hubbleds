@@ -10,8 +10,8 @@
       @next="() =>
       {
         const expectedAnswers = [state_view.lambda_obs, state_view.lambda_rest];
-        show_doppler_slideshow(!!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers));
-        // validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers) ? next_callback() : force_transition();
+        const isValidated = !!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers);
+        on_validated_transition(isValidated);
       }"
   >
     <div
@@ -140,13 +140,6 @@ mjx-mstyle {
 
 .doppler_alert .v-alert {
   font-size: 16px !important;
-}
-
-.v-application .legend {
-  border: 1px solid white !important;
-  max-width: 300px;
-  margin: 0 auto 0;
-  font-size: 15px !important;
 }
 
 #lam_obs, #lam_rest {

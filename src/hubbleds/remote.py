@@ -1,219 +1,352 @@
-from cosmicds.utils import API_URL
-from cosmicds.state import GLOBAL_STATE
-from .utils import HUBBLE_ROUTE_PATH
-from .data_models.student import student_data, StudentMeasurement, example_data
+from cosmicds.utils import debounce
+from hubbleds.state import StudentMeasurement
 from contextlib import closing
 from io import BytesIO
 from astropy.io import fits
-from .state import LOCAL_STATE
+from hubbleds.state import GalaxyData, SpectrumData, LocalState
 import datetime
+from cosmicds.remote import BaseAPI
+from cosmicds.state import GlobalState, BaseState
+from solara import Reactive
+from solara.lab import Ref
+from functools import cached_property
+from cosmicds.logger import setup_logger
+
+logger = setup_logger("API")
 
 
 ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
+DEBOUNCE_TIMEOUT = 1
 
 
-class DatabaseAPI:
-    @staticmethod
-    def _load_spectrum_data(gal_info):
-        file_name = f"{gal_info['name'].replace('.fits', '')}.fits"
-        gal_type = gal_info["type"]
+class LocalAPI(BaseAPI):
+    def get_galaxies(self, local_state: Reactive[LocalState]) -> list[GalaxyData]:
+        galaxy_data_json = self.request_session.get(
+            f"{self.API_URL}/{local_state.value.story_id}/galaxies?types=Sp"
+        ).json()
 
-        print(file_name)
+        galaxy_data = [GalaxyData(**x) for x in galaxy_data_json]
+
+        return galaxy_data
+
+    def load_spectrum_data(
+        self, gal_data: GalaxyData, local_state: Reactive[LocalState]
+    ) -> SpectrumData:
+        file_name = f"{gal_data.name.replace('.fits', '')}.fits"
 
         type_folders = {"Sp": "spiral", "E": "elliptical", "Ir": "irregular"}
-        folder = type_folders[gal_type]
-        url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/spectra/{folder}/{file_name}"
-        response = GLOBAL_STATE.request_session.get(url)
-
-        print(response)
+        folder = type_folders[gal_data.type]
+        url = (
+            f"{self.API_URL}/{local_state.value.story_id}/spectra/{folder}/{file_name}"
+        )
+        response = self.request_session.get(url)
 
         with closing(BytesIO(response.content)) as f:
-            f.name = gal_info["name"]
+            f.name = gal_data.name
 
             with fits.open(f) as hdulist:
                 data = hdulist["COADD"].data if "COADD" in hdulist else None
 
         if data is None:
-            print("No extension named 'COADD' in spectrum fits file.")
+            logger.error("No extension named 'COADD' in spectrum file.")
             return
 
-        spec_data = dict(
-            name=gal_info["name"],
+        spec_data = SpectrumData(
+            name=gal_data.name,
             wave=10 ** data["loglam"],
             flux=data["flux"],
             ivar=data["ivar"],
         )
 
+        logger.info("Loaded spectrum data for galaxy `%s` from database.", gal_data.id)
+
         return spec_data
 
-    @staticmethod
-    def _parse_measurement(measurement):
-        meas_dict = {}
+    def get_measurements(
+        self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
+    ) -> list[StudentMeasurement]:
+        url = (
+            f"{self.API_URL}/{local_state.value.story_id}/measurements/"
+            f"{global_state.value.student.id}"
+        )
+        r = self.request_session.get(url)
+        measurement_json = r.json()
 
-        for k, v in measurement.items():
-            if not (k.endswith("_value") or k == "galaxy"):
-                continue
+        measurements = Ref(local_state.fields.measurements)
+        parsed_measurements = []
 
-            meas_dict[k.replace("_value", "")] = v
+        for measurement in measurement_json["measurements"]:
+            measurement = StudentMeasurement(**measurement)
+            parsed_measurements.append(measurement)
 
-            if k != "galaxy":
-                continue
+        measurements.set(parsed_measurements)
 
-            gal_dict = {}
+        logger.info("Loaded measurements from database.")
 
-            for gk, gv in v.items():
-                if gk in ["galaxy_id", "id"]:
-                    gk = "id"
-                    gv = str(gv)
+        return measurements.value
 
-                gal_dict[gk] = gv
+    def get_sample_measurements(
+        self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
+    ) -> list[StudentMeasurement]:
+        r = self.request_session.get(
+            f"{self.API_URL}/{local_state.value.story_id}/sample-"
+            f"measurements/{global_state.value.student.id}"
+        )
 
-            gal_dict["spectrum"] = DatabaseAPI._load_spectrum_data(gal_dict)
+        sample_measurement_json = r.json()
 
-            meas_dict[k] = gal_dict
+        if len(sample_measurement_json["measurements"]) == 0:
+            logger.info(
+                "Failed to find sample galaxies for user `%s`: creating new "
+                "sample measurement.",
+                global_state.value.student.id,
+            )
+            sample_gal_data = LOCAL_API.get_sample_galaxy(local_state)
+            sample_measurement_json["measurements"].append(
+                StudentMeasurement(
+                    student_id=global_state.value.student.id,
+                    galaxy=sample_gal_data,
+                ).dict()
+            )
 
-        return meas_dict
+        sample_measurements = Ref(local_state.fields.example_measurements)
+        parsed_sample_measurements = []
 
-    @staticmethod
-    def get_measurements(samples=False):
-        url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample-' if samples else ''}measurements/{GLOBAL_STATE.student.id.value}"
-        r = GLOBAL_STATE.request_session.get(url)
-        res_json = r.json()
+        for measurement in sample_measurement_json["measurements"]:
+            measurement = StudentMeasurement(**measurement)
+            parsed_sample_measurements.append(measurement)
 
-        measurements = []
+        sample_measurements.set(parsed_sample_measurements)
 
-        for measurement in res_json["measurements"]:
-            meas_dict = DatabaseAPI._parse_measurement(measurement)
+        logger.info("Loaded example measurements from database.")
 
-            measurement = StudentMeasurement(**meas_dict)
-            measurements.append(measurement)
+        return sample_measurements.value
 
-        return measurements
+    def put_measurements(
+        self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
+    ):
+        url = f"{self.API_URL}/{local_state.value.story_id}/submit-measurement/"
 
-    @staticmethod
-    def put_measurements(samples=False):
-        url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample' if samples else 'submit'}-measurement/"
-        data = example_data if samples else student_data
+        for measurement in local_state.value.measurements:
+            r = self.request_session.put(url, json=measurement.dict(exclude={"galaxy"}))
 
-        for measurement in data.measurements:
-            sub_dict = {
-                "student_id": GLOBAL_STATE.student.id.value,
-                "galaxy_id": int(measurement.galaxy.id),
-                "rest_wave_value": measurement.rest_wave,
-                "rest_wave_unit": "angstrom",
-                "obs_wave_value": measurement.obs_wave,
-                "obs_wave_unit": "angstrom",
-                "velocity_value": measurement.velocity,
-                "velocity_unit": "km / s",
-                "ang_size_value": measurement.ang_size,
-                "ang_size_unit": "arcsecond",
-                "est_dist_value": measurement.est_dist,
-                "est_dist_unit": "Mpc",
-                "brightness": 1,
-                "last_modified": f"{datetime.datetime.now(datetime.UTC)}",
-                "galaxy": {
-                    "id": measurement.galaxy.id,
-                    "ra": measurement.galaxy.ra,
-                    "decl": measurement.galaxy.decl,
-                    "z": measurement.galaxy.z,
-                    "type": measurement.galaxy.type,
-                    "name": measurement.galaxy.name,
-                    "element": measurement.galaxy.element,
-                },
-            }
+            if r.status_code != 200:
+                logger.warning(
+                    f"Failed to add measurement for galaxy `%s` by student `%s`.",
+                    global_state.value.student.id,
+                    measurement.galaxy_id,
+                )
 
-            r = GLOBAL_STATE.request_session.put(url, json=sub_dict)
+        logger.info(
+            "Stored measurements for student `%s`.",
+            global_state.value.student.id,
+        )
 
-    @staticmethod
-    def get_measurement(galaxy_id, samples=False):
-        url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample-' if samples else ''}measurements/{GLOBAL_STATE.student.id.value}/{galaxy_id}"
-        r = GLOBAL_STATE.request_session.get(url)
-        res_json = r.json()
+    def put_sample_measurements(
+        self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
+    ):
+        url = f"{self.API_URL}/{local_state.value.story_id}/sample-measurement/"
 
-        meas_dict = DatabaseAPI._parse_measurement(res_json["measurement"])
+        for measurement in local_state.value.example_measurements:
+            logger.info(
+                f"Adding example measurement for galaxy `%s` by student `%s`.",
+                measurement.galaxy_id,
+                global_state.value.student.id,
+            )
 
-        measurement = StudentMeasurement(**meas_dict)
+            r = self.request_session.put(url, json=measurement.dict(exclude={"galaxy"}))
+
+            if r.status_code != 200:
+                logger.warning(
+                    f"Failed to add example measurement for galaxy `%s` by student `%s`.",
+                    measurement.galaxy_id,
+                    global_state.value.student.id,
+                )
+
+        logger.info(
+            "Stored example measurements for student %s.",
+            global_state.value.student.id,
+        )
+
+    def get_measurement(
+        self,
+        galaxy_id: int,
+        global_state: Reactive[GlobalState],
+        local_state: Reactive[LocalState],
+    ) -> StudentMeasurement:
+        logger.info(
+            "Retrieving measurement of galaxy %s for student %s...",
+            (galaxy_id, global_state.value.student.id),
+        )
+        url = (
+            f"{self.API_URL}/{local_state.value.story_id}/measurements/"
+            f"{global_state.value.student.id}/{galaxy_id}"
+        )
+        measurement_json = self.request_session.get(url).json()
+        measurement = measurement_json["measurements"]
+
+        measurements = Ref(local_state.fields.measurements)
+
+        measurements.set(measurements.value + [measurement])
 
         return measurement
 
-    @staticmethod
-    def delete_all_measurements(samples=False):
-        url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample-' if samples else ''}measurements/{GLOBAL_STATE.student.id.value}"
-        r = GLOBAL_STATE.request_session.get(url)
-        res_json = r.json()
+    def get_sample_measurement(
+        self,
+        galaxy_id: int,
+        global_state: Reactive[GlobalState],
+        local_state: Reactive[LocalState],
+    ) -> StudentMeasurement:
+        logger.info(
+            "Retrieving sample measurement of galaxy %s for student %s...",
+            (galaxy_id, global_state.value.student.id),
+        )
+        url = (
+            f"{self.API_URL}/{local_state.value.story_id}/"
+            f"sample-measurements/{global_state.value.student.id}/"
+            f"{galaxy_id}"
+        )
+        measurement_json = self.request_session.get(url).json()
+        measurement = measurement_json["measurements"]
 
-        for measurement in res_json["measurements"]:
-            # NOTE: FOR DELETING DB MEASUREMENTS
-            url = f"{API_URL}/{HUBBLE_ROUTE_PATH}/{'sample-' if samples else ''}measurement/{GLOBAL_STATE.student.id.value}"
-            url = url + "/first" if samples else url + f"/{measurement['galaxy']['id']}"
-            r = GLOBAL_STATE.request_session.delete(url)
-            print("Deleted ", r)
+        measurements = Ref(local_state.fields.measurements)
 
-    @staticmethod
-    def get_sample_galaxy():
-        example_galaxy_data = GLOBAL_STATE.request_session.get(
-            f"{API_URL}/{HUBBLE_ROUTE_PATH}/sample-galaxy"
+        measurements.set(measurements.value + [measurement])
+
+        return measurement
+
+    def delete_all_measurements(
+        self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
+    ):
+        url = f"{self.API_URL}/{local_state.value.story_id}/measurements/{global_state.value.student.id}"
+        measurements_json = self.request_session.get(url).json()
+
+        for measurement in measurements_json["measurements"]:
+            # url = url + "/first" if samples else url + f"/{measurement['galaxy']['id']}"
+            url += f"/{measurement['galaxy']['id']}"
+            r = self.request_session.delete(url)
+
+            if r.status_code != 200:
+                logger.error(
+                    "Failed to delete measurement of galaxy `%s` for student `%s`.",
+                    measurement["galaxy"]["id"],
+                    global_state.value.student.id,
+                )
+
+    def get_sample_galaxy(self, local_state: Reactive[LocalState]) -> GalaxyData:
+        galaxy_json = self.request_session.get(
+            f"{self.API_URL}/{local_state.value.story_id}/sample-galaxy"
         ).json()
 
-        example_galaxy_data = {k: example_galaxy_data[k] for k in example_galaxy_data}
-        example_galaxy_data["id"] = str(example_galaxy_data["id"])
-        example_galaxy_data["name"] = example_galaxy_data["name"].replace(".fits", "")
+        galaxy_data = GalaxyData(**galaxy_json)
 
-        # Load the spectrum associated with the example data
-        spec_data = DatabaseAPI._load_spectrum_data(example_galaxy_data)
-        example_galaxy_data["spectrum"] = spec_data
+        return galaxy_data
 
-        return {
-            "rest_wave": round(ELEMENT_REST[example_galaxy_data["element"]]),
-            "galaxy": example_galaxy_data,
-        }
-
-    @staticmethod
-    def get_story_state(component_state):
-        r = GLOBAL_STATE.request_session.get(
-            f"{API_URL}/story-state/{GLOBAL_STATE.student.id.value}/hubbles_law"
+    def get_stage_state(
+        self,
+        global_state: Reactive[GlobalState],
+        local_state: Reactive[LocalState],
+        component_state: Reactive[BaseState],
+    ) -> BaseState | None:
+        stage_json = (
+            self.request_session.get(
+                f"{self.API_URL}/stage-state/{global_state.value.student.id}/"
+                f"{local_state.value.story_id}/{component_state.value.stage_id}"
+            )
+            .json()
+            .get("state", None)
         )
-        res_json = r.json()
 
-        try:
-            app_state = res_json["state"]["app"]
-            story_state = res_json["state"]["story"]
-            stage_state = res_json["state"]["stage"][
-                f"{component_state.stage_name.value}"
-            ]
-        except Exception as e:
-            print(f"Stored DB state is malformed; failed to load.\n{e}")
+        if stage_json is None:
+            logger.error(
+                "Failed to retrieve stage state for story `%s` for user `%s`.",
+                local_state.value.story_id,
+                global_state.value.student.id,
+            )
             return
 
-        # NOTE: the way the loading from a dict works, solara with trigger
-        #  the reactive variables one after another, as there are loaded from
-        #  the database. It is possible that `current_step` will be set early,
-        #  and that some other event will cause it to revert to an early step.
-        #  To avoid this, remove `current_step` and re-add it as the last one.
-        stage_step = stage_state.pop("current_step")
-        stage_state.update(
-            {"current_step": component_state.current_step.value.__class__(stage_step)}
+        component_state.set(component_state.value.__class__(**stage_json))
+
+        logger.info("Updated component state from database.")
+
+        return component_state.value
+
+    def put_stage_state(
+        self,
+        global_state: Reactive[GlobalState],
+        local_state: Reactive[LocalState],
+        component_state: Reactive[BaseState],
+    ):
+        logger.info("Serializing stage state into DB.")
+
+        comp_state_dict = component_state.value.dict(
+            exclude={"selected_galaxy", "selected_example_galaxy"}
         )
-
-        GLOBAL_STATE.from_dict(app_state)
-        LOCAL_STATE.from_dict(story_state)
-        component_state.from_dict(stage_state)
-
-    @staticmethod
-    def put_story_state(component_state):
-        print("Serializing state into DB.")
-        comp_state_dict = component_state.as_dict()
         comp_state_dict.update(
-            {"current_step": component_state.current_step.value.value}
+            {"current_step": component_state.value.current_step.value}
         )
+
+        r = self.request_session.put(
+            f"{self.API_URL}/stage-state/{global_state.value.student.id}/"
+            f"{local_state.value.story_id}/{component_state.value.stage_id}",
+            json=comp_state_dict,
+        )
+
+        if r.status_code != 200:
+            logger.error("Failed to write story state to database.")
+
+    def get_story_state(
+        self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
+    ) -> LocalState | None:
+        story_json = (
+            self.request_session.get(
+                f"{self.API_URL}/story-state/{global_state.value.student.id}/"
+                f"{local_state.value.story_id}"
+            )
+            .json()
+            .get("state", None)
+        )
+
+        if story_json is None:
+            logger.error(
+                "Failed to retrieve state for story `%s` for user `%s`.",
+                local_state.value.story_id,
+                global_state.value.student.id,
+            )
+            return
+
+        # global_state_json = story_json.get("app", {})
+        # global_state_json.pop("student")
+        # global_state.set(global_state.value.__class__(**global_state_json))
+
+        local_state_json = story_json.get("story", {})
+        local_state.set(local_state.value.__class__(**local_state_json))
+
+        logger.info("Updated local state from database.")
+
+        return local_state.value
+
+    def put_story_state(
+        self,
+        global_state: Reactive[GlobalState],
+        local_state: Reactive[LocalState],
+    ):
+        logger.info("Serializing state into DB.")
 
         state = {
-            "app": GLOBAL_STATE.as_dict(),
-            "story": LOCAL_STATE.as_dict(),
-            "stage": {f"{component_state.stage_name.value}": comp_state_dict},
+            "app": global_state.value.dict(),
+            "story": local_state.value.dict(
+                exclude={"measurements", "example_measurements"}
+            ),
         }
 
-        r = GLOBAL_STATE.request_session.put(
-            f"{API_URL}/story-state/{GLOBAL_STATE.student.id.value}/hubbles_law",
+        r = self.request_session.put(
+            f"{self.API_URL}/story-state/{global_state.value.student.id}/{local_state.value.story_id}",
             json=state,
         )
+
+        if r.status_code != 200:
+            logger.error("Failed to write story state to database.")
+
+
+LOCAL_API = LocalAPI()

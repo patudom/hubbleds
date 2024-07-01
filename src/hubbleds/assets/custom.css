@@ -22,6 +22,26 @@
     --cosmicds-blue-lighter: #1a63d9;
 }
 
+:root .theme--dark {
+    --primary: var(--primary-dark);
+    --secondary: var(--secondary-dark);
+    --accent: var(--accent-dark);
+    --error: var(--error-dark);
+    --info: var(var(--info-dark));
+    --success: var(--success-dark);
+    --warning: var(--warning-dark);
+}
+
+:root .theme--light {
+    --primary: var(--primary-light);
+    --secondary: var(--secondary-light);
+    --accent: var(--accent-light);
+    --error: var(--error-light);
+    --info: var(--info-light);
+    --success: var(--success-light);
+    --warning: var(--warning-light);
+}
+
 .theme--dark .v-sheet {
     color: white;
     background-color: #121212;
@@ -51,12 +71,8 @@
     background-color: var(--primary-light) !important;    
 }
 
-.theme--dark .tutorial {
-    background-color: var(--secondary-dark) !important;
-}
-
-.theme--light .tutorial {
-    background-color: var(--secondary-light) !important;
+.tutorial {
+    background-color: var(--secondary) !important;
 }
 
 .inline-guideline-button {
@@ -65,20 +81,20 @@
     padding: 3px; 
 }
 
-
-/* TODO: For some reason, the .v-application .legend css only works when it's placed in a vue file. Don't know why; and it won't honor the light/dark theme, so I've left this redundantly in all the vue files where it is relevant. (If the user starts at a later guideline, the css won't have loaded, so it needs to be on every vue file). */
-
-/* .theme--dark .v-application .legend {
+/* NOTE: .v-application based selectors will work, but often will need to be either !important or (also) have a higher specificity selector than the default Vuetify css. */
+/* Note that theme--dark and theme--light are defined on the *same* element as v-application, so .v-application should not be a descendent of .theme--[dark/light] */
+.theme--dark.v-application .legend {
     border: 1px solid white !important;
 }
-.theme--light .v-application .legend {
+.theme--light.v-application .legend {
     border: 1px solid black !important;
 }
+
 .v-application .legend {
     max-width: 300px;
     margin: 0 auto 0;
-    font-size: 15px !important;   
-} */
+    font-size: 15px !important;
+}
 
 .toolbar-title {
     text-transform: uppercase;
@@ -160,3 +176,16 @@ footer .v-card__text {
 /*    max-height: 100%;*/
 /*    overflow: auto*/
 /*}*/
+
+
+/***** 
+    ================================
+    Solara/Vuetify default overrides 
+    ================================
+*****/
+
+/* buttons should remain white, even in dark mode. 
+    as the toolbar is still #1565C0 */
+.theme--light.v-btn-toggle:not(.v-btn-toggle--group) .v-btn.v-btn .v-icon {
+    color: #fff !important;
+}

@@ -24,7 +24,7 @@ def DopplerSlideshow(
     event_set_max_step_completed_5,
     event_set_student_vel_calc,
     event_set_student_c,
-    event_next_callback,
-    event_set_student_vel
+    event_set_student_vel,
+    event_next_callback
 ):
     pass
