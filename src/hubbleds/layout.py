@@ -3,10 +3,8 @@ from .state import GLOBAL_STATE, LOCAL_STATE
 import solara
 from solara.lab import Ref
 from cosmicds.components import MathJaxSupport, PlotlySupport
-from hubbleds.state import StudentMeasurement
 from hubbleds.remote import LOCAL_API
 from cosmicds.logger import setup_logger
-import asyncio
 
 logger = setup_logger("LAYOUT")
 

@@ -36,6 +36,7 @@ class HubbleSlideshow(BaseModel):
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.exp_dat1
+    stage_id: str = "explore_data"
     show_hubble_slideshow_dialog: bool = False
     hubble_slideshow_finished: bool = False
     hubble_slideshow_state: HubbleSlideshow = HubbleSlideshow()
