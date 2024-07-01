@@ -165,11 +165,12 @@ def mc_callback(
     
 
     # mc-initialize-callback returns data which is a string
-    if event[0] == "mc-initialize-response" and event[1] not in new:
-        new.add(event[1])
-        mc_scoring.set(new)
-        if callback is not None:
-            callback(new)
+    if event[0] == "mc-initialize-response":
+        if event[1] not in new:
+            new.add(event[1])
+            mc_scoring.set(new)
+            if callback is not None:
+                callback(new)
             
     # mc-score event returns a data which is an mc-score dictionary (includes tag)
     elif event[0] == "mc-score":
@@ -194,11 +195,12 @@ def fr_callback(
     free_responses = local_state.value.free_responses
     # new = free_responses.model_copy(deep=True)
     
-    if event[0] == "fr-initialize" and event[1]["tag"] not in free_responses:
-        free_responses.add(event[1]["tag"])
-        # free_responses.set(new)
-        if callback is not None:
-            callback(free_responses)
+    if event[0] == "fr-initialize":
+        if event[1]["tag"] not in free_responses:
+            free_responses.add(event[1]["tag"])
+            # free_responses.set(new)
+            if callback is not None:
+                callback(free_responses)
 
     elif event[0] == "fr-update":
         free_responses.update(event[1]["tag"], response=event[1]["response"])
