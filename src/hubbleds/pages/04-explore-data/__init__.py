@@ -1,7 +1,4 @@
-from hubbleds.pages
-from hubbleds.utils import AGE_CONSTANT.01-spectra-&-velocity import GUIDELINE_ROOT
 from hubbleds.base_component_state import transition_next, transition_previous
-from hubbleds.pages.01-spectra-&-velocity import GUIDELINE_ROOT
 import numpy as np
 from pathlib import Path
 import reacton.ipyvuetify as rv
@@ -13,6 +10,7 @@ from hubbleds.components import HubbleExpUniverseSlideshow
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
+from hubbleds.utils import AGE_CONSTANT
 
 from cosmicds.logger import setup_logger
 
@@ -175,7 +173,7 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.hub_exp1),
                 state_view={
-                    "hubble_slideshow_finished": component_state.hubble_slideshow_finished.value
+                    "hubble_slideshow_finished": COMPONENT_STATE.value.hubble_slideshow_finished
                 }, 
             )
             ScaffoldAlert(
