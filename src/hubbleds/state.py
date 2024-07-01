@@ -17,6 +17,9 @@ from typing import Callable, Tuple
 
 ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
 
+from cosmicds.logger import setup_logger
+
+logger = setup_logger("HUBBLEDS-STATE")
 
 class SpectrumData(BaseModel):
     name: str
@@ -142,13 +145,13 @@ def get_free_response(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary
     # also initializes the question by using get_or_create method
     free_responses = local_state.value.free_responses
-    return free_responses.get_or_create(tag).model_dump()
+    return free_responses.get_model_dump(tag)
         
 def get_multiple_choice(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary
     # also initializes the question by using get_or_create method
     multiple_choices = local_state.value.mc_scoring
-    return multiple_choices.get_or_create(tag).model_dump()
+    return multiple_choices.get_model_dump(tag)
 
 
 
@@ -162,7 +165,8 @@ def mc_callback(
     
     mc_scoring = Ref(local_state.fields.mc_scoring)    
     new = mc_scoring.value.model_copy(deep=True)
-    
+    logger.info(f"MC Callback Event: {event[0]}")
+    logger.info(f"Current mc_scoring: {new}")
 
     # mc-initialize-callback returns data which is a string
     if event[0] == "mc-initialize-response":
@@ -195,6 +199,8 @@ def fr_callback(
     free_responses = local_state.value.free_responses
     # new = free_responses.model_copy(deep=True)
     
+    logger.info(f"Free Response Callback Event: {event[0]}")
+    logger.info(f"Current fr_response value: {free_responses}")
     if event[0] == "fr-initialize":
         if event[1]["tag"] not in free_responses:
             free_responses.add(event[1]["tag"])

@@ -63,9 +63,9 @@ def Page():
 
         logger.info("Wrote state to database.")
     
-    solara.lab.use_task(
-        _write_local_global_states, dependencies=[GLOBAL_STATE.value, LOCAL_STATE.value]
-    )
+    # solara.lab.use_task(
+    #     _write_local_global_states, dependencies=[GLOBAL_STATE.value, LOCAL_STATE.value]
+    # )
     
     async def _write_component_state():
         if not loaded_component_state.value:
@@ -76,7 +76,7 @@ def Page():
 
         logger.info("Wrote component state to database.")
 
-    solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
+    # solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
     # === Setup Glue ===
     
@@ -119,6 +119,8 @@ def Page():
         event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
         can_advance=COMPONENT_STATE.value.can_transition(next=True)
     )
+    
+    logger.info(f"Current step: {COMPONENT_STATE.value.current_step}")
     
     with rv.Row():
         
