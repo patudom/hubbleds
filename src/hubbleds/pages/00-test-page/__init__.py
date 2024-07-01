@@ -51,22 +51,6 @@ def Page():
     
     solara.lab.use_task(_load_component_state)
     
-    
-    async def _write_local_global_states():
-        # Listen for changes in the states and write them to the database
-        LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)
-
-        # Be sure to write the measurement data separately since it's stored
-        #  in another location in the database
-        LOCAL_API.put_measurements(GLOBAL_STATE, LOCAL_STATE)
-        LOCAL_API.put_sample_measurements(GLOBAL_STATE, LOCAL_STATE)
-
-        logger.info("Wrote state to database.")
-    
-    # solara.lab.use_task(
-    #     _write_local_global_states, dependencies=[GLOBAL_STATE.value, LOCAL_STATE.value]
-    # )
-    
     async def _write_component_state():
         if not loaded_component_state.value:
             return
@@ -76,7 +60,7 @@ def Page():
 
         logger.info("Wrote component state to database.")
 
-    # solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
+    solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
     # === Setup Glue ===
     
