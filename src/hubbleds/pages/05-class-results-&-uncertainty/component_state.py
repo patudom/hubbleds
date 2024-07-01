@@ -87,3 +87,6 @@ class ComponentState(BaseComponentState, BaseState):
         return self.uncertainty_slideshow_finished
 
     # TODO: Implement other gates that require checking MC status
+
+
+COMPONENT_STATE = solara.reactive(ComponentState())
