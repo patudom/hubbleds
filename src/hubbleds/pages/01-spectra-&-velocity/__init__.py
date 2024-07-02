@@ -23,7 +23,8 @@ from hubbleds.components import (
     DotplotTutorialSlideshow,
 )
 from hubbleds.state import GalaxyData, StudentMeasurement
-from solara.lab import Ref
+# from solara.lab import Ref
+from solara.toestand import Ref
 from cosmicds.logger import setup_logger
 
 logger = setup_logger("STAGE")
