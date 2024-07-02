@@ -1,19 +1,24 @@
 from echo import delay_callback
 from glue.core.message import NumericalDataChangedMessage
-from glue.viewers.common.viewer import Viewer
+from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
+from glue_plotly.viewers import PlotlyBaseView
 import numpy as np
 import solara
 from solara.toestand import Ref
 
 from functools import partial
 from pathlib import Path
+import reacton.ipyvuetify as rv
 from typing import Dict, Tuple
 
+from cosmicds.components import PercentageSelector, ScaffoldAlert, StatisticsSelector, ViewerLayout
 from cosmicds.viewers import CDSHistogramView, CDSScatterView
+from hubbleds.base_component_state import transition_next, transition_previous
+from hubbleds.components import UncertaintySlideshow, IdSlider
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE
 from hubbleds.utils import make_summary_data, models_to_glue_data
-from .component_state import COMPONENT_STATE
+from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 
 from cosmicds.logger import setup_logger
@@ -75,7 +80,7 @@ def Page():
     default_color = "#3A86FF"
     highlight_color = "#FF5A00"
 
-    def glue_setup() -> Tuple[JupyterApplication, Dict[str, Viewer]]:
+    def glue_setup() -> Tuple[JupyterApplication, Dict[str, PlotlyBaseView]]:
         # NOTE: use_memo has to be part of the main page render. Including it
         #  in a conditional will result in an error.
         gjapp = JupyterApplication(
@@ -219,3 +224,448 @@ def Page():
         hist_viewer.layers[0].state.color = "blue"
 
     all_data_loaded.subscribe(_on_all_data_loaded)
+
+    #--------------------- Row 1: OUR DATA HUBBLE VIEWER -----------------------
+    if (
+            COMPONENT_STATE.value.current_step_between(Marker.ran_var1, Marker.fin_cla1) \
+                    or \
+            COMPONENT_STATE.value.current_step_between(Marker.cla_dat1, Marker.you_age1c)
+    ):
+        with solara.ColumnsResponsive(12, large=[5,7]):
+            with rv.Col():
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineRandomVariability.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    allow_back=False,
+                    show=COMPONENT_STATE.value.is_current_step(Marker.ran_var1),
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineFinishedClassmates.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.fin_cla1),
+                    state_view={
+                        "class_data_size": 10  # TODO: This is a placeholder
+                    }
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineClassData.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.cla_dat1),
+                    state_view={
+                        "class_data_size": 10  # TODO: This is a placeholder
+                    }                    
+                )
+                ScaffoldAlert(
+                    # TODO: This will need to be wired up once viewer is implemented
+                    GUIDELINE_ROOT / "GuidelineTrendLinesDraw2c.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.tre_lin2c),
+                )
+                ScaffoldAlert(
+                    # TODO: This will need to be wired up once viewer is implemented
+                    GUIDELINE_ROOT / "GuidelineBestFitLinec.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.bes_fit1c),
+                )
+                ScaffoldAlert(
+                    # TODO: This will need to be wired up once viewer is implemented
+                    GUIDELINE_ROOT / "GuidelineYourAgeEstimatec.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.you_age1c),
+                    # state_view={
+                    #     "low_guess": get_free_response(LOCAL_STATE.free_responses, "likely-low-age").get("response"),
+                    #     "high_guess": get_free_response(LOCAL_STATE.free_responses, "likely-high-age").get("response"),
+                    #     "best_guess": get_free_response(LOCAL_STATE.free_responses, "best-guess-age").get("response"),
+                    # }                    
+                )
+
+                with rv.Col():
+                    ViewerLayout(viewer=viewers["layer"])
+
+    # --------------------- Row 2: SLIDER VERSION: OUR DATA HUBBLE VIEWER -----------------------
+    if COMPONENT_STATE.value.current_step_between(Marker.cla_res1, Marker.con_int3):
+        with solara.ColumnsResponsive(12, large=[5,7]):
+            with rv.Col():
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineClassmatesResults.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.cla_res1),
+                    state_view={
+                        "class_data_size": 10  # TODO: This is a placeholder
+                    }
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineRelationshipAgeSlopeMC.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.rel_age1),
+                    # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                    # state_view = {"mc_score": mc_serialize_score(mc_scoring.get("age-slope-trend")), "score_tag": "age-slope-trend"}
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineClassAgeRange.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.cla_age1),
+                    state_view={
+                        "student_low_age": COMPONENT_STATE.value.student_low_age,
+                        "student_high_age": COMPONENT_STATE.value.student_high_age,
+                    }
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineClassAgeRange2.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.cla_age2),
+                    state_view={
+                        "student_low_age": COMPONENT_STATE.value.student_low_age,
+                        "student_high_age": COMPONENT_STATE.value.student_high_age,
+                    }
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineClassAgeRange3.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.cla_age3),
+                    state_view={
+                        "student_low_age": COMPONENT_STATE.value.student_low_age,
+                        "student_high_age": COMPONENT_STATE.value.student_high_age,
+                    }
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineClassAgeRange4.vue",
+                    event_next_callback=transition_next(COMPONENT_STATE),
+                    event_back_callback=transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.cla_age4),
+                    state_view={
+                        "student_low_age": COMPONENT_STATE.value.student_low_age,
+                        "student_high_age": COMPONENT_STATE.value.student_high_age,
+                    }
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineLearnUncertainty1.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.lea_unc1),
+                    state_view={
+                        "uncertainty_slideshow_finished": COMPONENT_STATE.value.uncertainty_slideshow_finished,
+                    },
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineMostLikelyValue1.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik1),
+                )
+
+            def update_student_slider_subset(id, highlighted):
+                class_data = gjapp.data_collection["Class Data"]
+                student_slider_subset = class_data.subsets[0]
+                student_slider_subset.subset_state = RangeSubsetState(id, id, class_data.id['student_id'])
+                color = highlight_color if highlighted else default_color
+                student_slider_subset.style.color = color
+
+            with rv.Col():
+                with solara.Card(style="background-color: #F06292;"):
+                    ViewerLayout(viewer=viewers["class_slider"])
+                    class_summary_data = gjapp.data_collection["Class Summaries"]
+                    IdSlider(
+                        gjapp=gjapp,
+                        data=class_summary_data,
+                        on_id=update_student_slider_subset,
+                        highlight_ids=[GLOBAL_STATE.value.student.id],
+                        id_component=class_summary_data.id['id'],
+                        value_component=class_summary_data.id['age_value'],
+                        default_color=default_color,
+                        highlight_color=highlight_color
+                    )
+
+        if COMPONENT_STATE.value.current_step_between(Marker.lea_unc1, Marker.you_age1c):
+            with solara.ColumnsResponsive(12, large=[5,7]):
+                with rv.Col():
+                    pass
+                with rv.Col():
+                    with rv.Col(cols=10, offset=1):
+                        UncertaintySlideshow(
+                            event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
+                            step=COMPONENT_STATE.value.uncertainty_state.step,
+                            # age_calc_short1=get_free_response(LOCAL_STATE.free_responses, "shortcoming-1").get("response"),
+                            # age_calc_short2=get_free_response(LOCAL_STATE.free_responses, "shortcoming-2").get("response"),
+                            # age_calc_short_other=get_free_response(LOCAL_STATE.free_responses, "other-shortcomings").get("response"),    
+                            # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                            # free_responses=[get_free_response(LOCAL_STATE.free_responses,'shortcoming-4'), get_free_response(LOCAL_STATE.free_responses,'systematic-uncertainty')]   
+                        )
+            
+        #--------------------- Row 3: ALL DATA HUBBLE VIEWER - during class sequence -----------------------
+
+        if COMPONENT_STATE.value.current_step_at_or_after(Marker.cla_res1c):
+            with solara.ColumnsResponsive(12, large=[5,7]):
+                with rv.Col():
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineClassmatesResultsc.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.cla_res1c),
+                    )
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineClassAgeRangec.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.cla_age1c),
+                    )
+
+                def update_class_slider_subset(id, highlighted):
+                    all_data = gjapp.data_collection["All Measurements"]
+                    class_slider_subset = all_data.subsets[0]
+                    class_slider_subset.subset_state = RangeSubsetState(id, id, all_data.id['class_id'])
+                    color = highlight_color if highlighted else default_color
+                    class_slider_subset.style.color = color
+
+                with rv.Col():
+                    with solara.Card():
+                        ViewerLayout(viewer=viewers["class_slider"])
+                        all_summary_data = gjapp.data_collection["All Class Summaries"]
+
+                        IdSlider(
+                            gjapp=gjapp,
+                            data=all_summary_data,
+                            on_id=update_class_slider_subset,
+                            highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
+                            id_component=all_summary_data.id['id'],
+                            value_component=all_summary_data.id['age_value'],
+                            default_color=default_color,
+                            highlight_color=highlight_color
+                        )
+
+                with rv.Col(cols=10, offset=1):
+                    UncertaintySlideshow(
+                        event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
+                        step=COMPONENT_STATE.value.uncertainty_state.step,
+                        # age_calc_short1=get_free_response(LOCAL_STATE.free_responses, "shortcoming-1").get("response"),
+                        # age_calc_short2=get_free_response(LOCAL_STATE.free_responses, "shortcoming-2").get("response"),
+                        # age_calc_short_other=get_free_response(LOCAL_STATE.free_responses, "other-shortcomings").get("response"),  
+                        # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                        # free_responses=[get_free_response(LOCAL_STATE.free_responses,'shortcoming-4'), get_free_response(LOCAL_STATE.free_responses,'systematic-uncertainty')]
+                    )
+
+        #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------
+        if COMPONENT_STATE.value.current_step_between(Marker.age_dis1, Marker.con_int3):
+            with solara.ColumnsResponsive(12, large=[5,7]):
+                with rv.Col():
+                    class_summary_data = gjapp.data_collection["Class Summaries"]
+                    if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
+                        statistics_selected = Ref(COMPONENT_STATE.fields.statistics_selection)
+                        StatisticsSelector(
+                            viewers=[viewers["student_hist"]],
+                            glue_data=[class_summary_data],
+                            units=["counts"],
+                            transform=round,
+                            selected=statistics_selected,
+                        )
+
+                    if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
+                        percentage_selected = Ref(COMPONENT_STATE.fields.percentage_selection)
+                        PercentageSelector(
+                            viewers=[viewers["student_hist"]],
+                            glue_data=[class_summary_data],
+                            selected=percentage_selected
+                        )
+
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.age_dis1),
+                    )
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineMostLikelyValue2.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik2),
+                    )
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineMostLikelyValue3.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik3),
+                    )
+
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineConfidenceInterval.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.con_int1),
+                    )
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineConfidenceInterval2.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.con_int2),
+                    )
+
+                with rv.Col():
+                    ViewerLayout(viewer=viewers["student_hist"])
+
+        ScaffoldAlert(
+            GUIDELINE_ROOT / "GuidelineMostLikelyValueReflect4.vue",
+            event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik4),
+            # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+            # state_view={
+            #     "hint1_dialog": component_state.age_calc_state.hint1_dialog.value,
+            #     'free_response_a': get_free_response(LOCAL_STATE.free_responses,'best-guess-age'),
+            #     'free_response_b': get_free_response(LOCAL_STATE.free_responses,'my-reasoning')
+            # }
+        )
+
+        ScaffoldAlert(
+            GUIDELINE_ROOT / "GuidelineConfidenceIntervalReflect3.vue",
+            event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            show=COMPONENT_STATE.value.is_current_step(Marker.con_int3),
+            # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+            # state_view={
+            #     "hint2_dialog": component_state.age_calc_state.hint2_dialog.value,
+            #     'free_response_a': get_free_response(LOCAL_STATE.free_responses,'likely-low-age'),
+            #     'free_response_b': get_free_response(LOCAL_STATE.free_responses,'likely-high-age'),
+            #     'free_response_c': get_free_response(LOCAL_STATE.free_responses,'my-reasoning-2'),
+            # }
+        )
+
+        #--------------------- Row 5: ALL DATA HISTOGRAM VIEWER -----------------------
+
+        if COMPONENT_STATE.value.current_step_between(Marker.age_dis1c):
+            with solara.ColumnsResponsive(12, large=[5,7]):
+                with rv.Col():
+                    all_class_summary_data = gjapp.data_collection["All Class Summaries"]
+                    statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
+                    StatisticsSelector(
+                        viewers=[viewers["class_hist"]],
+                        glue_data=[all_class_summary_data],
+                        units=["counts"],
+                        transform=round,
+                        selected=statistics_class_selected
+                    )
+
+                    percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
+                    PercentageSelector(
+                        viewers=[viewers["class_hist"]],
+                        glue_data=[all_class_summary_data],
+                        selected=percentage_class_selected
+                    )
+
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineClassAgeDistributionc.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.age_dis1c),
+                    )
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineTwoHistograms1.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.two_his1),
+                    )
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineTwoHistogramsMC2.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.two_his2),
+                        # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                        # state_view = {"mc_score": mc_serialize_score(mc_scoring.get("histogram-range")), "score_tag": "histogram-range"}
+                    )
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineTwoHistogramsMC3.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.two_his3),
+                        # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                        # state_view = {"mc_score": mc_serialize_score(mc_scoring.get("histogram-percent-range")), "score_tag": "histogram-percent-range"}
+                    )
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineTwoHistogramsMC4.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.two_his4),
+                        # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
+                        # state_view = {"mc_score": mc_serialize_score(mc_scoring.get("histogram-distribution")), "score_tag": "histogram-distribution"}
+                    )
+                    ScaffoldAlert(
+                        GUIDELINE_ROOT / "GuidelineTwoHistogramsReflect5.vue",
+                        event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.two_his5),
+                        # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                        # state_view={
+                        #     'free_response': get_free_response(LOCAL_STATE.free_responses,'unc-range-change-reasoning'),
+                        # }
+                    )
+                    ScaffoldAlert(
+                        # TODO: event_next_callback should go to next stage but I don't know how to set that up.
+                        GUIDELINE_ROOT / "GuidelineMoreDataDistribution.vue",
+                        event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                        can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                        show=COMPONENT_STATE.value.is_current_step(Marker.mor_dat1),
+                    )
+
+                with rv.Col():
+                    if COMPONENT_STATE.value.current_step_between(Marker.two_his1):
+                        ViewerLayout(viewers["student_hist"])
+
+                    ViewerLayout(viewers["class_hist"]) 
+
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineConfidenceIntervalReflect2c.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.con_int2c),
+                # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                # state_view={
+                #     "hint1_dialog": component_state.age_calc_state.hint1_dialog.value,
+                #     "hint2_dialog": component_state.age_calc_state.hint2_dialog.value,
+                #     "low_guess": get_free_response(LOCAL_STATE.free_responses, "likely-low-age").get("response"),
+                #     "high_guess": get_free_response(LOCAL_STATE.free_responses, "likely-high-age").get("response"),
+                #     "best_guess": get_free_response(LOCAL_STATE.free_responses, "best-guess-age").get("response"),
+                #     'free_response_a': get_free_response(LOCAL_STATE.free_responses,'new-most-likely-age'),
+                #     'free_response_b': get_free_response(LOCAL_STATE.free_responses,'new-likely-low-age'),
+                #     'free_response_c': get_free_response(LOCAL_STATE.free_responses,'new-likely-high-age'),
+                #     'free_response_d': get_free_response(LOCAL_STATE.free_responses,'my-updated-reasoning'),
+                # }
+            )
