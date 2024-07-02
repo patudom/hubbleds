@@ -6,7 +6,7 @@ from cosmicds.utils import API_URL
 from cosmicds.utils import load_template
 from ipywidgets import DOMWidget, widget_serialization
 from pandas import DataFrame, concat
-from ...state import GLOBAL_STATE
+from hubbleds.state import GLOBAL_STATE
 
 # from pywwt.jupyter import WWTJupyterWidget
 from ipywwt import WWTWidget
@@ -16,8 +16,8 @@ from ...utils import FULL_FOV, GALAXY_FOV
 from ...utils import HUBBLE_ROUTE_PATH
 
 
-class SelectionTool(v.VueTemplate):
-    template = load_template("selection_tool.vue", __file__, traitlet=True).tag(
+class SelectionToolWidget(v.VueTemplate):
+    template = load_template("selection_tool_widget.vue", __file__, traitlet=True).tag(
         sync=True
     )
     widget = Instance(DOMWidget, allow_none=True).tag(sync=True, **widget_serialization)

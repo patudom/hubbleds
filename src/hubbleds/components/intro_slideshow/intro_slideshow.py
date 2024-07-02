@@ -1,4 +1,4 @@
-import dataclasses
+from dataclasses import dataclass, field
 import solara
 from solara import Reactive
 import reacton.ipyvuetify as rv

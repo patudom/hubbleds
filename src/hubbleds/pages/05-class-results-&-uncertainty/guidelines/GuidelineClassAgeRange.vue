@@ -69,6 +69,13 @@ mjx-mstyle {
   font-size: 16px !important;
 }
 
+.v-application .legend {
+  border: 1px solid white !important;
+  max-width: 300px;
+  margin: 0 auto 0;
+  font-size: 15px !important;
+}
+
 #gal_ang_size {
   color:  black;
   font-size: 18px;

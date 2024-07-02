@@ -19,7 +19,7 @@
         Since everyone in your class also measured 5 galaxies, let's look at a dataset that combines everyone's measurements.
       </p>
       <p>
-        Click the box next to  <span class="inline-guideline-button" style="background-color: white; color:black!important; font-size: 80%"><b>Class Data</b></span>  in the legend panel to display measurements from your entire class.
+        Click the box next to  <span style="background-color: white; border-radius : 5px; padding: 3px; color:black!important; font-size: 80%"><b>Class Data</b></span>  in the legend panel to display measurements from your entire class.
       </p>
     </div>
   </scaffold-alert>

@@ -163,6 +163,13 @@ module.exports = {
   margin: 16px auto !important;
 }
 
+.v-application .legend {
+  border: 1px solid white !important;
+  max-width: 300px;
+  margin: 0 auto 0;
+  font-size: 15px !important;
+}
+
 mjx-mfrac {
   margin: 0 4px !important;
 }
@@ -173,6 +180,13 @@ mjx-mstyle {
 
 .angsize_alert .v-alert {
   font-size: 16px !important;
+}
+
+.v-application .legend {
+  border: 1px solid white !important;
+  max-width: 300px;
+  margin: 0 auto 0;
+  font-size: 15px !important;
 }
 
 #gal_ang_size {

@@ -1,13 +1,14 @@
-from solara import component_vue
+import solara
+from typing import Callable, Any
 
 
-@component_vue("DotplotTutorialSlideshow.vue")
+@solara.component_vue("DotplotTutorialSlideshow.vue")
 def DotplotTutorialSlideshow(
-    dialog,
-    step,
-    length,
-    max_step_completed,
-    dotplot_viewer,
-    event_tutorial_finished
+    dialog: bool,
+    step: int,
+    length: int,
+    max_step_completed: int,
+    dotplot_viewer: Any,
+    event_tutorial_finished: Callable,
 ):
     pass
