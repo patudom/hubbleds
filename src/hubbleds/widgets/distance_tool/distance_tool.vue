@@ -3,10 +3,9 @@
     id="distance-root"
   >
     <v-toolbar
-      color="primary"
       dense
       dark
-      class="text-uppercase"
+      class="text-uppercase toolbar"
     >
       <v-toolbar-title>Cosmic Sky Viewer</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -70,7 +69,7 @@
             bottom
             right
             absolute
-            :color="measuring ? 'red' : '#00E676'"
+            :color="measuring ? 'red' : 'var(--success-dark)'"
             class="measuring-fab black--text"
             :ripple="false"
             v-bind="attrs"
@@ -229,7 +228,7 @@ export default {
     setupMeasuringCanvasContext: function() {
       this.context = this.canvas.getContext('2d');
       this.context.lineWidth = 3;
-      this.context.strokeStyle = '#00e676';
+      this.context.strokeStyle = '#00E676';
     },
 
     addInitialPoint: function(event) {
