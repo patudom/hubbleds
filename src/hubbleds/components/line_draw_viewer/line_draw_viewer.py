@@ -26,13 +26,13 @@ def LineDrawViewer(plot_data=None, x_axis_label=None, y_axis_label=None):
     #     active.set(False)
 
     with rv.Card():
-        with rv.Toolbar(color="primary", dense=True):
-            with rv.ToolbarTitle():
+        with rv.Toolbar(class_="toolbar", dense=True):
+            with rv.ToolbarTitle(class_="toolbar"):
                 solara.Text("LINE DRAW VIEWER")
 
             rv.Spacer()
 
-            draw_button = solara.IconButton(icon_name="mdi-message-draw", on_click=on_draw_clicked)
+            draw_button = solara.IconButton(classes=["toolbar"], icon_name="mdi-message-draw", on_click=on_draw_clicked)
             rv.BtnToggle(v_model="selected", children=[draw_button], background_color="primary", borderless=True)
 
         LineDrawPlot(active=active.value,
