@@ -104,6 +104,7 @@ class LocalState(BaseState):
     all_measurements: list[StudentMeasurement] = []
     student_summaries: list[StudentSummary] = []
     class_summaries: list[ClassSummary] = []
+    measurements_loaded: Reactive[bool] = Reactive(False)
     calculations: dict = {}
     validation_failure_counts: dict = {}
     has_best_fit_galaxy: bool = False
@@ -121,6 +122,9 @@ class LocalState(BaseState):
         from hubbleds.remote import LOCAL_API
 
         return LOCAL_API.get_galaxies(LOCAL_STATE)
+
+    def as_dict(self):
+        self.model_dump(exclude={"measurements_loaded"})
 
     def get_measurement(self, galaxy_id: int) -> StudentMeasurement | None:
         return next((x for x in self.measurements if x.galaxy_id == galaxy_id), None)
