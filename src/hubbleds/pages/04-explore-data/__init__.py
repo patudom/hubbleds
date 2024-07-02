@@ -6,8 +6,8 @@ import solara
 from solara.toestand import Ref
 
 from cosmicds.components import ScaffoldAlert
-from hubbleds.components import HubbleExpUniverseSlideshow
-from hubbleds.state import LOCAL_STATE, GLOBAL_STATE
+from hubbleds.components import HubbleExpUniverseSlideshow, LineDrawViewer
+from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 from hubbleds.utils import AGE_CONSTANT
@@ -34,14 +34,6 @@ def Page():
 
     solara.lab.use_task(_load_component_state)
 
-    async def _write_local_global_states():
-        # Listen for changes in the states and write them to the database
-        LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)
-
-        logger.info("Wrote state to database.")
-
-    solara.lab.use_task(_write_local_global_states, dependencies=[GLOBAL_STATE.value, LOCAL_STATE.value])
-
     async def _write_component_state():
         if not loaded_component_state.value:
             return
@@ -67,6 +59,19 @@ def Page():
         class_plot_data.set(class_data_points)
 
     solara.lab.use_task(_load_class_data)
+
+    if class_plot_data.value:
+        data = class_plot_data.value
+        distances = [t.est_dist_value for t in data]
+        velocities = [t.velocity_value for t in data]
+        plot_data=[{
+            "x": distances,
+            "y": velocities,
+            "mode": "markers",
+            "marker": { "color": "red", "size": 12 },
+            "hoverinfo": "none"
+        }]
+        LineDrawViewer(plot_data=plot_data, x_axis_label="Distance (Mpc)", y_axis_label="Velocity (km / s)")
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -114,8 +119,11 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.tre_dat1),
-                # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring)
-                # state_view = { "mc_score": mc_serialize_score(mc_scoring.get("tre-dat-mc1")), "score_tag": "tre-dat-mc1" }
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE),
+                state_view={
+                    "mc_score": get_multiple_choice(LOCAL_STATE, "tre-dat-mc1"),
+                    "score_tag": "tre-dat-mc1"
+                }
             )
             ScaffoldAlert(
                 # TODO: This will need to be wired up once viewer is implemented
@@ -131,17 +139,23 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.tre_dat3),
-                # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
-                # state_view={'mc_score': mc_serialize_score(mc_scoring.get('tre-dat-mc3')), 'score_tag': 'tre-dat-mc3'}
+                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE),
+                state_view={
+                    'mc_score': get_multiple_choice(LOCAL_STATE, 'tre-dat-mc3'),
+                    'score_tag': 'tre-dat-mc3'
+                }
             )
             ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineRelationshipsVelDistMC.vue",
+                GUIDELINE_ROOT / "GuidelineRelationshipVelDistMC.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.rel_vel1),
-                # event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
-                # state_view={'mc_score': mc_serialize_score(mc_scoring.get('galaxy-trend')), 'score_tag': 'galaxy-trend'} 
+                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE),
+                state_view={
+                    'mc_score': get_multiple_choice(LOCAL_STATE, 'galaxy-trend'),
+                    'score_tag': 'galaxy-trend'
+                }
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineTrendLines1.vue",
@@ -221,12 +235,12 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est1),
-                # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
-                # state_view={
-                #     'free_response_a': get_free_response(LOCAL_STATE.free_responses,'shortcoming-1'),
-                #     'free_response_b': get_free_response(LOCAL_STATE.free_responses,'shortcoming-2'),
-                #     'free_response_c': get_free_response(LOCAL_STATE.free_responses,'other-shortcomings'),
-                # }
+                event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                state_view={
+                    'free_response_a': get_free_response(LOCAL_STATE, 'shortcoming-1'),
+                    'free_response_b': get_free_response(LOCAL_STATE, 'shortcoming-2'),
+                    'free_response_c': get_free_response(LOCAL_STATE, 'other-shortcomings'),
+                }
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",

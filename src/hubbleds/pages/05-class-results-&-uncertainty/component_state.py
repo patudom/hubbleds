@@ -63,6 +63,7 @@ class AgeCalcState(BaseModel):
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.first()
+    stage_id: str = "class_results_and_uncertainty"
     student_low_age: int = 0
     student_high_age: int = 0
     class_low_age: int = 0

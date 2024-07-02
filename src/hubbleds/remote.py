@@ -258,6 +258,7 @@ class LocalAPI(BaseAPI):
         parsed_measurements = []
 
         for measurement in measurement_json["measurements"]:
+            print(measurement)
             measurement = StudentMeasurement(**measurement)
             parsed_measurements.append(measurement)
 
@@ -278,7 +279,9 @@ class LocalAPI(BaseAPI):
         measurements = Ref(local_state.fields.all_measurements)
         parsed_measurements = []
         for measurement in res_json["measurements"]:
+            print(measurement)
             measurement = StudentMeasurement(**measurement)
+            print(measurement)
             parsed_measurements.append(measurement)
 
         measurements.set(parsed_measurements)

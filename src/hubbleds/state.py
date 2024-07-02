@@ -114,7 +114,7 @@ class LocalState(BaseState):
     all_measurements: list[StudentMeasurement] = []
     student_summaries: list[StudentSummary] = []
     class_summaries: list[ClassSummary] = []
-    measurements_loaded: Reactive[bool] = Reactive(False)
+    measurements_loaded: bool = False
     calculations: dict = {}
     validation_failure_counts: dict = {}
     has_best_fit_galaxy: bool = False
@@ -176,7 +176,7 @@ def get_free_response(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary
     # also initializes the question by using get_or_create method
     free_responses = local_state.value.free_responses
-    return  free_responses.get_or_create(tag).model_dump()
+    return free_responses.get_or_create(tag).model_dump()
         
 def get_multiple_choice(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary

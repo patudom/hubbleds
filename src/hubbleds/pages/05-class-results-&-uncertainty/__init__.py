@@ -16,7 +16,7 @@ from cosmicds.components import PercentageSelector, ScaffoldAlert, StatisticsSel
 from cosmicds.viewers import CDSHistogramView, CDSScatterView
 from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
-from hubbleds.state import LOCAL_STATE, GLOBAL_STATE
+from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_free_response, get_multiple_choice, mc_callback, fr_callback
 from hubbleds.utils import make_summary_data, models_to_glue_data
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
@@ -126,7 +126,7 @@ def Page():
             return
         student_data = gjapp.data_collection["My Data"]
         class_data = gjapp.data_collection["Class Data"]
-        for component in ("est_dist", "velocity"):
+        for component in ("est_dist_value", "velocity_value"):
             gjapp.add_link(student_data, component, class_data, component)
         links_setup.set(True)
 
@@ -143,16 +143,16 @@ def Page():
         layer_viewer.add_data(class_data)
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
         layer_viewer.state.y_axislabel = "Velocity"
-        layer_viewer.state.x_att = class_data.id['est_dist']
-        layer_viewer.state.y_att = class_data.id['velocity']
+        layer_viewer.state.x_att = class_data.id['est_dist_value']
+        layer_viewer.state.y_att = class_data.id['velocity_value']
 
         if len(class_data.subsets) == 0:
             student_slider_subset = class_data.new_subset(label="student_slider_subset", alpha=1, markersize=10)
         else:
             student_slider_subset = class_data.subsets[0]
         slider_viewer = viewers["student_slider"]
-        slider_viewer.state.x_att = class_data.id['est_dist']
-        slider_viewer.state.y_att = class_data.id['velocity']
+        slider_viewer.state.x_att = class_data.id['est_dist_value']
+        slider_viewer.state.y_att = class_data.id['velocity_value']
         slider_viewer.state.title = "Stage 5 Class Data Viewer"
         slider_viewer.layers[0].state.visible = False
         slider_viewer.add_subset(student_slider_subset)
@@ -168,11 +168,12 @@ def Page():
         hist_viewer.state.title = "My class ages (5 galaxies each)"
         hist_viewer.layers[0].state.color = "red"
 
-        if LOCAL_STATE.value.measurements_loaded.value:
+        if LOCAL_STATE.value.measurements_loaded:
             _setup_links()
 
     class_data_loaded.subscribe(_on_class_data_loaded)
 
+    measurements_loaded = Ref(LOCAL_STATE.fields.measurements_loaded)
     def _on_student_data_loaded(value: bool):
         if not value:
             return
@@ -181,13 +182,15 @@ def Page():
         layer_viewer = viewers["layer"]
         layer_viewer.add_data(student_data)
 
+        measurements_loaded.set(True)
+
         if class_data_loaded.value:
             _setup_links()
 
-    if LOCAL_STATE.value.measurements_loaded.value:
+    if measurements_loaded.value:
         _on_student_data_loaded(True)
     else:
-        LOCAL_STATE.value.measurements_loaded.subscribe(_on_student_data_loaded)
+        measurements_loaded.subscribe(_on_student_data_loaded)
 
     def _on_all_data_loaded(value):
         if not value:
@@ -212,8 +215,8 @@ def Page():
             class_slider_subset = all_data.subsets[0]
 
         slider_viewer = viewers["class_slider"]
-        slider_viewer.state.x_att = all_data.id['est_dist']
-        slider_viewer.state.y_att = all_data.id['velocity']
+        slider_viewer.state.x_att = all_data.id['est_dist_value']
+        slider_viewer.state.y_att = all_data.id['velocity_value']
         slider_viewer.state.title = "Stage 5 All Classes Data Viewer"
         slider_viewer.layers[0].state.visible = False
         slider_viewer.add_subset(class_slider_subset)
@@ -283,11 +286,11 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.you_age1c),
-                    # state_view={
-                    #     "low_guess": get_free_response(LOCAL_STATE.free_responses, "likely-low-age").get("response"),
-                    #     "high_guess": get_free_response(LOCAL_STATE.free_responses, "likely-high-age").get("response"),
-                    #     "best_guess": get_free_response(LOCAL_STATE.free_responses, "best-guess-age").get("response"),
-                    # }                    
+                    state_view={
+                        "low_guess": get_free_response(LOCAL_STATE, "likely-low-age").get("response"),
+                        "high_guess": get_free_response(LOCAL_STATE, "likely-high-age").get("response"),
+                        "best_guess": get_free_response(LOCAL_STATE, "best-guess-age").get("response"),
+                    }                    
                 )
 
                 with rv.Col():
@@ -313,8 +316,11 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.rel_age1),
-                    # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
-                    # state_view = {"mc_score": mc_serialize_score(mc_scoring.get("age-slope-trend")), "score_tag": "age-slope-trend"}
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    state_view={
+                        "mc_score": get_multiple_choice(LOCAL_STATE, "age-slope-trend"),
+                        "score_tag": "age-slope-trend"
+                    }
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeRange.vue",
@@ -409,11 +415,11 @@ def Page():
                         UncertaintySlideshow(
                             event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
                             step=COMPONENT_STATE.value.uncertainty_state.step,
-                            # age_calc_short1=get_free_response(LOCAL_STATE.free_responses, "shortcoming-1").get("response"),
-                            # age_calc_short2=get_free_response(LOCAL_STATE.free_responses, "shortcoming-2").get("response"),
-                            # age_calc_short_other=get_free_response(LOCAL_STATE.free_responses, "other-shortcomings").get("response"),    
-                            # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
-                            # free_responses=[get_free_response(LOCAL_STATE.free_responses,'shortcoming-4'), get_free_response(LOCAL_STATE.free_responses,'systematic-uncertainty')]   
+                            age_calc_short1=get_free_response(LOCAL_STATE, "shortcoming-1").get("response"),
+                            age_calc_short2=get_free_response(LOCAL_STATE, "shortcoming-2").get("response"),
+                            age_calc_short_other=get_free_response(LOCAL_STATE, "other-shortcomings").get("response"),    
+                            event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                            free_responses=[get_free_response(LOCAL_STATE,'shortcoming-4'), get_free_response(LOCAL_STATE,'systematic-uncertainty')]   
                         )
             
         #--------------------- Row 3: ALL DATA HUBBLE VIEWER - during class sequence -----------------------
@@ -463,11 +469,11 @@ def Page():
                     UncertaintySlideshow(
                         event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
                         step=COMPONENT_STATE.value.uncertainty_state.step,
-                        # age_calc_short1=get_free_response(LOCAL_STATE.free_responses, "shortcoming-1").get("response"),
-                        # age_calc_short2=get_free_response(LOCAL_STATE.free_responses, "shortcoming-2").get("response"),
-                        # age_calc_short_other=get_free_response(LOCAL_STATE.free_responses, "other-shortcomings").get("response"),  
-                        # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
-                        # free_responses=[get_free_response(LOCAL_STATE.free_responses,'shortcoming-4'), get_free_response(LOCAL_STATE.free_responses,'systematic-uncertainty')]
+                        age_calc_short1=get_free_response(LOCAL_STATE, "shortcoming-1").get("response"),
+                        age_calc_short2=get_free_response(LOCAL_STATE, "shortcoming-2").get("response"),
+                        age_calc_short_other=get_free_response(LOCAL_STATE, "other-shortcomings").get("response"),  
+                        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                        free_responses=[get_free_response(LOCAL_STATE, 'shortcoming-4'), get_free_response(LOCAL_STATE, 'systematic-uncertainty')]
                     )
 
         #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------
@@ -539,12 +545,12 @@ def Page():
             event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
             can_advance=COMPONENT_STATE.value.can_transition(next=True),
             show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik4),
-            # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
-            # state_view={
-            #     "hint1_dialog": component_state.age_calc_state.hint1_dialog.value,
-            #     'free_response_a': get_free_response(LOCAL_STATE.free_responses,'best-guess-age'),
-            #     'free_response_b': get_free_response(LOCAL_STATE.free_responses,'my-reasoning')
-            # }
+            event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+            state_view={
+                "hint1_dialog": COMPONENT_STATE.value.age_calc_state.hint1_dialog,
+                'free_response_a': get_free_response(LOCAL_STATE,'best-guess-age').get("response"),
+                'free_response_b': get_free_response(LOCAL_STATE,'my-reasoning').get("response")
+            }
         )
 
         ScaffoldAlert(
@@ -553,13 +559,13 @@ def Page():
             event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
             can_advance=COMPONENT_STATE.value.can_transition(next=True),
             show=COMPONENT_STATE.value.is_current_step(Marker.con_int3),
-            # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
-            # state_view={
-            #     "hint2_dialog": component_state.age_calc_state.hint2_dialog.value,
-            #     'free_response_a': get_free_response(LOCAL_STATE.free_responses,'likely-low-age'),
-            #     'free_response_b': get_free_response(LOCAL_STATE.free_responses,'likely-high-age'),
-            #     'free_response_c': get_free_response(LOCAL_STATE.free_responses,'my-reasoning-2'),
-            # }
+            event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+            state_view={
+                "hint2_dialog": COMPONENT_STATE.value.age_calc_state.hint2_dialog,
+                'free_response_a': get_free_response(LOCAL_STATE,'likely-low-age'),
+                'free_response_b': get_free_response(LOCAL_STATE,'likely-high-age'),
+                'free_response_c': get_free_response(LOCAL_STATE,'my-reasoning-2'),
+            }
         )
 
         #--------------------- Row 5: ALL DATA HISTOGRAM VIEWER -----------------------
@@ -604,8 +610,11 @@ def Page():
                         event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                         can_advance=COMPONENT_STATE.value.can_transition(next=True),
                         show=COMPONENT_STATE.value.is_current_step(Marker.two_his2),
-                        # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
-                        # state_view = {"mc_score": mc_serialize_score(mc_scoring.get("histogram-range")), "score_tag": "histogram-range"}
+                        event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                        state_view = {
+                            "mc_score": get_multiple_choice(LOCAL_STATE, "histogram-range"),
+                            "score_tag": "histogram-range"
+                        }
                     )
                     ScaffoldAlert(
                         GUIDELINE_ROOT / "GuidelineTwoHistogramsMC3.vue",
@@ -613,8 +622,11 @@ def Page():
                         event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                         can_advance=COMPONENT_STATE.value.can_transition(next=True),
                         show=COMPONENT_STATE.value.is_current_step(Marker.two_his3),
-                        # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
-                        # state_view = {"mc_score": mc_serialize_score(mc_scoring.get("histogram-percent-range")), "score_tag": "histogram-percent-range"}
+                        event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                        state_view = {
+                            "mc_score": get_multiple_choice(LOCAL_STATE, "histogram-percent-range"),
+                            "score_tag": "histogram-percent-range"
+                        }
                     )
                     ScaffoldAlert(
                         GUIDELINE_ROOT / "GuidelineTwoHistogramsMC4.vue",
@@ -622,8 +634,11 @@ def Page():
                         event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                         can_advance=COMPONENT_STATE.value.can_transition(next=True),
                         show=COMPONENT_STATE.value.is_current_step(Marker.two_his4),
-                        # event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE, callback=set_mc_scoring),
-                        # state_view = {"mc_score": mc_serialize_score(mc_scoring.get("histogram-distribution")), "score_tag": "histogram-distribution"}
+                        event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                        state_view = {
+                            "mc_score": get_multiple_choice(LOCAL_STATE, "histogram-distribution"),
+                            "score_tag": "histogram-distribution"
+                        }
                     )
                     ScaffoldAlert(
                         GUIDELINE_ROOT / "GuidelineTwoHistogramsReflect5.vue",
@@ -631,10 +646,10 @@ def Page():
                         event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                         can_advance=COMPONENT_STATE.value.can_transition(next=True),
                         show=COMPONENT_STATE.value.is_current_step(Marker.two_his5),
-                        # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
-                        # state_view={
-                        #     'free_response': get_free_response(LOCAL_STATE.free_responses,'unc-range-change-reasoning'),
-                        # }
+                        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                        state_view={
+                            'free_response': get_free_response(LOCAL_STATE,'unc-range-change-reasoning'),
+                        }
                     )
                     ScaffoldAlert(
                         # TODO: event_next_callback should go to next stage but I don't know how to set that up.
@@ -656,16 +671,16 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.con_int2c),
-                # event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
-                # state_view={
-                #     "hint1_dialog": component_state.age_calc_state.hint1_dialog.value,
-                #     "hint2_dialog": component_state.age_calc_state.hint2_dialog.value,
-                #     "low_guess": get_free_response(LOCAL_STATE.free_responses, "likely-low-age").get("response"),
-                #     "high_guess": get_free_response(LOCAL_STATE.free_responses, "likely-high-age").get("response"),
-                #     "best_guess": get_free_response(LOCAL_STATE.free_responses, "best-guess-age").get("response"),
-                #     'free_response_a': get_free_response(LOCAL_STATE.free_responses,'new-most-likely-age'),
-                #     'free_response_b': get_free_response(LOCAL_STATE.free_responses,'new-likely-low-age'),
-                #     'free_response_c': get_free_response(LOCAL_STATE.free_responses,'new-likely-high-age'),
-                #     'free_response_d': get_free_response(LOCAL_STATE.free_responses,'my-updated-reasoning'),
-                # }
+                event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                state_view={
+                    "hint1_dialog": COMPONENT_STATE.value.age_calc_state.hint1_dialog,
+                    "hint2_dialog": COMPONENT_STATE.value.age_calc_state.hint2_dialog,
+                    "low_guess": get_free_response(LOCAL_STATE, "likely-low-age").get("response"),
+                    "high_guess": get_free_response(LOCAL_STATE, "likely-high-age").get("response"),
+                    "best_guess": get_free_response(LOCAL_STATE, "best-guess-age").get("response"),
+                    'free_response_a': get_free_response(LOCAL_STATE, 'new-most-likely-age'),
+                    'free_response_b': get_free_response(LOCAL_STATE, 'new-likely-low-age'),
+                    'free_response_c': get_free_response(LOCAL_STATE, 'new-likely-high-age'),
+                    'free_response_d': get_free_response(LOCAL_STATE, 'my-updated-reasoning'),
+                }
             )
