@@ -253,4 +253,3 @@ def Page():
                     # ViewerLayout(viewer)
                     with solara.Card(style="background-color: var(--error);"):
                         solara.Markdown("Hubble Viewer")
-    
