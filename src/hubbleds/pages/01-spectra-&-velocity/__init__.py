@@ -5,7 +5,7 @@ from hubbleds.remote import LOCAL_API
 from glue_jupyter import JupyterApplication
 import asyncio
 from pathlib import Path
-from cosmicds.components import ScaffoldAlert
+from cosmicds.components import ScaffoldAlert, StateEditor
 import reacton.ipyvuetify as rv
 from hubbleds.base_component_state import (
     transition_to,
@@ -154,6 +154,8 @@ def Page():
         set_show_selection_tool(True)
 
     solara.lab.use_task(_delay_selection_tool)
+
+    StateEditor(Marker, COMPONENT_STATE)
 
     with rv.Row():
         with rv.Col(cols=4):
