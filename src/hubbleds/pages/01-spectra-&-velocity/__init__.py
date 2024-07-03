@@ -27,7 +27,13 @@ from hubbleds.state import GalaxyData, StudentMeasurement
 from solara.toestand import Ref
 from cosmicds.logger import setup_logger
 
+
+from ...data_management import EXAMPLE_GALAXY_SEED_DATA, DB_VELOCITY_FIELD
+import numpy as np
+from glue.core import Data
+
 logger = setup_logger("STAGE")
+
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
@@ -100,7 +106,13 @@ def Page():
         gjapp = JupyterApplication(
             GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
         )
-
+        
+        if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
+            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE)
+            data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **{k: np.asarray([r[k] for r in example_seed_data]) for k in example_seed_data[0].keys()})
+            gjapp.data_collection.append(data)
+        else:
+            data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
         return gjapp
 
     gjapp = solara.use_memo(_glue_setup)
@@ -587,7 +599,7 @@ def Page():
                     ),
                 )
 
-                DotplotViewer(gjapp)
+                DotplotViewer(gjapp, data=gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA], component_id=DB_VELOCITY_FIELD)
 
             if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
                 reflection_completed = Ref(COMPONENT_STATE.fields.reflection_complete)
