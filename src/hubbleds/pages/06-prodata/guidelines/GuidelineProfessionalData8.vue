@@ -9,6 +9,9 @@
     @next="next_callback()"
     :can-advance="can_advance"
   >
+    <template #before-next>
+        Enter your responses.
+    </template>
     <div
       class="mb-4"
     >
@@ -24,7 +27,6 @@
           auto-grow
           rows="2"
           label="Reflection #1"
-          tag="prodata-reflect-8a"
           :tag="state_view.free_response_a.tag"
           :initial-response="state_view.free_response_a.response"
           :initialized="state_view.free_response_a.initialized"
@@ -37,7 +39,6 @@
           auto-grow
           rows="2"
           label="Age from Edwin Hubble"
-          tag="prodata-reflect-8b"
           type="float"
           :tag="state_view.free_response_b.tag"
           :initial-response="state_view.free_response_b.response"
@@ -51,7 +52,6 @@
           auto-grow
           rows="2"
           label="Age from HST Key Project"
-          tag="prodata-reflect-8c"
           type="float"
           :tag="state_view.free_response_c.tag"
           :initial-response="state_view.free_response_c.response"
