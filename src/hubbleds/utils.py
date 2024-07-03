@@ -165,8 +165,8 @@ def make_summary_data(measurement_data: Data,
 ) -> Data:
     dists = defaultdict(list)
     vels = defaultdict(list)
-    d = measurement_data["est_dist"]
-    v = measurement_data["velocity"]
+    d = measurement_data["est_dist_value"]
+    v = measurement_data["velocity_value"]
     ids: Set[int] = set()
 
     for i in range(measurement_data.size):

@@ -103,6 +103,8 @@ def Page():
         def _update_bins(viewer, *args):
             props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
             with delay_callback(viewer.state, *props):
+                if not viewer.layers:
+                    return
                 layer = viewer.layers[0] # only works cuz there is only one layer 
                 component = viewer.state.x_att                   
                 xmin = round(layer.layer.data[component].min(), 0) - 0.5
@@ -151,6 +153,7 @@ def Page():
         else:
             student_slider_subset = class_data.subsets[0]
         slider_viewer = viewers["student_slider"]
+        slider_viewer.add_data(class_data)
         slider_viewer.state.x_att = class_data.id['est_dist_value']
         slider_viewer.state.y_att = class_data.id['velocity_value']
         slider_viewer.state.title = "Stage 5 Class Data Viewer"
@@ -164,6 +167,7 @@ def Page():
         class_summary_data = GLOBAL_STATE.value.add_or_update_data(class_summary_data)
 
         hist_viewer = viewers["student_hist"]
+        hist_viewer.add_data(class_summary_data)
         hist_viewer.state.x_att = class_summary_data.id['age_value']
         hist_viewer.state.title = "My class ages (5 galaxies each)"
         hist_viewer.layers[0].state.color = "red"
@@ -200,7 +204,7 @@ def Page():
         student_summaries = LOCAL_STATE.value.student_summaries
         class_summaries = LOCAL_STATE.value.class_summaries
 
-        all_data = models_to_glue_data(all_measurements, label="All Student Summaries")
+        all_data = models_to_glue_data(all_measurements, label="All Measurements")
         all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
 
         student_summ_data = models_to_glue_data(student_summaries, label="All Student Summaries")
@@ -215,6 +219,7 @@ def Page():
             class_slider_subset = all_data.subsets[0]
 
         slider_viewer = viewers["class_slider"]
+        slider_viewer.add_data(all_data)
         slider_viewer.state.x_att = all_data.id['est_dist_value']
         slider_viewer.state.y_att = all_data.id['velocity_value']
         slider_viewer.state.title = "Stage 5 All Classes Data Viewer"
@@ -222,6 +227,7 @@ def Page():
         slider_viewer.add_subset(class_slider_subset)
 
         hist_viewer = viewers["class_hist"]
+        hist_viewer.add_data(all_class_summ_data)
         hist_viewer.state.x_att = all_class_summ_data.id['age_value']
         hist_viewer.state.title = "All class ages (5 galaxies each)"
         hist_viewer.layers[0].state.color = "blue"
