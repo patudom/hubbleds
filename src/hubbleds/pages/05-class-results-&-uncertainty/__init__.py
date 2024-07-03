@@ -107,8 +107,9 @@ def Page():
                     return
                 layer = viewer.layers[0] # only works cuz there is only one layer 
                 component = viewer.state.x_att                   
-                xmin = round(layer.layer.data[component].min(), 0) - 0.5
-                xmax = round(layer.layer.data[component].max(), 0) + 0.5
+                values = layer.layer.data[component]
+                xmin = round(values.min(), 0) - 0.5
+                xmax = round(values.max(), 0) + 0.5
                 viewer.state.hist_n_bin = int(xmax - xmin)
                 viewer.state.hist_x_min = xmin
                 viewer.state.hist_x_max = xmax
