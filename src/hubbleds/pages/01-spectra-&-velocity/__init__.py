@@ -156,6 +156,15 @@ def Page():
 
     solara.lab.use_task(_delay_selection_tool)
 
+    def _fill_data_points():
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        for measurement in dummy_measurements:
+            measurement.student_id = GLOBAL_STATE.value.student.id
+        Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
+        print(LOCAL_STATE.value.measurements)
+
+    solara.Button(label="Fill data points", on_click=_fill_data_points)
+
     with rv.Row():
         with rv.Col(cols=4):
             ScaffoldAlert(

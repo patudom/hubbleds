@@ -43,7 +43,7 @@ def Layout(children=[]):
         logger.info("Finished loading state.")
         loaded_states.set(True)
 
-        LOCAL_STATE.value.measurements_loaded.set(True)
+        Ref(LOCAL_STATE.fields.measurements_loaded).set(True)
 
     solara.lab.use_task(_load_local_state, dependencies=[student_id.value])
     # solara.use_memo(_load_local_state, dependencies=[student_id.value])

@@ -12,6 +12,9 @@ from solara.lab import Ref
 from functools import cached_property
 from cosmicds.logger import setup_logger
 
+from pathlib import Path
+from csv import DictReader
+
 logger = setup_logger("API")
 
 
@@ -62,6 +65,25 @@ class LocalAPI(BaseAPI):
 
         return spec_data
 
+    def get_dummy_data(self):
+        path = (Path(__file__).parent / "data" / "dummy_student_data.csv").as_posix()
+        measurements = []
+        galaxy_prefix = "galaxy."
+        galaxy_pref_len = len(galaxy_prefix)
+        with open(path, 'r') as f:
+            reader = DictReader(f)
+            for row in reader:
+                galaxy = {}
+                keys_to_remove = set()
+                for key, value in row.items():
+                    if key.startswith(galaxy_prefix):
+                        galaxy[key[galaxy_pref_len:]] = value
+                        keys_to_remove.add(key)
+                measurement = { k: v for k, v in row.items() if k not in keys_to_remove }
+                measurement["galaxy"] = galaxy
+                measurements.append(StudentMeasurement(**measurement))
+        return measurements
+
     def get_measurements(
         self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
     ) -> list[StudentMeasurement]:
@@ -70,16 +92,20 @@ class LocalAPI(BaseAPI):
             f"{global_state.value.student.id}"
         )
         r = self.request_session.get(url)
-        measurement_json = r.json()
-
+            
         measurements = Ref(local_state.fields.measurements)
-        parsed_measurements = []
+        if r.status_code == 200:
+            measurement_json = r.json()
 
-        for measurement in measurement_json["measurements"]:
-            measurement = StudentMeasurement(**measurement)
-            parsed_measurements.append(measurement)
+            parsed_measurements = []
 
-        measurements.set(parsed_measurements)
+            for measurement in measurement_json["measurements"]:
+                measurement = StudentMeasurement(**measurement)
+                parsed_measurements.append(measurement)
+
+            measurements.set(parsed_measurements)
+
+        Ref(local_state.fields.measurements_loaded).set(True)
 
         logger.info("Loaded measurements from database.")
 

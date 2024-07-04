@@ -1,4 +1,5 @@
 from echo import delay_callback
+from glue.core import Data
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
@@ -12,11 +13,12 @@ from pathlib import Path
 import reacton.ipyvuetify as rv
 from typing import Dict, Tuple
 
-from cosmicds.components import PercentageSelector, ScaffoldAlert, StatisticsSelector, ViewerLayout
+from cosmicds.components import PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
+from cosmicds.utils import empty_data_from_model_class
 from cosmicds.viewers import CDSHistogramView, CDSScatterView
 from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
-from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_free_response, get_multiple_choice, mc_callback, fr_callback
+from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_free_response, get_multiple_choice, mc_callback, fr_callback
 from hubbleds.utils import make_summary_data, models_to_glue_data
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
@@ -76,6 +78,14 @@ def Page():
 
     solara.lab.use_task(_load_all_data)
 
+    def _load_student_data():
+        if not LOCAL_STATE.value.measurements_loaded:
+            print("Getting measurements for student")
+            LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
+    # TODO: Using this inside a conditional threw an error
+    # Is that a general restriction?
+    solara.lab.use_task(_load_student_data)
+
 
     default_color = "#3A86FF"
     highlight_color = "#FF5A00"
@@ -124,15 +134,20 @@ def Page():
 
 
     links_setup = solara.use_reactive(False)
-    def _setup_links():
-        if links_setup.value:
+    def _setup_links(_value: bool):
+        print(class_data_added.value, student_data_added.value)
+        if not (class_data_added.value and student_data_added.value):
             return
         student_data = gjapp.data_collection["My Data"]
         class_data = gjapp.data_collection["Class Data"]
         for component in ("est_dist_value", "velocity_value"):
             gjapp.add_link(student_data, component, class_data, component)
         links_setup.set(True)
+        print("_setup_links")
+        print(viewers["layer"].state)
+        viewers["layer"].add_data(student_data)
 
+    class_data_added = solara.use_reactive(False)
     def _on_class_data_loaded(value: bool):
         if not value:
             return
@@ -141,13 +156,19 @@ def Page():
         class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
         class_data = models_to_glue_data(class_data_points, label="Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
+        class_data_added.set(True)
 
         layer_viewer = viewers["layer"]
         layer_viewer.add_data(class_data)
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
         layer_viewer.state.y_axislabel = "Velocity"
-        layer_viewer.state.x_att = class_data.id['est_dist_value']
-        layer_viewer.state.y_att = class_data.id['velocity_value']
+        # TODO: Fix whatever is making us need to do this
+        # I think it's an issue in the glue-plotly scatter layer artist, but I'm not 100% sure
+        with delay_callback(layer_viewer.state, *layer_viewer.state.iter_callback_properties()):
+            layer_viewer.state.x_att = class_data.id['est_dist_value']
+            layer_viewer.state.y_att = class_data.id['velocity_value']
+        print("_on_class_data_loaded")
+        print(layer_viewer.state)
 
         if len(class_data.subsets) == 0:
             student_slider_subset = class_data.new_subset(label="student_slider_subset", alpha=1, markersize=10)
@@ -173,24 +194,21 @@ def Page():
         hist_viewer.state.title = "My class ages (5 galaxies each)"
         hist_viewer.layers[0].state.color = "red"
 
-        if LOCAL_STATE.value.measurements_loaded:
-            _setup_links()
-
     class_data_loaded.subscribe(_on_class_data_loaded)
 
     measurements_loaded = Ref(LOCAL_STATE.fields.measurements_loaded)
+    student_data_added = solara.use_reactive(False)
     def _on_student_data_loaded(value: bool):
         if not value:
             return
         student_data = models_to_glue_data(LOCAL_STATE.value.measurements, label="My Data", ignore_components=["galaxy"])
+        # NB: If there are no components, Data::size returns 1 (empty product)
+        # so that can't be our check
+        if not student_data.components:
+            student_data = empty_data_from_model_class(StudentMeasurement, label="My Data")
         student_data = GLOBAL_STATE.value.add_or_update_data(student_data)
-        layer_viewer = viewers["layer"]
-        layer_viewer.add_data(student_data)
+        student_data_added.set(True)
 
-        measurements_loaded.set(True)
-
-        if class_data_loaded.value:
-            _setup_links()
 
     if measurements_loaded.value:
         _on_student_data_loaded(True)
@@ -234,6 +252,11 @@ def Page():
         hist_viewer.layers[0].state.color = "blue"
 
     all_data_loaded.subscribe(_on_all_data_loaded)
+
+    student_data_added.subscribe(_setup_links)
+    class_data_added.subscribe(_setup_links)
+
+    StateEditor(Marker, COMPONENT_STATE)
 
     #--------------------- Row 1: OUR DATA HUBBLE VIEWER -----------------------
     if (
