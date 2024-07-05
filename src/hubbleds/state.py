@@ -71,12 +71,14 @@ class StudentMeasurement(BaseModel):
     @computed_field
     @property
     def galaxy_id(self) -> int:
-        return self.galaxy.id
+        return self.galaxy.id if self.galaxy else 0
 
     @computed_field
     @property
     def rest_wave_value(self) -> float:
-        return round(ELEMENT_REST[self.galaxy.element])
+        if self.galaxy:
+            return round(ELEMENT_REST[self.galaxy.element])
+        return 0
 
     @computed_field
     @property

@@ -44,7 +44,7 @@ def Page():
         logger.info("Finished loading component state for stage 4.")
         loaded_component_state.set(True)
 
-    solara.lab.use_task(_load_component_state)
+    # solara.lab.use_task(_load_component_state)
     
     class_data_loaded = solara.use_reactive(False)
     async def _load_class_data():
@@ -76,7 +76,7 @@ def Page():
 
         all_data_loaded.set(True)
 
-    solara.lab.use_task(_load_all_data)
+    # solara.lab.use_task(_load_all_data)
 
     def _load_student_data():
         if not LOCAL_STATE.value.measurements_loaded:
@@ -84,7 +84,7 @@ def Page():
             LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
     # TODO: Using this inside a conditional threw an error
     # Is that a general restriction?
-    solara.lab.use_task(_load_student_data)
+    # solara.lab.use_task(_load_student_data)
 
 
     default_color = "#3A86FF"
@@ -118,8 +118,11 @@ def Page():
                 layer = viewer.layers[0] # only works cuz there is only one layer 
                 component = viewer.state.x_att                   
                 values = layer.layer.data[component]
-                xmin = round(values.min(), 0) - 0.5
-                xmax = round(values.max(), 0) + 0.5
+                try:
+                    xmin = round(values.min(), 0) - 0.5
+                    xmax = round(values.max(), 0) + 0.5
+                except:
+                    return
                 viewer.state.hist_n_bin = int(xmax - xmin)
                 viewer.state.hist_x_min = xmin
                 viewer.state.hist_x_max = xmax
@@ -156,17 +159,16 @@ def Page():
         class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
         class_data = models_to_glue_data(class_data_points, label="Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
-        class_data_added.set(True)
 
         layer_viewer = viewers["layer"]
-        layer_viewer.add_data(class_data)
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
         layer_viewer.state.y_axislabel = "Velocity"
         # TODO: Fix whatever is making us need to do this
         # I think it's an issue in the glue-plotly scatter layer artist, but I'm not 100% sure
-        with delay_callback(layer_viewer.state, *layer_viewer.state.iter_callback_properties()):
-            layer_viewer.state.x_att = class_data.id['est_dist_value']
-            layer_viewer.state.y_att = class_data.id['velocity_value']
+        layer_viewer.add_data(class_data)
+        layer_viewer.state.x_att = class_data.id['est_dist_value']
+        layer_viewer.state.y_att = class_data.id['velocity_value']
+        class_data_added.set(True)
         print("_on_class_data_loaded")
         print(layer_viewer.state)
 
@@ -210,10 +212,10 @@ def Page():
         student_data_added.set(True)
 
 
-    if measurements_loaded.value:
-        _on_student_data_loaded(True)
-    else:
-        measurements_loaded.subscribe(_on_student_data_loaded)
+    # if measurements_loaded.value:
+    #     _on_student_data_loaded(True)
+    # else:
+    #     measurements_loaded.subscribe(_on_student_data_loaded)
 
     def _on_all_data_loaded(value):
         if not value:
