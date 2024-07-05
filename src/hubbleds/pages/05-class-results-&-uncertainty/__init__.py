@@ -44,7 +44,7 @@ def Page():
         logger.info("Finished loading component state for stage 4.")
         loaded_component_state.set(True)
 
-    # solara.lab.use_task(_load_component_state)
+    solara.lab.use_task(_load_component_state)
     
     class_data_loaded = solara.use_reactive(False)
     async def _load_class_data():
@@ -76,7 +76,7 @@ def Page():
 
         all_data_loaded.set(True)
 
-    # solara.lab.use_task(_load_all_data)
+    solara.lab.use_task(_load_all_data)
 
     def _load_student_data():
         if not LOCAL_STATE.value.measurements_loaded:
@@ -212,10 +212,10 @@ def Page():
         student_data_added.set(True)
 
 
-    # if measurements_loaded.value:
-    #     _on_student_data_loaded(True)
-    # else:
-    #     measurements_loaded.subscribe(_on_student_data_loaded)
+    if measurements_loaded.value:
+        _on_student_data_loaded(True)
+    else:
+        measurements_loaded.subscribe(_on_student_data_loaded)
 
     def _on_all_data_loaded(value):
         if not value:
