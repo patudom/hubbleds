@@ -389,8 +389,8 @@ def Page():
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeRange4.vue",
-                    event_next_callback=transition_next(COMPONENT_STATE),
-                    event_back_callback=transition_previous(COMPONENT_STATE),
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _:transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_age4),
                     state_view={
