@@ -304,6 +304,8 @@ class LocalAPI(BaseAPI):
         measurements = Ref(local_state.fields.all_measurements)
         parsed_measurements = []
         for measurement in res_json["measurements"]:
+            if measurement["class_id"] is None:
+                continue
             measurement = StudentMeasurement(**measurement)
             parsed_measurements.append(measurement)
 
