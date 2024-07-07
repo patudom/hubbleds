@@ -74,7 +74,7 @@ class ComponentState(BaseComponentState, BaseState):
     age_calc_state: AgeCalcState = AgeCalcState()
     percentage_selection: str | None = None
     statistics_selection: str | None = None
-    percentage_selection_class: str | None = None
+    percentage_selection_class: int | None = None
     statistics_selection_class: str | None = None
 
     @field_validator("current_step", mode="before")

@@ -78,13 +78,11 @@ def Page():
 
     solara.lab.use_task(_load_all_data)
 
-    def _load_student_data():
+    async def _load_student_data():
         if not LOCAL_STATE.value.measurements_loaded:
             print("Getting measurements for student")
             LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
-    # TODO: Using this inside a conditional threw an error
-    # Is that a general restriction?
-    # solara.lab.use_task(_load_student_data)
+    solara.lab.use_task(_load_student_data)
 
 
     default_color = "#3A86FF"
@@ -163,8 +161,6 @@ def Page():
         layer_viewer = viewers["layer"]
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
         layer_viewer.state.y_axislabel = "Velocity"
-        # TODO: Fix whatever is making us need to do this
-        # I think it's an issue in the glue-plotly scatter layer artist, but I'm not 100% sure
         layer_viewer.add_data(class_data)
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
@@ -179,8 +175,8 @@ def Page():
         slider_viewer.state.x_att = class_data.id['est_dist_value']
         slider_viewer.state.y_att = class_data.id['velocity_value']
         slider_viewer.state.title = "Stage 5 Class Data Viewer"
-        slider_viewer.layers[0].state.visible = False
         slider_viewer.add_subset(student_slider_subset)
+        slider_viewer.layers[0].state.visible = False
 
         class_summary_data = make_summary_data(class_data,
                                                input_id_field="student_id",
@@ -422,7 +418,7 @@ def Page():
                 student_slider_subset.style.color = color
 
             with rv.Col():
-                ViewerLayout(viewer=viewers["class_slider"])
+                ViewerLayout(viewer=viewers["student_slider"])
                 class_summary_data = gjapp.data_collection["Class Summaries"]
                 IdSlider(
                     gjapp=gjapp,
