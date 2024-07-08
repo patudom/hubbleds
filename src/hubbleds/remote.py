@@ -242,35 +242,6 @@ class LocalAPI(BaseAPI):
 
         return galaxy_data
 
-    def get_stage_state(
-        self,
-        global_state: Reactive[GlobalState],
-        local_state: Reactive[LocalState],
-        component_state: Reactive[BaseState],
-    ) -> BaseState | None:
-        stage_json = (
-            self.request_session.get(
-                f"{self.API_URL}/stage-state/{global_state.value.student.id}/"
-                f"{local_state.value.story_id}/{component_state.value.stage_id}"
-            )
-            .json()
-            .get("state", None)
-        )
-
-        if stage_json is None:
-            logger.error(
-                "Failed to retrieve stage state for story `%s` for user `%s`.",
-                local_state.value.story_id,
-                global_state.value.student.id,
-            )
-            return
-
-        component_state.set(component_state.value.__class__(**stage_json))
-
-        logger.info("Updated component state from database.")
-
-        return component_state.value
-
     def put_stage_state(
         self,
         global_state: Reactive[GlobalState],
@@ -290,59 +261,6 @@ class LocalAPI(BaseAPI):
             f"{self.API_URL}/stage-state/{global_state.value.student.id}/"
             f"{local_state.value.story_id}/{component_state.value.stage_id}",
             json=comp_state_dict,
-        )
-
-        if r.status_code != 200:
-            logger.error("Failed to write story state to database.")
-
-    def get_story_state(
-        self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
-    ) -> LocalState | None:
-        story_json = (
-            self.request_session.get(
-                f"{self.API_URL}/story-state/{global_state.value.student.id}/"
-                f"{local_state.value.story_id}"
-            )
-            .json()
-            .get("state", None)
-        )
-
-        if story_json is None:
-            logger.error(
-                "Failed to retrieve state for story `%s` for user `%s`.",
-                local_state.value.story_id,
-                global_state.value.student.id,
-            )
-            return
-
-        # global_state_json = story_json.get("app", {})
-        # global_state_json.pop("student")
-        # global_state.set(global_state.value.__class__(**global_state_json))
-
-        local_state_json = story_json.get("story", {})
-        local_state.set(local_state.value.__class__(**local_state_json))
-
-        logger.info("Updated local state from database.")
-
-        return local_state.value
-
-    def put_story_state(
-        self,
-        global_state: Reactive[GlobalState],
-        local_state: Reactive[LocalState],
-    ):
-        logger.info("Serializing state into DB.")
-
-        state = {
-            "app": global_state.value.dict(),
-            "story": local_state.value.dict(
-                exclude={"measurements", "example_measurements"}
-            ),
-        }
-
-        r = self.request_session.put(
-            f"{self.API_URL}/story-state/{global_state.value.student.id}/{local_state.value.story_id}",
-            json=state,
         )
 
         if r.status_code != 200:
