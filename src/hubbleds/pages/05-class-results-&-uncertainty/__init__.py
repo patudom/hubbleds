@@ -136,19 +136,14 @@ def Page():
 
     links_setup = solara.use_reactive(False)
     def _setup_links(_value: bool):
-        print(class_data_added.value, student_data_added.value)
         if not (class_data_added.value and student_data_added.value):
             return
         student_data = gjapp.data_collection["My Data"]
         class_data = gjapp.data_collection["Class Data"]
-        for c in student_data.components:
-            print(c, student_data[c])
-        print(class_data)
         for component in ("est_dist_value", "velocity_value"):
             gjapp.add_link(student_data, component, class_data, component)
         links_setup.set(True)
         print("_setup_links")
-        print(viewers["layer"].state)
         viewers["layer"].add_data(student_data)
 
     class_data_added = solara.use_reactive(False)

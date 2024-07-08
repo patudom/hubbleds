@@ -161,7 +161,6 @@ def Page():
         for measurement in dummy_measurements:
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
-        print(LOCAL_STATE.value.measurements)
 
     solara.Button(label="Fill data points", on_click=_fill_data_points)
 
