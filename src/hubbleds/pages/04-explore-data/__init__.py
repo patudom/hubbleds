@@ -260,4 +260,3 @@ def Page():
                         step=COMPONENT_STATE.value.hubble_slideshow_state.step,
                         max_step_completed=COMPONENT_STATE.value.hubble_slideshow_state.max_step_completed,
                     )
-     

@@ -5,7 +5,7 @@ from hubbleds.remote import LOCAL_API
 from glue_jupyter import JupyterApplication
 import asyncio
 from pathlib import Path
-from cosmicds.components import ScaffoldAlert
+from cosmicds.components import ScaffoldAlert, StateEditor
 import reacton.ipyvuetify as rv
 from hubbleds.base_component_state import (
     transition_to,
@@ -156,6 +156,7 @@ def Page():
 
     solara.lab.use_task(_delay_selection_tool)
 
+
     def _fill_data_points():
         dummy_measurements = LOCAL_API.get_dummy_data()
         for measurement in dummy_measurements:
@@ -163,6 +164,9 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
 
     solara.Button(label="Fill data points", on_click=_fill_data_points)
+
+    StateEditor(Marker, COMPONENT_STATE)
+
 
     with rv.Row():
         with rv.Col(cols=4):
