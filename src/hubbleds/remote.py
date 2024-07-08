@@ -8,7 +8,7 @@ import datetime
 from cosmicds.remote import BaseAPI
 from cosmicds.state import GlobalState, BaseState
 from solara import Reactive
-from solara.lab import Ref
+from solara.toestand import Ref
 from functools import cached_property
 from cosmicds.logger import setup_logger
 
@@ -35,7 +35,7 @@ class LocalAPI(BaseAPI):
 
     def load_spectrum_data(
         self, gal_data: GalaxyData, local_state: Reactive[LocalState]
-    ) -> SpectrumData:
+    ) -> SpectrumData | None:
         file_name = f"{gal_data.name.replace('.fits', '')}.fits"
 
         type_folders = {"Sp": "spiral", "E": "elliptical", "Ir": "irregular"}

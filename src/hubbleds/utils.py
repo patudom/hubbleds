@@ -4,7 +4,7 @@ from numpy import argsort, pi
 
 from cosmicds.utils import mode, percent_around_center_indices
 
-from .data_models.student import StudentMeasurement
+from hubbleds.state import StudentMeasurement
 from glue.core import Data
 from numpy import asarray
 

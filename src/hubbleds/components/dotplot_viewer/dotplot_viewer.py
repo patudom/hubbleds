@@ -17,9 +17,8 @@ from solara.toestand import Reactive
 
 
 @solara.component
-def DotplotViewer(gjapp, data=None, component_id=None, title = None, height=400, on_click_callback = None, line_marker_at = None, line_marker_color = 'red', vertical_line_visible = Reactive(True)):
+def DotplotViewer(gjapp, data=None, component_id=None, title = None, height=400, on_click_callback = None, line_marker_at = None, line_marker_color = 'red', vertical_line_visible = True):
     
-    vertical_line_visible = vertical_line_visible.value
     
     with rv.Card() as main:
         with rv.Toolbar(dense=True, class_="toolbar"):
@@ -43,13 +42,15 @@ def DotplotViewer(gjapp, data=None, component_id=None, title = None, height=400,
         def _remove_lines(viewers: List[PlotlyBaseView], line_ids: List[List[str]]):
             for (viewer, viewer_line_ids) in zip(viewers, line_ids):
                 lines = list(viewer.figure.select_traces(lambda t: t.meta in viewer_line_ids))
-                viewer.figure.data = [t for t in viewer.figure.data if t not in lines]
+                viewer.figure.data = list(reversed([t for t in viewer.figure.data if t not in lines]))
         
         
-        def _add_vertical_line(viewer: PlotlyBaseView, value: Number, color: str, label: str = None):
+        def _add_vertical_line(viewer: PlotlyBaseView, value: Number, color: str, label: str = None, line_ids: list[str] = []):
+            print("adding line")
             line = vertical_line_mark(viewer.layers[0], value, color, label = label)
             line_id = str(uuid4())
             line["meta"] = line_id
+            line_ids.append(line_id)
             
             viewer.figure.add_trace(line)
             
@@ -69,28 +70,32 @@ def DotplotViewer(gjapp, data=None, component_id=None, title = None, height=400,
                     )
                 elif isinstance(data, list):
                     dotplot_view: HubbleDotPlotViewer = gjapp.new_data_viewer(
-                        HubbleDotPlotView, show=False)
-                    for viewer_data in data:
+                        HubbleDotPlotView, data = data[0], show=False)
+                    print("component_id", component_id)
+                    if component_id is not None:
+                        dotplot_view.state.x_att = data[0].id[component_id]
+                    for viewer_data in data[1:]:
                         dotplot_view.add_data(viewer_data)
+            
+            
                         
 
             
-            line_ids = [_line_ids_for_viewer(dotplot_view)]
+            line_ids = [] #[_line_ids_for_viewer(dotplot_view)]
             
-            def _update_lines():
-                
+            def _update_lines(value = None):
                 # remove any pre existing lines
+
                 _remove_lines([dotplot_view], line_ids)
                 
                 line_ids.clear()
                 
-                if vertical_line_visible and line_marker_at is not None:
-                    _add_vertical_line(dotplot_view, line_marker_at, line_marker_color, label = "Line Marker")
+                if vertical_line_visible and value is not None:
+                    _add_vertical_line(dotplot_view, value, line_marker_color, label = "Line Marker", line_ids = line_ids)
+                
+                # line_ids.append(_line_ids_for_viewer(dotplot_view))
             
             
-            print("component_id", component_id)
-            if component_id is not None:
-                dotplot_view.state.x_att = viewer_data.id[component_id]
             
             if title is not None:
                 dotplot_view.state.title = title
@@ -122,9 +127,19 @@ def DotplotViewer(gjapp, data=None, component_id=None, title = None, height=400,
                 ),
             )
             
-            def on_click_callback(trace, points, selector):
-                x = selector.xrange[0]
-                _update_lines()
+            def on_click(trace, points, selector):
+                _update_lines(value = randint(36, 44))
+                if on_click_callback is not None:
+                    on_click_callback(trace, points, selector)
+                
+            dotplot_view.figure.update_layout(clickmode="event", hovermode="closest")
+            dotplot_view.selection_layer.on_click(on_click)
+            dotplot_view.set_selection_active(True)
+            dotplot_view.selection_layer.update(visible=True, z=[[1]], opacity=0)
+            
+            
+            if line_marker_at is not None:
+                _update_lines(value = line_marker_at)
 
             def cleanup():
                 for cnt in (title_widget, toolbar_widget, viewer_widget):

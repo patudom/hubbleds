@@ -1,12 +1,21 @@
-from solara import Reactive
+import solara
 import enum
-from ...decorators import computed_property
-from ...marker_base import MarkerBase
-import dataclasses
-from ...component_state_base import BaseComponentState
-from ...state import GLOBAL_STATE, LOCAL_STATE
 
-class Marker(enum.Enum, MarkerBase):
+from pydantic import field_validator
+
+from cosmicds.state import BaseState
+from hubbleds.base_marker import BaseMarker 
+from hubbleds.base_component_state import (
+    BaseComponentState,
+    transition_to,
+    transition_previous,
+    transition_next
+)
+from hubbleds.state import LOCAL_STATE
+
+from typing import Any
+
+class Marker(enum.Enum, BaseMarker):
     ang_siz1 = enum.auto()
     cho_row1 = enum.auto()
     ang_siz2 = enum.auto()
@@ -26,79 +35,66 @@ class Marker(enum.Enum, MarkerBase):
     ang_siz5a  = enum.auto()
     # ang_siz6  = enum.auto() We skipped this in the voila version
     dot_seq5  = enum.auto()
-    dot_seq5a = enum.auto()
-    dot_seq5b = enum.auto()
-    dot_seq5c = enum.auto()
-    dot_seq6  = enum.auto()	# MC ang_meas_consensus_2
-    dot_seq7 = enum.auto()
+    # dot_seq5a = enum.auto() Skipping 2nd meas. sequence 5a-7
+    # dot_seq5b = enum.auto() 
+    # dot_seq5c = enum.auto()
+    # dot_seq6  = enum.auto()	# MC ang_meas_consensus_2
+    # dot_seq7 = enum.auto()
     rep_rem1 = enum.auto()
     fil_rem1 = enum.auto()
 
 
-@dataclasses.dataclass
-class ComponentState(BaseComponentState):
 
-    current_step: Reactive[Marker] = dataclasses.field(
-        default=Reactive(Marker.ang_siz1)
-    )
-    example_angular_sizes_total: Reactive[int] = dataclasses.field(default=Reactive(0))
-    angular_sizes_total: Reactive[int] = dataclasses.field(default=Reactive(0))
-    dosdonts_tutorial_opened: Reactive[bool] = dataclasses.field(
-        default=Reactive(False)
-    )
-    selected_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    selected_example_galaxy: Reactive[dict] = dataclasses.field(default=Reactive({}))
-    show_ruler: Reactive[bool] = dataclasses.field(default=Reactive(False))
-    meas_theta: Reactive[float] = dataclasses.field(default=Reactive(0.0))
-    ruler_click_count: Reactive[int] = dataclasses.field(default=Reactive(0))
-    n_meas: Reactive[int] = dataclasses.field(default=Reactive(0))
+class ComponentState(BaseComponentState, BaseState):
+    current_step: Marker = Marker.ang_siz1
+    stage_id: str = "distance_measurements"
+    
+    example_angular_sizes_total: int = 0
+    angular_sizes_total: int = 0
+    dosdonts_tutorial_opened: bool = True
+    selected_galaxy: dict = {}
+    selected_example_galaxy: dict = {}
+    show_ruler: bool = False
+    meas_theta: float = 0.0
+    ruler_click_count: int = 0
+    n_meas: int = 0
+    
+    @field_validator("current_step", mode="before")
+    def convert_int_to_enum(cls, v: Any) -> Marker:
+        if isinstance(v, int):
+            return Marker(v)
+        return v
 
-    def setup(self):
-        def _on_example_galaxy_selected(*args):
-            if self.is_current_step(Marker.cho_row1):
-                self.transition_to(Marker.ang_siz2)
 
-        self.selected_example_galaxy.subscribe(_on_example_galaxy_selected)
-
-        def _on_ruler_clicked_first_time(*args):
-            if self.is_current_step(Marker.ang_siz3) and self.ruler_click_count.value == 1:
-                self.transition_to(Marker.ang_siz4)
-
-        self.ruler_click_count.subscribe(_on_ruler_clicked_first_time)
-
-        def _on_measurement_added(*args):
-            if self.is_current_step(Marker.ang_siz4) and self.n_meas.value == 1:
-                self.transition_to(Marker.ang_siz5)
-
-        self.n_meas.subscribe(_on_measurement_added)
-
-    @computed_property
+    @property
     def ang_siz2_gate(self):
-        return bool(self.selected_example_galaxy.value)
+        return bool(self.selected_example_galaxy)
 
-    @computed_property
+    @property
     def ang_siz4_gate(self):
-        return self.ruler_click_count.value == 1
+        return self.ruler_click_count == 1
 
-    @computed_property
+    @property
     def ang_siz5_gate(self):
-        return self.n_meas.value > 0
+        return self.n_meas > 0
 
-    @computed_property
+    @property
     def dot_seq3_gate(self):
-        return LOCAL_STATE.question_completed("ang_meas_consensus")
+        return LOCAL_STATE.value.question_completed("ang_meas_consensus")
 
-    @computed_property
+    @property
     def ang_siz5a_gate(self):
-        return LOCAL_STATE.question_completed("ang_meas_dist_relation")
+        return LOCAL_STATE.value.question_completed("ang_meas_dist_relation")
 
-    @computed_property
+    @property
     def dot_seq7_gate(self):
-        return LOCAL_STATE.question_completed("ang_meas_consensus_2")
+        return LOCAL_STATE.value.question_completed("ang_meas_consensus_2")
 
-    @computed_property
+    @property
     def dot_seq5_gate(self):
         return (
-            bool(self.dosdonts_tutorial_opened.value)
+            bool(self.dosdonts_tutorial_opened)
         )
 
+
+COMPONENT_STATE = solara.reactive(ComponentState())
