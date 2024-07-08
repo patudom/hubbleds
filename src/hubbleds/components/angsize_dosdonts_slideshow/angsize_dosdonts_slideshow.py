@@ -8,6 +8,7 @@ from ...utils import IMAGE_BASE_URL
 def AngsizeDosDontsSlideshow(
     step=0,
     length=8,
+    max_step_completed=0,
     dialog=False,
     opened=False,
     currentTitle="Measurement Dos and Don'ts",
