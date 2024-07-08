@@ -92,7 +92,8 @@ def fit_line(x, y):
         line_init = models.Linear1D(intercept=0, fixed={"intercept": True})
         fitted_line = fit(line_init, x, y)
         return fitted_line
-    except ValueError:
+    except ValueError as e:
+        print(e)
         return None
 
 

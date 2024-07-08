@@ -1,7 +1,8 @@
-from cosmicds.utils import debounce
+from cosmicds.utils import CDSJSONEncoder, debounce
 from hubbleds.state import ClassSummary, StudentMeasurement, StudentSummary
 from contextlib import closing
 from io import BytesIO
+import json
 from astropy.io import fits
 from hubbleds.state import GalaxyData, SpectrumData, LocalState
 import datetime
@@ -429,9 +430,10 @@ class LocalAPI(BaseAPI):
             ),
         }
 
+        state_json = json.dumps(state, cls=CDSJSONEncoder)
         r = self.request_session.put(
             f"{self.API_URL}/story-state/{global_state.value.student.id}/{local_state.value.story_id}",
-            json=state,
+            json=state_json,
         )
 
         if r.status_code != 200:

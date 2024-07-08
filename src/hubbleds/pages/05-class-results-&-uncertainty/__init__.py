@@ -141,6 +141,9 @@ def Page():
             return
         student_data = gjapp.data_collection["My Data"]
         class_data = gjapp.data_collection["Class Data"]
+        for c in student_data.components:
+            print(c, student_data[c])
+        print(class_data)
         for component in ("est_dist_value", "velocity_value"):
             gjapp.add_link(student_data, component, class_data, component)
         links_setup.set(True)
