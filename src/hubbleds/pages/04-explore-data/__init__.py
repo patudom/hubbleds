@@ -60,18 +60,7 @@ def Page():
 
     solara.lab.use_task(_load_class_data)
 
-    if class_plot_data.value:
-        data = class_plot_data.value
-        distances = [t.est_dist_value for t in data]
-        velocities = [t.velocity_value for t in data]
-        plot_data=[{
-            "x": distances,
-            "y": velocities,
-            "mode": "markers",
-            "marker": { "color": "red", "size": 12 },
-            "hoverinfo": "none"
-        }]
-        LineDrawViewer(plot_data=plot_data, x_axis_label="Distance (Mpc)", y_axis_label="Velocity (km / s)")
+    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -93,7 +82,7 @@ def Page():
                     "age_const": AGE_CONSTANT,
                     # TODO: Update these once real values are hooked up
                     "hypgal_distance": 100,
-                    "hypval_velocity": 8000,
+                    "hypgal_velocity": 8000,
                 }
             )
             ScaffoldAlert(
@@ -106,12 +95,16 @@ def Page():
                     "age_const": AGE_CONSTANT,
                     # TODO: Update these once real values are hooked up
                     "hypgal_distance": 100,
-                    "hypval_velocity": 8000,
+                    "hypgal_velocity": 8000,
                 }
             )
 
         with rv.Col():
-            pass
+            with solara.Card(style="background-color: var(--error);"):
+                solara.Markdown("Student data table goes here")
+
+
+
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -188,9 +181,6 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.hub_exp1),
-                state_view={
-                    "hubble_slideshow_finished": COMPONENT_STATE.value.hubble_slideshow_finished
-                }, 
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAgeUniverse.vue",
@@ -252,9 +242,31 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),
             )
 
-        with rv.Col():
+        with rv.Col(class_="no-padding"):
+            if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
+                with solara.Columns([3,9], classes=["no-padding"]):
+                    with rv.Col(class_="no-padding"):
+                        # TODO: LayerToggle should refresh when the data changes
+                        # LayerToggle(viewer)
+                        with solara.Card(style="background-color: var(--error);"):
+                            solara.Markdown("Layer Toggle")
+                    with rv.Col(class_="no-padding"):
+                        if class_plot_data.value:
+                            data = class_plot_data.value
+                            distances = [t.est_dist_value for t in data]
+                            velocities = [t.velocity_value for t in data]
+                            plot_data=[{
+                                "x": distances,
+                                "y": velocities,
+                                "mode": "markers",
+                                "marker": { "color": "red", "size": 12 },
+                                "hoverinfo": "none"
+                            }]
+                            LineDrawViewer(plot_data=plot_data, x_axis_label="Distance (Mpc)", y_axis_label="Velocity (km / s)")
+
             with rv.Col(cols=10, offset=1):
-                if COMPONENT_STATE.value.current_step.value > Marker.rel_vel1.value:
+                if COMPONENT_STATE.value.current_step_at_or_after(
+                Marker.hub_exp1):
                     slideshow_finished = Ref(COMPONENT_STATE.fields.hubble_slideshow_finished)
                     HubbleExpUniverseSlideshow(
                         event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
