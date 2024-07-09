@@ -2,7 +2,7 @@ from numpy import isnan
 from echo import CallbackProperty
 
 
-from ..utils import age_in_gyr_simple
+from ...utils import age_in_gyr_simple
 from cosmicds.config import register_tool
 from cosmicds.tools import LineFitTool
 
