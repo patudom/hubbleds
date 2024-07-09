@@ -1,12 +1,15 @@
 from pydantic import BaseModel, computed_field, field_validator, Field
 from solara import Reactive
 from cosmicds.state import BaseState, GLOBAL_STATE, BaseLocalState
+from glue.core.data_factories import load_data
+
 from typing import Optional
 import solara
 import datetime
 from functools import cached_property
 from astropy.table import Table
 from pydantic import Field
+from pathlib import Path
 
 from solara.toestand import Ref
 
@@ -14,6 +17,11 @@ from .free_response import FreeResponses
 from .mc_score import MCScoring
 
 from typing import Callable, Tuple
+
+from hubbleds.data_management import (
+    HUBBLE_1929_DATA_LABEL,
+    HUBBLE_KEY_DATA_LABEL
+)
 
 ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
 
@@ -215,3 +223,37 @@ def fr_callback(
                 callback(new)
     else:
         raise ValueError(f"Unknown event in fr_callback: <<{event}>> ")
+
+# add a csv file to the data collection
+
+
+def add_link(from_dc_name, from_att, to_dc_name, to_att):
+    from_dc = GLOBAL_STATE.value.glue_data_collection[from_dc_name]
+    to_dc = GLOBAL_STATE.value.glue_data_collection[to_dc_name]
+    GLOBAL_STATE.value._glue_app.add_link(from_dc, from_att, to_dc, to_att)
+
+
+data_dir = Path(__file__).parent / "data"
+
+try:
+    GLOBAL_STATE.value.glue_data_collection.append(
+        load_data(data_dir / f"{HUBBLE_KEY_DATA_LABEL}.csv")
+    )
+    GLOBAL_STATE.value.glue_data_collection.append(
+        load_data(data_dir / f"{HUBBLE_1929_DATA_LABEL}.csv")
+    )
+
+    add_link(
+        HUBBLE_1929_DATA_LABEL,
+        "Distance (Mpc)",
+        HUBBLE_KEY_DATA_LABEL,
+        "Distance (Mpc)",
+    )
+    add_link(
+        HUBBLE_1929_DATA_LABEL,
+        "Tweaked Velocity (km/s)",
+        HUBBLE_KEY_DATA_LABEL,
+        "Velocity (km/s)",
+    )
+except:
+    print("Data already loaded into Glue.")

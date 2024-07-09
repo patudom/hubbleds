@@ -17,6 +17,11 @@ from hubbleds.base_component_state import (
     transition_previous,
     transition_next,
 )
+from hubbleds.components import (
+    ProdataViewer,
+    add_data_layer
+)
+from hubbleds.viewers.hubble_fit_viewer import HubbleFitView
 from hubbleds.state import (
     LOCAL_STATE, 
     GLOBAL_STATE, 
@@ -25,7 +30,10 @@ from hubbleds.state import (
     get_free_response, 
     get_multiple_choice
     )
-
+from hubbleds.data_management import (
+    HUBBLE_1929_DATA_LABEL,
+    HUBBLE_KEY_DATA_LABEL
+)
 from ...utils import HST_KEY_AGE
 
 from .component_state import COMPONENT_STATE, Marker
@@ -36,23 +44,12 @@ from glue_jupyter import JupyterApplication
 # misc.
 from pathlib import Path
 
-from ...viewers import HubbleFitView
-
 # from ...data_management import *
 
 logger = setup_logger("STAGE")
 
 # the guidelines in the current files parent directory
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-
-
-def basic_viewer_setup(viewer_class, glue_session, data_collection, name, x_att, y_att):
-    viewer = viewer_class(glue_session)
-    viewer.add_data(data_collection[name])
-    viewer.state.x_att = x_att
-    viewer.state.y_att = y_att
-    return viewer
-
     
 # create the Page for the current stage
 @solara.component
@@ -84,7 +81,8 @@ def Page():
         # NOTE: use_memo has to be part of the main page render. Including it
         #  in a conditional will result in an error.
         gjapp = JupyterApplication(
-            GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
+            GLOBAL_STATE.value.glue_data_collection, 
+            GLOBAL_STATE.value.glue_session
         )
         # TODO: Should viewer creation happen somewhere else?
 
@@ -116,7 +114,7 @@ def Page():
     # mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
     # print('\n =============  done setting up mc scoring ============= \n')
 
-    StateEditor(Marker, COMPONENT_STATE)
+    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
     with solara.Card():
         with solara.Div():
@@ -262,6 +260,10 @@ def Page():
                     with solara.Card(style="background-color: var(--error);"):
                         solara.Markdown("Layer Toggle")
                 with rv.Col(class_="no-padding"):
-                    # ViewerLayout(viewer)
-                    with solara.Card(style="background-color: var(--error);"):
-                        solara.Markdown("Hubble Viewer")
+
+                    prodata_viewer = gjapp.new_data_viewer(HubbleFitView, show=False)
+                    ViewerLayout(viewer =prodata_viewer)
+
+                    # prodata_viewer = gjapp.viewers[0]
+
+                    add_data_layer(prodata_viewer, HUBBLE_1929_DATA_LABEL, 10, '#D500F9', 'Distance (Mpc)', 'Tweaked Velocity (km/s)')

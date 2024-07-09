@@ -15,6 +15,6 @@ from .hubble_exp_universe_slideshow.hubble_exp_universe_slideshow import (
 )
 from .dotplot_viewer.dotplot_viewer import DotplotViewer
 from .uncertainty_slideshow.uncertainty_slideshow import UncertaintySlideshow
-from .dotplot_viewer.dotplot_viewer import DotplotViewer
+from .prodata_viewer.prodata_viewer import ProdataViewer, add_data_layer
 from .selection_tool import SelectionTool
 from .dotplot_tutorial_slideshow import DotplotTutorialSlideshow
