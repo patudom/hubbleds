@@ -116,7 +116,7 @@ def Page():
     # mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
     # print('\n =============  done setting up mc scoring ============= \n')
 
-    StateEditor(Marker, COMPONENT_STATE)
+    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
     with solara.Card():
         with solara.Div():
