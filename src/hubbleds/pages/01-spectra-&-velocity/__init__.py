@@ -156,7 +156,7 @@ def Page():
 
     solara.lab.use_task(_delay_selection_tool)
 
-    StateEditor(Marker, COMPONENT_STATE)
+    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
     with rv.Row():
         with rv.Col(cols=4):
