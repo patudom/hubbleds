@@ -1,6 +1,6 @@
 from pydantic import BaseModel, computed_field, field_validator, Field
 from solara import Reactive
-from cosmicds.state import BaseState, GLOBAL_STATE
+from cosmicds.state import BaseState, GLOBAL_STATE, BaseLocalState
 from typing import Optional
 import solara
 import datetime
@@ -106,8 +106,7 @@ class MCScore(BaseModel):
     tag: str = ""
 
 
-class LocalState(BaseState):
-    debug_mode: bool = False
+class LocalState(BaseLocalState):
     title: str = "Hubble's law"
     story_id: str = "hubbles_law"
     measurements: list[StudentMeasurement] = []

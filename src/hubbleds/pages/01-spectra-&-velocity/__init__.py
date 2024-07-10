@@ -156,7 +156,6 @@ def Page():
 
     solara.lab.use_task(_delay_selection_tool)
 
-
     def _fill_data_points():
         dummy_measurements = LOCAL_API.get_dummy_data()
         for measurement in dummy_measurements:
@@ -165,8 +164,7 @@ def Page():
 
     solara.Button(label="Fill data points", on_click=_fill_data_points)
 
-    StateEditor(Marker, COMPONENT_STATE)
-
+    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
     with rv.Row():
         with rv.Col(cols=4):
