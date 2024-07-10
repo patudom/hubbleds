@@ -250,7 +250,7 @@ def Page():
     student_data_added.subscribe(_setup_links)
     class_data_added.subscribe(_setup_links)
 
-    StateEditor(Marker, COMPONENT_STATE)
+    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
     #--------------------- Row 1: OUR DATA HUBBLE VIEWER -----------------------
     if (
