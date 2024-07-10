@@ -45,6 +45,17 @@ def Page():
         loaded_component_state.set(True)
 
     solara.lab.use_task(_load_component_state)
+
+    async def _write_component_state():
+        if not loaded_component_state.value:
+            return
+
+        # Listen for changes in the states and write them to the database
+        LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+
+        logger.info("Wrote stage 5 component state to database.")
+
+    solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
     class_data_loaded = solara.use_reactive(False)
     async def _load_class_data():
@@ -162,7 +173,6 @@ def Page():
         layer_viewer.add_data(class_data)
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
-        class_data_added.set(True)
 
         if len(class_data.subsets) == 0:
             student_slider_subset = class_data.new_subset(label="student_slider_subset", alpha=1, markersize=10)
@@ -181,6 +191,7 @@ def Page():
                                                output_id_field="id",
                                                label="Class Summaries")
         class_summary_data = GLOBAL_STATE.value.add_or_update_data(class_summary_data)
+        class_data_added.set(True)
 
         hist_viewer = viewers["student_hist"]
         hist_viewer.add_data(class_summary_data)
@@ -209,6 +220,7 @@ def Page():
     else:
         measurements_loaded.subscribe(_on_student_data_loaded)
 
+    all_data_added = solara.use_reactive(False)
     def _on_all_data_loaded(value):
         if not value:
             return
@@ -230,6 +242,8 @@ def Page():
             class_slider_subset = all_data.new_subset(label="class_slider_subset", alpha=1, markersize=10)
         else:
             class_slider_subset = all_data.subsets[0]
+
+        all_data_added.set(True)
 
         slider_viewer = viewers["class_slider"]
         slider_viewer.add_data(all_data)
@@ -417,17 +431,18 @@ def Page():
 
             with rv.Col():
                 ViewerLayout(viewer=viewers["student_slider"])
-                class_summary_data = gjapp.data_collection["Class Summaries"]
-                IdSlider(
-                    gjapp=gjapp,
-                    data=class_summary_data,
-                    on_id=update_student_slider_subset,
-                    highlight_ids=[GLOBAL_STATE.value.student.id],
-                    id_component=class_summary_data.id['id'],
-                    value_component=class_summary_data.id['age_value'],
-                    default_color=default_color,
-                    highlight_color=highlight_color
-                )
+                if class_data_added.value:
+                    class_summary_data = gjapp.data_collection["Class Summaries"]
+                    IdSlider(
+                        gjapp=gjapp,
+                        data=class_summary_data,
+                        on_id=update_student_slider_subset,
+                        highlight_ids=[GLOBAL_STATE.value.student.id],
+                        id_component=class_summary_data.id['id'],
+                        value_component=class_summary_data.id['age_value'],
+                        default_color=default_color,
+                        highlight_color=highlight_color
+                    )
 
         if COMPONENT_STATE.value.current_step_between(Marker.lea_unc1, Marker.you_age1c):
             with solara.ColumnsResponsive(12, large=[5,7]):
@@ -475,18 +490,18 @@ def Page():
             with rv.Col():
                 with solara.Card():
                     ViewerLayout(viewer=viewers["class_slider"])
-                    all_summary_data = gjapp.data_collection["All Class Summaries"]
-
-                    IdSlider(
-                        gjapp=gjapp,
-                        data=all_summary_data,
-                        on_id=update_class_slider_subset,
-                        highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
-                        id_component=all_summary_data.id['class_id'],
-                        value_component=all_summary_data.id['age_value'],
-                        default_color=default_color,
-                        highlight_color=highlight_color
-                    )
+                    if all_data_added.value:
+                        all_summary_data = gjapp.data_collection["All Class Summaries"]
+                        IdSlider(
+                            gjapp=gjapp,
+                            data=all_summary_data,
+                            on_id=update_class_slider_subset,
+                            highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
+                            id_component=all_summary_data.id['class_id'],
+                            value_component=all_summary_data.id['age_value'],
+                            default_color=default_color,
+                            highlight_color=highlight_color
+                        )
 
             with rv.Col(cols=10, offset=1):
                 UncertaintySlideshow(
