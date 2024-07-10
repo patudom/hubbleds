@@ -99,16 +99,17 @@ def DotplotViewer(
             else: 
                 if isinstance(data, Data):
                     viewer_data = data
-            
-                    dotplot_view: HubbleDotPlotViewer = gjapp.new_data_viewer(
-                        HubbleDotPlotView, data=viewer_data, show=False
-                    )
                 elif isinstance(data, list):
-                    dotplot_view: HubbleDotPlotViewer = gjapp.new_data_viewer(
-                        HubbleDotPlotView, data = data[0], show=False)
-                    print("component_id", component_id)
-                    if component_id is not None:
-                        dotplot_view.state.x_att = data[0].id[component_id]
+                    viewer_data = data[0]
+            
+            dotplot_view: HubbleDotPlotViewer = gjapp.new_data_viewer(
+                HubbleDotPlotView, data=viewer_data, show=False)
+            
+            if component_id is not None:
+                dotplot_view.state.x_att = viewer_data.id[component_id]
+            
+            if isinstance(data, list):
+                if len(data) > 1:
                     for viewer_data in data[1:]:
                         dotplot_view.add_data(viewer_data)
             

@@ -26,9 +26,10 @@ from hubbleds.state import GalaxyData, StudentMeasurement
 # from solara.lab import Ref
 from solara.toestand import Ref
 from cosmicds.logger import setup_logger
-from ...data_management import EXAMPLE_GALAXY_SEED_DATA, DB_VELOCITY_FIELD
+from ...data_management import EXAMPLE_GALAXY_SEED_DATA, DB_VELOCITY_FIELD, EXAMPLE_GALAXY_MEASUREMENTS, DB_MEASWAVE_FIELD
 import numpy as np
 from glue.core import Data
+from hubbleds.utils import measurement_list_to_glue_data
 
 logger = setup_logger("STAGE")
 
@@ -603,8 +604,36 @@ def Page():
                         True
                     ),
                 )
-
-                DotplotViewer(gjapp, data=gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA], component_id=DB_VELOCITY_FIELD)
+                
+                def add_link(from_dc_name, from_att, to_dc_name, to_att):
+                    if isinstance(from_dc_name, Data):
+                        from_dc = from_dc_name
+                    else:
+                        from_dc = gjapp.data_collection[from_dc_name]
+                    
+                    if isinstance(to_dc_name, Data):
+                        to_dc = to_dc_name
+                    else:
+                        to_dc = gjapp.data_collection[to_dc_name]
+                    gjapp.add_link(from_dc, from_att, to_dc, to_att)
+                
+                def add_example_measurements_to_glue():
+                    if len(LOCAL_STATE.value.example_measurements) > 0:
+                        if EXAMPLE_GALAXY_MEASUREMENTS not in gjapp.data_collection:
+                            example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
+                            example_measurements_glue.style.color = "red"
+                            gjapp.data_collection.append(example_measurements_glue)
+                            egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                            add_link(egsd, DB_VELOCITY_FIELD, example_measurements_glue,"velocity_value")
+                            add_link(egsd, DB_MEASWAVE_FIELD, example_measurements_glue,"obs_wave_value")
+                
+                add_example_measurements_to_glue()
+                if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                    viewer_data=[gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
+                          gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
+                else:
+                    viewer_data=[gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
+                DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD)
 
             if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
                 reflection_completed = Ref(COMPONENT_STATE.fields.reflection_complete)
