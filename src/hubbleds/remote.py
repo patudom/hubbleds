@@ -1,17 +1,16 @@
-from cosmicds.utils import CDSJSONEncoder, debounce
+from cosmicds.utils import CDSJSONEncoder
 from hubbleds.state import ClassSummary, StudentMeasurement, StudentSummary
 from contextlib import closing
 from io import BytesIO
 import json
 from astropy.io import fits
 from hubbleds.state import GalaxyData, SpectrumData, LocalState
-import datetime
 from cosmicds.remote import BaseAPI
 from cosmicds.state import GlobalState, BaseState
 from solara import Reactive
 from solara.lab import Ref
-from functools import cached_property
 from cosmicds.logger import setup_logger
+from typing import List
 
 from pathlib import Path
 from csv import DictReader
@@ -66,7 +65,7 @@ class LocalAPI(BaseAPI):
 
         return spec_data
 
-    def get_dummy_data(self):
+    def get_dummy_data(self) -> List[StudentMeasurement]:
         path = (Path(__file__).parent / "data" / "dummy_student_data.csv").as_posix()
         measurements = []
         galaxy_prefix = "galaxy."
