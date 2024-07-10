@@ -174,8 +174,11 @@ def make_summary_data(measurement_data: Data,
     for i in range(measurement_data.size):
         id_num = measurement_data[input_id_field][i]
         ids.add(id_num)
-        dists[id_num].append(d[i])
-        vels[id_num].append(v[i])
+        dist = d[i]
+        vel = v[i]
+        if dist is not None and vel is not None:
+            dists[id_num].append(dist)
+            vels[id_num].append(vel)
 
     hubbles: List[float] = []
     ages: List[float] = []
