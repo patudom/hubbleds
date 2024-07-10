@@ -1,13 +1,15 @@
-import enum
-from pydantic import BaseModel, field_validator
 import solara
-from typing import List, Any
+
+from pydantic import BaseModel, field_validator
 
 from cosmicds.state import BaseState
 from hubbleds.base_marker import BaseMarker
 from hubbleds.base_component_state import BaseComponentState
 from hubbleds.state import LOCAL_STATE
 
+import enum
+
+from typing import List, Any
 
 class Marker(enum.Enum, BaseMarker):
     ran_var1 = enum.auto()
@@ -84,8 +86,24 @@ class ComponentState(BaseComponentState, BaseState):
         return v
 
     @property
-    def mos_lik_gate(self) -> bool:
-        return self.uncertainty_slideshow_finished
+    def mos_lik1_gate(self) -> bool:
+        return COMPONENT_STATE.value.uncertainty_slideshow_finished
+    
+    @property
+    def cla_age1_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("age-slope-trend")
+    
+    @property
+    def two_his3_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("histogram-range")
+    
+    @property
+    def two_his4_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("histogram-percent-range")
+    
+    @property
+    def two_his5_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("histogram-distribution")
 
     # TODO: Implement other gates that require checking MC status
 
