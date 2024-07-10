@@ -100,7 +100,7 @@
                       'Try again. The age of the race is the distance any runner has traveled divided by their speed.',
                     ]"
                     :correct-answers="[1]"
-                    @select="(option) => { if(option.correct) { this.maxStepCompleted = Math.max(this.maxStepCompleted, 1);} }"
+                    @select="(option) => { if(option.correct) { this.max_step_completed = Math.max(this.max_step_completed, 1);} }"
                     score-tag="race-age"  
                   >
                   </mc-radiogroup>
@@ -217,7 +217,7 @@
             v-slot="{ active, toggle }"
           >
             <v-btn
-              :disabled="n > maxStepCompleted + 2"
+              :disabled="n > max_step_completed + 2"
               :input-value="active"
               icon
               @click="toggle"
@@ -228,7 +228,7 @@
         </v-item-group>
         <v-spacer></v-spacer>
           <v-btn
-          :disabled="step > maxStepCompleted"
+          :disabled="step > max_step_completed"
           v-if="step < length-1"
           color="accent"
           class="black--text"
@@ -256,16 +256,16 @@ export default {
   
   watch: {
     step(newStep) {
-      const isInteractStep = this.interactSteps.includes(newStep);
+      const isInteractStep = this.interact_steps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
       // FIX: change this to a callback
-      this.maxStepCompleted = Math.max(this.maxStepCompleted, newCompleted);
+      this.max_step_completed = Math.max(this.max_step_completed, newCompleted);
     },
   },
 
   methods: {
     closeDialog() {
-      if (this.maxStepCompleted == this.length - 1) {
+      if (this.max_step_completed == this.length - 1) {
         this.$emit('close');
         this.dialog = false;
         if (this.step == this.length - 1) {

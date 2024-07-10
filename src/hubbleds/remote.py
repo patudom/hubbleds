@@ -1,16 +1,19 @@
-from cosmicds.utils import debounce
-from hubbleds.state import StudentMeasurement
+from cosmicds.utils import CDSJSONEncoder
+from hubbleds.state import ClassSummary, StudentMeasurement, StudentSummary
 from contextlib import closing
 from io import BytesIO
+import json
 from astropy.io import fits
 from hubbleds.state import GalaxyData, SpectrumData, LocalState
-import datetime
 from cosmicds.remote import BaseAPI
 from cosmicds.state import GlobalState, BaseState
 from solara import Reactive
 from solara.lab import Ref
-from functools import cached_property
 from cosmicds.logger import setup_logger
+from typing import List
+
+from pathlib import Path
+from csv import DictReader
 
 logger = setup_logger("API")
 
@@ -62,6 +65,25 @@ class LocalAPI(BaseAPI):
 
         return spec_data
 
+    def get_dummy_data(self) -> List[StudentMeasurement]:
+        path = (Path(__file__).parent / "data" / "dummy_student_data.csv").as_posix()
+        measurements = []
+        galaxy_prefix = "galaxy."
+        galaxy_pref_len = len(galaxy_prefix)
+        with open(path, 'r') as f:
+            reader = DictReader(f)
+            for row in reader:
+                galaxy = {}
+                keys_to_remove = set()
+                for key, value in row.items():
+                    if key.startswith(galaxy_prefix):
+                        galaxy[key[galaxy_pref_len:]] = value
+                        keys_to_remove.add(key)
+                measurement = { k: v for k, v in row.items() if k not in keys_to_remove }
+                measurement["galaxy"] = galaxy
+                measurements.append(StudentMeasurement(**measurement))
+        return measurements
+
     def get_measurements(
         self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
     ) -> list[StudentMeasurement]:
@@ -70,16 +92,20 @@ class LocalAPI(BaseAPI):
             f"{global_state.value.student.id}"
         )
         r = self.request_session.get(url)
-        measurement_json = r.json()
-
+            
         measurements = Ref(local_state.fields.measurements)
-        parsed_measurements = []
+        if r.status_code == 200:
+            measurement_json = r.json()
 
-        for measurement in measurement_json["measurements"]:
-            measurement = StudentMeasurement(**measurement)
-            parsed_measurements.append(measurement)
+            parsed_measurements = []
 
-        measurements.set(parsed_measurements)
+            for measurement in measurement_json["measurements"]:
+                measurement = StudentMeasurement(**measurement)
+                parsed_measurements.append(measurement)
+
+            measurements.set(parsed_measurements)
+
+        Ref(local_state.fields.measurements_loaded).set(True)
 
         logger.info("Loaded measurements from database.")
 
@@ -242,6 +268,69 @@ class LocalAPI(BaseAPI):
 
         return galaxy_data
 
+    def get_class_measurements(
+        self,
+        global_state: Reactive[GlobalState],
+        local_state: Reactive[LocalState],
+    ) -> list[StudentMeasurement]:
+        url = (
+            f"{self.API_URL}/{local_state.value.story_id}/class-measurements/"
+            f"{global_state.value.student.id}/{global_state.value.classroom.class_info['id']}"
+        )
+        r = self.request_session.get(url)
+        measurement_json = r.json()
+
+        measurements = Ref(local_state.fields.class_measurements)
+        parsed_measurements = []
+
+        for measurement in measurement_json["measurements"]:
+            measurement = StudentMeasurement(**measurement)
+            parsed_measurements.append(measurement)
+
+        measurements.set(parsed_measurements)
+
+        logger.info("Loaded class measurements from database.")
+
+        return measurements.value
+
+    def get_all_data(
+        self,
+        local_state: Reactive[LocalState],
+    ) -> tuple[list[StudentMeasurement], list[StudentSummary], list[ClassSummary]]:
+        url = f"{self.API_URL}/{local_state.value.story_id}/all-data"
+        r = self.request_session.get(url)
+        res_json = r.json()
+
+        measurements = Ref(local_state.fields.all_measurements)
+        parsed_measurements = []
+        for measurement in res_json["measurements"]:
+            if measurement["class_id"] is None:
+                continue
+            measurement = StudentMeasurement(**measurement)
+            parsed_measurements.append(measurement)
+
+        measurements.set(parsed_measurements)
+
+        student_summaries = Ref(local_state.fields.student_summaries)
+        parsed_student_summaries = []
+        for summary in res_json["studentData"]:
+            summary = StudentSummary(**summary)
+            parsed_student_summaries.append(summary)
+
+        student_summaries.set(parsed_student_summaries)
+
+        class_summaries = Ref(local_state.fields.class_summaries)
+        parsed_class_summaries = []
+        for summary in res_json["classData"]:
+            summary = ClassSummary(**summary)
+            parsed_class_summaries.append(summary)
+
+        class_summaries.set(parsed_class_summaries)
+
+        logger.info("Loaded all measurements and summary data from database.")
+
+        return measurements.value, student_summaries.value, class_summaries.value
+
     def put_stage_state(
         self,
         global_state: Reactive[GlobalState],
@@ -280,9 +369,10 @@ class LocalAPI(BaseAPI):
             ),
         }
 
+        state_json = json.dumps(state, cls=CDSJSONEncoder)
         r = self.request_session.put(
             f"{self.API_URL}/story-state/{global_state.value.student.id}/{local_state.value.story_id}",
-            json=state,
+            json=state_json,
         )
 
         if r.status_code != 200:

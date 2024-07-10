@@ -18,3 +18,5 @@ from .uncertainty_slideshow.uncertainty_slideshow import UncertaintySlideshow
 from .dotplot_viewer.dotplot_viewer import DotplotViewer
 from .selection_tool import SelectionTool
 from .dotplot_tutorial_slideshow import DotplotTutorialSlideshow
+from .id_slider import IdSlider
+from .line_draw_viewer import LineDrawViewer

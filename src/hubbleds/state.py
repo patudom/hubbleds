@@ -54,6 +54,7 @@ class GalaxyData(BaseModel):
 
 class StudentMeasurement(BaseModel):
     student_id: int
+    class_id: int | None = None
     rest_wave_unit: str = "angstrom"
     obs_wave_value: float | None = None
     obs_wave_unit: str = "angstrom"
@@ -70,12 +71,14 @@ class StudentMeasurement(BaseModel):
     @computed_field
     @property
     def galaxy_id(self) -> int:
-        return self.galaxy.id
+        return self.galaxy.id if self.galaxy else 0
 
     @computed_field
     @property
     def rest_wave_value(self) -> float:
-        return round(ELEMENT_REST[self.galaxy.element])
+        if self.galaxy:
+            return round(ELEMENT_REST[self.galaxy.element])
+        return 0
 
     @computed_field
     @property
@@ -83,11 +86,36 @@ class StudentMeasurement(BaseModel):
         return f"{datetime.datetime.now(datetime.UTC)}"
 
 
+class BaseSummary(BaseModel):
+    hubble_fit_value: float
+    hubble_fit_unit: str
+    age_value: float
+    age_unit: str
+    last_data_update: datetime.datetime
+
+
+class StudentSummary(BaseSummary):
+    student_id: int
+
+
+class ClassSummary(BaseSummary):
+    class_id: int
+
+
+class MCScore(BaseModel):
+    tag: str = ""
+
+
 class LocalState(BaseLocalState):
     title: str = "Hubble's law"
     story_id: str = "hubbles_law"
     measurements: list[StudentMeasurement] = []
     example_measurements: list[StudentMeasurement] = []
+    class_measurements: list[StudentMeasurement] = []
+    all_measurements: list[StudentMeasurement] = []
+    student_summaries: list[StudentSummary] = []
+    class_summaries: list[ClassSummary] = []
+    measurements_loaded: bool = False
     calculations: dict = {}
     validation_failure_counts: dict = {}
     has_best_fit_galaxy: bool = False
@@ -98,12 +126,17 @@ class LocalState(BaseLocalState):
     free_responses: FreeResponses = Field(default_factory=FreeResponses)
     show_snackbar: bool = False
     snackbar_message: str = ""
+    stage_4_class_data_students: list[int] = []
+    stage_5_class_data_students: list[int] = []
 
     @cached_property
     def galaxies(self) -> list[GalaxyData]:
         from hubbleds.remote import LOCAL_API
 
         return LOCAL_API.get_galaxies(LOCAL_STATE)
+
+    def as_dict(self):
+        self.model_dump(exclude={"measurements_loaded"})
 
     def get_measurement(self, galaxy_id: int) -> StudentMeasurement | None:
         return next((x for x in self.measurements if x.galaxy_id == galaxy_id), None)
@@ -144,7 +177,7 @@ def get_free_response(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary
     # also initializes the question by using get_or_create method
     free_responses = local_state.value.free_responses
-    return  free_responses.get_or_create(tag).model_dump()
+    return free_responses.get_or_create(tag).model_dump()
         
 def get_multiple_choice(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary
