@@ -1,2 +1,2 @@
-hubbleds @ git+https://github.com/nmearl/hubbleds@database-connections
-cosmicds @ git+https://github.com/nmearl/cosmicds@database-connections
+hubbleds @ git+https://github.com/cosmicds/hubbleds.git
+cosmicds @ git+https://github.com/cosmicds/cosmicds.git
