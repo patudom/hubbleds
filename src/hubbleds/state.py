@@ -173,7 +173,6 @@ class LocalState(BaseLocalState):
 LOCAL_STATE = solara.reactive(LocalState())
 
 
-
 def get_free_response(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary
     # also initializes the question by using get_or_create method
@@ -185,7 +184,6 @@ def get_multiple_choice(local_state: Reactive[LocalState], tag: str):
     # also initializes the question by using get_or_create method
     multiple_choices = local_state.value.mc_scoring
     return multiple_choices.get_model_dump(tag)
-
 
 
 

@@ -13,7 +13,7 @@ from cosmicds.components import (
     ViewerLayout
     )
 from cosmicds.logger import setup_logger
-from cosmicds.state import BaseState
+from cosmicds.state import BaseState, BaseLocalState
 
 
 from hubbleds.base_component_state import (
@@ -170,7 +170,7 @@ def Page():
     solara.use_memo(_state_callback_setup)
 
 
-    StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE))
+    StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API)
     
 
     def put_measurements(samples):

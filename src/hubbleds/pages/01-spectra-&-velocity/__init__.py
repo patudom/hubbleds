@@ -26,14 +26,11 @@ from hubbleds.state import GalaxyData, StudentMeasurement
 # from solara.lab import Ref
 from solara.toestand import Ref
 from cosmicds.logger import setup_logger
-
-
 from ...data_management import EXAMPLE_GALAXY_SEED_DATA, DB_VELOCITY_FIELD
 import numpy as np
 from glue.core import Data
 
 logger = setup_logger("STAGE")
-
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
