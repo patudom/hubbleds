@@ -62,8 +62,6 @@ def Page():
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
-    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
-
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
             ScaffoldAlert(
