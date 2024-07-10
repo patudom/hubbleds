@@ -5,7 +5,7 @@ import reacton.ipyvuetify as rv
 import solara
 from solara.toestand import Ref
 
-from cosmicds.components import ScaffoldAlert
+from cosmicds.components import ScaffoldAlert, StateEditor
 from hubbleds.components import HubbleExpUniverseSlideshow, LineDrawViewer
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from .component_state import COMPONENT_STATE, Marker
@@ -72,6 +72,8 @@ def Page():
             "hoverinfo": "none"
         }]
         LineDrawViewer(plot_data=plot_data, x_axis_label="Distance (Mpc)", y_axis_label="Velocity (km / s)")
+
+    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
