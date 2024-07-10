@@ -1,9 +1,9 @@
 from collections import defaultdict
 from astropy import units as u
 from astropy.modeling import models, fitting
-from numpy import argsort, pi
+from numpy import argsort, array, pi
 
-from cosmicds.utils import mode, percent_around_center_indices
+from cosmicds.utils import component_type_for_field, mode, percent_around_center_indices
 from pydantic import BaseModel
 
 from glue.core import Data
@@ -144,9 +144,10 @@ def models_to_glue_data(items: List[M],
     if items:
         t = type(items[0])
         ignore = ignore_components or []
-        for field in t.model_fields.keys():
+        for field, info in t.model_fields.items():
             if field not in ignore:
-                data_dict[field] = [getattr(m, field) for m in items]
+                component_type = component_type_for_field(info)
+                data_dict[field] = component_type(array([getattr(m, field) for m in items]))
     if label:
         data_dict["label"] = label
     return Data(**data_dict)
