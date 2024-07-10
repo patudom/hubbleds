@@ -523,26 +523,27 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with rv.Row():
-                    with rv.Col():
+                    if class_data_added.value:
                         class_summary_data = gjapp.data_collection["Class Summaries"]
-                        if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
-                            statistics_selected = Ref(COMPONENT_STATE.fields.statistics_selection)
-                            StatisticsSelector(
-                                viewers=[viewers["student_hist"]],
-                                glue_data=[class_summary_data],
-                                units=["counts"],
-                                transform=round,
-                                selected=statistics_selected,
-                            )
+                        with rv.Col():
+                            if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
+                                statistics_selected = Ref(COMPONENT_STATE.fields.statistics_selection)
+                                StatisticsSelector(
+                                    viewers=[viewers["student_hist"]],
+                                    glue_data=[class_summary_data],
+                                    units=["counts"],
+                                    transform=round,
+                                    selected=statistics_selected,
+                                )
 
-                    with rv.Col():
-                        if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
-                            percentage_selected = Ref(COMPONENT_STATE.fields.percentage_selection)
-                            PercentageSelector(
-                                viewers=[viewers["student_hist"]],
-                                glue_data=[class_summary_data],
-                                selected=percentage_selected
-                            )
+                        with rv.Col():
+                            if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
+                                percentage_selected = Ref(COMPONENT_STATE.fields.percentage_selection)
+                                PercentageSelector(
+                                    viewers=[viewers["student_hist"]],
+                                    glue_data=[class_summary_data],
+                                    selected=percentage_selected
+                                )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
@@ -619,24 +620,25 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with rv.Row():
-                    with rv.Col():
+                    if all_data_added.value:
                         all_class_summary_data = gjapp.data_collection["All Class Summaries"]
-                        statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
-                        StatisticsSelector(
-                            viewers=[viewers["class_hist"]],
-                            glue_data=[all_class_summary_data],
-                            units=["counts"],
-                            transform=round,
-                            selected=statistics_class_selected
-                        )
+                        with rv.Col():
+                            statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
+                            StatisticsSelector(
+                                viewers=[viewers["class_hist"]],
+                                glue_data=[all_class_summary_data],
+                                units=["counts"],
+                                transform=round,
+                                selected=statistics_class_selected
+                            )
 
-                    with rv.Col():
-                        percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
-                        PercentageSelector(
-                            viewers=[viewers["class_hist"]],
-                            glue_data=[all_class_summary_data],
-                            selected=percentage_class_selected
-                        )
+                        with rv.Col():
+                            percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
+                            PercentageSelector(
+                                viewers=[viewers["class_hist"]],
+                                glue_data=[all_class_summary_data],
+                                selected=percentage_class_selected
+                            )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistributionc.vue",
