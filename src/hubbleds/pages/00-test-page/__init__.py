@@ -122,7 +122,10 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.mark2),
                 event_mc_callback = lambda event: mc_callback(event, LOCAL_STATE),
-                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'mc-2'), 'score_tag': 'mc-2'}
+                state_view={
+                    'mc_score': get_multiple_choice(LOCAL_STATE, 'mc-2'),
+                    'score_tag': 'mc-2'
+                }
             )
             
 
@@ -133,7 +136,9 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.mark3),
                 event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE),
-                state_view={'free_response': get_free_response(LOCAL_STATE, 'fr-1')}
+                state_view={
+                    'free_response': get_free_response(LOCAL_STATE, 'fr-1')
+                }
             )
             
             

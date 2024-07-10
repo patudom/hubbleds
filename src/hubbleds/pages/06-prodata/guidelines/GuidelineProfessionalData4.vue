@@ -6,8 +6,14 @@
     :can-advance="can_advance"
   >
     <template #before-next>
-      Choose a response.
+      <div v-if="!state_view.mc_completed">
+        Choose a response.
+      </div>
+      <div v-else>
+        Enter a response.
+      </div>
     </template>
+
     <div
       class="mb-4"
     >
@@ -24,7 +30,6 @@
           :feedbacks="['Interesting! Why do you choose that?','Interesting! Why do you choose that?']"
           :correct-answers="[]"
           :neutral-answers='[0,1]'
-          @select="(status) => { if (status.neutral) { question_completed = true; } }"
           :score-tag="state_view.score_tag"
           @mc-emit="mc_callback($event)"
           :initialization="state_view.mc_score"
@@ -36,12 +41,11 @@
         auto-grow
         rows="2"
         label="Why?"
-        tag="prodata-free-4"
         :tag="state_view.free_response.tag"
         :initial-response="state_view.free_response.response"
         :initialized="state_view.free_response.initialized"
         @fr-emit="fr_callback($event)"
-        v-if="question_completed"
+        v-if="state_view.mc_completed"
       ></free-response>
     </div>
   </scaffold-alert>
@@ -51,7 +55,6 @@
 module.exports = {
   data() {
     return {
-      question_completed: false,
     };
   },
 };

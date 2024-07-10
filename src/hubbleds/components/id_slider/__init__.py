@@ -51,10 +51,10 @@ def IdSlider(gjapp,
         if selected_id in ids.value:
             selected_value.set(values.value[ids.value.index(selected_id)])
 
-    def _on_index(index):
-        set_index(index)
-        selected_id = glue_data[id_component][index]
-        selected_value.set(glue_data[value_component][index])
+    def _on_index(idx):
+        set_index(idx)
+        selected_id = glue_data[id_component][idx]
+        selected_value.set(glue_data[value_component][idx])
         highlight = selected_id in highlight_ids
         color.set(highlight_color if highlight else default_color)
         if on_id is not None:

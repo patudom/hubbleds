@@ -38,6 +38,9 @@ class ComponentState(BaseState, BaseComponentState):
     def mark3_gate(self) -> bool:
         return LOCAL_STATE.value.question_completed("mc-2")
     
+    @property
+    def mark4_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("fr-1")
 
 
     

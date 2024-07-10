@@ -1,12 +1,10 @@
 from cosmicds.layout import BaseLayout
 from .state import GLOBAL_STATE, LOCAL_STATE
 import solara
-from solara.lab import Ref
+from solara.toestand import Ref
 from cosmicds.components import MathJaxSupport, PlotlySupport
-from hubbleds.state import StudentMeasurement
 from hubbleds.remote import LOCAL_API
 from cosmicds.logger import setup_logger
-import asyncio
 
 logger = setup_logger("LAYOUT")
 
@@ -44,6 +42,8 @@ def Layout(children=[]):
 
         logger.info("Finished loading state.")
         loaded_states.set(True)
+
+        Ref(LOCAL_STATE.fields.measurements_loaded).set(True)
 
     solara.lab.use_task(_load_local_state, dependencies=[student_id.value])
     # solara.use_memo(_load_local_state, dependencies=[student_id.value])

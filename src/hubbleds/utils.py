@@ -1,8 +1,14 @@
+from collections import defaultdict
 from astropy import units as u
 from astropy.modeling import models, fitting
-from numpy import argsort, pi
+from numpy import argsort, array, pi
 
-from cosmicds.utils import mode, percent_around_center_indices
+from cosmicds.utils import component_type_for_field, mode, percent_around_center_indices
+from pydantic import BaseModel
+
+from glue.core import Data
+from numbers import Number
+from typing import List, Set, Tuple, TypeVar
 
 from hubbleds.state import StudentMeasurement
 from glue.core import Data
@@ -90,7 +96,8 @@ def fit_line(x, y):
         line_init = models.Linear1D(intercept=0, fixed={"intercept": True})
         fitted_line = fit(line_init, x, y)
         return fitted_line
-    except ValueError:
+    except ValueError as e:
+        print(e)
         return None
 
 
@@ -140,3 +147,61 @@ def measurement_list_to_glue_data(measurements: list[StudentMeasurement] | list[
             x.append(measurement)
     return Data(label = label, **{k: asarray([r[k] for r in x]) for k in x[0].keys()})
 
+
+M = TypeVar("M", bound=BaseModel)
+def models_to_glue_data(items: List[M],
+                        label: str | None=None,
+                        ignore_components: list[str] | None=None
+) -> Data:
+    data_dict = {}
+    if items:
+        t = type(items[0])
+        ignore = ignore_components or []
+        for field, info in t.model_fields.items():
+            if field not in ignore:
+                component_type = component_type_for_field(info)
+                data_dict[field] = component_type(array([getattr(m, field) for m in items]))
+    if label:
+        data_dict["label"] = label
+    return Data(**data_dict)
+
+
+def create_single_summary(distances: List[Number], velocities: List[Number]) -> Tuple[float, float]:
+    line = fit_line(distances, velocities)
+    h0 = line.slope.value
+    age = age_in_gyr_simple(h0)
+    return h0, age
+
+
+def make_summary_data(measurement_data: Data,
+                      input_id_field: str="id",
+                      output_id_field: str | None=None,
+                      label: str | None=None
+) -> Data:
+    dists = defaultdict(list)
+    vels = defaultdict(list)
+    d = measurement_data["est_dist_value"]
+    v = measurement_data["velocity_value"]
+    ids: Set[int] = set()
+
+    for i in range(measurement_data.size):
+        id_num = measurement_data[input_id_field][i]
+        ids.add(id_num)
+        dists[id_num].append(d[i])
+        vels[id_num].append(v[i])
+
+    hubbles: List[float] = []
+    ages: List[float] = []
+    for id_num in ids:
+        h0, age = create_single_summary(dists[id_num], vels[id_num])
+        hubbles.append(h0)
+        ages.append(age)
+
+    data_kwargs: dict = { "hubble_fit_value": hubbles, "age_value": ages }
+    output_id_field = output_id_field or input_id_field
+    data_kwargs[output_id_field] = list(ids)
+
+    if label:
+        data_kwargs["label"] = label
+
+    return Data(**data_kwargs)
