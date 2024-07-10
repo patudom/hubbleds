@@ -17,7 +17,42 @@ from solara.toestand import Reactive
 
 
 @solara.component
-def DotplotViewer(gjapp, data=None, component_id=None, title = None, height=400, on_click_callback = None, line_marker_at = None, line_marker_color = 'red', vertical_line_visible = True):
+def DotplotViewer(
+    gjapp, 
+    data=None, 
+    component_id=None, 
+    title = None, 
+    height=400, 
+    on_click_callback = None, 
+    line_marker_at = None, 
+    line_marker_color = 'red', 
+    vertical_line_visible = True
+    ):
+    
+    """
+    DotplotViewer component
+    
+    Basic Usage:
+    ```python
+    data = Data(label = "Test Data", x=[randint(1, 10) for _ in range(30)])
+    DotplotViewer(data = data, component_id: str = 'x')
+    ```
+    
+    Parameters:
+    - `gjapp`: The GlueJupyter application instance
+    - `data`: The data to be displayed in the viewer. Can be a single Data object or a list of Data objects.
+    - `component_id`: The component id of the data to be displayed. Only used if `data` is a list of Data objects.
+       the components should already linked. component_id is the id for the first (only) Data object in the list.
+    - `title`: The title of the viewer
+    - `height`: The height of the viewer (default: 400)
+    - `on_click_callback`: A callback function that is called when a point is clicked. The function should accept the
+    - `line_marker_at`: The value at which the vertical line marker should be placed (passed value is displayed)
+    - `line_marker_color`: The color of the vertical line marker (default: 'red')
+    - `vertical_line_visible`: Whether the vertical line marker should be visible (default: True)
+    
+    
+    
+    """
     
     
     with rv.Card() as main:
