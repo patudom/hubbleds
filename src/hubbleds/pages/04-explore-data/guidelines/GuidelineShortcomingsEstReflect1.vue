@@ -5,6 +5,9 @@
     @next="next_callback()"
     :can-advance="can_advance"
   >
+    <template #before-next>
+        Enter your responses.
+    </template>
     <div
       class="mb-4"
     >
@@ -16,7 +19,7 @@
         auto-grow
         rows="2"
         label="Shortcoming #1"
-        tag="shortcoming-1"
+        :tag="state_view.free_response_a.tag"
         :initial-response="state_view.free_response_a.response"
         :initialized="state_view.free_response_a.initialized"
         @fr-emit="fr_callback($event)"
@@ -26,7 +29,7 @@
         auto-grow
         rows="2"
         label="Shortcoming #2"
-        tag="shortcoming-2"
+        :tag="state_view.free_response_b.tag"
         :initial-response="state_view.free_response_b.response"
         :initialized="state_view.free_response_b.initialized"
         @fr-emit="fr_callback($event)"
@@ -37,7 +40,7 @@
         rows="2"
         label="Other Shortcomings"
         hint="(if you can think of any more)"
-        tag="other-shortcomings"
+        :tag="state_view.free_response_c.tag"
         :initial-response="state_view.free_response_c.response"
         :initialized="state_view.free_response_c.initialized"
         @fr-emit="fr_callback($event)"

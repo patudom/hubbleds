@@ -1,12 +1,15 @@
-import enum
-from pydantic import BaseModel, field_validator
 import solara
-from typing import Any
+
+from pydantic import BaseModel, field_validator
 
 from cosmicds.state import BaseState
 from hubbleds.base_marker import BaseMarker
 from hubbleds.base_component_state import BaseComponentState
+from hubbleds.state import LOCAL_STATE
 
+import enum
+
+from typing import Any
 
 class Marker(enum.Enum, BaseMarker):
     exp_dat1 = enum.auto()
@@ -46,6 +49,27 @@ class ComponentState(BaseComponentState, BaseState):
         if isinstance(v, int):
             return Marker(v)
         return v
+    
+    @property
+    def tre_dat2_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("tre-dat-mc1")
+    
+    @property
+    def rel_vel1_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("tre-dat-mc3")
+    
+    @property
+    def hub_exp1_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("galaxy-trend")
+
+    @property
+    def tre_lin1_gate(self) -> bool:
+        return COMPONENT_STATE.value.hubble_slideshow_finished
+    
+    @property
+    def sho_est2_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("shortcoming-1") and LOCAL_STATE.value.question_completed("shortcoming-2")
 
 
 COMPONENT_STATE = solara.reactive(ComponentState())
+
