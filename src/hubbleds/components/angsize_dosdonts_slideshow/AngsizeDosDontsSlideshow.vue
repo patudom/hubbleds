@@ -625,3 +625,6 @@
   transition: none;
 }
 </style>
+
+<script>
+</script>

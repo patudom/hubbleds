@@ -16,6 +16,7 @@
       <p>
         Your measurement is shown as an orange-red dot.
       </p>
+      <p><strong style="font-size:2em">You might need to refresh to see your data point</strong></p> <!-- TODO -->
       <p>
         Click the <span class="inline-guideline-button tutorial">DOT PLOT TUTORIAL</span> button to learn about interpreting dot plots.
       </p>

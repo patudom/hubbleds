@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from cosmicds.state import BaseState
 from hubbleds.base_marker import BaseMarker
 from solara import Reactive
-from solara.lab import Ref
+from solara.toestand import Ref
 
 from cosmicds.logger import setup_logger
 
