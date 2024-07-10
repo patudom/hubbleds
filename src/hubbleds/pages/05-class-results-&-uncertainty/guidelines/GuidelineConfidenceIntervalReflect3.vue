@@ -32,11 +32,11 @@
         <v-col>
           <v-btn
             color="secondary lighten-1"
-            @click="state_view.hint2_dialog = true"
+            @click="dialog = true"
           >
             hint
             <v-dialog
-              v-model="state_view.hint2_dialog"
+              v-model="dialog"
               persistent
               max-width="600px">
               <v-card
@@ -57,7 +57,7 @@
                     @click="
                       () => {
                         $emit('close');
-                        state_view.hint2_dialog = false;
+                        dialog = false;
                       }
                     "
                   >
@@ -156,7 +156,8 @@
 export default {
   data() {
     return {
-      revealIter: 0
+      revealIter: 0,
+      dialog: false,
     }
   },
   watch: {

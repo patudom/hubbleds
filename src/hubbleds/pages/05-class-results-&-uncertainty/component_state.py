@@ -56,13 +56,6 @@ class MMMState(BaseModel):
     length: int = 3
     titles: List[str] = ["Mean", "Median", "Mode"]
 
-
-class AgeCalcState(BaseModel):
-    hint1_dialog: bool = False
-    hint2_dialog: bool = False
-    hint3_dialog: bool = False
-
-
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.first()
     stage_id: str = "class_results_and_uncertainty"
@@ -73,7 +66,6 @@ class ComponentState(BaseComponentState, BaseState):
     uncertainty_state: UncertaintyState = UncertaintyState()
     uncertainty_slideshow_finished: bool = False
     mmm_state: MMMState = MMMState()
-    age_calc_state: AgeCalcState = AgeCalcState()
     percentage_selection: str | None = None
     statistics_selection: str | None = None
     percentage_selection_class: int | None = None

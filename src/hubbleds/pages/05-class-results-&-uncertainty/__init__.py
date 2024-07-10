@@ -593,7 +593,6 @@ def Page():
         show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik4),
         event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
         state_view={
-            "hint1_dialog": COMPONENT_STATE.value.age_calc_state.hint1_dialog,
             'free_response_a': get_free_response(LOCAL_STATE,'best-guess-age').get("response"),
             'free_response_b': get_free_response(LOCAL_STATE,'my-reasoning').get("response")
         }
@@ -607,7 +606,6 @@ def Page():
         show=COMPONENT_STATE.value.is_current_step(Marker.con_int3),
         event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
         state_view={
-            "hint2_dialog": COMPONENT_STATE.value.age_calc_state.hint2_dialog,
             'free_response_a': get_free_response(LOCAL_STATE,'likely-low-age'),
             'free_response_b': get_free_response(LOCAL_STATE,'likely-high-age'),
             'free_response_c': get_free_response(LOCAL_STATE,'my-reasoning-2'),
@@ -723,8 +721,6 @@ def Page():
             show=COMPONENT_STATE.value.is_current_step(Marker.con_int2c),
             event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
             state_view={
-                "hint1_dialog": COMPONENT_STATE.value.age_calc_state.hint1_dialog,
-                "hint2_dialog": COMPONENT_STATE.value.age_calc_state.hint2_dialog,
                 "low_guess": get_free_response(LOCAL_STATE, "likely-low-age").get("response"),
                 "high_guess": get_free_response(LOCAL_STATE, "likely-high-age").get("response"),
                 "best_guess": get_free_response(LOCAL_STATE, "best-guess-age").get("response"),

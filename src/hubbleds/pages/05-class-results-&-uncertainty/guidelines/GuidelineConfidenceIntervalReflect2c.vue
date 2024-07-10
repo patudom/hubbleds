@@ -24,11 +24,11 @@
         <v-col>
           <v-btn
             color="secondary lighten-1"
-            @click="state_view.hint1_dialog = true"
+            @click="dialog1 = true"
           >
             hint
             <v-dialog
-              v-model="state_view.hint1_dialog"
+              v-model="dialog1"
               persistent
               max-width="600px">
               <v-card
@@ -49,7 +49,7 @@
                     @click="
                       () => {
                         $emit('close');
-                        state_view.hint1_dialog = false;
+                        dialog1 = false;
                       }
                     "
                   >
@@ -102,11 +102,11 @@
         <v-col>
           <v-btn
             color="secondary lighten-1"
-            @click="state_view.hint2_dialog = true"
+            @click="dialog2 = true"
           >
             hint
             <v-dialog
-              v-model="state_view.hint2_dialog"
+              v-model="dialog2"
               persistent
               max-width="600px">
               <v-card
@@ -127,7 +127,7 @@
                     @click="
                       () => {
                         $emit('close');
-                        state_view.hint2_dialog = false;
+                        dialog2 = false;
                       }
                     "
                   >
@@ -208,4 +208,12 @@
   </scaffold-alert>
 </template>
 <script>
+export default {
+  data() {
+    return {
+      dialog1: false,
+      dialog2: false,
+    }
+  },
+}
 </script>
