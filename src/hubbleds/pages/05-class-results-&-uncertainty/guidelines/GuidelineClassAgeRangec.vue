@@ -34,7 +34,6 @@
         $$ \text{Lowest age:  } \bbox[#FBE9E7]{\input[low_age][]{} } \text{ Gyr} $$
         $$ \text{Highest age:  } \bbox[#FBE9E7]{\input[high_age][]{} } \text{ Gyr} $$
       </div>
-      <v-divider role="presentation"></v-divider>
     </div>
     <v-divider
       class="my-4"

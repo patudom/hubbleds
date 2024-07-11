@@ -1,13 +1,15 @@
-import enum
-from pydantic import BaseModel, field_validator
 import solara
-from typing import List, Any
+
+from pydantic import BaseModel, field_validator
 
 from cosmicds.state import BaseState
 from hubbleds.base_marker import BaseMarker
 from hubbleds.base_component_state import BaseComponentState
 from hubbleds.state import LOCAL_STATE
 
+import enum
+
+from typing import List, Any
 
 class Marker(enum.Enum, BaseMarker):
     ran_var1 = enum.auto()
@@ -54,13 +56,6 @@ class MMMState(BaseModel):
     length: int = 3
     titles: List[str] = ["Mean", "Median", "Mode"]
 
-
-class AgeCalcState(BaseModel):
-    hint1_dialog: bool = False
-    hint2_dialog: bool = False
-    hint3_dialog: bool = False
-
-
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.first()
     stage_id: str = "class_results_and_uncertainty"
@@ -71,7 +66,6 @@ class ComponentState(BaseComponentState, BaseState):
     uncertainty_state: UncertaintyState = UncertaintyState()
     uncertainty_slideshow_finished: bool = False
     mmm_state: MMMState = MMMState()
-    age_calc_state: AgeCalcState = AgeCalcState()
     percentage_selection: str | None = None
     statistics_selection: str | None = None
     percentage_selection_class: int | None = None
@@ -84,10 +78,40 @@ class ComponentState(BaseComponentState, BaseState):
         return v
 
     @property
-    def mos_lik_gate(self) -> bool:
-        return self.uncertainty_slideshow_finished
+    def cla_age1_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("age-slope-trend")
 
-    # TODO: Implement other gates that require checking MC status
+    @property
+    def mos_lik1_gate(self) -> bool:
+        return COMPONENT_STATE.value.uncertainty_slideshow_finished
 
+    @property
+    def con_int1_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("best-guess-age") and LOCAL_STATE.value.question_completed("my-reasoning")    
+    
+    @property
+    def cla_dat1_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("likely-low-age") and LOCAL_STATE.value.question_completed("likely-high-age") and LOCAL_STATE.value.question_completed("my-reasoning-2")  
+    
+    @property
+    def two_his1_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("new-most-likely-age") and LOCAL_STATE.value.question_completed("new-likely-low-age") and LOCAL_STATE.value.question_completed("new-likely-high-age") and LOCAL_STATE.value.question_completed("my-updated-reasoning")  
+
+    @property
+    def two_his3_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("histogram-range")
+    
+    @property
+    def two_his4_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("histogram-percent-range")
+    
+    @property
+    def two_his5_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("histogram-distribution")
+
+    @property
+    def mor_dat1_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("unc-range-change-reasoning")
+    
 
 COMPONENT_STATE = solara.reactive(ComponentState())

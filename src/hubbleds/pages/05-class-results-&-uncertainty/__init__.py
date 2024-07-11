@@ -46,16 +46,16 @@ def Page():
 
     solara.lab.use_task(_load_component_state)
 
-    async def _write_component_state():
-        if not loaded_component_state.value:
-            return
+    # async def _write_component_state():
+    #     if not loaded_component_state.value:
+    #         return
 
-        # Listen for changes in the states and write them to the database
-        LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+    #     # Listen for changes in the states and write them to the database
+    #     LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
 
-        logger.info("Wrote stage 5 component state to database.")
+    #     logger.info("Wrote stage 5 component state to database.")
 
-    solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
+    # solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
     class_data_loaded = solara.use_reactive(False)
     async def _load_class_data():
@@ -331,8 +331,8 @@ def Page():
                     }                    
                 )
 
-                with rv.Col():
-                    ViewerLayout(viewer=viewers["layer"])
+            with rv.Col():
+                ViewerLayout(viewer=viewers["layer"])
 
     # --------------------- Row 2: SLIDER VERSION: OUR DATA HUBBLE VIEWER -----------------------
     if COMPONENT_STATE.value.current_step_between(Marker.cla_res1, Marker.con_int3):
@@ -429,7 +429,7 @@ def Page():
                 color = highlight_color if highlighted else default_color
                 student_slider_subset.style.color = color
 
-            with rv.Col():
+            with rv.Col(class_="no-padding"):
                 ViewerLayout(viewer=viewers["student_slider"])
                 if class_data_added.value:
                     class_summary_data = gjapp.data_collection["Class Summaries"]
@@ -478,6 +478,10 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_age1c),
+                    state_view={
+                        "class_low_age": COMPONENT_STATE.value.class_low_age,
+                        "class_high_age": COMPONENT_STATE.value.class_high_age,
+                    }
                 )
 
             def update_class_slider_subset(id, highlighted):
@@ -488,54 +492,58 @@ def Page():
                 class_slider_subset.style.color = color
 
             with rv.Col():
-                with solara.Card():
-                    ViewerLayout(viewer=viewers["class_slider"])
-                    if all_data_added.value:
-                        all_summary_data = gjapp.data_collection["All Class Summaries"]
-                        IdSlider(
-                            gjapp=gjapp,
-                            data=all_summary_data,
-                            on_id=update_class_slider_subset,
-                            highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
-                            id_component=all_summary_data.id['class_id'],
-                            value_component=all_summary_data.id['age_value'],
-                            default_color=default_color,
-                            highlight_color=highlight_color
+                ViewerLayout(viewer=viewers["class_slider"])
+                if all_data_added.value:
+                    all_summary_data = gjapp.data_collection["All Class Summaries"]
+
+                    IdSlider(
+                        gjapp=gjapp,
+                        data=all_summary_data,
+                        on_id=update_class_slider_subset,
+                        highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
+                        id_component=all_summary_data.id['class_id'],
+                        value_component=all_summary_data.id['age_value'],
+                        default_color=default_color,
+                        highlight_color=highlight_color
                         )
 
-            with rv.Col(cols=10, offset=1):
-                UncertaintySlideshow(
-                    event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
-                    step=COMPONENT_STATE.value.uncertainty_state.step,
-                    age_calc_short1=get_free_response(LOCAL_STATE, "shortcoming-1").get("response"),
-                    age_calc_short2=get_free_response(LOCAL_STATE, "shortcoming-2").get("response"),
-                    age_calc_short_other=get_free_response(LOCAL_STATE, "other-shortcomings").get("response"),  
-                    event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
-                    free_responses=[get_free_response(LOCAL_STATE, 'shortcoming-4'), get_free_response(LOCAL_STATE, 'systematic-uncertainty')]
+                with rv.Col(cols=10, offset=1):
+                    UncertaintySlideshow(
+                        event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
+                        step=COMPONENT_STATE.value.uncertainty_state.step,
+                        age_calc_short1=get_free_response(LOCAL_STATE, "shortcoming-1").get("response"),
+                        age_calc_short2=get_free_response(LOCAL_STATE, "shortcoming-2").get("response"),
+                        age_calc_short_other=get_free_response(LOCAL_STATE, "other-shortcomings").get("response"),  
+                        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                        free_responses=[get_free_response(LOCAL_STATE, 'shortcoming-4'), get_free_response(LOCAL_STATE, 'systematic-uncertainty')]
                 )
 
     #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------
     if COMPONENT_STATE.value.current_step_between(Marker.age_dis1, Marker.con_int3):
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
-                class_summary_data = gjapp.data_collection["Class Summaries"]
-                if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
-                    statistics_selected = Ref(COMPONENT_STATE.fields.statistics_selection)
-                    StatisticsSelector(
-                        viewers=[viewers["student_hist"]],
-                        glue_data=[class_summary_data],
-                        units=["counts"],
-                        transform=round,
-                        selected=statistics_selected,
-                    )
+                with rv.Row():
+                    if class_data_added.value:
+                        class_summary_data = gjapp.data_collection["Class Summaries"]
+                        with rv.Col():
+                            if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
+                                statistics_selected = Ref(COMPONENT_STATE.fields.statistics_selection)
+                                StatisticsSelector(
+                                    viewers=[viewers["student_hist"]],
+                                    glue_data=[class_summary_data],
+                                    units=["counts"],
+                                    transform=round,
+                                    selected=statistics_selected,
+                                )
 
-                if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
-                    percentage_selected = Ref(COMPONENT_STATE.fields.percentage_selection)
-                    PercentageSelector(
-                        viewers=[viewers["student_hist"]],
-                        glue_data=[class_summary_data],
-                        selected=percentage_selected
-                    )
+                        with rv.Col():
+                            if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
+                                percentage_selected = Ref(COMPONENT_STATE.fields.percentage_selection)
+                                PercentageSelector(
+                                    viewers=[viewers["student_hist"]],
+                                    glue_data=[class_summary_data],
+                                    selected=percentage_selected
+                                )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
@@ -585,9 +593,9 @@ def Page():
         show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik4),
         event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
         state_view={
-            "hint1_dialog": COMPONENT_STATE.value.age_calc_state.hint1_dialog,
-            'free_response_a': get_free_response(LOCAL_STATE,'best-guess-age').get("response"),
-            'free_response_b': get_free_response(LOCAL_STATE,'my-reasoning').get("response")
+            'free_response_a': get_free_response(LOCAL_STATE,'best-guess-age'),
+            'best_guess_answered': LOCAL_STATE.value.question_completed("best-guess-age"),
+            'free_response_b': get_free_response(LOCAL_STATE,'my-reasoning')
         }
     )
 
@@ -599,9 +607,9 @@ def Page():
         show=COMPONENT_STATE.value.is_current_step(Marker.con_int3),
         event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
         state_view={
-            "hint2_dialog": COMPONENT_STATE.value.age_calc_state.hint2_dialog,
             'free_response_a': get_free_response(LOCAL_STATE,'likely-low-age'),
             'free_response_b': get_free_response(LOCAL_STATE,'likely-high-age'),
+            'high_low_answered': LOCAL_STATE.value.question_completed("likely-low-age") and LOCAL_STATE.value.question_completed("likely-high-age"),
             'free_response_c': get_free_response(LOCAL_STATE,'my-reasoning-2'),
         }
     )
@@ -611,22 +619,26 @@ def Page():
     if COMPONENT_STATE.value.current_step_between(Marker.age_dis1c):
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
-                all_class_summary_data = gjapp.data_collection["All Class Summaries"]
-                statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
-                StatisticsSelector(
-                    viewers=[viewers["class_hist"]],
-                    glue_data=[all_class_summary_data],
-                    units=["counts"],
-                    transform=round,
-                    selected=statistics_class_selected
-                )
+                with rv.Row():
+                    if all_data_added.value:
+                        all_class_summary_data = gjapp.data_collection["All Class Summaries"]
+                        with rv.Col():
+                            statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
+                            StatisticsSelector(
+                                viewers=[viewers["class_hist"]],
+                                glue_data=[all_class_summary_data],
+                                units=["counts"],
+                                transform=round,
+                                selected=statistics_class_selected
+                            )
 
-                percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
-                PercentageSelector(
-                    viewers=[viewers["class_hist"]],
-                    glue_data=[all_class_summary_data],
-                    selected=percentage_class_selected
-                )
+                        with rv.Col():
+                            percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
+                            PercentageSelector(
+                                viewers=[viewers["class_hist"]],
+                                glue_data=[all_class_summary_data],
+                                selected=percentage_class_selected
+                            )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistributionc.vue",
@@ -711,8 +723,6 @@ def Page():
             show=COMPONENT_STATE.value.is_current_step(Marker.con_int2c),
             event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
             state_view={
-                "hint1_dialog": COMPONENT_STATE.value.age_calc_state.hint1_dialog,
-                "hint2_dialog": COMPONENT_STATE.value.age_calc_state.hint2_dialog,
                 "low_guess": get_free_response(LOCAL_STATE, "likely-low-age").get("response"),
                 "high_guess": get_free_response(LOCAL_STATE, "likely-high-age").get("response"),
                 "best_guess": get_free_response(LOCAL_STATE, "best-guess-age").get("response"),
