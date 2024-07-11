@@ -260,9 +260,21 @@ def Page():
         hist_viewer.layers[0].state.color = "blue"
 
     all_data_loaded.subscribe(_on_all_data_loaded)
-
     student_data_added.subscribe(_setup_links)
     class_data_added.subscribe(_setup_links)
+
+    @solara.lab.computed
+    def data_ready():
+        return student_data_added.value and class_data_added.value and all_data_added.value
+
+    if not data_ready.value:
+        rv.ProgressCircular(
+            width=3,
+            color="primary",
+            indeterminate=True,
+            size=100,
+        )
+        return
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -431,18 +443,17 @@ def Page():
 
             with rv.Col(class_="no-padding"):
                 ViewerLayout(viewer=viewers["student_slider"])
-                if class_data_added.value:
-                    class_summary_data = gjapp.data_collection["Class Summaries"]
-                    IdSlider(
-                        gjapp=gjapp,
-                        data=class_summary_data,
-                        on_id=update_student_slider_subset,
-                        highlight_ids=[GLOBAL_STATE.value.student.id],
-                        id_component=class_summary_data.id['id'],
-                        value_component=class_summary_data.id['age_value'],
-                        default_color=default_color,
-                        highlight_color=highlight_color
-                    )
+                class_summary_data = gjapp.data_collection["Class Summaries"]
+                IdSlider(
+                    gjapp=gjapp,
+                    data=class_summary_data,
+                    on_id=update_student_slider_subset,
+                    highlight_ids=[GLOBAL_STATE.value.student.id],
+                    id_component=class_summary_data.id['id'],
+                    value_component=class_summary_data.id['age_value'],
+                    default_color=default_color,
+                    highlight_color=highlight_color
+                )
 
         if COMPONENT_STATE.value.current_step_between(Marker.lea_unc1, Marker.you_age1c):
             with solara.ColumnsResponsive(12, large=[5,7]):
@@ -493,19 +504,17 @@ def Page():
 
             with rv.Col():
                 ViewerLayout(viewer=viewers["class_slider"])
-                if all_data_added.value:
-                    all_summary_data = gjapp.data_collection["All Class Summaries"]
-
-                    IdSlider(
-                        gjapp=gjapp,
-                        data=all_summary_data,
-                        on_id=update_class_slider_subset,
-                        highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
-                        id_component=all_summary_data.id['class_id'],
-                        value_component=all_summary_data.id['age_value'],
-                        default_color=default_color,
-                        highlight_color=highlight_color
-                        )
+                all_summary_data = gjapp.data_collection["All Class Summaries"]
+                IdSlider(
+                    gjapp=gjapp,
+                    data=all_summary_data,
+                    on_id=update_class_slider_subset,
+                    highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
+                    id_component=all_summary_data.id['class_id'],
+                    value_component=all_summary_data.id['age_value'],
+                    default_color=default_color,
+                    highlight_color=highlight_color
+                )
 
                 with rv.Col(cols=10, offset=1):
                     UncertaintySlideshow(
@@ -620,25 +629,24 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with rv.Row():
-                    if all_data_added.value:
-                        all_class_summary_data = gjapp.data_collection["All Class Summaries"]
-                        with rv.Col():
-                            statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
-                            StatisticsSelector(
-                                viewers=[viewers["class_hist"]],
-                                glue_data=[all_class_summary_data],
-                                units=["counts"],
-                                transform=round,
-                                selected=statistics_class_selected
-                            )
+                    all_class_summary_data = gjapp.data_collection["All Class Summaries"]
+                    with rv.Col():
+                        statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
+                        StatisticsSelector(
+                            viewers=[viewers["class_hist"]],
+                            glue_data=[all_class_summary_data],
+                            units=["counts"],
+                            transform=round,
+                            selected=statistics_class_selected
+                        )
 
-                        with rv.Col():
-                            percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
-                            PercentageSelector(
-                                viewers=[viewers["class_hist"]],
-                                glue_data=[all_class_summary_data],
-                                selected=percentage_class_selected
-                            )
+                    with rv.Col():
+                        percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
+                        PercentageSelector(
+                            viewers=[viewers["class_hist"]],
+                            glue_data=[all_class_summary_data],
+                            selected=percentage_class_selected
+                        )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistributionc.vue",
