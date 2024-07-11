@@ -8,8 +8,8 @@ phases:
       - pip install --upgrade pip
   build:
     commands:
-      - pip install .
+      - python -m pip install .
+      - zip -r hubbleds.zip hubbleds
 artifacts:
   files:
-    - '**/*'
-  discard-paths: no
+    - hubbleds.zip
