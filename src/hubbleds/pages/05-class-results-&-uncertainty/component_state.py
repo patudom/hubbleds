@@ -66,7 +66,7 @@ class ComponentState(BaseComponentState, BaseState):
     uncertainty_state: UncertaintyState = UncertaintyState()
     uncertainty_slideshow_finished: bool = False
     mmm_state: MMMState = MMMState()
-    percentage_selection: str | None = None
+    percentage_selection: int | None = None
     statistics_selection: str | None = None
     percentage_selection_class: int | None = None
     statistics_selection_class: str | None = None
