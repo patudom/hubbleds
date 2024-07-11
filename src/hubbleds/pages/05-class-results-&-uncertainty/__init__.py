@@ -593,8 +593,9 @@ def Page():
         show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik4),
         event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
         state_view={
-            'free_response_a': get_free_response(LOCAL_STATE,'best-guess-age').get("response"),
-            'free_response_b': get_free_response(LOCAL_STATE,'my-reasoning').get("response")
+            'free_response_a': get_free_response(LOCAL_STATE,'best-guess-age'),
+            'best_guess_answered': LOCAL_STATE.value.question_completed("best-guess-age"),
+            'free_response_b': get_free_response(LOCAL_STATE,'my-reasoning')
         }
     )
 
@@ -608,6 +609,7 @@ def Page():
         state_view={
             'free_response_a': get_free_response(LOCAL_STATE,'likely-low-age'),
             'free_response_b': get_free_response(LOCAL_STATE,'likely-high-age'),
+            'high_low_answered': LOCAL_STATE.value.question_completed("likely-low-age") and LOCAL_STATE.value.question_completed("likely-high-age"),
             'free_response_c': get_free_response(LOCAL_STATE,'my-reasoning-2'),
         }
     )
@@ -721,9 +723,9 @@ def Page():
             show=COMPONENT_STATE.value.is_current_step(Marker.con_int2c),
             event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
             state_view={
-                "low_guess": get_free_response(LOCAL_STATE, "likely-low-age").get("response"),
-                "high_guess": get_free_response(LOCAL_STATE, "likely-high-age").get("response"),
-                "best_guess": get_free_response(LOCAL_STATE, "best-guess-age").get("response"),
+                "low_guess": get_free_response(LOCAL_STATE, "likely-low-age"),
+                "high_guess": get_free_response(LOCAL_STATE, "likely-high-age"),
+                "best_guess": get_free_response(LOCAL_STATE, "best-guess-age"),
                 'free_response_a': get_free_response(LOCAL_STATE, 'new-most-likely-age'),
                 'free_response_b': get_free_response(LOCAL_STATE, 'new-likely-low-age'),
                 'free_response_c': get_free_response(LOCAL_STATE, 'new-likely-high-age'),

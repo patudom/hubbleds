@@ -3,18 +3,12 @@
     title-text="Identify Your Confidence Interval"
     ref="scaffold"
     @back="back_callback()"
-    @next="() => {
-      if (revealIter < 1) {
-        revealIter = revealIter + 1;
-      }
-      else {
-        next_callback();
-        // state_view.trend_line_drawn = false;
-        // state_view.best_fit_clicked = false;
-      }
-    }"
+    @next="next_callback()"
     :can-advance="can_advance"
   >
+    <template #before-next>
+      Enter responses.
+    </template>
     <div
       class="mb-4"
     >
@@ -82,9 +76,7 @@
           </v-btn>
         </v-col>
       </v-row>
-      <v-row
-        v-if="revealIter >= 0"
-      >
+      <v-row>
         <v-col
           cols="12"
           lg="3">
@@ -92,7 +84,7 @@
             outlined
             rows="1"
             label="Likely Low Age"
-            tag="likely-low-age"
+            :tag="state_view.free_response_a.tag"
             type="float"
             :initial-response="state_view.free_response_a.response"
             :initialized="state_view.free_response_a.initialized"
@@ -110,7 +102,7 @@
             outlined
             rows="1"
             label="Likely High Age"
-            tag="likely-high-age"
+            :tag="state_view.free_response_b.tag"
             type="float"
             :initial-response="state_view.free_response_b.response"
             :initialized="state_view.free_response_b.initialized"
@@ -124,14 +116,14 @@
       </v-row>
 
       <v-row
-        v-if="revealIter >= 1"
+        v-if="state_view.high_low_answered"
       >
         <v-col>
           4. Explain why you chose your values using information from the histogram or other viewers:
         </v-col>
       </v-row>
       <v-row
-        v-if="revealIter >= 1"
+        v-if="state_view.high_low_answered"
       >
         <v-col>
           <free-response
@@ -139,7 +131,7 @@
             auto-grow
             rows="2"
             label="My Reasoning"
-            tag="my-reasoning-2"
+            :tag="state_view.free_response_c.tag"
             :initial-response="state_view.free_response_c.response"
             :initialized="state_view.free_response_c.initialized"
             @fr-emit="fr_callback($event)"
@@ -156,21 +148,9 @@
 export default {
   data() {
     return {
-      revealIter: 0,
       dialog: false,
     }
   },
-  watch: {
-    revealIter(_value) {
-      const scaffold = this.$refs.scaffold;
-      this.$nextTick(() => {
-        scaffold.$refs.next.$el.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      });
-    }
-  }
 }
 </script>
 

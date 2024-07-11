@@ -6,6 +6,9 @@
     @next="next_callback()"
     :can-advance="can_advance"
   >
+    <template #before-next>
+      Enter responses.
+    </template>
     <div
       class="mb-4"
     >
@@ -80,7 +83,7 @@
             outlined
             rows="1"
             label="New Most Likely Age"
-            tag="new-most-likely-age"
+            :tag="state_view.free_response_a.tag"
             type="float"
             :initial-response="state_view.free_response_a.response"
             :initialized="state_view.free_response_a.initialized"
@@ -161,7 +164,7 @@
             outlined
             rows="1"
             label="New Likely Low Age"
-            tag="new-likely-low-age"
+            :tag="state_view.free_response_b.tag"
             type="float"
             :initial-response="state_view.free_response_b.response"
             :initialized="state_view.free_response_b.initialized"
@@ -179,7 +182,7 @@
             outlined
             rows="1"
             label="New Likely High Age"
-            tag="new-likely-high-age"
+            :tag="state_view.free_response_c.tag"
             type="float"
             :initial-response="state_view.free_response_c.response"
             :initialized="state_view.free_response_c.initialized"
@@ -199,7 +202,7 @@
         outlined
         rows="1"
         label="My Updated Reasoning"
-        tag="my-updated-reasoning"
+        :tag="state_view.free_response_d.tag"
         :initial-response="state_view.free_response_d.response"
         :initialized="state_view.free_response_d.initialized"
         @fr-emit="fr_callback($event)"

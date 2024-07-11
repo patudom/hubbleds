@@ -5,6 +5,9 @@
     @next="next_callback()"
     :can-advance="can_advance"
   >
+    <template #before-next>
+      Enter a response.
+    </template>
     <div
       class="mb-4"
     >
