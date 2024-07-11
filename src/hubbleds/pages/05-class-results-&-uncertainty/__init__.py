@@ -229,14 +229,20 @@ def Page():
         student_summaries = LOCAL_STATE.value.student_summaries
         class_summaries = LOCAL_STATE.value.class_summaries
 
-        all_data = models_to_glue_data(all_measurements, label="All Measurements")
-        all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
+        if all_measurements and student_summaries and class_summaries:
+            all_data = models_to_glue_data(all_measurements, label="All Measurements")
+            all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
 
-        student_summ_data = models_to_glue_data(student_summaries, label="All Student Summaries")
-        student_summ_data = GLOBAL_STATE.value.add_or_update_data(student_summ_data)
+            student_summ_data = models_to_glue_data(student_summaries, label="All Student Summaries")
+            student_summ_data = GLOBAL_STATE.value.add_or_update_data(student_summ_data)
 
-        all_class_summ_data = models_to_glue_data(class_summaries, label="All Class Summaries")
-        all_class_summ_data = GLOBAL_STATE.value.add_or_update_data(all_class_summ_data)
+            all_class_summ_data = models_to_glue_data(class_summaries, label="All Class Summaries")
+            all_class_summ_data = GLOBAL_STATE.value.add_or_update_data(all_class_summ_data)
+        else:
+            # If we've gotten here but the arrays are empty, it means that glue already has the data
+            all_data = gjapp.data_collection["All Measurements"]
+            student_summ_data = gjapp.data_collection["All Student Summaries"]
+            all_class_summ_data = gjapp.data_collection["All Class Summaries"]
 
         if len(all_data.subsets) == 0:
             class_slider_subset = all_data.new_subset(label="class_slider_subset", alpha=1, markersize=10)
