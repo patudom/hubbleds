@@ -6,12 +6,9 @@ phases:
       python: 3.11
     commands:
       - pip install --upgrade pip
-  pre_build:
-    commands:
-      - pip install .
   build:
     commands:
-      - echo Build completed.
+      - pip install .
 artifacts:
   files:
     - '**/*'
