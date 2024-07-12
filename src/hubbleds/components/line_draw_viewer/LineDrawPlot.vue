@@ -28,7 +28,6 @@ export default {
     Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, layout, this.chart.config)
       .then(() => {
         this.element = document.getElementById(this.chart.uuid);
-        console.log(this.element);
         this.dragLayer = this.element.querySelector(".nsewdrag");
         if (this.plot_data) {
           this.plotDataCount = this.plot_data.length;
@@ -208,18 +207,23 @@ export default {
       Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: this.endpointSize, color: "#000000" }, hoverinfo: "none" });
       this.lastEndpoint = [x, y];
     },
-    linearRegression(x, y) {
+    linearRegression(x, y, forceOrigin=true) {
       const sum = (s, a) => s + a;
       const sumX = x.reduce(sum);
       const sumY = y.reduce(sum);
-      const n = x.length;
-      const sumXsq = x.reduce((s, a) => s + a * a, 0);
-      const sumXY = x.reduce((s, a, i) => s + a * y[i], 0);
-      const xAvg = sumX / n;
-      const yAvg = sumY / n;
-      const a = (n * sumXY - (sumX * sumY)) / (n * sumXsq - (sumX * sumX));
-      const b = yAvg - a * xAvg;
-      return [a, b];
+      if (forceOrigin) {
+        const a = sumY / sumX;
+        return [a, 0];
+      } else {
+        const n = x.length;
+        const sumXsq = x.reduce((s, a) => s + a * a, 0);
+        const sumXY = x.reduce((s, a, i) => s + a * y[i], 0);
+        const xAvg = sumX / n;
+        const yAvg = sumY / n;
+        const a = (n * sumXY - (sumX * sumY)) / (n * sumXsq - (sumX * sumX));
+        const b = yAvg - b * xAvg;
+        return [a, b];
+      }
     },
     fitLinePoints(x, y) {
       const [a, b] = this.linearRegression(x, y);
