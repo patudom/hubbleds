@@ -1,7 +1,7 @@
 <script>
 export default {
   name: "LineDrawPlot",
-  props: ["active", "line_drawn", "plot_data", "x_axis_label", "y_axis_label"],
+  props: ["active", "fit_active", "line_drawn", "plot_data", "x_axis_label", "y_axis_label"],
   async mounted() {
     await window.plotlyPromise;
 
@@ -16,6 +16,9 @@ export default {
       xmax = Math.max(xmax, Math.max(...trace.x));
       ymax = Math.max(ymax, Math.max(...trace.y));
     });
+    if (this.plot_data?.length > 0) {
+      this.chart.traces[1].line.color = this.plot_data[0].marker.color;
+    }
     const layout = this.chart.layout;
     layout.xaxis.range = [xmin, xmax];
     layout.yaxis.range = [ymin, ymax];
@@ -25,6 +28,7 @@ export default {
     Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, layout, this.chart.config)
       .then(() => {
         this.element = document.getElementById(this.chart.uuid);
+        console.log(this.element);
         this.dragLayer = this.element.querySelector(".nsewdrag");
         if (this.plot_data) {
           this.plotDataCount = this.plot_data.length;
@@ -63,6 +67,17 @@ export default {
             },
             visible: false,
             hoverinfo: "skip"
+          },
+          {
+            x: [0, 0],
+            y: [0, 0],
+            line: {
+              color: "#000000",
+              width: 4,
+              shape: "line"
+            },
+            visible: false,
+            hoverinfo: "skip"
           }
         ],
         layout: { xaxis, yaxis, hovermode: "none", dragmode: false, showlegend: false },
@@ -76,6 +91,7 @@ export default {
       hoveringEndpoint: false,
       plotDataCount: 0,
       lineTraceIndex: 0,
+      fitLineTraceIndex: 1,
       endpointSize: 10,
     };
   },
@@ -192,6 +208,25 @@ export default {
       Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: this.endpointSize, color: "#000000" }, hoverinfo: "none" });
       this.lastEndpoint = [x, y];
     },
+    linearRegression(x, y) {
+      const sum = (s, a) => s + a;
+      const sumX = x.reduce(sum, 0);
+      const sumY = y.reduce(sum, 0);
+      const n = x.length;
+      const sumXsq = x.reduce((s, a) => s + a * a, 0);
+      const sumXY = x.reduce((s, a, i) => s + a * y[i], 0);
+      const xAvg = sumX / n;
+      const yAvg = sumY / n;
+      const b = (sumXY - ((sumX * sumY)/ n)) / (sumXsq - ((sumX * sumX) / n));
+      const a = yAvg - b * xAvg;
+      return [a, b];
+    },
+    fitLinePoints(x, y) {
+      const [a, b] = this.linearRegression(x, y);
+      const xs = this.element._fullLayout.xaxis.range;
+      const ys = xs.map(v => a * v + b);
+      return [xs, ys];
+    },
     setupMouseHandlers(active) {
       // Using document as the event listener for mouseup is intentional
       // See this thread here: https://community.plotly.com/t/plotly-onmousedown-and-onmouseup/4812
@@ -217,11 +252,12 @@ export default {
         this.element.removeListener("plotly_hover", this.plotlyHoverHandler);
         this.element.removeListener("plotly_unhover", this.plotlyUnhoverHandler);
       }
-    }
+    },
+
   },
   computed: {
     endpointTraceIndex() {
-      return (this.plot_data?.length ?? 0) + 1;
+      return this.plotDataCount + 2;
     }
   },
   watch: {
@@ -237,6 +273,22 @@ export default {
       Plotly.update(this.chart.uuid, { visible: true }, {}, [this.lineTraceIndex]);
       this.setupMouseHandlers(value);
       this.setupPlotlyHandlers(value);
+    },
+    fit_active(value) {
+      let update = { visible: value };
+      if (value && this.plot_data?.length > 0) {
+        const x = this.plot_data[0].x;
+        const y = this.plot_data[0].y;
+        const [xs, ys] = this.fitLinePoints(x, y);
+        update = {
+          ...update,
+          'x.0': xs[0],
+          'x.1': xs[1],
+          'y.0': ys[0],
+          'y.1': ys[1],
+        };
+      }
+      Plotly.update(this.chart.uuid, update, {}, [this.fitLineTraceIndex]);
     },
     movingLine(value) {
       if (value) {

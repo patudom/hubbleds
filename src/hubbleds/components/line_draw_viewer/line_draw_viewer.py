@@ -4,6 +4,7 @@ import solara
 
 @solara.component_vue("LineDrawPlot.vue")
 def LineDrawPlot(active,
+                 fit_active=False,
                  event_line_drawn=None,
                  plot_data=None,
                  x_axis_label=None,
@@ -15,10 +16,16 @@ def LineDrawPlot(active,
 @solara.component
 def LineDrawViewer(plot_data=None, x_axis_label=None, y_axis_label=None):
 
-    active = solara.use_reactive(False)
+    draw_active = solara.use_reactive(False)
+    fit_active = solara.use_reactive(False)
 
     def on_draw_clicked():
-        active.set(not active.value)
+        fit_active.set(False)
+        draw_active.set(not draw_active.value)
+
+    def on_fit_clicked():
+        draw_active.set(False)
+        fit_active.set(not fit_active.value) 
 
     # If we want to disable the tool after finishing a line draw
     # pass this function to `LineDrawPlot` as `event_line_drawn`
@@ -33,9 +40,11 @@ def LineDrawViewer(plot_data=None, x_axis_label=None, y_axis_label=None):
             rv.Spacer()
 
             draw_button = solara.IconButton(classes=["toolbar"], icon_name="mdi-message-draw", on_click=on_draw_clicked)
-            rv.BtnToggle(v_model="selected", children=[draw_button], background_color="primary", borderless=True)
+            fit_button = solara.IconButton(classes=["toolbar"], icon_name="mdi-chart-timeline-variant", on_click=on_fit_clicked)
+            rv.BtnToggle(v_model="selected", children=[draw_button, fit_button], background_color="primary", borderless=True)
 
-        LineDrawPlot(active=active.value,
+        LineDrawPlot(active=draw_active.value,
+                     fit_active=fit_active.value,
                      event_line_drawn=None,
                      plot_data=plot_data,
                      x_axis_label=x_axis_label,
