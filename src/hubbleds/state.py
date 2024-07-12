@@ -136,7 +136,15 @@ class LocalState(BaseLocalState):
         return LOCAL_API.get_galaxies(LOCAL_STATE)
 
     def as_dict(self):
-        self.model_dump(exclude={"measurements_loaded"})
+        return self.model_dump(exclude={
+            "example_measurements",
+            "measurements",
+            "measurements_loaded",
+            "class_measurements",
+            "all_measurements",
+            "student_summaries",
+            "class_summaries",
+        })
 
     def get_measurement(self, galaxy_id: int) -> StudentMeasurement | None:
         return next((x for x in self.measurements if x.galaxy_id == galaxy_id), None)
