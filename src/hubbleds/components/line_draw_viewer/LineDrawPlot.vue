@@ -210,15 +210,15 @@ export default {
     },
     linearRegression(x, y) {
       const sum = (s, a) => s + a;
-      const sumX = x.reduce(sum, 0);
-      const sumY = y.reduce(sum, 0);
+      const sumX = x.reduce(sum);
+      const sumY = y.reduce(sum);
       const n = x.length;
       const sumXsq = x.reduce((s, a) => s + a * a, 0);
       const sumXY = x.reduce((s, a, i) => s + a * y[i], 0);
       const xAvg = sumX / n;
       const yAvg = sumY / n;
-      const b = (sumXY - ((sumX * sumY)/ n)) / (sumXsq - ((sumX * sumX) / n));
-      const a = yAvg - b * xAvg;
+      const a = (n * sumXY - (sumX * sumY)) / (n * sumXsq - (sumX * sumX));
+      const b = yAvg - a * xAvg;
       return [a, b];
     },
     fitLinePoints(x, y) {
