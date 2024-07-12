@@ -46,16 +46,16 @@ def Page():
 
     solara.lab.use_task(_load_component_state)
 
-    # async def _write_component_state():
-    #     if not loaded_component_state.value:
-    #         return
+    async def _write_component_state():
+        if not loaded_component_state.value:
+            return
 
-    #     # Listen for changes in the states and write them to the database
-    #     LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+        # Listen for changes in the states and write them to the database
+        LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
 
-    #     logger.info("Wrote stage 5 component state to database.")
+        logger.info("Wrote stage 5 component state to database.")
 
-    # solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
+    solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
     class_data_loaded = solara.use_reactive(False)
     async def _load_class_data():
@@ -229,14 +229,20 @@ def Page():
         student_summaries = LOCAL_STATE.value.student_summaries
         class_summaries = LOCAL_STATE.value.class_summaries
 
-        all_data = models_to_glue_data(all_measurements, label="All Measurements")
-        all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
+        if all_measurements and student_summaries and class_summaries:
+            all_data = models_to_glue_data(all_measurements, label="All Measurements")
+            all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
 
-        student_summ_data = models_to_glue_data(student_summaries, label="All Student Summaries")
-        student_summ_data = GLOBAL_STATE.value.add_or_update_data(student_summ_data)
+            student_summ_data = models_to_glue_data(student_summaries, label="All Student Summaries")
+            student_summ_data = GLOBAL_STATE.value.add_or_update_data(student_summ_data)
 
-        all_class_summ_data = models_to_glue_data(class_summaries, label="All Class Summaries")
-        all_class_summ_data = GLOBAL_STATE.value.add_or_update_data(all_class_summ_data)
+            all_class_summ_data = models_to_glue_data(class_summaries, label="All Class Summaries")
+            all_class_summ_data = GLOBAL_STATE.value.add_or_update_data(all_class_summ_data)
+        else:
+            # If we've gotten here but the arrays are empty, it means that glue already has the data
+            all_data = gjapp.data_collection["All Measurements"]
+            student_summ_data = gjapp.data_collection["All Student Summaries"]
+            all_class_summ_data = gjapp.data_collection["All Class Summaries"]
 
         if len(all_data.subsets) == 0:
             class_slider_subset = all_data.new_subset(label="class_slider_subset", alpha=1, markersize=10)
@@ -260,9 +266,21 @@ def Page():
         hist_viewer.layers[0].state.color = "blue"
 
     all_data_loaded.subscribe(_on_all_data_loaded)
-
     student_data_added.subscribe(_setup_links)
     class_data_added.subscribe(_setup_links)
+
+    @solara.lab.computed
+    def data_ready():
+        return student_data_added.value and class_data_added.value and all_data_added.value
+
+    if not data_ready.value:
+        rv.ProgressCircular(
+            width=3,
+            color="primary",
+            indeterminate=True,
+            size=100,
+        )
+        return
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -431,18 +449,17 @@ def Page():
 
             with rv.Col(class_="no-padding"):
                 ViewerLayout(viewer=viewers["student_slider"])
-                if class_data_added.value:
-                    class_summary_data = gjapp.data_collection["Class Summaries"]
-                    IdSlider(
-                        gjapp=gjapp,
-                        data=class_summary_data,
-                        on_id=update_student_slider_subset,
-                        highlight_ids=[GLOBAL_STATE.value.student.id],
-                        id_component=class_summary_data.id['id'],
-                        value_component=class_summary_data.id['age_value'],
-                        default_color=default_color,
-                        highlight_color=highlight_color
-                    )
+                class_summary_data = gjapp.data_collection["Class Summaries"]
+                IdSlider(
+                    gjapp=gjapp,
+                    data=class_summary_data,
+                    on_id=update_student_slider_subset,
+                    highlight_ids=[GLOBAL_STATE.value.student.id],
+                    id_component=class_summary_data.id['id'],
+                    value_component=class_summary_data.id['age_value'],
+                    default_color=default_color,
+                    highlight_color=highlight_color
+                )
 
         if COMPONENT_STATE.value.current_step_between(Marker.lea_unc1, Marker.you_age1c):
             with solara.ColumnsResponsive(12, large=[5,7]):
@@ -493,19 +510,17 @@ def Page():
 
             with rv.Col():
                 ViewerLayout(viewer=viewers["class_slider"])
-                if all_data_added.value:
-                    all_summary_data = gjapp.data_collection["All Class Summaries"]
-
-                    IdSlider(
-                        gjapp=gjapp,
-                        data=all_summary_data,
-                        on_id=update_class_slider_subset,
-                        highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
-                        id_component=all_summary_data.id['class_id'],
-                        value_component=all_summary_data.id['age_value'],
-                        default_color=default_color,
-                        highlight_color=highlight_color
-                        )
+                all_summary_data = gjapp.data_collection["All Class Summaries"]
+                IdSlider(
+                    gjapp=gjapp,
+                    data=all_summary_data,
+                    on_id=update_class_slider_subset,
+                    highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
+                    id_component=all_summary_data.id['class_id'],
+                    value_component=all_summary_data.id['age_value'],
+                    default_color=default_color,
+                    highlight_color=highlight_color
+                )
 
                 with rv.Col(cols=10, offset=1):
                     UncertaintySlideshow(
@@ -620,25 +635,24 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with rv.Row():
-                    if all_data_added.value:
-                        all_class_summary_data = gjapp.data_collection["All Class Summaries"]
-                        with rv.Col():
-                            statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
-                            StatisticsSelector(
-                                viewers=[viewers["class_hist"]],
-                                glue_data=[all_class_summary_data],
-                                units=["counts"],
-                                transform=round,
-                                selected=statistics_class_selected
-                            )
+                    all_class_summary_data = gjapp.data_collection["All Class Summaries"]
+                    with rv.Col():
+                        statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
+                        StatisticsSelector(
+                            viewers=[viewers["class_hist"]],
+                            glue_data=[all_class_summary_data],
+                            units=["counts"],
+                            transform=round,
+                            selected=statistics_class_selected
+                        )
 
-                        with rv.Col():
-                            percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
-                            PercentageSelector(
-                                viewers=[viewers["class_hist"]],
-                                glue_data=[all_class_summary_data],
-                                selected=percentage_class_selected
-                            )
+                    with rv.Col():
+                        percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
+                        PercentageSelector(
+                            viewers=[viewers["class_hist"]],
+                            glue_data=[all_class_summary_data],
+                            selected=percentage_class_selected
+                        )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistributionc.vue",
