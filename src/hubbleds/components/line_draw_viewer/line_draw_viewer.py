@@ -39,9 +39,9 @@ def LineDrawViewer(plot_data=None, x_axis_label=None, y_axis_label=None):
 
             rv.Spacer()
 
-            draw_button = solara.IconButton(classes=["toolbar"], icon_name="mdi-message-draw", on_click=on_draw_clicked)
             fit_button = solara.IconButton(classes=["toolbar"], icon_name="mdi-chart-timeline-variant", on_click=on_fit_clicked)
-            rv.BtnToggle(v_model="selected", children=[draw_button, fit_button], background_color="primary", borderless=True)
+            draw_button = solara.IconButton(classes=["toolbar"], icon_name="mdi-message-draw", on_click=on_draw_clicked)
+            rv.BtnToggle(v_model="selected", children=[fit_button, draw_button], background_color="primary", borderless=True)
 
         LineDrawPlot(active=draw_active.value,
                      fit_active=fit_active.value,
