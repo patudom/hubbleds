@@ -4,7 +4,6 @@
     @back="back_callback()"
     @next="next_callback()"
     :can-advance="can_advance"
-    :state="state"
   >
     <template #before-next>
       Click <span style="background-color: #02838f; border-radius : 5px; padding: 3px; color:white!important;">HUBBLE'S DISCOVERY</span> button.

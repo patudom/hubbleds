@@ -1,5 +1,4 @@
 from echo import delay_callback
-from glue.core import Data
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
@@ -15,11 +14,13 @@ from typing import Dict, Tuple
 
 from cosmicds.components import PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
 from cosmicds.utils import empty_data_from_model_class
-from cosmicds.viewers import CDSHistogramView, CDSScatterView
+from cosmicds.viewers import CDSHistogramView
 from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
+from hubbleds.tools import *  # noqa
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_free_response, get_multiple_choice, mc_callback, fr_callback
 from hubbleds.utils import make_summary_data, models_to_glue_data
+from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 
@@ -106,9 +107,9 @@ def Page():
             GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
         )
 
-        layer_viewer = gjapp.new_data_viewer(CDSScatterView, show=False)
-        student_slider_viewer = gjapp.new_data_viewer(CDSScatterView, show=False)
-        class_slider_viewer = gjapp.new_data_viewer(CDSScatterView, show=False)
+        layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
+        student_slider_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
+        class_slider_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
         student_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
         class_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
         viewers = {
@@ -154,7 +155,6 @@ def Page():
         for component in ("est_dist_value", "velocity_value"):
             gjapp.add_link(student_data, component, class_data, component)
         links_setup.set(True)
-        print("_setup_links")
         viewers["layer"].add_data(student_data)
 
     class_data_added = solara.use_reactive(False)
@@ -182,6 +182,8 @@ def Page():
         slider_viewer.add_data(class_data)
         slider_viewer.state.x_att = class_data.id['est_dist_value']
         slider_viewer.state.y_att = class_data.id['velocity_value']
+        slider_viewer.state.x_axislabel = "Distance (Mpc)"
+        slider_viewer.state.y_axislabel = "Velocity"
         slider_viewer.state.title = "Stage 5 Class Data Viewer"
         slider_viewer.add_subset(student_slider_subset)
         slider_viewer.layers[0].state.visible = False
