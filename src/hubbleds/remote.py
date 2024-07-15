@@ -263,6 +263,7 @@ class LocalAPI(BaseAPI):
                     measurement["galaxy"]["id"],
                     global_state.value.student.id,
                 )
+                logger.error(r.text)
 
     def get_sample_galaxy(self, local_state: Reactive[LocalState]) -> GalaxyData:
         galaxy_json = self.request_session.get(
@@ -360,6 +361,7 @@ class LocalAPI(BaseAPI):
 
         if r.status_code != 200:
             logger.error("Failed to write story state to database.")
+            logger.error(r.text)
 
     def put_story_state(
         self,
@@ -382,6 +384,7 @@ class LocalAPI(BaseAPI):
 
         if r.status_code != 200:
             logger.error("Failed to write story state to database.")
+            logger.error(r.text)
 
 
     def get_example_seed_measurement(
