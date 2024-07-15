@@ -45,6 +45,7 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
 
+    class_plot_data = solara.use_reactive([])
     async def _load_class_data():
         class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
         measurements = Ref(LOCAL_STATE.fields.class_measurements)
@@ -53,6 +54,9 @@ def Page():
             ids = [int(id) for id in np.unique([m.student_id for m in class_measurements])]
             student_ids.set(ids)
         measurements.set(class_measurements)
+
+        class_data_points = [m for m in class_measurements if m.student_id in student_ids.value]
+        class_plot_data.set(class_data_points)
 
     solara.lab.use_task(_load_class_data)
 
@@ -253,17 +257,19 @@ def Page():
                         with solara.Card(style="background-color: var(--error);"):
                             solara.Markdown("Layer Toggle")
                     with rv.Col(class_="no-padding"):
-                        if student_plot_data.value:
-                            data = student_plot_data.value
-                            distances = [t.est_dist_value for t in data]
-                            velocities = [t.velocity_value for t in data]
-                            plot_data=[{
-                                "x": distances,
-                                "y": velocities,
-                                "mode": "markers",
-                                "marker": { "color": "red", "size": 12 },
-                                "hoverinfo": "none"
-                            }]
+                        if student_plot_data.value and class_plot_data.value:
+                            # Note the ordering here - we want the student data on top
+                            layers = (class_plot_data.value, student_plot_data.value)
+                            colors = ("blue", "red")
+                            plot_data=[
+                                {
+                                    "x": [t.est_dist_value for t in data],
+                                    "y": [t.velocity_value for t in data],
+                                    "mode": "markers",
+                                    "marker": { "color": color, "size": 12 },
+                                    "hoverinfo": "none"
+                                } for data, color in zip(layers, colors)
+                            ]
                             best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
                             LineDrawViewer(plot_data=plot_data,
                                            on_line_fit=best_fit_slope.set,
