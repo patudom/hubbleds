@@ -45,7 +45,6 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
 
-    class_plot_data = solara.use_reactive([])
     async def _load_class_data():
         class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
         measurements = Ref(LOCAL_STATE.fields.class_measurements)
@@ -55,10 +54,15 @@ def Page():
             student_ids.set(ids)
         measurements.set(class_measurements)
 
-        class_data_points = [m for m in class_measurements if m.student_id in student_ids.value] 
-        class_plot_data.set(class_data_points)
-
     solara.lab.use_task(_load_class_data)
+
+    student_plot_data = solara.use_reactive(LOCAL_STATE.value.measurements)
+    async def _load_student_data():
+        if not LOCAL_STATE.value.measurements_loaded:
+            logger.info("Loading measurements")
+            measurements = LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
+            student_plot_data.set(measurements)
+    solara.lab.use_task(_load_student_data)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -249,8 +253,8 @@ def Page():
                         with solara.Card(style="background-color: var(--error);"):
                             solara.Markdown("Layer Toggle")
                     with rv.Col(class_="no-padding"):
-                        if class_plot_data.value:
-                            data = class_plot_data.value
+                        if student_plot_data.value:
+                            data = student_plot_data.value
                             distances = [t.est_dist_value for t in data]
                             velocities = [t.velocity_value for t in data]
                             plot_data=[{
