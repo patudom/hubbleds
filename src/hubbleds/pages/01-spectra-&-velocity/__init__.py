@@ -623,9 +623,12 @@ def Page():
                             example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
                             example_measurements_glue.style.color = "red"
                             gjapp.data_collection.append(example_measurements_glue)
-                            egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                            add_link(egsd, DB_VELOCITY_FIELD, example_measurements_glue,"velocity_value")
-                            add_link(egsd, DB_MEASWAVE_FIELD, example_measurements_glue,"obs_wave_value")
+                        else:
+                            example_measurements_glue = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                            example_measurements_glue.style.color = "red"
+                        egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                        add_link(egsd, DB_VELOCITY_FIELD, example_measurements_glue,"velocity_value")
+                        add_link(egsd, DB_MEASWAVE_FIELD, example_measurements_glue,"obs_wave_value")
                 
                 add_example_measurements_to_glue()
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:

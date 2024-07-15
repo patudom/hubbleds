@@ -649,9 +649,12 @@ def Page():
                             example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
                             example_measurements_glue.style.color = "red"
                             gjapp.data_collection.append(example_measurements_glue)
-                            egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                            add_link(egsd, DB_ANGSIZE_FIELD, example_measurements_glue,"ang_size_value")
-                            add_link(egsd, DB_DISTANCE_FIELD, example_measurements_glue,"est_dist_value")
+                        else:
+                            example_measurements_glue = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                            example_measurements_glue.style.color = "red"
+                        egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                        add_link(egsd, DB_ANGSIZE_FIELD, example_measurements_glue,"ang_size_value")
+                        add_link(egsd, DB_DISTANCE_FIELD, example_measurements_glue,"est_dist_value")
 
                 
                 def on_click(trace, points, selector):
