@@ -270,9 +270,13 @@ def Page():
                                     "hoverinfo": "none"
                                 } for data, color in zip(layers, colors)
                             ]
+
                             best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
+                            def line_fit_cb(slopes: list[float]):
+                                # The student data is second in our tuple above
+                                best_fit_slope.set(slopes[1])
                             LineDrawViewer(plot_data=plot_data,
-                                           on_line_fit=best_fit_slope.set,
+                                           on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
                                            y_axis_label="Velocity (km / s)")
 

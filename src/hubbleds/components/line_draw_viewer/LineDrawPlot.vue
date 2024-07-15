@@ -17,7 +17,9 @@ export default {
       ymax = Math.max(ymax, Math.max(...trace.y));
     });
     if (this.plot_data?.length > 0) {
-      this.chart.traces[1].line.color = this.plot_data[0].marker.color;
+      for (const layer of this.plot_data) {
+        this.chart.traces.push(this.fitLineData(layer.marker.color));
+      }
     }
     const layout = this.chart.layout;
     layout.xaxis.range = [xmin, xmax];
@@ -29,10 +31,12 @@ export default {
       .then(() => {
         this.element = document.getElementById(this.chart.uuid);
         this.dragLayer = this.element.querySelector(".nsewdrag");
+        const count = this.plot_data?.length ?? 0;
         if (this.plot_data) {
-          this.plotDataCount = this.plot_data.length;
+          this.plotDataCount = count;
           Plotly.addTraces(this.chart.uuid, this.plot_data);
         }
+        this.fitLineTraceIndices = Array.from({length: count}, (x, i) => i + 1);
         this.setupMouseHandlers(this.active);
         this.setupPlotlyHandlers(this.active);
       });
@@ -67,17 +71,7 @@ export default {
             visible: false,
             hoverinfo: "skip"
           },
-          {
-            x: [0, 0],
-            y: [0, 0],
-            line: {
-              color: "#000000",
-              width: 4,
-              shape: "line"
-            },
-            visible: false,
-            hoverinfo: "skip"
-          }
+
         ],
         layout: { xaxis, yaxis, hovermode: "none", dragmode: false, showlegend: false },
         config: { displayModeBar: false, responsive: true },
@@ -90,12 +84,25 @@ export default {
       hoveringEndpoint: false,
       plotDataCount: 0,
       lineTraceIndex: 0,
-      fitLineTraceIndex: 1,
+      fitLineTraceIndices: [],
       endpointSize: 10,
-      lastFitSlope: null,
+      lastFitSlopes: [],
     };
   },
   methods: {
+    fitLineData(color="#000000") {
+      return {
+        x: [0, 0],
+        y: [0, 0],
+        line: {
+          color,
+          width: 4,
+          shape: "line"
+        },
+        visible: false,
+        hoverinfo: "skip"
+      };
+    },
     screenToWorld(event) {
       const layout = this.element._fullLayout;
       const rect = this.element.getBoundingClientRect();
@@ -226,12 +233,11 @@ export default {
         return [a, b];
       }
     },
-    fitLinePoints(x, y) {
+    fitLineResults(x, y) {
       const [a, b] = this.linearRegression(x, y);
-      this.lastFitSlope = a;
       const xs = this.element._fullLayout.xaxis.range;
       const ys = xs.map(v => a * v + b);
-      return [xs, ys];
+      return [[a, b], [xs, ys]];
     },
     setupMouseHandlers(active) {
       // Using document as the event listener for mouseup is intentional
@@ -263,7 +269,7 @@ export default {
   },
   computed: {
     endpointTraceIndex() {
-      return this.plotDataCount + 2;
+      return 2 * this.plotDataCount + 1;
     }
   },
   watch: {
@@ -276,28 +282,34 @@ export default {
     },
     active(value) {
       this.movingLine = value && this.lastEndpoint === null;
-      Plotly.update(this.chart.uuid, { visible: true }, {}, [this.lineTraceIndex]);
+      Plotly.update(this.chart.uuid, { visible: true }, {}, this.fitLineTraceIndices);
       this.setupMouseHandlers(value);
       this.setupPlotlyHandlers(value);
     },
     fit_active(value) {
-      let update = { visible: value };
-      if (value && this.plot_data?.length > 0) {
-        const x = this.plot_data[0].x;
-        const y = this.plot_data[0].y;
-        const [xs, ys] = this.fitLinePoints(x, y);
-        update = {
-          ...update,
-          'x.0': xs[0],
-          'x.1': xs[1],
-          'y.0': ys[0],
-          'y.1': ys[1],
-        };
-        if (this.line_fit) {
-          this.line_fit(this.lastFitSlope);
+      if (value && this.plotDataCount > 0) {
+        const slopes = [];
+        for (const [index, layer] of this.plot_data.entries()) {
+          const x = layer.x;
+          const y = layer.y;
+          const [[a, _], [xs, ys]] = this.fitLineResults(x, y);
+          let update = {
+            visible: value,
+            'x.0': xs[0],
+            'x.1': xs[1],
+            'y.0': ys[0],
+            'y.1': ys[1],
+          };
+          Plotly.update(this.chart.uuid, update, {}, [index + 1]);
+          slopes.push(a);
         }
+        this.lastFitSlopes = slopes;
+        if (this.line_fit) {
+          this.line_fit(slopes);
+        }
+      } else {
+        Plotly.update(this.chart.uuid, { visible: false }, {}, this.fitLineTraceIndices);
       }
-      Plotly.update(this.chart.uuid, update, {}, [this.fitLineTraceIndex]);
     },
     movingLine(value) {
       if (value) {

@@ -7,7 +7,7 @@ from typing import Callable, Optional
 def LineDrawPlot(active: bool,
                  fit_active: bool=False,
                  event_line_drawn: Optional[Callable]=None,
-                 event_line_fit: Optional[Callable[[float], None]]=None,
+                 event_line_fit: Optional[Callable[[list[float]], None]]=None,
                  plot_data: Optional[list[dict]]=None,
                  x_axis_label: Optional[str]=None,
                  y_axis_label: Optional[str]=None
@@ -20,7 +20,7 @@ def LineDrawViewer(plot_data: Optional[list[dict]]=None,
                    x_axis_label: Optional[str]=None,
                    y_axis_label: Optional[str]=None,
                    on_line_drawn: Optional[Callable]=None,
-                   on_line_fit: Optional[Callable[[float], None]]=None):
+                   on_line_fit: Optional[Callable[[list[float]], None]]=None):
 
     draw_active = solara.use_reactive(False)
     fit_active = solara.use_reactive(False)
