@@ -260,7 +260,11 @@ def Page():
                                 "marker": { "color": "red", "size": 12 },
                                 "hoverinfo": "none"
                             }]
-                            LineDrawViewer(plot_data=plot_data, x_axis_label="Distance (Mpc)", y_axis_label="Velocity (km / s)")
+                            best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
+                            LineDrawViewer(plot_data=plot_data,
+                                           on_line_fit=best_fit_slope.set,
+                                           x_axis_label="Distance (Mpc)",
+                                           y_axis_label="Velocity (km / s)")
 
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(

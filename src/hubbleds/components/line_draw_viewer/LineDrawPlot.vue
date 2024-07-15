@@ -1,7 +1,7 @@
 <script>
 export default {
   name: "LineDrawPlot",
-  props: ["active", "fit_active", "line_drawn", "plot_data", "x_axis_label", "y_axis_label"],
+  props: ["active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label"],
   async mounted() {
     await window.plotlyPromise;
 
@@ -92,6 +92,7 @@ export default {
       lineTraceIndex: 0,
       fitLineTraceIndex: 1,
       endpointSize: 10,
+      lastFitSlope: null,
     };
   },
   methods: {
@@ -227,6 +228,7 @@ export default {
     },
     fitLinePoints(x, y) {
       const [a, b] = this.linearRegression(x, y);
+      this.lastFitSlope = a;
       const xs = this.element._fullLayout.xaxis.range;
       const ys = xs.map(v => a * v + b);
       return [xs, ys];
@@ -291,6 +293,9 @@ export default {
           'y.0': ys[0],
           'y.1': ys[1],
         };
+        if (this.line_fit) {
+          this.line_fit(this.lastFitSlope);
+        }
       }
       Plotly.update(this.chart.uuid, update, {}, [this.fitLineTraceIndex]);
     },

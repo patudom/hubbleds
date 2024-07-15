@@ -119,6 +119,7 @@ class LocalState(BaseLocalState):
     calculations: dict = {}
     validation_failure_counts: dict = {}
     has_best_fit_galaxy: bool = False
+    best_fit_slope: Optional[float] = None
     enough_students_ready: bool = False
     class_data_students: list = []
     class_data_info: dict = {}
