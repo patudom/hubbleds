@@ -34,7 +34,7 @@ messier_coordinates = {
 
 @solara.component
 def carousel_title(step, titles):
-    with rv.Toolbar(color="warning", dense=True, ):
+    with rv.Toolbar(color="warning", dense=True, class_="rounded-top"):
         with rv.ToolbarTitle():
             solara.Text(titles[step], classes=["toolbar-title"])
 
