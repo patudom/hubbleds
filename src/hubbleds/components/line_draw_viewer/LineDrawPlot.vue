@@ -1,7 +1,7 @@
 <script>
 export default {
   name: "LineDrawPlot",
-  props: ["active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label"],
+  props: ["chart_id", "active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label"],
   async mounted() {
     await window.plotlyPromise;
 
@@ -27,18 +27,19 @@ export default {
     layout.xaxis.title = { text: this.x_axis_label };
     layout.yaxis.title = { text: this.y_axis_label };
 
-    Plotly.newPlot(this.$refs[this.chart.uuid], this.chart.traces, layout, this.chart.config)
+    Plotly.newPlot(this.$refs[this.chart_id], this.chart.traces, layout, this.chart.config)
       .then(() => {
-        this.element = document.getElementById(this.chart.uuid);
+        this.element = document.getElementById(this.chart_id);
         this.dragLayer = this.element.querySelector(".nsewdrag");
         const count = this.plot_data?.length ?? 0;
         if (this.plot_data) {
           this.plotDataCount = count;
-          Plotly.addTraces(this.chart.uuid, this.plot_data);
+          Plotly.addTraces(this.chart_id, this.plot_data);
         }
         this.fitLineTraceIndices = Array.from({length: count}, (x, i) => i + 1);
         this.setupMouseHandlers(this.active);
         this.setupPlotlyHandlers(this.active);
+        this.setupPlotlyRestyleHandler();
       });
   },
   data() {
@@ -58,7 +59,7 @@ export default {
     const yaxis = { ...baseAxis, range: [0, 1] };
     return {
       chart: {
-        uuid: "abcde",
+        uuid: this.chart_id,
         traces: [
           {
             x: [0, 0],
@@ -122,7 +123,7 @@ export default {
     updateLine(event) {
       const [xWorld, yWorld] = this.screenToWorld(event);
       Plotly.update(
-        this.chart.uuid,
+        this.chart_id,
         { 'x.1': xWorld, 'y.1': yWorld },
         {},
         [this.lineTraceIndex]
@@ -186,7 +187,7 @@ export default {
       const dataTracesCount = this.plot_data?.length ?? 0;
       if (this.element.data.length > dataTracesCount + 1) {
         try {
-          Plotly.deleteTraces(this.chart.uuid, this.endpointTraceIndex);
+          Plotly.deleteTraces(this.chart_id, this.endpointTraceIndex);
         } catch (e) {
           console.warn(e);
         }
@@ -212,7 +213,7 @@ export default {
       const line = this.element.data[this.lineTraceIndex];
       const x = line.x[1];
       const y = line.y[1];
-      Plotly.addTraces(this.chart.uuid, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: this.endpointSize, color: "#000000" }, hoverinfo: "none" });
+      Plotly.addTraces(this.chart_id, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: this.endpointSize, color: "#000000" }, hoverinfo: "none" });
       this.lastEndpoint = [x, y];
     },
     linearRegression(x, y, forceOrigin=true) {
@@ -238,6 +239,15 @@ export default {
       const xs = this.element._fullLayout.xaxis.range;
       const ys = xs.map(v => a * v + b);
       return [[a, b], [xs, ys]];
+    },
+    onPlotlyRestyle(event) {
+      const visibilityUpdate = "visible" in event[0];
+      if (!(this.fit_active && visibilityUpdate)) {
+        return;
+      }
+      const relevantIndices = this.fitLineTraceIndices.filter(idx => event[1].includes(idx + this.plotDataCount));
+      const visible = event[0]["visible"];
+      Plotly.update(this.chart_id, { visible }, {}, relevantIndices);
     },
     setupMouseHandlers(active) {
       // Using document as the event listener for mouseup is intentional
@@ -265,6 +275,9 @@ export default {
         this.element.removeListener("plotly_unhover", this.plotlyUnhoverHandler);
       }
     },
+    setupPlotlyRestyleHandler() {
+      this.element.on("plotly_restyle", this.onPlotlyRestyle);
+    },
 
   },
   computed: {
@@ -282,7 +295,7 @@ export default {
     },
     active(value) {
       this.movingLine = value && this.lastEndpoint === null;
-      Plotly.update(this.chart.uuid, { visible: true }, {}, this.fitLineTraceIndices);
+      Plotly.update(this.chart_id, { visible: true }, {}, this.fitLineTraceIndices);
       this.setupMouseHandlers(value);
       this.setupPlotlyHandlers(value);
     },
@@ -300,7 +313,7 @@ export default {
             'y.0': ys[0],
             'y.1': ys[1],
           };
-          Plotly.update(this.chart.uuid, update, {}, [index + 1]);
+          Plotly.update(this.chart_id, update, {}, [index + 1]);
           slopes.push(a);
         }
         this.lastFitSlopes = slopes;
@@ -308,7 +321,7 @@ export default {
           this.line_fit(slopes);
         }
       } else {
-        Plotly.update(this.chart.uuid, { visible: false }, {}, this.fitLineTraceIndices);
+        Plotly.update(this.chart_id, { visible: false }, {}, this.fitLineTraceIndices);
       }
     },
     movingLine(value) {
@@ -323,8 +336,8 @@ export default {
 
 <template>
 <div
-  :ref="chart.uuid"
-  :id="chart.uuid"
+  :ref="chart_id"
+  :id="chart_id"
 ></div>
 </template>
 

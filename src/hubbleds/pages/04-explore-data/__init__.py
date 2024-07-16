@@ -6,7 +6,7 @@ import solara
 from solara.toestand import Ref
 
 from cosmicds.components import ScaffoldAlert, StateEditor
-from hubbleds.components import HubbleExpUniverseSlideshow, LineDrawViewer
+from hubbleds.components import HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
@@ -251,16 +251,16 @@ def Page():
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
                 with solara.Columns([3,9], classes=["no-padding"]):
+                    colors = ("blue", "red")
                     with rv.Col(class_="no-padding"):
-                        # TODO: LayerToggle should refresh when the data changes
-                        # LayerToggle(viewer)
-                        with solara.Card(style="background-color: var(--error);"):
-                            solara.Markdown("Layer Toggle")
+                        PlotlyLayerToggle(chart_id="line-draw-viewer",
+                                          layer_indices=(3, 4),
+                                          colors=colors,
+                                          labels=("Class Data", "My Data"))
                     with rv.Col(class_="no-padding"):
                         if student_plot_data.value and class_plot_data.value:
                             # Note the ordering here - we want the student data on top
                             layers = (class_plot_data.value, student_plot_data.value)
-                            colors = ("blue", "red")
                             plot_data=[
                                 {
                                     "x": [t.est_dist_value for t in data],
@@ -275,7 +275,8 @@ def Page():
                             def line_fit_cb(slopes: list[float]):
                                 # The student data is second in our tuple above
                                 best_fit_slope.set(slopes[1])
-                            LineDrawViewer(plot_data=plot_data,
+                            LineDrawViewer(chart_id="line-draw-viewer",
+                                           plot_data=plot_data,
                                            on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
                                            y_axis_label="Velocity (km / s)")

@@ -60,7 +60,7 @@ export default {
       if (!this.element) {
         this.getElement();
       }
-      Plotly.update(this.element, { visible }, {}, index);
+      Plotly.restyle(this.element, { visible }, {}, index);
     }
   }
 }
