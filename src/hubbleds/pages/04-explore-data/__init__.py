@@ -6,7 +6,7 @@ import solara
 from solara.toestand import Ref
 
 from cosmicds.components import ScaffoldAlert, StateEditor
-from hubbleds.components import HubbleExpUniverseSlideshow, LineDrawViewer
+from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
@@ -98,11 +98,20 @@ def Page():
             )
 
         with rv.Col():
-            with solara.Card(style="background-color: var(--error);"):
-                solara.Markdown("Student data table goes here")
-
-
-
+            DataTable(
+                title="My Galaxies",
+                items=[x.model_dump() for x in LOCAL_STATE.value.measurements],
+                headers=[
+                    {
+                        "text": "Galaxy Name",
+                        "align": "start",
+                        "sortable": False,
+                        "value": "galaxy.name"
+                    },
+                    { "text": "Velocity (km/s)", "value": "velocity_value" },
+                    { "text": "Distance (Mpc)", "value": "est_dist_value" },
+                ]
+            )
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
