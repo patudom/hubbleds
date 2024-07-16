@@ -168,7 +168,10 @@ footer .v-card__text {
     background-color: #000b !important;
 }
 
-
+/** By default the WWT widget has a transparent background, but we want it to be black **/
+#app .wwtelescope-component {
+    background-color: #000;
+}
 
 /*.solara-container-main {*/
 /*    max-width: 1264px;*/
