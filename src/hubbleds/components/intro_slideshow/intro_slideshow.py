@@ -113,6 +113,7 @@ def IntroSlideshow():
                                 If not, how long ago did it form?
                             </p>                            
                             """,
+                            classes=["white--text"],
                         )
 
                 with solara.Column(align="center"):

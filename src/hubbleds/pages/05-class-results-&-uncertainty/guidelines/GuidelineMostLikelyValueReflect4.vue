@@ -40,6 +40,7 @@
                 >
                   <v-toolbar-title
                     class="text-h6 text-uppercase font-weight-regular"
+                    style="color: white;"
                   >
                     Hint #1
                   </v-toolbar-title>

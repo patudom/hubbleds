@@ -47,6 +47,7 @@
           >
             <v-toolbar-title
               class="text-h6 text-uppercase font-weight-regular"
+              style="color: white;"
             >
               Hint
             </v-toolbar-title>
