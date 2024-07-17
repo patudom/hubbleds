@@ -100,6 +100,23 @@ def Page():
     default_color = "#3A86FF"
     highlight_color = "#FF5A00"
 
+    def _update_bins(viewer, *args):
+        props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
+        with delay_callback(viewer.state, *props):
+            if not viewer.layers:
+                return
+            layer = viewer.layers[0] # only works cuz there is only one layer
+            component = viewer.state.x_att
+            values = layer.layer.data[component]
+            try:
+                xmin = round(values.min(), 0) - 1.5
+                xmax = round(values.max(), 0) + 1.5
+            except:
+                return
+            viewer.state.hist_n_bin = int(xmax - xmin)
+            viewer.state.hist_x_min = xmin
+            viewer.state.hist_x_max = xmax
+
     def glue_setup() -> Tuple[JupyterApplication, Dict[str, PlotlyBaseView]]:
         # NOTE: use_memo has to be part of the main page render. Including it
         #  in a conditional will result in an error.
@@ -120,23 +137,6 @@ def Page():
             "class_hist": class_hist_viewer
         }
 
-        def _update_bins(viewer, *args):
-            props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
-            with delay_callback(viewer.state, *props):
-                if not viewer.layers:
-                    return
-                layer = viewer.layers[0] # only works cuz there is only one layer 
-                component = viewer.state.x_att                   
-                values = layer.layer.data[component]
-                try:
-                    xmin = round(values.min(), 0) - 0.5
-                    xmax = round(values.max(), 0) + 0.5
-                except:
-                    return
-                viewer.state.hist_n_bin = int(xmax - xmin)
-                viewer.state.hist_x_min = xmin
-                viewer.state.hist_x_max = xmax
-        
         for viewer in (student_hist_viewer, class_hist_viewer):
             gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
                                                 handler=partial(_update_bins, viewer))
@@ -286,6 +286,9 @@ def Page():
             size=100,
         )
         return
+
+    for viewer_tag in ("student_hist", "class_hist"):
+        _update_bins(viewers[viewer_tag])
 
     logger.info("DATA IS READY")
 
