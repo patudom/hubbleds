@@ -2,7 +2,6 @@
   <v-dialog
       v-model="dialog"
       max-width="800px"
-      persistent
   >
     <v-card
         class="mx-auto"
@@ -14,6 +13,7 @@
       >
         <v-toolbar-title
             class="text-h6 text-uppercase font-weight-regular"
+            style="color: white;"
         >
           {{ titles[step] }}
         </v-toolbar-title>

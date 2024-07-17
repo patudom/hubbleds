@@ -1,7 +1,6 @@
 <template>
   <v-dialog
       v-model="dialog"
-      persistent
       max-width="1000px"
   >
     <template v-slot:activator="{ on, attrs }">
@@ -29,6 +28,7 @@
       >
         <v-toolbar-title
           class="text-h6 text-uppercase font-weight-regular"
+          style="color: white;"
         >
           {{ titles[step] }}
         </v-toolbar-title>
@@ -409,12 +409,3 @@
 </template>
 
 
-<style>
-  .StudentResponses {
-    /* font-weight: bold; */
-    padding: 5px 10px;
-    background-color: #ffefb2;
-    border-radius: 5px;
-    color: black;
-  }
-</style>

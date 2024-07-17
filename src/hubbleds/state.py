@@ -107,7 +107,7 @@ class MCScore(BaseModel):
 
 
 class LocalState(BaseLocalState):
-    title: str = "Hubble's law"
+    title: str = "Hubble's Law"
     story_id: str = "hubbles_law"
     measurements: list[StudentMeasurement] = []
     example_measurements: list[StudentMeasurement] = []

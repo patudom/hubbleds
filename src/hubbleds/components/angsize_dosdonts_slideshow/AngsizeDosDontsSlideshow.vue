@@ -1,7 +1,6 @@
 <template>
   <v-dialog
       v-model="dialog"
-      persistent
       max-width="1000px"
   >
     <template v-slot:activator="{ on, attrs }">
@@ -26,6 +25,7 @@
       >
         <v-toolbar-title
           class="text-h6 text-uppercase font-weight-regular"
+          style="color: white;"
         >
           {{ currentTitle }}
         </v-toolbar-title>

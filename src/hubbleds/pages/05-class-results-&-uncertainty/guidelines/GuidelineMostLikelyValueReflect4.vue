@@ -28,7 +28,6 @@
             hint
             <v-dialog
               v-model="dialog"
-              persistent
               max-width="600px">
               <v-card
                 class="mx-auto"
@@ -40,6 +39,7 @@
                 >
                   <v-toolbar-title
                     class="text-h6 text-uppercase font-weight-regular"
+                    style="color: white;"
                   >
                     Hint #1
                   </v-toolbar-title>

@@ -2,7 +2,7 @@
     --primary-dark: #0D47A1;
     --secondary-dark: #00838F;
     --accent-dark: #FFC400;
-    --error-dark: #D81B60;
+    --error-dark: #C5CAE9;
     --info-dark: #BF360C;
     --success-dark: #00E676;
     --warning-dark: #DD2C00;
@@ -10,7 +10,7 @@
     --primary-light: #1565C0;
     --secondary-light: #006064;
     --accent-light: #FFD740;
-    --error-light: #F06292;
+    --error-light: #121754;
     --info-light: #FF7043;
     --success-light: #388E3C;
     --warning-light: #DD2C00;
@@ -42,14 +42,73 @@
     --warning: var(--warning-light);
 }
 
-.theme--dark .v-sheet {
-    color: white;
-    background-color: #121212;
+.cosmicds-appbar {
+    background-color: #0d2040 !important;
+    color: white !important;
 }
 
+.cosmicds-appbar .v-icon {
+    color: white !important;
+
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+h3 {
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+h4 {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* General text size */
+.v-card .v-card__subtitle, .v-card>.v-card__text, .v-card__subtitle,
+.v-card__text   {
+    font-size: 1rem;
+    line-height: 1.5;
+    padding-inline: 20px;
+}
+.theme--dark.v-card .v-card__subtitle, .theme--dark.v-card>.v-card__text {
+    color:#f2f2f2;
+}
+.theme--light.v-card .v-card__subtitle, .theme--light.v-card>.v-card__text {
+    color:#1a1a1a;
+}
+
+.guideline-button {
+    font-weight: 400 !important;
+}
+
+.rounded-top {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px; 
+}
+
+/* This is the background for the intro slideshow */
+.theme--dark .v-sheet {
+    background-color: #121212;
+}
 .theme--light .v-sheet {
-    color: black;
+    color: black;  /* Don't know why text is white if you don't specify this.. */
     background-color: #FAFAFA;
+}
+
+/* Captions have slightly less contrast than general text */
+.v-application .caption {
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+}
+.theme--dark .caption {
+    color: #BDBDBD; 
+}
+.theme--light .caption {
+    color: #424242; 
 }
 
 /* This removes the solara watermark */
@@ -60,15 +119,19 @@
 .piggy-chip {
     background-color: black !important; 
     border: 1px solid var(--success-dark) !important;
-    color: white;
+    color: white !important;
 }
 
 .theme--dark .toolbar {
     background-color: var(--primary-dark) !important;    
 }
 .theme--light .toolbar {
-    color: white !important;
+    color: white !important;  
     background-color: var(--primary-light) !important;    
+}
+.toolbar-title {
+    text-transform: uppercase;
+    color: white !important;
 }
 
 .tutorial {
@@ -83,32 +146,40 @@
 
 /* NOTE: .v-application based selectors will work, but often will need to be either !important or (also) have a higher specificity selector than the default Vuetify css. */
 /* Note that theme--dark and theme--light are defined on the *same* element as v-application, so .v-application should not be a descendent of .theme--[dark/light] */
+
+/* These are for the mathjax boxes */
 .theme--dark.v-application .legend {
     border: 1px solid white !important;
 }
 .theme--light.v-application .legend {
     border: 1px solid black !important;
 }
-
 .v-application .legend {
     max-width: 300px;
     margin: 0 auto 0;
     font-size: 15px !important;
 }
-
-.toolbar-title {
-    text-transform: uppercase;
+.theme--dark .MathJax, .theme--dark.v-label {
     color: white !important;
 }
+.theme--light .MathJax, .theme--light.v-label {
+    color: black !important;
+}
+.JaxEquation .MathJax {
+    margin: 16px auto !important;
+}
+
+/* This is the background for displaying text students have entered */
+.StudentResponses {
+    /* font-weight: bold; */
+    padding: 3px 5px;
+    background-color: #FFAB91;
+    border-radius: 5px;
+    color: black;
+    }
 
 .padded-text {
     padding: 15px;
-}
-
-.theme--dark.v-card .v-card__subtitle, .theme--dark.v-card>.v-card__text {
-    color: hsl(0 0% 100% / 1);
-    font-weight: bold !important;
-    padding-inline: 20px;
 }
 
 .no-padding {
@@ -139,36 +210,31 @@ footer .v-card__text {
     color: #F5f5f5 !important; 
     padding-block: 0;
 }
-
-.theme--dark .MathJax {
-    color: white !important;
-}
-
-.theme--light .MathJax {
-    color: black !important;
-}
-
-.JaxEquation .MathJax {
-    margin: 16px auto !important;
-}
-
-.v-container .v-card__text {
+/* 
+/* Don't remember where this goes - could be deleted? */
+.v-card__text .v-container {
     font-size: 18px !important;
     line-height: 1.5 !important;
-}
+} */
 
-.v-radio label.theme--dark{
+.v-radio label.theme--dark {
     color: white !important;
 }
-.v-radio label.theme--light{
+.v-radio label.theme--light {
     color: black !important;
 }
 
-.v-alert .v-input--radio-group+.v-alert, .v-dialog .v-input--radio-group+.v-alert {
-    background-color: #000b !important;
+.theme--dark .switch-panel {
+    background-color: #233149;
+}
+.theme--light .switch-panel {
+    background-color: #e0e9fc;
 }
 
-
+/** By default the WWT widget has a transparent background, but we want it to be black **/
+#app .wwtelescope-component {
+    background-color: #000;
+}
 
 /*.solara-container-main {*/
 /*    max-width: 1264px;*/
@@ -177,15 +243,13 @@ footer .v-card__text {
 /*    overflow: auto*/
 /*}*/
 
-
 /***** 
     ================================
     Solara/Vuetify default overrides 
     ================================
 *****/
 
-/* buttons should remain white, even in dark mode. 
-    as the toolbar is still #1565C0 */
-.theme--light.v-btn-toggle:not(.v-btn-toggle--group) .v-btn.v-btn .v-icon {
+/* buttons should remain white, even in dark mode. as the toolbar is still #1565C0 */
+.theme--light.toolbar .v-btn.v-btn .v-icon {
     color: #fff !important;
 }
