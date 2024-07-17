@@ -295,7 +295,7 @@ export default {
     },
     active(value) {
       this.movingLine = value && this.lastEndpoint === null;
-      Plotly.update(this.chart_id, { visible: true }, {}, this.fitLineTraceIndices);
+      Plotly.update(this.chart_id, { visible: true }, {}, this.lineTraceIndex);
       this.setupMouseHandlers(value);
       this.setupPlotlyHandlers(value);
     },
