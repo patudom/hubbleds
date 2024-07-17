@@ -27,6 +27,7 @@
       >
         <v-toolbar-title
           class="text-h6 text-uppercase font-weight-regular"
+          style="color: white;"
         >
           Dot Plot Tutorial
         </v-toolbar-title>
