@@ -307,7 +307,7 @@ export default {
           const y = layer.y;
           const [[a, _], [xs, ys]] = this.fitLineResults(x, y);
           let update = {
-            visible: value,
+            visible: value && (this.element.data[index + 1 + this.plotDataCount].visible ?? true),
             'x.0': xs[0],
             'x.1': xs[1],
             'y.0': ys[0],
