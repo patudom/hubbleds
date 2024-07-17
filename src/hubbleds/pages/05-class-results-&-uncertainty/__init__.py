@@ -193,13 +193,14 @@ def Page():
                                                output_id_field="id",
                                                label="Class Summaries")
         class_summary_data = GLOBAL_STATE.value.add_or_update_data(class_summary_data)
-        class_data_added.set(True)
 
         hist_viewer = viewers["student_hist"]
         hist_viewer.add_data(class_summary_data)
         hist_viewer.state.x_att = class_summary_data.id['age_value']
         hist_viewer.state.title = "My class ages (5 galaxies each)"
         hist_viewer.layers[0].state.color = "red"
+
+        class_data_added.set(True)
 
     class_data_loaded.subscribe(_on_class_data_loaded)
 
@@ -251,8 +252,6 @@ def Page():
         else:
             class_slider_subset = all_data.subsets[0]
 
-        all_data_added.set(True)
-
         slider_viewer = viewers["class_slider"]
         slider_viewer.add_data(all_data)
         slider_viewer.state.x_att = all_data.id['est_dist_value']
@@ -267,7 +266,11 @@ def Page():
         hist_viewer.state.title = "All class ages (5 galaxies each)"
         hist_viewer.layers[0].state.color = "blue"
 
+        all_data_added.set(True)
+
     all_data_loaded.subscribe(_on_all_data_loaded)
+
+
     student_data_added.subscribe(_setup_links)
     class_data_added.subscribe(_setup_links)
 
@@ -283,6 +286,8 @@ def Page():
             size=100,
         )
         return
+
+    logger.info("DATA IS READY")
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
