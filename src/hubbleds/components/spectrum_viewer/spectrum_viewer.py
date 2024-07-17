@@ -49,12 +49,13 @@ def SpectrumViewer(
                     event["relayout_data"]["xaxis.range[1]"],
                 ]
             )
-            y_bounds.set(
-                [
-                    event["relayout_data"]["yaxis.range[0]"],
-                    event["relayout_data"]["yaxis.range[1]"],
-                ]
-            )
+            # y_bounds.set(
+            #     [
+            #         event["relayout_data"]["yaxis.range[0]"],
+            #         event["relayout_data"]["yaxis.range[1]"],
+            #     ]
+            # )
+            toggle_group_state.set([x for x in toggle_group_state.value if x != 0])
         except:
             x_bounds.set([])
             y_bounds.set([])
@@ -120,7 +121,9 @@ def SpectrumViewer(
 
         fig = px.line(spec_data_task.value, x="wave", y="flux")
 
-        fig.update_layout(margin=dict(l=0, r=10, t=10, b=0))
+        fig.update_layout(
+            margin=dict(l=0, r=10, t=10, b=0), yaxis=dict(fixedrange=True)
+        )
 
         fig.add_vline(
             x=obs_wave,
@@ -187,16 +190,16 @@ def SpectrumViewer(
             hovermode="x",
         )
 
-        if x_bounds.value and y_bounds.value:
+        if x_bounds.value:  # and y_bounds.value:
             fig.update_xaxes(range=x_bounds.value)
-            fig.update_yaxes(range=y_bounds.value)
-        else:
-            fig.update_yaxes(
-                range=[
-                    spec_data_task.value["flux"].min() * 0.95,
-                    spec_data_task.value["flux"].max() * 1.25,
-                ]
-            )
+            # fig.update_yaxes(range=y_bounds.value)
+        # else:
+        fig.update_yaxes(
+            range=[
+                spec_data_task.value["flux"].min() * 0.95,
+                spec_data_task.value["flux"].max() * 1.25,
+            ]
+        )
 
         fig.update_layout(dragmode="zoom" if 0 in toggle_group_state.value else "pan")
 
