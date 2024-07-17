@@ -218,6 +218,11 @@ footer .v-card__text {
     color: black !important;
 }
 
+/** By default the WWT widget has a transparent background, but we want it to be black **/
+#app .wwtelescope-component {
+    background-color: #000;
+}
+
 /*.solara-container-main {*/
 /*    max-width: 1264px;*/
 /*    height: 100%;*/
@@ -235,5 +240,4 @@ footer .v-card__text {
 /* buttons should remain white, even in dark mode. as the toolbar is still #1565C0 */
 .theme--light.toolbar .v-btn.v-btn .v-icon {
     color: #fff !important;
-    opacity: 1 !important;
 }
