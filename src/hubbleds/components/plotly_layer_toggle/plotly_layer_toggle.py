@@ -7,5 +7,6 @@ def PlotlyLayerToggle(chart_id: str,
                       layer_indices: Iterable[int],
                       labels: Iterable[str],
                       colors: Iterable[str],
+                      initial_selected: Iterable[int] | None=None
 ):
     pass

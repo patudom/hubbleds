@@ -14,7 +14,8 @@
         v-for="(layer, index) in layer_indices"
         :key="index"
         :value="index"
-        inactive
+        color="black"
+        @click="toggleVisibility(index)"
       >
         <template v-slot:default="{ active }">
           <v-list-item-content
@@ -25,9 +26,8 @@
 
           <v-list-item-action>
             <v-checkbox
-              :input-value="index in selected"
+              :input-value="selected.includes(index)"
               :color="colors[index]"
-              @change="setLayerVisible(layer, active)"
             />
           </v-list-item-action>
         </template>
@@ -61,6 +61,17 @@ export default {
         this.getElement();
       }
       Plotly.restyle(this.element, { visible }, {}, index);
+    },
+    toggleVisibility(index) {
+      let makeVisible = false;
+      if (this.selected.includes(index)) {
+        this.selected = this.selected.filter(idx => idx !== index);
+      } else {
+        this.selected = this.selected.concat([index]);
+        makeVisible = true;
+      }
+      const layerIndex = this.layer_indices[index];
+      this.setLayerVisible(layerIndex, makeVisible);
     }
   }
 }
