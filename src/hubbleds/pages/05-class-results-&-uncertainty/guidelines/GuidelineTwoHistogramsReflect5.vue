@@ -35,7 +35,6 @@
       hint
       <v-dialog
         v-model="uncertainty_hint_dialog"
-        persistent
         max-width="600px">
         <v-card
           class="mx-auto"

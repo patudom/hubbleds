@@ -28,7 +28,6 @@
             hint
             <v-dialog
               v-model="dialog"
-              persistent
               max-width="600px">
               <v-card
                 class="mx-auto"

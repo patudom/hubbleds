@@ -74,6 +74,12 @@ h4 {
     line-height: 1.5;
     padding-inline: 20px;
 }
+.theme--dark.v-card .v-card__subtitle, .theme--dark.v-card>.v-card__text {
+    color:#f2f2f2;
+}
+.theme--light.v-card .v-card__subtitle, .theme--light.v-card>.v-card__text {
+    color:#1a1a1a;
+}
 
 .guideline-button {
     font-weight: 400 !important;
@@ -211,11 +217,18 @@ footer .v-card__text {
     line-height: 1.5 !important;
 } */
 
-.v-radio label.theme--dark{
+.v-radio label.theme--dark {
     color: white !important;
 }
-.v-radio label.theme--light{
+.v-radio label.theme--light {
     color: black !important;
+}
+
+.theme--dark .switch-panel {
+    background-color: #233149;
+}
+.theme--light .switch-panel {
+    background-color: #e0e9fc;
 }
 
 /** By default the WWT widget has a transparent background, but we want it to be black **/
@@ -229,7 +242,6 @@ footer .v-card__text {
 /*    max-height: 100%;*/
 /*    overflow: auto*/
 /*}*/
-
 
 /***** 
     ================================
