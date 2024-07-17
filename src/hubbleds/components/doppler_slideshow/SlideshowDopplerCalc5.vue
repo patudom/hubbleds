@@ -2,7 +2,6 @@
   <v-dialog
       v-model="dialog"
       max-width="800px"
-      persistent
   >
     <v-card
         class="mx-auto"
