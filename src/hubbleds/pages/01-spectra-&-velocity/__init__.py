@@ -23,10 +23,16 @@ from hubbleds.components import (
     DotplotTutorialSlideshow,
 )
 from hubbleds.state import GalaxyData, StudentMeasurement
+
 # from solara.lab import Ref
 from solara.toestand import Ref
 from cosmicds.logger import setup_logger
-from ...data_management import EXAMPLE_GALAXY_SEED_DATA, DB_VELOCITY_FIELD, EXAMPLE_GALAXY_MEASUREMENTS, DB_MEASWAVE_FIELD
+from ...data_management import (
+    EXAMPLE_GALAXY_SEED_DATA,
+    DB_VELOCITY_FIELD,
+    EXAMPLE_GALAXY_MEASUREMENTS,
+    DB_MEASWAVE_FIELD,
+)
 import numpy as np
 from glue.core import Data
 from hubbleds.utils import measurement_list_to_glue_data
@@ -104,10 +110,16 @@ def Page():
         gjapp = JupyterApplication(
             GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
         )
-        
+
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
             example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE)
-            data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **{k: np.asarray([r[k] for r in example_seed_data]) for k in example_seed_data[0].keys()})
+            data = Data(
+                label=EXAMPLE_GALAXY_SEED_DATA,
+                **{
+                    k: np.asarray([r[k] for r in example_seed_data])
+                    for k in example_seed_data[0].keys()
+                }
+            )
             gjapp.data_collection.append(data)
         else:
             data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
@@ -156,8 +168,8 @@ def Page():
     # solara.Text(f"{COMPONENT_STATE.value.dict()}")
 
     # Flag to show/hide the selection tool. TODO: we shouldn't need to be
-    #  doing this here; revisit in the future and implement proper handling
-    #  in the ipywwt package itself.
+    #   doing this here; revisit in the future and implement proper handling
+    #   in the ipywwt package itself.
     show_selection_tool, set_show_selection_tool = solara.use_state(False)
 
     async def _delay_selection_tool():
@@ -604,35 +616,50 @@ def Page():
                         True
                     ),
                 )
-                
+
                 def add_link(from_dc_name, from_att, to_dc_name, to_att):
                     if isinstance(from_dc_name, Data):
                         from_dc = from_dc_name
                     else:
                         from_dc = gjapp.data_collection[from_dc_name]
-                    
+
                     if isinstance(to_dc_name, Data):
                         to_dc = to_dc_name
                     else:
                         to_dc = gjapp.data_collection[to_dc_name]
                     gjapp.add_link(from_dc, from_att, to_dc, to_att)
-                
+
                 def add_example_measurements_to_glue():
                     if len(LOCAL_STATE.value.example_measurements) > 0:
                         if EXAMPLE_GALAXY_MEASUREMENTS not in gjapp.data_collection:
-                            example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
+                            example_measurements_glue = measurement_list_to_glue_data(
+                                LOCAL_STATE.value.example_measurements,
+                                label=EXAMPLE_GALAXY_MEASUREMENTS,
+                            )
                             example_measurements_glue.style.color = "red"
                             gjapp.data_collection.append(example_measurements_glue)
                             egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                            add_link(egsd, DB_VELOCITY_FIELD, example_measurements_glue,"velocity_value")
-                            add_link(egsd, DB_MEASWAVE_FIELD, example_measurements_glue,"obs_wave_value")
-                
+                            add_link(
+                                egsd,
+                                DB_VELOCITY_FIELD,
+                                example_measurements_glue,
+                                "velocity_value",
+                            )
+                            add_link(
+                                egsd,
+                                DB_MEASWAVE_FIELD,
+                                example_measurements_glue,
+                                "obs_wave_value",
+                            )
+
                 add_example_measurements_to_glue()
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                    viewer_data=[gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
-                          gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
+                    viewer_data = [
+                        gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
+                        gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
+                    ]
                 else:
-                    viewer_data=[gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
+                    viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
                 DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD)
 
             if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
@@ -658,13 +685,11 @@ def Page():
                 },
             )
 
-            selected_example_galaxy_data = LOCAL_STATE.value.get_example_measurement(
-                COMPONENT_STATE.value.selected_example_galaxy
+            selected_example_galaxy_data = (
+                selected_example_measurement.value.galaxy.dict()
+                if selected_example_measurement.value is not None
+                else None
             )
-            if selected_example_galaxy_data is not None:
-                selected_example_galaxy_data = (
-                    selected_example_galaxy_data.galaxy.dict()
-                )
 
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRestwave.vue",
@@ -783,9 +808,9 @@ def Page():
                     )
 
                     SpectrumViewer(
-                        data=(
-                            example_spec_data_task.value
-                            if example_spec_data_task.finished
+                        galaxy_data=(
+                            selected_example_measurement.value.galaxy
+                            if selected_example_measurement.value is not None
                             else None
                         ),
                         obs_wave=COMPONENT_STATE.value.obs_wave,
@@ -831,8 +856,10 @@ def Page():
                         obs_wave_total.set(obs_wave_total.value + 1)
 
                     SpectrumViewer(
-                        data=(
-                            spec_data_task.value if spec_data_task.finished else None
+                        galaxy_data=(
+                            selected_measurement.value.galaxy
+                            if selected_measurement.value is not None
+                            else None
                         ),
                         obs_wave=COMPONENT_STATE.value.obs_wave,
                         spectrum_click_enabled=COMPONENT_STATE.value.current_step_at_or_after(
