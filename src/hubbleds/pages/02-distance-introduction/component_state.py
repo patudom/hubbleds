@@ -1,15 +1,14 @@
-from solara import Reactive
-import dataclasses
-from ...state import GLOBAL_STATE
+import solara
+from pydantic import BaseModel
+from cosmicds.state import BaseState
 
-@dataclasses.dataclass
-class DistanceSlideshow:
-    step_dist: Reactive[int] = dataclasses.field(default=Reactive(0))
-    max_step_completed: Reactive[int] = dataclasses.field(default=Reactive(0))
-    complete: Reactive[bool] = dataclasses.field(default=Reactive(False))
+class DistanceSlideshow(BaseModel):
+    step: int = 0
+    max_step_completed: int = 0
+    complete: bool = False
 
-@dataclasses.dataclass
-class ComponentState:
-    distance_slideshow_state: DistanceSlideshow = dataclasses.field(
-        default_factory=DistanceSlideshow
-    )
+class ComponentState(BaseState):
+    stage_id: str = "distance_introduction"
+    distance_slideshow_state: DistanceSlideshow = DistanceSlideshow()
+
+COMPONENT_STATE = solara.reactive(ComponentState())
