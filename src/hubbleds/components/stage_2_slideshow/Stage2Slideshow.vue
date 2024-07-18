@@ -426,7 +426,7 @@
                           'Try again. \n Think about the people on the beach. Did the closer person appear bigger or smaller than the farther person?'
                         ]"
                         :correct-answers="[2]"
-                        @select="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(this.max_step_completed, 7); } }"
+                        @select="(option) => { if(option.correct || option.neutral) { set_max_step_completed(Math.max(max_step_completed, 7)); } }"
                         score-tag="which-galaxy-closer"
                       >
                       </mc-radiogroup>
@@ -553,7 +553,7 @@
                         'Try again. \ You could probably fit 10 Galaxy B’s across Galaxy A.'
                       ]"
                       :correct-answers="[1]"
-                      @select="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(this.max_step_completed, 9); } }"
+                      @select="(option) => { if(option.correct || option.neutral) { set_max_step_completed(Math.max(max_step_completed, 9)); } }"
                       score-tag="how-much-closer-galaxies"
                     >
                     </mc-radiogroup>
@@ -774,7 +774,7 @@
         class="black--text"
         color="accent"
         depressed
-        @click="step--"
+        @click="set_step(step - 1);"
       >
         Back
       </v-btn>
@@ -814,7 +814,7 @@
         class="black--text"
         color="accent"
         depressed
-        @click="step++;"
+        @click="set_step(step + 1);"
       >
         next
       </v-btn>
@@ -826,8 +826,8 @@
         class="black--text"
         depressed
         @click="() => {
-          on_slideshow_finished();
-          step = 0;
+          slideshow_finished();
+          set_step(0)
           //this.$refs.synth.stopSpeaking();
         }"
       >
@@ -841,8 +841,8 @@
         class="black--text"
         depressed
         @click="() => {
-          on_slideshow_finished();
-          step = 0;
+          slideshow_finished();
+          set_step(0)
           //this.$refs.synth.stopSpeaking();
         }"
       >
@@ -859,14 +859,6 @@
 
 <script>
 module.exports = {
-  props: ["buttonText", "titleText", "closeText"],
-
-  mounted() {
-    console.log("Two Intro");
-    console.log(this);
-    console.log(this.$el);
-  },
-
   methods: {
     typesetMathJax(entries, _observer, intersecting) {
       if (intersecting) {

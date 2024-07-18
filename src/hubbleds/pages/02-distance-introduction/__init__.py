@@ -1,5 +1,6 @@
 
 import solara
+from solara.toestand import Ref
 
 from hubbleds.components import Stage2Slideshow
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE 
@@ -38,10 +39,19 @@ def Page():
     logger.info("Trying to write component state for stage 2.")
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
 
+    step = Ref(
+        COMPONENT_STATE.fields.distance_slideshow_state.step
+    )
+    max_step_completed = Ref(
+        COMPONENT_STATE.fields.distance_slideshow_state.max_step_completed
+    )
+    slideshow_finished = Ref(
+        COMPONENT_STATE.fields.distance_slideshow_state.complete
+    )
+
     Stage2Slideshow(
         step = COMPONENT_STATE.value.distance_slideshow_state.step,
         max_step_completed = COMPONENT_STATE.value.distance_slideshow_state.max_step_completed,
-        event_on_slideshow_finished=lambda _: COMPONENT_STATE.value.complete.set(True),
         length = 13,
         titles = [
             "1920's Astronomy",
@@ -61,5 +71,8 @@ def Page():
         interact_steps=[7,9],
         distance_const=DISTANCE_CONSTANT,
         image_location=f"{IMAGE_BASE_URL}/stage_two_intro",
+        event_set_step=step.set,
+        event_set_max_step_completed=max_step_completed.set,
+        event_slideshow_finished=lambda _: slideshow_finished.set(True),
         debug = LOCAL_STATE.value.debug_mode,
     )
