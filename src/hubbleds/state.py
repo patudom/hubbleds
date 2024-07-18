@@ -23,6 +23,7 @@ from cosmicds.logger import setup_logger
 
 logger = setup_logger("HUBBLEDS-STATE")
 
+
 class SpectrumData(BaseModel):
     name: str
     wave: list[float]
@@ -53,6 +54,14 @@ class GalaxyData(BaseModel):
 
         return Table({"wave": spec_data.wave, "flux": spec_data.flux}).to_pandas()
 
+    @property
+    def rest_wave_value(self) -> float:
+        return round(ELEMENT_REST[self.element])
+
+    @property
+    def redshift_rest_wave_value(self) -> float:
+        return round(ELEMENT_REST[self.element] * (1 + self.z))
+
 
 class StudentMeasurement(BaseModel):
     student_id: int
@@ -79,13 +88,13 @@ class StudentMeasurement(BaseModel):
     @property
     def rest_wave_value(self) -> float:
         if self.galaxy:
-            return round(ELEMENT_REST[self.galaxy.element])
+            return self.galaxy.rest_wave_value
         return 0
 
-    @computed_field
-    @property
-    def last_modified(self) -> str:
-        return f"{datetime.datetime.now(datetime.UTC)}"
+    # @computed_field
+    # @property
+    # def last_modified(self) -> str:
+    #     return f"{datetime.datetime.now(datetime.UTC)}"
 
 
 class BaseSummary(BaseModel):
@@ -109,7 +118,7 @@ class MCScore(BaseModel):
 
 
 class LocalState(BaseLocalState):
-    title: str = "Hubble's law"
+    title: str = "Hubble's Law"
     story_id: str = "hubbles_law"
     measurements: list[StudentMeasurement] = []
     example_measurements: list[StudentMeasurement] = []
@@ -121,6 +130,7 @@ class LocalState(BaseLocalState):
     calculations: dict = {}
     validation_failure_counts: dict = {}
     has_best_fit_galaxy: bool = False
+    best_fit_slope: Optional[float] = None
     enough_students_ready: bool = False
     class_data_students: list = []
     class_data_info: dict = {}
@@ -171,14 +181,15 @@ class LocalState(BaseLocalState):
             ),
             None,
         )
-    
+
     def question_completed(self, tag: str) -> bool:
         if tag in self.free_responses:
             return self.free_responses[tag].completed
         elif tag in self.mc_scoring:
             return self.mc_scoring[tag].completed
-        
+
         return False
+
 
 LOCAL_STATE = solara.reactive(LocalState())
 
@@ -188,7 +199,8 @@ def get_free_response(local_state: Reactive[LocalState], tag: str):
     # also initializes the question by using get_or_create method
     free_responses = local_state.value.free_responses
     return free_responses.get_or_create(tag).model_dump()
-        
+
+
 def get_multiple_choice(local_state: Reactive[LocalState], tag: str):
     # get question as serializable dictionary
     # also initializes the question by using get_or_create method
@@ -196,16 +208,16 @@ def get_multiple_choice(local_state: Reactive[LocalState], tag: str):
     return multiple_choices.get_model_dump(tag)
 
 
-
 def mc_callback(
-        event, 
-        local_state: Reactive[LocalState], 
-        callback: Optional[Callable[[MCScoring], None]] = None):
+    event,
+    local_state: Reactive[LocalState],
+    callback: Optional[Callable[[MCScoring], None]] = None,
+):
     """
     Multiple Choice callback function
     """
-    
-    mc_scoring = Ref(local_state.fields.mc_scoring)    
+
+    mc_scoring = Ref(local_state.fields.mc_scoring)
     new = mc_scoring.value.model_copy(deep=True)
     logger.info(f"MC Callback Event: {event[0]}")
     logger.info(f"Current mc_scoring: {new}")
@@ -217,7 +229,7 @@ def mc_callback(
             mc_scoring.set(new)
             if callback is not None:
                 callback(new)
-            
+
     # mc-score event returns a data which is an mc-score dictionary (includes tag)
     elif event[0] == "mc-score":
         new.update_mc_score(**event[1])

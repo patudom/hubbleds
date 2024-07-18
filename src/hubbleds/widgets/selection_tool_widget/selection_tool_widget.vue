@@ -49,7 +49,6 @@
 
       <v-dialog
           v-model="dialog"
-          persistent
           max-width="1000px"
       >
         <v-card

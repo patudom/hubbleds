@@ -50,12 +50,6 @@ class Marker(enum.Enum, BaseMarker):
 class UncertaintyState(BaseModel):
     step: int = 0
 
-
-class MMMState(BaseModel):
-    step: int = 0
-    length: int = 3
-    titles: List[str] = ["Mean", "Median", "Mode"]
-
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.first()
     stage_id: str = "class_results_and_uncertainty"
@@ -65,11 +59,6 @@ class ComponentState(BaseComponentState, BaseState):
     class_high_age: int = 0
     uncertainty_state: UncertaintyState = UncertaintyState()
     uncertainty_slideshow_finished: bool = False
-    mmm_state: MMMState = MMMState()
-    percentage_selection: int | None = None
-    statistics_selection: str | None = None
-    percentage_selection_class: int | None = None
-    statistics_selection_class: str | None = None
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:

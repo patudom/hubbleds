@@ -1,20 +1,28 @@
 import reacton.ipyvuetify as rv
 import solara
+from typing import Callable, Optional
 
 
 @solara.component_vue("LineDrawPlot.vue")
-def LineDrawPlot(active,
-                 fit_active=False,
-                 event_line_drawn=None,
-                 plot_data=None,
-                 x_axis_label=None,
-                 y_axis_label=None
+def LineDrawPlot(chart_id: str,
+                 active: bool,
+                 fit_active: bool=False,
+                 event_line_drawn: Optional[Callable]=None,
+                 event_line_fit: Optional[Callable[[list[float]], None]]=None,
+                 plot_data: Optional[list[dict]]=None,
+                 x_axis_label: Optional[str]=None,
+                 y_axis_label: Optional[str]=None
 ):
     pass
 
 
 @solara.component
-def LineDrawViewer(plot_data=None, x_axis_label=None, y_axis_label=None):
+def LineDrawViewer(chart_id: str,
+                   plot_data: Optional[list[dict]]=None,
+                   x_axis_label: Optional[str]=None,
+                   y_axis_label: Optional[str]=None,
+                   on_line_drawn: Optional[Callable]=None,
+                   on_line_fit: Optional[Callable[[list[float]], None]]=None):
 
     draw_active = solara.use_reactive(False)
     fit_active = solara.use_reactive(False)
@@ -25,7 +33,7 @@ def LineDrawViewer(plot_data=None, x_axis_label=None, y_axis_label=None):
 
     def on_fit_clicked():
         draw_active.set(False)
-        fit_active.set(not fit_active.value) 
+        fit_active.set(not fit_active.value)
 
     # If we want to disable the tool after finishing a line draw
     # pass this function to `LineDrawPlot` as `event_line_drawn`
@@ -43,9 +51,11 @@ def LineDrawViewer(plot_data=None, x_axis_label=None, y_axis_label=None):
             draw_button = solara.IconButton(classes=["toolbar"], icon_name="mdi-message-draw", on_click=on_draw_clicked)
             rv.BtnToggle(v_model="selected", children=[fit_button, draw_button], background_color="primary", borderless=True)
 
-        LineDrawPlot(active=draw_active.value,
+        LineDrawPlot(chart_id=chart_id,
+                     active=draw_active.value,
                      fit_active=fit_active.value,
-                     event_line_drawn=None,
+                     event_line_drawn=on_line_drawn,
+                     event_line_fit=on_line_fit,
                      plot_data=plot_data,
                      x_axis_label=x_axis_label,
                      y_axis_label=y_axis_label

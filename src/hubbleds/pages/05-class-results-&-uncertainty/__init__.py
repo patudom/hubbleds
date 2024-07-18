@@ -100,6 +100,23 @@ def Page():
     default_color = "#3A86FF"
     highlight_color = "#FF5A00"
 
+    def _update_bins(viewer, *args):
+        props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
+        with delay_callback(viewer.state, *props):
+            if not viewer.layers:
+                return
+            layer = viewer.layers[0] # only works cuz there is only one layer
+            component = viewer.state.x_att
+            values = layer.layer.data[component]
+            try:
+                xmin = round(values.min(), 0) - 1.5
+                xmax = round(values.max(), 0) + 1.5
+            except:
+                return
+            viewer.state.hist_n_bin = int(xmax - xmin)
+            viewer.state.hist_x_min = xmin
+            viewer.state.hist_x_max = xmax
+
     def glue_setup() -> Tuple[JupyterApplication, Dict[str, PlotlyBaseView]]:
         # NOTE: use_memo has to be part of the main page render. Including it
         #  in a conditional will result in an error.
@@ -120,23 +137,6 @@ def Page():
             "class_hist": class_hist_viewer
         }
 
-        def _update_bins(viewer, *args):
-            props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
-            with delay_callback(viewer.state, *props):
-                if not viewer.layers:
-                    return
-                layer = viewer.layers[0] # only works cuz there is only one layer 
-                component = viewer.state.x_att                   
-                values = layer.layer.data[component]
-                try:
-                    xmin = round(values.min(), 0) - 0.5
-                    xmax = round(values.max(), 0) + 0.5
-                except:
-                    return
-                viewer.state.hist_n_bin = int(xmax - xmin)
-                viewer.state.hist_x_min = xmin
-                viewer.state.hist_x_max = xmax
-        
         for viewer in (student_hist_viewer, class_hist_viewer):
             gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
                                                 handler=partial(_update_bins, viewer))
@@ -193,13 +193,14 @@ def Page():
                                                output_id_field="id",
                                                label="Class Summaries")
         class_summary_data = GLOBAL_STATE.value.add_or_update_data(class_summary_data)
-        class_data_added.set(True)
 
         hist_viewer = viewers["student_hist"]
         hist_viewer.add_data(class_summary_data)
         hist_viewer.state.x_att = class_summary_data.id['age_value']
         hist_viewer.state.title = "My class ages (5 galaxies each)"
         hist_viewer.layers[0].state.color = "red"
+
+        class_data_added.set(True)
 
     class_data_loaded.subscribe(_on_class_data_loaded)
 
@@ -251,8 +252,6 @@ def Page():
         else:
             class_slider_subset = all_data.subsets[0]
 
-        all_data_added.set(True)
-
         slider_viewer = viewers["class_slider"]
         slider_viewer.add_data(all_data)
         slider_viewer.state.x_att = all_data.id['est_dist_value']
@@ -267,7 +266,11 @@ def Page():
         hist_viewer.state.title = "All class ages (5 galaxies each)"
         hist_viewer.layers[0].state.color = "blue"
 
+        all_data_added.set(True)
+
     all_data_loaded.subscribe(_on_all_data_loaded)
+
+
     student_data_added.subscribe(_setup_links)
     class_data_added.subscribe(_setup_links)
 
@@ -283,6 +286,11 @@ def Page():
             size=100,
         )
         return
+
+    for viewer_tag in ("student_hist", "class_hist"):
+        _update_bins(viewers[viewer_tag])
+
+    logger.info("DATA IS READY")
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -544,22 +552,18 @@ def Page():
                         class_summary_data = gjapp.data_collection["Class Summaries"]
                         with rv.Col():
                             if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
-                                statistics_selected = Ref(COMPONENT_STATE.fields.statistics_selection)
                                 StatisticsSelector(
                                     viewers=[viewers["student_hist"]],
                                     glue_data=[class_summary_data],
                                     units=["counts"],
                                     transform=round,
-                                    selected=statistics_selected,
                                 )
 
                         with rv.Col():
                             if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
-                                percentage_selected = Ref(COMPONENT_STATE.fields.percentage_selection)
                                 PercentageSelector(
                                     viewers=[viewers["student_hist"]],
                                     glue_data=[class_summary_data],
-                                    selected=percentage_selected
                                 )
 
                 ScaffoldAlert(
@@ -639,21 +643,17 @@ def Page():
                 with rv.Row():
                     all_class_summary_data = gjapp.data_collection["All Class Summaries"]
                     with rv.Col():
-                        statistics_class_selected = Ref(COMPONENT_STATE.fields.statistics_selection_class)
                         StatisticsSelector(
                             viewers=[viewers["class_hist"]],
                             glue_data=[all_class_summary_data],
                             units=["counts"],
                             transform=round,
-                            selected=statistics_class_selected
                         )
 
                     with rv.Col():
-                        percentage_class_selected = Ref(COMPONENT_STATE.fields.percentage_selection_class)
                         PercentageSelector(
                             viewers=[viewers["class_hist"]],
                             glue_data=[all_class_summary_data],
-                            selected=percentage_class_selected
                         )
 
                 ScaffoldAlert(

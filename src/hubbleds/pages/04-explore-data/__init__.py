@@ -6,7 +6,7 @@ import solara
 from solara.toestand import Ref
 
 from cosmicds.components import ScaffoldAlert, StateEditor
-from hubbleds.components import HubbleExpUniverseSlideshow, LineDrawViewer
+from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
@@ -55,10 +55,18 @@ def Page():
             student_ids.set(ids)
         measurements.set(class_measurements)
 
-        class_data_points = [m for m in class_measurements if m.student_id in student_ids.value] 
+        class_data_points = [m for m in class_measurements if m.student_id in student_ids.value]
         class_plot_data.set(class_data_points)
 
     solara.lab.use_task(_load_class_data)
+
+    student_plot_data = solara.use_reactive(LOCAL_STATE.value.measurements)
+    async def _load_student_data():
+        if not LOCAL_STATE.value.measurements_loaded:
+            logger.info("Loading measurements")
+            measurements = LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
+            student_plot_data.set(measurements)
+    solara.lab.use_task(_load_student_data)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -98,11 +106,20 @@ def Page():
             )
 
         with rv.Col():
-            with solara.Card(style="background-color: var(--error);"):
-                solara.Markdown("Student data table goes here")
-
-
-
+            DataTable(
+                title="My Galaxies",
+                items=[x.model_dump() for x in LOCAL_STATE.value.measurements],
+                headers=[
+                    {
+                        "text": "Galaxy Name",
+                        "align": "start",
+                        "sortable": False,
+                        "value": "galaxy.name"
+                    },
+                    { "text": "Velocity (km/s)", "value": "velocity_value" },
+                    { "text": "Distance (Mpc)", "value": "est_dist_value" },
+                ]
+            )
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -243,24 +260,36 @@ def Page():
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
                 with solara.Columns([3,9], classes=["no-padding"]):
+                    colors = ("blue", "red")
                     with rv.Col(class_="no-padding"):
-                        # TODO: LayerToggle should refresh when the data changes
-                        # LayerToggle(viewer)
-                        with solara.Card(style="background-color: var(--error);"):
-                            solara.Markdown("Layer Toggle")
+                        PlotlyLayerToggle(chart_id="line-draw-viewer",
+                                          layer_indices=(3, 4),
+                                          initial_selected=(0, 1),
+                                          colors=colors,
+                                          labels=("Class Data", "My Data"))
                     with rv.Col(class_="no-padding"):
-                        if class_plot_data.value:
-                            data = class_plot_data.value
-                            distances = [t.est_dist_value for t in data]
-                            velocities = [t.velocity_value for t in data]
-                            plot_data=[{
-                                "x": distances,
-                                "y": velocities,
-                                "mode": "markers",
-                                "marker": { "color": "red", "size": 12 },
-                                "hoverinfo": "none"
-                            }]
-                            LineDrawViewer(plot_data=plot_data, x_axis_label="Distance (Mpc)", y_axis_label="Velocity (km / s)")
+                        if student_plot_data.value and class_plot_data.value:
+                            # Note the ordering here - we want the student data on top
+                            layers = (class_plot_data.value, student_plot_data.value)
+                            plot_data=[
+                                {
+                                    "x": [t.est_dist_value for t in data],
+                                    "y": [t.velocity_value for t in data],
+                                    "mode": "markers",
+                                    "marker": { "color": color, "size": 12 },
+                                    "hoverinfo": "none"
+                                } for data, color in zip(layers, colors)
+                            ]
+
+                            best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
+                            def line_fit_cb(slopes: list[float]):
+                                # The student data is second in our tuple above
+                                best_fit_slope.set(slopes[1])
+                            LineDrawViewer(chart_id="line-draw-viewer",
+                                           plot_data=plot_data,
+                                           on_line_fit=line_fit_cb,
+                                           x_axis_label="Distance (Mpc)",
+                                           y_axis_label="Velocity (km / s)")
 
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(
