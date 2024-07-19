@@ -789,13 +789,13 @@
         <v-item
           v-for="n in length"
           :key="`btn-${n}`"
-          v-slot="{ active, toggle }"
+          v-slot="{ active }"
         >
           <v-btn
             :disabled="n > max_step_completed + 2"
             :input-value="active"
             icon
-            @click="toggle"
+            @click="set_step(n-1);" 
           >
             <v-icon
               color="info lighten-1"
@@ -844,6 +844,7 @@
           slideshow_finished();
           set_step(0)
           //this.$refs.synth.stopSpeaking();
+          // TODO: this should advance to Stage 3
         }"
       >
         get started
@@ -872,7 +873,7 @@ module.exports = {
       const isInteractStep = this.interact_steps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
       // FIX: change this to a callback
-      this.max_step_completed = Math.max(this.max_step_completed, newCompleted);
+      this.set_max_step_completed(Math.max(this.max_step_completed, newCompleted));
     },
   },
 };
