@@ -426,8 +426,13 @@
                           'Try again. \n Think about the people on the beach. Did the closer person appear bigger or smaller than the farther person?'
                         ]"
                         :correct-answers="[2]"
-                        @select="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(this.max_step_completed, 7); } }"
-                        score-tag="which-galaxy-closer"
+                        @select="(option) => { 
+                          if(option.correct || option.neutral) {    
+                            set_max_step_completed(Math.max(max_step_completed, 7)); 
+                          } }"
+                        @mc-emit="mc_callback($event)"
+                        :score-tag="state_view.score_tag_1"
+                        :initialization="state_view.mc_score_1"
                       >
                       </mc-radiogroup>
                     </v-row>
@@ -553,8 +558,12 @@
                         'Try again. \ You could probably fit 10 Galaxy B’s across Galaxy A.'
                       ]"
                       :correct-answers="[1]"
-                      @select="(option) => { if(option.correct || option.neutral) { max_step_completed = Math.max(this.max_step_completed, 9); } }"
-                      score-tag="how-much-closer-galaxies"
+                      @select="(option) => {
+                        if(option.correct || option.neutral) { set_max_step_completed(Math.max(max_step_completed, 9)); } 
+                      }"
+                      @mc-emit="mc_callback($event)"
+                      :score-tag="state_view.score_tag_2"
+                      :initialization="state_view.mc_score_2"
                     >
                     </mc-radiogroup>
                   </v-row>
@@ -774,7 +783,7 @@
         class="black--text"
         color="accent"
         depressed
-        @click="step--"
+        @click="set_step(step - 1);"
       >
         Back
       </v-btn>
@@ -789,13 +798,13 @@
         <v-item
           v-for="n in length"
           :key="`btn-${n}`"
-          v-slot="{ active, toggle }"
+          v-slot="{ active }"
         >
           <v-btn
             :disabled="n > max_step_completed + 2"
             :input-value="active"
             icon
-            @click="toggle"
+            @click="set_step(n-1);" 
           >
             <v-icon
               color="info lighten-1"
@@ -814,7 +823,7 @@
         class="black--text"
         color="accent"
         depressed
-        @click="step++;"
+        @click="set_step(step + 1);"
       >
         next
       </v-btn>
@@ -826,8 +835,8 @@
         class="black--text"
         depressed
         @click="() => {
-          on_slideshow_finished();
-          step = 0;
+          slideshow_finished();
+          set_step(0)
           //this.$refs.synth.stopSpeaking();
         }"
       >
@@ -841,9 +850,10 @@
         class="black--text"
         depressed
         @click="() => {
-          on_slideshow_finished();
-          step = 0;
+          slideshow_finished();
+          set_step(0)
           //this.$refs.synth.stopSpeaking();
+          // TODO: this should advance to Stage 3
         }"
       >
         get started
@@ -859,14 +869,6 @@
 
 <script>
 module.exports = {
-  props: ["buttonText", "titleText", "closeText"],
-
-  mounted() {
-    console.log("Two Intro");
-    console.log(this);
-    console.log(this.$el);
-  },
-
   methods: {
     typesetMathJax(entries, _observer, intersecting) {
       if (intersecting) {
@@ -880,7 +882,7 @@ module.exports = {
       const isInteractStep = this.interact_steps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
       // FIX: change this to a callback
-      this.max_step_completed = Math.max(this.max_step_completed, newCompleted);
+      this.set_max_step_completed(Math.max(this.max_step_completed, newCompleted));
     },
   },
 };
