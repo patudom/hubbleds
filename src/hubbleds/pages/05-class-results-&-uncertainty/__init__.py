@@ -128,12 +128,14 @@ def Page():
         student_slider_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
         class_slider_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
         student_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
+        all_student_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
         class_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
         viewers = {
             "layer": layer_viewer,
             "student_slider": student_slider_viewer,
             "class_slider": class_slider_viewer,
             "student_hist": student_hist_viewer,
+            "all_student_hist": all_student_hist_viewer,
             "class_hist": class_hist_viewer
         }
 
@@ -260,11 +262,17 @@ def Page():
         slider_viewer.layers[0].state.visible = False
         slider_viewer.add_subset(class_slider_subset)
 
-        hist_viewer = viewers["class_hist"]
-        hist_viewer.add_data(all_class_summ_data)
-        hist_viewer.state.x_att = all_class_summ_data.id['age_value']
-        hist_viewer.state.title = "All class ages (5 galaxies each)"
-        hist_viewer.layers[0].state.color = "blue"
+        student_hist_viewer = viewers["all_student_hist"]
+        student_hist_viewer.add_data(student_summ_data)
+        student_hist_viewer.state.x_att = student_summ_data.id['age_value']
+        student_hist_viewer.state.title = "All student ages (5 galaxies each)"
+        student_hist_viewer.layers[0].state.color = "red"
+
+        class_hist_viewer = viewers["class_hist"]
+        class_hist_viewer.add_data(all_class_summ_data)
+        class_hist_viewer.state.x_att = all_class_summ_data.id['age_value']
+        class_hist_viewer.state.title = "All class ages (5 galaxies each)"
+        class_hist_viewer.layers[0].state.color = "blue"
 
         all_data_added.set(True)
 
@@ -641,10 +649,10 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with rv.Row():
-                    class_summary_data = gjapp.data_collection["Class Summaries"]
+                    all_student_summary_data = gjapp.data_collection["All Student Summaries"]
                     all_class_summary_data = gjapp.data_collection["All Class Summaries"]
-                    hist_viewers = [viewers["student_hist"], viewers["class_hist"]]
-                    hist_data = [class_summary_data, all_class_summary_data]
+                    hist_viewers = [viewers["all_student_hist"], viewers["class_hist"]]
+                    hist_data = [all_student_summary_data, all_class_summary_data]
                     units = ["counts" for _ in range(len(hist_viewers))]
                     with rv.Col():
                         StatisticsSelector(
@@ -731,7 +739,7 @@ def Page():
 
             with rv.Col():
                 if COMPONENT_STATE.value.current_step_between(Marker.two_his1):
-                    ViewerLayout(viewers["student_hist"])
+                    ViewerLayout(viewers["all_student_hist"])
 
                 ViewerLayout(viewers["class_hist"]) 
 
