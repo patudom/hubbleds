@@ -426,8 +426,13 @@
                           'Try again. \n Think about the people on the beach. Did the closer person appear bigger or smaller than the farther person?'
                         ]"
                         :correct-answers="[2]"
-                        @select="(option) => { if(option.correct || option.neutral) { set_max_step_completed(Math.max(max_step_completed, 7)); } }"
-                        score-tag="which-galaxy-closer"
+                        @select="(option) => { 
+                          if(option.correct || option.neutral) {    
+                            set_max_step_completed(Math.max(max_step_completed, 7)); 
+                          } }"
+                        @mc-emit="mc_callback($event)"
+                        :score-tag="state_view.score_tag_1"
+                        :initialization="state_view.mc_score_1"
                       >
                       </mc-radiogroup>
                     </v-row>
@@ -553,8 +558,12 @@
                         'Try again. \ You could probably fit 10 Galaxy B’s across Galaxy A.'
                       ]"
                       :correct-answers="[1]"
-                      @select="(option) => { if(option.correct || option.neutral) { set_max_step_completed(Math.max(max_step_completed, 9)); } }"
-                      score-tag="how-much-closer-galaxies"
+                      @select="(option) => {
+                        if(option.correct || option.neutral) { set_max_step_completed(Math.max(max_step_completed, 9)); } 
+                      }"
+                      @mc-emit="mc_callback($event)"
+                      :score-tag="state_view.score_tag_2"
+                      :initialization="state_view.mc_score_2"
                     >
                     </mc-radiogroup>
                   </v-row>

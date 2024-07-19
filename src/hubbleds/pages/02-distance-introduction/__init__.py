@@ -3,7 +3,7 @@ import solara
 from solara.toestand import Ref
 
 from hubbleds.components import Stage2Slideshow
-from hubbleds.state import LOCAL_STATE, GLOBAL_STATE 
+from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, mc_callback 
 from .component_state import COMPONENT_STATE
 from hubbleds.remote import LOCAL_API
 from ...utils import IMAGE_BASE_URL, DISTANCE_CONSTANT
@@ -73,6 +73,17 @@ def Page():
         image_location=f"{IMAGE_BASE_URL}/stage_two_intro",
         event_set_step=step.set,
         event_set_max_step_completed=max_step_completed.set,
+        event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE),
+        state_view={
+            "mc_score_1": get_multiple_choice(
+                LOCAL_STATE, "which-galaxy-closer"
+                ),
+            "score_tag_1": "which-galaxy-closer",
+            "mc_score_2": get_multiple_choice(
+                LOCAL_STATE, "how-much-closer-galaxies"
+                ), 
+            "score_tag_2": "how-much-closer-galaxies",
+        },
         event_slideshow_finished=lambda _: slideshow_finished.set(True),
         debug = LOCAL_STATE.value.debug_mode,
     )

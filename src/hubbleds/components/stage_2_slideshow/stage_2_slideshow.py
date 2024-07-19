@@ -14,6 +14,8 @@ def Stage2Slideshow (
     debug,
     event_set_step,
     event_set_max_step_completed,
+    event_mc_callback,
+    state_view,
     event_slideshow_finished,
 ):
     pass
