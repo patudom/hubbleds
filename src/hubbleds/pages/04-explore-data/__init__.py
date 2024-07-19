@@ -1,13 +1,18 @@
+from cosmicds.components.statistics_selector import PlotlyBaseView
+from glue.core import Data
+from glue_jupyter import JupyterApplication
 from hubbleds.base_component_state import transition_next, transition_previous
 import numpy as np
 from pathlib import Path
 import reacton.ipyvuetify as rv
 import solara
 from solara.toestand import Ref
+from typing import Dict, Tuple
 
 from cosmicds.components import ScaffoldAlert, StateEditor
 from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, get_free_response, mc_callback, fr_callback
+from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 from hubbleds.utils import AGE_CONSTANT
@@ -67,6 +72,32 @@ def Page():
             measurements = LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
             student_plot_data.set(measurements)
     solara.lab.use_task(_load_student_data)
+
+    def glue_setup() -> Tuple[JupyterApplication, Dict[str, PlotlyBaseView]]:
+        gjapp = JupyterApplication(
+            GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
+        )
+
+        race_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
+        race_data = Data(**{
+            "label": "Hubble Race Data",
+            "Distance (km)": [12, 24, 30],
+            "Velocity (km/hr)": [4, 8, 10],
+        })
+        race_viewer.add_data(race_data)
+        race_viewer.state.x_att = race_data.id["Distance (km)"]
+        race_viewer.state.y_att = race_data.id["Velocity (km/hr)"]
+
+        layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
+
+        viewers = {
+            "race": race_viewer,
+            "layer": layer_viewer,
+        }
+
+        return gjapp, viewers
+
+    gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -296,6 +327,8 @@ def Page():
                 Marker.hub_exp1):
                     slideshow_finished = Ref(COMPONENT_STATE.fields.hubble_slideshow_finished)
                     HubbleExpUniverseSlideshow(
+                        race_viewer=viewers["race"],
+                        layer_viewer=viewers["layer"],
                         event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
                         dialog=COMPONENT_STATE.value.show_hubble_slideshow_dialog,
                         step=COMPONENT_STATE.value.hubble_slideshow_state.step,
