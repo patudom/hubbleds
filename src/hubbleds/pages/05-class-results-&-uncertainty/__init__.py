@@ -641,19 +641,23 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with rv.Row():
+                    class_summary_data = gjapp.data_collection["Class Summaries"]
                     all_class_summary_data = gjapp.data_collection["All Class Summaries"]
+                    hist_viewers = [viewers["student_hist"], viewers["class_hist"]]
+                    hist_data = [class_summary_data, all_class_summary_data]
+                    units = ["counts" for _ in range(len(hist_viewers))]
                     with rv.Col():
                         StatisticsSelector(
-                            viewers=[viewers["class_hist"]],
-                            glue_data=[all_class_summary_data],
-                            units=["counts"],
+                            viewers=hist_viewers,
+                            glue_data=hist_data,
+                            units=units,
                             transform=round,
                         )
 
                     with rv.Col():
                         PercentageSelector(
-                            viewers=[viewers["class_hist"]],
-                            glue_data=[all_class_summary_data],
+                            viewers=hist_viewers,
+                            glue_data=hist_data,
                         )
 
                 ScaffoldAlert(
