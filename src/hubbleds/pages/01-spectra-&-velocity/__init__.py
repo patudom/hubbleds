@@ -1,5 +1,5 @@
 import solara
-from hubbleds.state import LOCAL_STATE, GLOBAL_STATE
+from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, mc_callback
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 from glue_jupyter import JupyterApplication
@@ -535,10 +535,12 @@ def Page():
                 max_step_completed_5 = Ref(
                     COMPONENT_STATE.fields.doppler_state.max_step_completed_5
                 )
+                student_c = Ref(
+                    COMPONENT_STATE.fields.doppler_state.student_c
+                )
                 velocity_calculated = Ref(
                     COMPONENT_STATE.fields.doppler_state.velocity_calculated
                 )
-                light_speed = Ref(COMPONENT_STATE.fields.doppler_state.light_speed)
 
                 def _velocity_calculated_callback(value):
                     example_measurement_index = (
@@ -571,17 +573,20 @@ def Page():
                     max_step_completed_5=COMPONENT_STATE.value.doppler_state.max_step_completed_5,
                     failed_validation_5=COMPONENT_STATE.value.doppler_state.validation_5_failed,
                     interact_steps_5=COMPONENT_STATE.value.doppler_state.interact_steps_5,
-                    student_vel=COMPONENT_STATE.value.velocity,
-                    student_c=COMPONENT_STATE.value.doppler_state.light_speed,
+                    student_c=COMPONENT_STATE.value.doppler_state.student_c,
                     student_vel_calc=COMPONENT_STATE.value.doppler_state.velocity_calculated,
                     event_set_dialog=show_doppler_dialog.set,
                     event_set_step=step.set,
                     event_set_failed_validation_5=validation_5_failed.set,
                     event_set_max_step_completed_5=max_step_completed_5.set,
                     event_set_student_vel_calc=velocity_calculated.set,
-                    event_set_student_c=light_speed.set,
-                    event_set_student_vel=_velocity_calculated_callback,
+                    event_set_student_c=student_c.set,
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    state_view={
+                        "mc_score": get_multiple_choice(LOCAL_STATE, "interpret-velocity"),
+                        "score_tag": "interpret-velocity"
+                    }                    
                 )
 
             if COMPONENT_STATE.value.current_step_between(

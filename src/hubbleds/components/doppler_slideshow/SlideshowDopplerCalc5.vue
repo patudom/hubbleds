@@ -411,7 +411,9 @@
                       'The galaxy\’s velocity is greater than the speed of light.'
                     ]"
                       @select="(_state) => { if (_state.correct) { set_max_step_completed_5(Math.max(max_step_completed_5, 3)); } }"
-                      score-tag="interpret-velocity"
+                      @mc-emit="mc_callback($event)"
+                      :initialization="state_view.mc_score"
+                      :score-tag="state_view.score_tag"
                   >
                   </mc-radiogroup>
                 </v-col>
@@ -659,14 +661,14 @@
               \textcolor{black}{\colorbox{#DDD}{ {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
             </v-card>
             <p>
-              Great work. Your galaxy's velocity is <b>{{ student_vel.toFixed(0).toLocaleString() }}</b>
+              Great work. Your galaxy's velocity is <b>{{ (student_c * (lambda_obs / lambda_rest - 1) ).toFixed(0).toLocaleString() }}</b>
               km/s.
             </p>
             <v-card
                 class="JaxEquation pa-3"
                 color="info"
             >
-              $$ v = \textcolor{black}{\colorbox{#FFAB91}{ {{ student_vel.toFixed(0).toLocaleString() }} } }
+              $$ v = \textcolor{black}{\colorbox{#FFAB91}{ {{ (student_c * (lambda_obs / lambda_rest - 1) ).toFixed(0).toLocaleString() }} } }
               \text{ km/s} $$
               <v-divider role="presentation"></v-divider>
               <div
@@ -810,10 +812,10 @@
             color="accent"
             elevation="2"
             @click="() => {
-              const lambdas = [lambda_obs, lambda_rest];
               validateLightSpeed(['speed_light']) ? set_step(step + 1) : null;
-              let tempStudentC = storeStudentC(['speed_light']);
-              storeStudentVel(tempStudentC, lambdas);
+              if (validateLightSpeed(['speed_light'])) {
+                set_student_c(parseAnswer(['speed_light']));
+              }
           }"
         >
           calculate
@@ -892,19 +894,6 @@ module.exports = {
 
     parseAnswer(inputID) {
       return parseFloat(this.getValue(inputID).replace(/,/g, ''));
-    },
-
-    storeStudentC(inputID) {
-      console.log("Storing student c");
-      let tempStudentC = this.parseAnswer(inputID);
-      console.log(tempStudentC);
-      this.set_student_c(tempStudentC);
-      return tempStudentC;
-    },
-
-    storeStudentVel(student_c, lambdas) {
-      console.log(student_c, lambdas, student_c * (lambdas[0] / lambdas[1] - 1));
-      this.set_student_vel(student_c * (lambdas[0] / lambdas[1] - 1));
     },
 
     validateLightSpeed(inputIDs) {
