@@ -1,4 +1,5 @@
 from cosmicds.components.statistics_selector import PlotlyBaseView
+from cosmicds.viewers import CDSScatterView
 from glue.core import Data
 from glue_jupyter import JupyterApplication
 from hubbleds.base_component_state import transition_next, transition_previous
@@ -9,13 +10,13 @@ import solara
 from solara.toestand import Ref
 from typing import Dict, Tuple
 
-from cosmicds.components import ScaffoldAlert, StateEditor
+from cosmicds.components import ScaffoldAlert, StateEditor, ViewerLayout
 from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.utils import AGE_CONSTANT
+from hubbleds.utils import AGE_CONSTANT, models_to_glue_data
 
 from cosmicds.logger import setup_logger
 
@@ -51,6 +52,7 @@ def Page():
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
 
     class_plot_data = solara.use_reactive([])
+    class_data_loaded = solara.use_reactive(False)
     async def _load_class_data():
         class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
         measurements = Ref(LOCAL_STATE.fields.class_measurements)
@@ -62,6 +64,7 @@ def Page():
 
         class_data_points = [m for m in class_measurements if m.student_id in student_ids.value]
         class_plot_data.set(class_data_points)
+        class_data_loaded.set(True)
 
     solara.lab.use_task(_load_class_data)
 
@@ -73,7 +76,7 @@ def Page():
             student_plot_data.set(measurements)
     solara.lab.use_task(_load_student_data)
 
-    def glue_setup() -> Tuple[JupyterApplication, Dict[str, PlotlyBaseView]]:
+    def glue_setup() -> Tuple[JupyterApplication, Dict[str, CDSScatterView]]:
         gjapp = JupyterApplication(
             GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
         )
@@ -84,6 +87,7 @@ def Page():
             "Distance (km)": [12, 24, 30],
             "Velocity (km/hr)": [4, 8, 10],
         })
+        race_data = GLOBAL_STATE.value.add_or_update_data(race_data)
         race_viewer.add_data(race_data)
         race_viewer.state.x_att = race_data.id["Distance (km)"]
         race_viewer.state.y_att = race_data.id["Velocity (km/hr)"]
@@ -98,6 +102,24 @@ def Page():
         return gjapp, viewers
 
     gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
+
+    def _on_class_data_loaded(value: bool):
+        if not value:
+            return
+
+        class_ids = LOCAL_STATE.value.stage_4_class_data_students
+        class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
+        class_data = models_to_glue_data(class_data_points, label="Stage 4 Class Data")
+        class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
+
+        layer_viewer = viewers["layer"]
+        layer_viewer.add_data(class_data)
+        layer_viewer.state.x_att = class_data.id['est_dist_value']
+        layer_viewer.state.y_att = class_data.id['velocity_value']
+        layer_viewer.state.x_axislabel = "Distance (Mpc)"
+        layer_viewer.state.y_axislabel = "Velocity"
+
+    class_data_loaded.subscribe(_on_class_data_loaded)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -327,8 +349,8 @@ def Page():
                 Marker.hub_exp1):
                     slideshow_finished = Ref(COMPONENT_STATE.fields.hubble_slideshow_finished)
                     HubbleExpUniverseSlideshow(
-                        race_viewer=viewers["race"],
-                        layer_viewer=viewers["layer"],
+                        race_viewer=ViewerLayout(viewer=viewers["race"]),
+                        layer_viewer=ViewerLayout(viewers["layer"]),
                         event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
                         dialog=COMPONENT_STATE.value.show_hubble_slideshow_dialog,
                         step=COMPONENT_STATE.value.hubble_slideshow_state.step,

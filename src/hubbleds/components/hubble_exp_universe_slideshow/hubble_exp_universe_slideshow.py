@@ -1,15 +1,13 @@
-from cosmicds.viewers import CDSScatterView
+from reacton.ipyvuetify import Any
 from solara import component_vue
 from typing import Callable, List
-
-from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 
 from ...utils import IMAGE_BASE_URL
 
 @component_vue("HubbleExpUniverseSlideshow.vue")
 def HubbleExpUniverseSlideshow(
-    race_viewer: HubbleScatterView,
-    layer_viewer: HubbleScatterView,
+    race_viewer: Any,
+    layer_viewer: Any,
     dialog: bool = False,
     step: int = 0,
     max_step_completed: int = 0,
