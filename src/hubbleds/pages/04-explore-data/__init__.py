@@ -1,4 +1,3 @@
-from cosmicds.components.statistics_selector import PlotlyBaseView
 from cosmicds.viewers import CDSScatterView
 from glue.core import Data
 from glue_jupyter import JupyterApplication
@@ -88,9 +87,14 @@ def Page():
             "Velocity (km/hr)": [4, 8, 10],
         })
         race_data = GLOBAL_STATE.value.add_or_update_data(race_data)
+        race_data.style.color = "#111111"
+        race_data.style.alpha = 1
+        race_data.style.markersize = 14
         race_viewer.add_data(race_data)
         race_viewer.state.x_att = race_data.id["Distance (km)"]
         race_viewer.state.y_att = race_data.id["Velocity (km/hr)"]
+        race_viewer.state.x_max = 1.1 * race_viewer.state.x_max
+        race_viewer.state.y_max = 1.1 * race_viewer.state.y_max
 
         layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
 
@@ -111,6 +115,9 @@ def Page():
         class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
         class_data = models_to_glue_data(class_data_points, label="Stage 4 Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
+        class_data.style.color = "#3A86FF"
+        class_data.style.alpha = 1
+        class_data.style.markersize = 14
 
         layer_viewer = viewers["layer"]
         layer_viewer.add_data(class_data)
