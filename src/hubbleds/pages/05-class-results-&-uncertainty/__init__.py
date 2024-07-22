@@ -152,6 +152,12 @@ def Page():
         hist_viewers = (all_student_hist_viewer, class_hist_viewer)
         for att in ('x_min', 'x_max'):
             link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
+
+        # This looks weird, and it kinda is!
+        # The idea here is that the all students viewer will always have a wider range than the all classes viewer
+        # So we force the home tool of the class viewer to limit-resetting based on the students viewer
+        class_hist_viewer.toolbar.tools["plotly:home"].activate = all_student_hist_viewer.toolbar.tools["plotly:home"].activate
+
         gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
                                             handler=partial(_update_bins, hist_viewers),
                                             filter=lambda msg: msg.data.label == "Student Summaries")
