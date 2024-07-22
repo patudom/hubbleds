@@ -49,7 +49,6 @@ def Layout(children=[]):
 
         solara.lab.use_task(_load_measurements, dependencies=[])
 
-    solara.lab.use_task(_load_measurements, dependencies=[student_id.value])
     # solara.use_memo(_load_local_state, dependencies=[student_id.value])
 
     async def _write_local_global_states():
@@ -74,5 +73,6 @@ def Layout(children=[]):
         children=children,
         story_name=LOCAL_STATE.value.story_id,
         story_title=LOCAL_STATE.value.title,
+        on_student_info_loaded=_on_student_info_loaded,
     ):
         pass
