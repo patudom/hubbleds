@@ -1,7 +1,9 @@
+from contextlib import ExitStack
 from echo import delay_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
+from glue_jupyter.link import link
 from glue_plotly.viewers import PlotlyBaseView
 import numpy as np
 import solara
@@ -10,7 +12,7 @@ from solara.toestand import Ref
 from functools import partial
 from pathlib import Path
 import reacton.ipyvuetify as rv
-from typing import Dict, Tuple
+from typing import Dict, Iterable, Optional, Tuple
 
 from cosmicds.components import PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
 from cosmicds.utils import empty_data_from_model_class
@@ -100,22 +102,28 @@ def Page():
     default_color = "#3A86FF"
     highlight_color = "#FF5A00"
 
-    def _update_bins(viewer, *args):
+    def _linked_update_bins(viewers: Iterable[CDSHistogramView], msg: Optional[NumericalDataChangedMessage]=None):
         props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
-        with delay_callback(viewer.state, *props):
-            if not viewer.layers:
-                return
-            layer = viewer.layers[0] # only works cuz there is only one layer
-            component = viewer.state.x_att
-            values = layer.layer.data[component]
+        with ExitStack() as stack:
+            for viewer in viewers:
+                stack.enter_context(delay_callback(viewer.state, *props))
+
+            values = []
+            for viewer in viewers:
+                if viewer.layers and \
+                        ((msg is None) or (viewer.layer_artist_for_data(msg.data) is not None)):
+                    # For now, we assume that the first layer contains the data that we're interested in
+                    values.append(viewer.layers[0].layer[viewer.state.x_att])
+
             try:
-                xmin = round(values.min(), 0) - 1.5
-                xmax = round(values.max(), 0) + 1.5
+                xmin = round(min(min(vals) for vals in values), 0) - 2.5
+                xmax = round(max(max(vals) for vals in values), 0) + 2.5
             except:
                 return
-            viewer.state.hist_n_bin = int(xmax - xmin)
-            viewer.state.hist_x_min = xmin
-            viewer.state.hist_x_max = xmax
+            for viewer in viewers:
+                viewer.state.hist_n_bin = int(xmax - xmin)
+                viewer.state.hist_x_min = xmin
+                viewer.state.hist_x_max = xmax
 
     def glue_setup() -> Tuple[JupyterApplication, Dict[str, PlotlyBaseView]]:
         # NOTE: use_memo has to be part of the main page render. Including it
@@ -139,9 +147,11 @@ def Page():
             "class_hist": class_hist_viewer
         }
 
-        for viewer in (student_hist_viewer, class_hist_viewer):
-            gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
-                                                handler=partial(_update_bins, viewer))
+        hist_viewers = (all_student_hist_viewer, class_hist_viewer)
+        for att in ('x_min', 'x_max'):
+            link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
+        gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
+                                            handler=partial(_linked_update_bins, hist_viewers))
 
         return gjapp, viewers
 
@@ -295,8 +305,7 @@ def Page():
         )
         return
 
-    for viewer_tag in ("student_hist", "class_hist"):
-        _update_bins(viewers[viewer_tag])
+    _linked_update_bins([viewers["all_student_hist"], viewers["class_hist"]])
 
     logger.info("DATA IS READY")
 
