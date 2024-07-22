@@ -157,7 +157,7 @@
                 <v-col
                   cols="12"
                   lg="7">
-                  <jupyter-widget :widget="hubble_race_viewer"/>
+                  <jupyter-widget :widget="race_viewer"/>
                 </v-col>
               </v-row>
               <v-row>
