@@ -4,30 +4,29 @@
     light
     variant="outlined"
     color="white"
-    class="layer_toggle"
   >
     <v-list-item-group
       multiple
       v-model="selected"
     >
       <v-list-item
-        v-for="(layer, index) in layer_indices"
-        :key="index"
-        :value="index"
+        v-for="(layer, index) in reversedLayerIndices"
+        :key="layer_indices.length - 1 - index"
+        :value="layer_indices.length - 1 - index"
         color="black"
-        @click="toggleVisibility(index)"
+        @click="toggleVisibility(layer_indices.length - 1 - index)"
       >
         <template v-slot:default="{ active }">
           <v-list-item-content
             class="font-weight-bold"
           >
-            {{ labels[index] }}
+            {{ labels[layer_indices.length - 1 - index] }}
           </v-list-item-content>
 
           <v-list-item-action>
             <v-checkbox
-              :input-value="selected.includes(index)"
-              :color="colors[index]"
+              :input-value="selected.includes(layer_indices.length - 1 - index)"
+              :color="colors[layer_indices.length - 1 - index]"
             />
           </v-list-item-action>
         </template>
@@ -52,6 +51,11 @@ export default {
     this.getElement();
     this.selected = this.initial_selected || Array.from({length: this.layer_indices.length}, (x, i) => true);
   },
+  computed: {
+  reversedLayerIndices() {
+    return this.layer_indices.slice().reverse();
+  }
+  },  
   methods: {
     getElement() {
       this.element = document.getElementById(this.chart_id);
