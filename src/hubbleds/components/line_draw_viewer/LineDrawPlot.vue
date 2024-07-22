@@ -1,7 +1,7 @@
 <script>
 export default {
   name: "LineDrawPlot",
-  props: ["chart_id", "active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label"],
+  props: ["chart_id", "active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label", "height", "margin"],
   async mounted() {
     await window.plotlyPromise;
 
@@ -22,10 +22,12 @@ export default {
       }
     }
     const layout = this.chart.layout;
-    layout.xaxis.range = [xmin, xmax];
-    layout.yaxis.range = [ymin, ymax];
+    layout.xaxis.range = [0, xmax*1.1];
+    layout.yaxis.range = [0, ymax*1.1];
     layout.xaxis.title = { text: this.x_axis_label };
     layout.yaxis.title = { text: this.y_axis_label };
+    layout.height = this.height;
+    layout.margin = this.margins;
 
     Plotly.newPlot(this.$refs[this.chart_id], this.chart.traces, layout, this.chart.config)
       .then(() => {
