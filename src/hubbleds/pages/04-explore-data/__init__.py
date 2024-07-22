@@ -1,3 +1,4 @@
+from cosmicds.utils import empty_data_from_model_class
 from cosmicds.viewers import CDSScatterView
 from glue.core import Data
 from glue_jupyter import JupyterApplication
@@ -7,11 +8,11 @@ from pathlib import Path
 import reacton.ipyvuetify as rv
 import solara
 from solara.toestand import Ref
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 from cosmicds.components import ScaffoldAlert, StateEditor, ViewerLayout
 from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
-from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, get_free_response, mc_callback, fr_callback
+from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
@@ -22,6 +23,22 @@ from cosmicds.logger import setup_logger
 logger = setup_logger("STAGE 4")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
+
+
+@solara.lab.task
+async def load_class_data():
+    logger.info("Loading class data")
+    class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
+    logger.info(len(class_measurements))
+    measurements = Ref(LOCAL_STATE.fields.class_measurements)
+    student_ids = Ref(LOCAL_STATE.fields.stage_4_class_data_students)
+    if class_measurements and not student_ids.value:
+        ids = [int(id) for id in np.unique([m.student_id for m in class_measurements])]
+        student_ids.set(ids)
+    measurements.set(class_measurements)
+
+    class_data_points = [m for m in class_measurements if m.student_id in student_ids.value]
+    return class_data_points
 
 
 @solara.component
@@ -51,21 +68,6 @@ def Page():
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
 
     class_plot_data = solara.use_reactive([])
-    class_data_loaded = solara.use_reactive(False)
-    async def _load_class_data():
-        class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
-        measurements = Ref(LOCAL_STATE.fields.class_measurements)
-        student_ids = Ref(LOCAL_STATE.fields.stage_4_class_data_students)
-        if class_measurements and not student_ids.value:
-            ids = [int(id) for id in np.unique([m.student_id for m in class_measurements])]
-            student_ids.set(ids)
-        measurements.set(class_measurements)
-
-        class_data_points = [m for m in class_measurements if m.student_id in student_ids.value]
-        class_plot_data.set(class_data_points)
-        class_data_loaded.set(True)
-
-    solara.lab.use_task(_load_class_data)
 
     student_plot_data = solara.use_reactive(LOCAL_STATE.value.measurements)
     async def _load_student_data():
@@ -107,13 +109,17 @@ def Page():
 
     gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
 
-    def _on_class_data_loaded(value: bool):
-        if not value:
+    if not (load_class_data.value or load_class_data.pending):
+        load_class_data()
+
+    def _on_class_data_loaded(class_data_points: List[StudentMeasurement]):
+        logger.info("Setting up class glue data")
+        if not class_data_points:
             return
 
-        class_ids = LOCAL_STATE.value.stage_4_class_data_students
-        class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
         class_data = models_to_glue_data(class_data_points, label="Stage 4 Class Data")
+        if not class_data.components:
+            class_data = empty_data_from_model_class(StudentMeasurement, label="Stage 4 Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
         class_data.style.color = "#3A86FF"
         class_data.style.alpha = 1
@@ -126,7 +132,10 @@ def Page():
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
         layer_viewer.state.y_axislabel = "Velocity"
 
-    class_data_loaded.subscribe(_on_class_data_loaded)
+        class_plot_data.set(class_data_points)
+
+    if load_class_data.value:
+        _on_class_data_loaded(load_class_data.value)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -354,12 +363,26 @@ def Page():
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(
                 Marker.hub_exp1):
+                    dialog = Ref(COMPONENT_STATE.fields.show_hubble_slideshow_dialog)
+                    step = Ref(COMPONENT_STATE.fields.hubble_slideshow_state.step)
+                    max_step_completed = Ref(COMPONENT_STATE.fields.hubble_slideshow_state.max_step_completed)
                     slideshow_finished = Ref(COMPONENT_STATE.fields.hubble_slideshow_finished)
+
                     HubbleExpUniverseSlideshow(
                         race_viewer=ViewerLayout(viewer=viewers["race"]),
                         layer_viewer=ViewerLayout(viewers["layer"]),
-                        event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
+
                         dialog=COMPONENT_STATE.value.show_hubble_slideshow_dialog,
                         step=COMPONENT_STATE.value.hubble_slideshow_state.step,
                         max_step_completed=COMPONENT_STATE.value.hubble_slideshow_state.max_step_completed,
+                        state_view={
+                            "mc_score": get_multiple_choice(LOCAL_STATE, "race-age"),
+                            "score_tag": "race-age"
+                        },
+                        
+                        event_set_dialog=dialog.set,
+                        event_set_step=step.set,
+                        event_set_max_step_completed=max_step_completed.set,
+                        event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                        event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
                     )

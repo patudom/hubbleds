@@ -20,6 +20,11 @@ def HubbleExpUniverseSlideshow(
         "Age of the Universe"
     ],
     image_location: str = f"{IMAGE_BASE_URL}/stage_three",
+    state_view: Any = None,
+    event_set_dialog: Callable | None = None,
+    event_set_step: Callable | None = None,
+    event_set_max_step_completed: Callable | None = None,
+    event_mc_callback: Callable | None = None,
     event_on_slideshow_finished: Callable | None = None,
 
 ):

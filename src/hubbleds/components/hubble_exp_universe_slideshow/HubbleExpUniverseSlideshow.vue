@@ -10,7 +10,7 @@
         color="secondary"
         elevation="2"
         id="hubble-exp-button"
-        @click.stop="() => { dialog = true; }"
+        @click.stop="() => { set_dialog(true); }"
       >
         Hubble's Discovery
       </v-btn>
@@ -39,7 +39,7 @@
           /> -->
         <v-btn
           icon
-          @click="dialog = false;"
+          @click="set_dialog(false);"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -99,8 +99,10 @@
                       'Try again. The age of the race is the distance any runner has traveled divided by their speed.',
                     ]"
                     :correct-answers="[1]"
-                    @select="(option) => { if(option.correct) { this.max_step_completed = Math.max(this.max_step_completed, 1);} }"
-                    score-tag="race-age"  
+                    @select="(option) => { if(option.correct) { set_max_step_completed(Math.max(max_step_completed, 1));} }"
+                    :score-tag="state_view.score_tag"  
+                    @mc-emit="mc_callback($event)"
+                    :initialization="state_view.mc_score"
                   >
                   </mc-radiogroup>
                 </v-col>
@@ -197,7 +199,7 @@
           class="black--text"
           color="accent"
           depressed
-          @click="step--"
+          @click="set_step(step - 1)"
         >
           Back
         </v-btn>
@@ -210,13 +212,13 @@
           <v-item
             v-for="n in length"
             :key="`btn-${n}`"
-            v-slot="{ active, toggle }"
+            v-slot="{ active }"
           >
             <v-btn
               :disabled="n > max_step_completed + 2"
               :input-value="active"
               icon
-              @click="toggle"
+              @click="set_step(n-1);"
             >
               <v-icon>mdi-record</v-icon>
             </v-btn>
@@ -229,7 +231,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { step++; }"
+          @click="() => { set_step(step+1); }"
         >
           {{ step < length-1 ? 'next' : '' }}
         </v-btn>
@@ -238,7 +240,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); dialog = false; step = 0; on_slideshow_finished(); }"
+          @click="() => { $emit('close'); set_dialog(false); set_step(0); on_slideshow_finished(); }"
         >
           Done
         </v-btn>
@@ -255,22 +257,9 @@ export default {
       const isInteractStep = this.interact_steps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
       // FIX: change this to a callback
-      this.max_step_completed = Math.max(this.max_step_completed, newCompleted);
+      this.set_max_step_completed(Math.max(this.max_step_completed, newCompleted));
     },
   },
-
-  methods: {
-    closeDialog() {
-      if (this.max_step_completed == this.length - 1) {
-        this.$emit('close');
-        this.dialog = false;
-        if (this.step == this.length - 1) {
-          this.step = 0;
-        }
-      }
-    }
-  }
-
   
 };
 
