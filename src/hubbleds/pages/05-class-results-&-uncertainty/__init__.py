@@ -22,7 +22,7 @@ from hubbleds.components import UncertaintySlideshow, IdSlider
 from hubbleds.tools import *  # noqa
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_free_response, get_multiple_choice, mc_callback, fr_callback
 from hubbleds.utils import make_summary_data, models_to_glue_data
-from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
+from hubbleds.viewers.hubble_scatter_viewer import HubbleHistogramView, HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 
@@ -102,7 +102,7 @@ def Page():
     default_color = "#3A86FF"
     highlight_color = "#FF5A00"
 
-    def _linked_update_bins(viewers: Iterable[CDSHistogramView], msg: Optional[NumericalDataChangedMessage]=None):
+    def _update_bins(viewers: Iterable[CDSHistogramView], _msg: Optional[NumericalDataChangedMessage]=None):
         props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
         with ExitStack() as stack:
             for viewer in viewers:
@@ -110,10 +110,12 @@ def Page():
 
             values = []
             for viewer in viewers:
-                if viewer.layers and \
-                        ((msg is None) or (viewer.layer_artist_for_data(msg.data) is not None)):
+                if viewer.layers: 
                     # For now, we assume that the first layer contains the data that we're interested in
                     values.append(viewer.layers[0].layer[viewer.state.x_att])
+
+            if not values:
+                return
 
             try:
                 xmin = round(min(min(vals) for vals in values), 0) - 2.5
@@ -135,9 +137,9 @@ def Page():
         layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
         student_slider_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
         class_slider_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
-        student_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
-        all_student_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
-        class_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
+        student_hist_viewer = gjapp.new_data_viewer(HubbleHistogramView, show=False)
+        all_student_hist_viewer = gjapp.new_data_viewer(HubbleHistogramView, show=False)
+        class_hist_viewer = gjapp.new_data_viewer(HubbleHistogramView, show=False)
         viewers = {
             "layer": layer_viewer,
             "student_slider": student_slider_viewer,
@@ -151,7 +153,12 @@ def Page():
         for att in ('x_min', 'x_max'):
             link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
         gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
-                                            handler=partial(_linked_update_bins, hist_viewers))
+                                            handler=partial(_update_bins, hist_viewers),
+                                            filter=lambda msg: msg.data.label == "Student Summaries")
+
+        gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
+                                            handler=partial(_update_bins, [student_hist_viewer]),
+                                            filter=lambda msg: msg.data.label in ("All Student Summaries", "All Class Summaries"))
 
         return gjapp, viewers
 
@@ -305,7 +312,8 @@ def Page():
         )
         return
 
-    _linked_update_bins([viewers["all_student_hist"], viewers["class_hist"]])
+    _update_bins((viewers["all_student_hist"], viewers["class_hist"]))
+    _update_bins((viewers["student_hist"],))
 
     logger.info("DATA IS READY")
 
