@@ -98,9 +98,11 @@ def Page():
             LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
     solara.lab.use_task(_load_student_data)
 
+    student_default_color = "#3A86FF"
+    student_highlight_color = "#FF5A00"
 
-    default_color = "#3A86FF"
-    highlight_color = "#FF5A00"
+    class_default_color = "#FF006E"
+    class_highlight_color = "#3A86FF"
 
     def _update_bins(viewers: Iterable[CDSHistogramView], _msg: Optional[NumericalDataChangedMessage]=None):
         props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
@@ -198,6 +200,7 @@ def Page():
         layer_viewer.add_data(class_data)
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
+        layer_viewer.state.title = "Our Data"
 
         if len(class_data.subsets) == 0:
             student_slider_subset = class_data.new_subset(label="student_slider_subset", alpha=1, markersize=10)
@@ -223,7 +226,7 @@ def Page():
         hist_viewer.add_data(class_summary_data)
         hist_viewer.state.x_att = class_summary_data.id['age_value']
         hist_viewer.state.title = "My class ages (5 galaxies each)"
-        hist_viewer.layers[0].state.color = "red"
+        hist_viewer.layers[0].state.color = "#8338EC"
 
         class_data_added.set(True)
 
@@ -281,7 +284,7 @@ def Page():
         slider_viewer.add_data(all_data)
         slider_viewer.state.x_att = all_data.id['est_dist_value']
         slider_viewer.state.y_att = all_data.id['velocity_value']
-        slider_viewer.state.title = "Stage 5 All Classes Data Viewer"
+        slider_viewer.state.title = "All Classes Data Viewer"
         slider_viewer.layers[0].state.visible = False
         slider_viewer.add_subset(class_slider_subset)
 
@@ -289,13 +292,13 @@ def Page():
         student_hist_viewer.add_data(student_summ_data)
         student_hist_viewer.state.x_att = student_summ_data.id['age_value']
         student_hist_viewer.state.title = "All student ages (5 galaxies each)"
-        student_hist_viewer.layers[0].state.color = "red"
+        student_hist_viewer.layers[0].state.color = "#FFBE0B"
 
         class_hist_viewer = viewers["class_hist"]
         class_hist_viewer.add_data(all_class_summ_data)
         class_hist_viewer.state.x_att = all_class_summ_data.id['age_value']
-        class_hist_viewer.state.title = "All class ages (5 galaxies each)"
-        class_hist_viewer.layers[0].state.color = "blue"
+        class_hist_viewer.state.title = "All class ages (~100 galaxies each)"
+        class_hist_viewer.layers[0].state.color = "#619EFF"
 
         all_data_added.set(True)
 
@@ -485,7 +488,7 @@ def Page():
                 class_data = gjapp.data_collection["Class Data"]
                 student_slider_subset = class_data.subsets[0]
                 student_slider_subset.subset_state = RangeSubsetState(id, id, class_data.id['student_id'])
-                color = highlight_color if highlighted else default_color
+                color = student_highlight_color if highlighted else student_default_color
                 student_slider_subset.style.color = color
 
             with rv.Col(class_="no-padding"):
@@ -498,8 +501,8 @@ def Page():
                     highlight_ids=[GLOBAL_STATE.value.student.id],
                     id_component=class_summary_data.id['id'],
                     value_component=class_summary_data.id['age_value'],
-                    default_color=default_color,
-                    highlight_color=highlight_color
+                    default_color=student_default_color,
+                    highlight_color=student_highlight_color
                 )
 
         if COMPONENT_STATE.value.current_step_between(Marker.lea_unc1, Marker.you_age1c):
@@ -546,7 +549,7 @@ def Page():
                 all_data = gjapp.data_collection["All Measurements"]
                 class_slider_subset = all_data.subsets[0]
                 class_slider_subset.subset_state = RangeSubsetState(id, id, all_data.id['class_id'])
-                color = highlight_color if highlighted else default_color
+                color = class_highlight_color if highlighted else class_default_color
                 class_slider_subset.style.color = color
 
             with rv.Col():
@@ -559,8 +562,8 @@ def Page():
                     highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
                     id_component=all_summary_data.id['class_id'],
                     value_component=all_summary_data.id['age_value'],
-                    default_color=default_color,
-                    highlight_color=highlight_color
+                    default_color=class_default_color,
+                    highlight_color=class_highlight_color
                 )
 
                 with rv.Col(cols=10, offset=1):
