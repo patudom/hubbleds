@@ -80,6 +80,9 @@ class DotPlotTutorial(BaseModel):
     max_step_completed: int = 0
     current_title: str = ""
 
+class VelocityReflection(BaseModel):
+    step: int = 0
+    max_step_completed: int = 0
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.mee_gui1
@@ -105,6 +108,8 @@ class ComponentState(BaseComponentState, BaseState):
     has_multiple_bad_velocities: bool = False
     obs_wave_total: int = 0
     velocities_total: int = 0
+    show_reflection_dialog: bool = False
+    velocity_reflection_state: VelocityReflection = VelocityReflection()
     reflection_complete: bool = False
 
     @field_validator("current_step", mode="before")

@@ -1,18 +1,27 @@
 import solara
-from typing import Callable
-
+import reacton.ipyvuetify as rv
+from ipyvuetify import VuetifyTemplate
 
 @solara.component_vue("ReflectVelocitySlideshow.vue")
 def ReflectVelocitySlideshow(
-    step: int = 0,
-    length: int = 8,
-    dialog: bool = False,
-    max_step_completed: int = 0,
-    interact_steps: list[int] = [2, 3, 4, 5, 6],
-    button_text: str = "Reflect",
-    close_text: str = "Done",
-    require_responses: bool = True,
-    reflection_complete: bool = False,
-    event_on_reflection_completed: Callable = lambda: None,
+    # Variables we are not storing in state
+    length,
+    titles,
+    interact_steps,
+    require_responses,
+
+    # State variables
+    dialog,
+    step,
+    max_step_completed,
+    reflection_complete,
+    state_view,
+
+    # Event handlers
+    event_set_dialog,
+    event_mc_callback,
+    event_set_step,
+    event_set_max_step_completed,
+    event_on_reflection_complete,
 ):
     pass
