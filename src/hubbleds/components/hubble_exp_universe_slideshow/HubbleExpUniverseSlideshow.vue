@@ -135,8 +135,7 @@
                 <v-col
                   cols="12"
                   lg="7">
-                  hubble_race_viewer goes here
-                  <!-- <jupyter-widget :widget="hubble_race_viewer"/> -->
+                  <jupyter-widget :widget="race_viewer"/>
                 </v-col>
               </v-row>
             </v-container>
@@ -158,8 +157,7 @@
                 <v-col
                   cols="12"
                   lg="7">
-                  hubble_race_viewer goes here
-                  <!-- <jupyter-widget :widget="hubble_race_viewer"/> -->
+                  <jupyter-widget :widget="race_viewer"/>
                 </v-col>
               </v-row>
               <v-row>
@@ -180,8 +178,7 @@
                 <v-col
                   cols="12"
                   lg="7">
-                  layer_viewer goes here
-                  <!-- <jupyter-widget :widget="layer_viewer"/> -->
+                  <jupyter-widget :widget="layer_viewer"/>
                 </v-col>
               </v-row>
             </v-container>
