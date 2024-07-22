@@ -97,6 +97,9 @@ def Page():
         race_viewer.state.y_att = race_data.id["Velocity (km/hr)"]
         race_viewer.state.x_max = 1.1 * race_viewer.state.x_max
         race_viewer.state.y_max = 1.1 * race_viewer.state.y_max
+        race_viewer.state.x_min = 0
+        race_viewer.state.y_min = 0
+        race_viewer.state.title = "Race Data"
 
         layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
 
@@ -130,7 +133,8 @@ def Page():
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
-        layer_viewer.state.y_axislabel = "Velocity"
+        layer_viewer.state.y_axislabel = "Velocity (km/s)"
+        layer_viewer.state.title = "Our Data"
 
         class_plot_data.set(class_data_points)
 
@@ -359,7 +363,7 @@ def Page():
                                            plot_data=plot_data,
                                            on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
-                                           y_axis_label="Velocity (km / s)",
+                                           y_axis_label="Velocity (km/s)",
                                            viewer_height=VIEWER_HEIGHT,
                                            plot_margins=PLOTLY_MARGINS)
 
