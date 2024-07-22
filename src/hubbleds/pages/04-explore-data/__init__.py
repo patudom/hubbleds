@@ -1,3 +1,4 @@
+from cosmicds.utils import empty_data_from_model_class
 from cosmicds.viewers import CDSScatterView
 from glue.core import Data
 from glue_jupyter import JupyterApplication
@@ -11,7 +12,7 @@ from typing import Dict, Tuple
 
 from cosmicds.components import ScaffoldAlert, StateEditor, ViewerLayout
 from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
-from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, get_free_response, mc_callback, fr_callback
+from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
@@ -114,6 +115,8 @@ def Page():
         class_ids = LOCAL_STATE.value.stage_4_class_data_students
         class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
         class_data = models_to_glue_data(class_data_points, label="Stage 4 Class Data")
+        if not class_data.components:
+            class_data = empty_data_from_model_class(StudentMeasurement, label="Stage 4 Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
         class_data.style.color = "#3A86FF"
         class_data.style.alpha = 1
