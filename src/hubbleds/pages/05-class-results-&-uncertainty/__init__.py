@@ -1,7 +1,9 @@
+from contextlib import ExitStack
 from echo import delay_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
+from glue_jupyter.link import link
 from glue_plotly.viewers import PlotlyBaseView
 import numpy as np
 import solara
@@ -10,7 +12,7 @@ from solara.toestand import Ref
 from functools import partial
 from pathlib import Path
 import reacton.ipyvuetify as rv
-from typing import Dict, Tuple
+from typing import Dict, Iterable, Optional, Tuple
 
 from cosmicds.components import PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
 from cosmicds.utils import empty_data_from_model_class
@@ -20,7 +22,7 @@ from hubbleds.components import UncertaintySlideshow, IdSlider
 from hubbleds.tools import *  # noqa
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_free_response, get_multiple_choice, mc_callback, fr_callback
 from hubbleds.utils import make_summary_data, models_to_glue_data
-from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
+from hubbleds.viewers.hubble_scatter_viewer import HubbleHistogramView, HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 
@@ -100,22 +102,30 @@ def Page():
     default_color = "#3A86FF"
     highlight_color = "#FF5A00"
 
-    def _update_bins(viewer, *args):
+    def _update_bins(viewers: Iterable[CDSHistogramView], _msg: Optional[NumericalDataChangedMessage]=None):
         props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
-        with delay_callback(viewer.state, *props):
-            if not viewer.layers:
+        with ExitStack() as stack:
+            for viewer in viewers:
+                stack.enter_context(delay_callback(viewer.state, *props))
+
+            values = []
+            for viewer in viewers:
+                if viewer.layers: 
+                    # For now, we assume that the first layer contains the data that we're interested in
+                    values.append(viewer.layers[0].layer[viewer.state.x_att])
+
+            if not values:
                 return
-            layer = viewer.layers[0] # only works cuz there is only one layer
-            component = viewer.state.x_att
-            values = layer.layer.data[component]
+
             try:
-                xmin = round(values.min(), 0) - 1.5
-                xmax = round(values.max(), 0) + 1.5
+                xmin = round(min(min(vals) for vals in values), 0) - 2.5
+                xmax = round(max(max(vals) for vals in values), 0) + 2.5
             except:
                 return
-            viewer.state.hist_n_bin = int(xmax - xmin)
-            viewer.state.hist_x_min = xmin
-            viewer.state.hist_x_max = xmax
+            for viewer in viewers:
+                viewer.state.hist_n_bin = int(xmax - xmin)
+                viewer.state.hist_x_min = xmin
+                viewer.state.hist_x_max = xmax
 
     def glue_setup() -> Tuple[JupyterApplication, Dict[str, PlotlyBaseView]]:
         # NOTE: use_memo has to be part of the main page render. Including it
@@ -127,9 +137,9 @@ def Page():
         layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
         student_slider_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
         class_slider_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
-        student_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
-        all_student_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
-        class_hist_viewer = gjapp.new_data_viewer(CDSHistogramView, show=False)
+        student_hist_viewer = gjapp.new_data_viewer(HubbleHistogramView, show=False)
+        all_student_hist_viewer = gjapp.new_data_viewer(HubbleHistogramView, show=False)
+        class_hist_viewer = gjapp.new_data_viewer(HubbleHistogramView, show=False)
         viewers = {
             "layer": layer_viewer,
             "student_slider": student_slider_viewer,
@@ -139,9 +149,22 @@ def Page():
             "class_hist": class_hist_viewer
         }
 
-        for viewer in (student_hist_viewer, class_hist_viewer):
-            gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
-                                                handler=partial(_update_bins, viewer))
+        hist_viewers = (all_student_hist_viewer, class_hist_viewer)
+        for att in ('x_min', 'x_max'):
+            link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
+
+        # This looks weird, and it kinda is!
+        # The idea here is that the all students viewer will always have a wider range than the all classes viewer
+        # So we force the home tool of the class viewer to limit-resetting based on the students viewer
+        class_hist_viewer.toolbar.tools["plotly:home"].activate = all_student_hist_viewer.toolbar.tools["plotly:home"].activate
+
+        gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
+                                            handler=partial(_update_bins, hist_viewers),
+                                            filter=lambda msg: msg.data.label == "Student Summaries")
+
+        gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
+                                            handler=partial(_update_bins, [student_hist_viewer]),
+                                            filter=lambda msg: msg.data.label in ("All Student Summaries", "All Class Summaries"))
 
         return gjapp, viewers
 
@@ -295,8 +318,8 @@ def Page():
         )
         return
 
-    for viewer_tag in ("student_hist", "class_hist"):
-        _update_bins(viewers[viewer_tag])
+    _update_bins((viewers["all_student_hist"], viewers["class_hist"]))
+    _update_bins((viewers["student_hist"],))
 
     logger.info("DATA IS READY")
 
