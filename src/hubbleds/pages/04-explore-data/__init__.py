@@ -16,7 +16,7 @@ from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_mu
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.utils import AGE_CONSTANT, models_to_glue_data
+from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, VIEWER_HEIGHT, PLOTLY_MARGINS
 
 from cosmicds.logger import setup_logger
 
@@ -355,10 +355,13 @@ def Page():
                                 # The student data is second in our tuple above
                                 best_fit_slope.set(slopes[1])
                             LineDrawViewer(chart_id="line-draw-viewer",
+                                           title="Our Data",
                                            plot_data=plot_data,
                                            on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
-                                           y_axis_label="Velocity (km / s)")
+                                           y_axis_label="Velocity (km / s)",
+                                           viewer_height=VIEWER_HEIGHT,
+                                           plot_margins=PLOTLY_MARGINS)
 
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(
