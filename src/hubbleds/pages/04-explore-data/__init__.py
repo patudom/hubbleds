@@ -354,12 +354,26 @@ def Page():
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(
                 Marker.hub_exp1):
+                    dialog = Ref(COMPONENT_STATE.fields.show_hubble_slideshow_dialog)
+                    step = Ref(COMPONENT_STATE.fields.hubble_slideshow_state.step)
+                    max_step_completed = Ref(COMPONENT_STATE.fields.hubble_slideshow_state.max_step_completed)
                     slideshow_finished = Ref(COMPONENT_STATE.fields.hubble_slideshow_finished)
+
                     HubbleExpUniverseSlideshow(
                         race_viewer=ViewerLayout(viewer=viewers["race"]),
                         layer_viewer=ViewerLayout(viewers["layer"]),
-                        event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
+
                         dialog=COMPONENT_STATE.value.show_hubble_slideshow_dialog,
                         step=COMPONENT_STATE.value.hubble_slideshow_state.step,
                         max_step_completed=COMPONENT_STATE.value.hubble_slideshow_state.max_step_completed,
+                        state_view={
+                            "mc_score": get_multiple_choice(LOCAL_STATE, "race-age"),
+                            "score_tag": "race-age"
+                        },
+                        
+                        event_set_dialog=dialog.set,
+                        event_set_step=step.set,
+                        event_set_max_step_completed=max_step_completed.set,
+                        event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                        event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
                     )
