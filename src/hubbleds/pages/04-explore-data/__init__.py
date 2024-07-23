@@ -333,25 +333,29 @@ def Page():
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
                 with solara.Columns([3,9], classes=["no-padding"]):
-                    colors = ("blue", "red")
+                    colors = ("#3A86FF", "#FB5607")
+                    sizes = (8, 12)
+                    layers_visible = (False, True)
                     with rv.Col(class_="no-padding"):
                         PlotlyLayerToggle(chart_id="line-draw-viewer",
                                           layer_indices=(3, 4),
-                                          initial_selected=(0, 1),
+                                          initial_selected=(1, 1),
                                           colors=colors,
                                           labels=("Class Data", "My Data"))
                     with rv.Col(class_="no-padding"):
                         if student_plot_data.value and class_plot_data.value:
                             # Note the ordering here - we want the student data on top
                             layers = (class_plot_data.value, student_plot_data.value)
+
                             plot_data=[
                                 {
                                     "x": [t.est_dist_value for t in data],
                                     "y": [t.velocity_value for t in data],
                                     "mode": "markers",
-                                    "marker": { "color": color, "size": 12 },
+                                    "marker": { "color": color, "size": size },
+                                    "visible": visibility,    
                                     "hoverinfo": "none"
-                                } for data, color in zip(layers, colors)
+                                } for data, color, size, visibility in zip(layers, colors, sizes, layers_visible)
                             ]
 
                             best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
