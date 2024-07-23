@@ -1,4 +1,4 @@
-from cosmicds.utils import empty_data_from_model_class
+from cosmicds.utils import empty_data_from_model_class, DEFAULT_VIEWER_HEIGHT
 from cosmicds.viewers import CDSScatterView
 from glue.core import Data
 from glue_jupyter import JupyterApplication
@@ -16,7 +16,7 @@ from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_mu
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, VIEWER_HEIGHT, PLOTLY_MARGINS
+from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS
 
 from cosmicds.logger import setup_logger
 
@@ -368,7 +368,7 @@ def Page():
                                            on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
                                            y_axis_label="Velocity (km/s)",
-                                           viewer_height=VIEWER_HEIGHT,
+                                           viewer_height=DEFAULT_VIEWER_HEIGHT,
                                            plot_margins=PLOTLY_MARGINS)
 
             with rv.Col(cols=10, offset=1):
