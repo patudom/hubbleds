@@ -32,11 +32,16 @@ from .component_state import COMPONENT_STATE, Marker
 
 # glue-jupyter
 from glue_jupyter import JupyterApplication
+from glue.core.data_factories import load_data
 
 # misc.
 from pathlib import Path
 
+from glue_plotly.viewers import PlotlyBaseView
 from ...viewers import HubbleFitView
+
+from typing import Tuple, cast
+from ...data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
 
 # from ...data_management import *
 
@@ -80,24 +85,39 @@ def Page():
     
     # === Setup Glue ===
     
-    def _glue_setup() -> JupyterApplication:
+    def _glue_setup() -> Tuple[JupyterApplication, PlotlyBaseView]:
         # NOTE: use_memo has to be part of the main page render. Including it
         #  in a conditional will result in an error.
         gjapp = JupyterApplication(
             GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
         )
-        # TODO: Should viewer creation happen somewhere else?
-
-        # viewer = gjapp.new_data_viewer(HubbleFitView, show=False)
-        # viewer.state.title = "Professional Data"
-        # viewer.figure.update_xaxes(showline=True, mirror=False)
-        # viewer.figure.update_yaxes(showline=True, mirror=False)
         
-        # return gjapp, cast(HubbleFitView, viewer)
+        
+        def add_link(from_dc_name, from_att, to_dc_name, to_att):
+                from_dc = gjapp.data_collection[from_dc_name]
+                to_dc = gjapp.data_collection[to_dc_name]
+                gjapp.add_link(from_dc, from_att, to_dc, to_att)
 
-        return gjapp
 
-    gjapp = solara.use_memo(_glue_setup)
+        data_dir = Path(__file__).parent.parent.parent / "data"
+        if HUBBLE_KEY_DATA_LABEL not in gjapp.data_collection:
+            gjapp.data_collection.append(load_data(data_dir / f"{HUBBLE_KEY_DATA_LABEL}.csv"))
+        if HUBBLE_1929_DATA_LABEL not in gjapp.data_collection:
+            gjapp.data_collection.append(load_data(data_dir / f"{HUBBLE_1929_DATA_LABEL}.csv"))
+
+        add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)')
+        add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)')
+
+        viewer = cast(PlotlyBaseView,gjapp.new_data_viewer(HubbleFitView, show=False))
+        viewer.state.title = "Professional Data"
+        viewer.figure.update_xaxes(showline=True, mirror=False)
+        viewer.figure.update_yaxes(showline=True, mirror=False)
+        
+        return gjapp, viewer
+    
+    
+
+    gjapp, viewer = solara.use_memo(_glue_setup)
 
     def _state_callback_setup():
         # We want to minimize duplicate state handling, but also keep the states
@@ -108,9 +128,47 @@ def Page():
 
     solara.use_memo(_state_callback_setup)    
     
-    # # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
-    # component_state.add_data_by_marker(viewer)
-    # component_state.show_legend(viewer, show=True)
+    
+    def add_data_by_marker(viewer ):
+        
+        if COMPONENT_STATE.value.current_step.value == Marker.pro_dat1.value:
+            data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
+            if data not in viewer.state.layers_data:
+                print('adding Hubble 1929')
+                data.style.markersize = 10
+                data.style.color = '#D500F9'
+                viewer.add_data(data)
+                viewer.state.x_att = data.id['Distance (Mpc)']
+                viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+                layer = viewer.layer_artist_for_data(data)
+                
+        if COMPONENT_STATE.value.current_step.value == Marker.pro_dat5.value:
+            data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
+            if data not in viewer.state.layers_data:
+                print('adding HST key')
+                data.style.markersize = 10
+                data.style.color = '#AEEA00'
+                viewer.add_data(data)
+                viewer.state.x_att = data.id['Distance (Mpc)']
+                viewer.state.y_att = data.id['Velocity (km/s)']
+                layer = viewer.layer_artist_for_data(data)
+        
+        viewer.state.reset_limits()
+    
+    def show_legend(viewer, show=True):
+        viewer.figure.update_layout(showlegend=show)
+        if show:
+            viewer.figure.update_layout(
+            legend = {
+                'yanchor': 'top',
+                'xanchor': 'left',
+                "y": 0.99,
+                "x": 0.01
+            })
+        return
+    # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
+    add_data_by_marker(viewer)
+    show_legend(viewer, show=True)
     
     # print('\n =============  setting up mc scoring ============= \n')
     # mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
@@ -118,11 +176,12 @@ def Page():
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
-    with solara.Card():
-        with solara.Div():
-            solara.Text(f"mc_scoring: {LOCAL_STATE.value.mc_scoring}")
-        with solara.Div():
-            solara.Text(f"free_responses: {LOCAL_STATE.value.free_responses}")
+    # with solara.Card():
+    #     with solara.Div():
+    #         solara.Text(f"mc_scoring: {LOCAL_STATE.value.mc_scoring}")
+    #     with solara.Div():
+    #         solara.Text(f"free_responses: {LOCAL_STATE.value.free_responses}")
+    
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -258,10 +317,10 @@ def Page():
             with solara.Columns([3,9], classes=["no-padding"]):
                 with rv.Col(class_="no-padding"):
                     # TODO: LayerToggle should refresh when the data changes
-                    # LayerToggle(viewer)
+                    LayerToggle(viewer)
                     with solara.Card(style="background-color: var(--error);"):
                         solara.Markdown("Layer Toggle")
                 with rv.Col(class_="no-padding"):
-                    # ViewerLayout(viewer)
+                    ViewerLayout(viewer)
                     with solara.Card(style="background-color: var(--error);"):
                         solara.Markdown("Hubble Viewer")

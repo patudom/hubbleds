@@ -43,42 +43,7 @@ class ComponentState(BaseComponentState, BaseState):
     
     fit_line_shown: bool = False
     
-    # def add_data_by_marker(self, viewer ):
-    #     if self.current_step.value.value == Marker.pro_dat1.value:
-    #         data = GLOBAL_STATE.data_collection[HUBBLE_1929_DATA_LABEL]
-    #         if data not in viewer.state.layers_data:
-    #             print('adding Hubble 1929')
-    #             data.style.markersize = 10
-    #             data.style.color = '#D500F9'
-    #             viewer.add_data(data)
-    #             viewer.state.x_att = data.id['Distance (Mpc)']
-    #             viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
-    #             layer = viewer.layer_artist_for_data(data)
-                
-    #     if self.current_step.value.value == Marker.pro_dat5.value:
-    #         data = GLOBAL_STATE.data_collection[HUBBLE_KEY_DATA_LABEL]
-    #         if data not in viewer.state.layers_data:
-    #             print('adding HST key')
-    #             data.style.markersize = 10
-    #             data.style.color = '#AEEA00'
-    #             viewer.add_data(data)
-    #             viewer.state.x_att = data.id['Distance (Mpc)']
-    #             viewer.state.y_att = data.id['Velocity (km/s)']
-    #             layer = viewer.layer_artist_for_data(data)
-        
-    #     viewer.state.reset_limits()
     
-    # def show_legend(self, viewer, show=True):
-    #     viewer.figure.update_layout(showlegend=show)
-    #     if show:
-    #         viewer.figure.update_layout(
-    #         legend = {
-    #             'yanchor': 'top',
-    #             'xanchor': 'left',
-    #             "y": 0.99,
-    #             "x": 0.01
-    #         })
-    #     return
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:
