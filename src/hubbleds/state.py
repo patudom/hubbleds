@@ -8,7 +8,6 @@ from functools import cached_property
 from astropy.table import Table
 from pydantic import Field
 
-from hubbleds.remote import LOCAL_API
 
 from solara.toestand import Ref
 
@@ -250,20 +249,21 @@ def fr_callback(
     Free Response callback function
     """
     
-    free_responses = local_state.fields.free_responses
+    free_responses = local_state.value.free_responses
     
     logger.info(f"Free Response Callback Event: {event[0]}")
     logger.info(f"Current fr_response value: {free_responses}")
     if event[0] == "fr-initialize":
         if event[1]["tag"] not in free_responses:
             free_responses.add(event[1]["tag"])
-            LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)
+            LOCAL_STATE.set(local_state.value)
             if callback is not None:
                 callback()
 
     elif event[0] == "fr-update":
         free_responses.update(event[1]["tag"], response=event[1]["response"])
-        LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)
+        LOCAL_STATE.set(local_state.value)
+        print(f"local state set")
         if callback is not None:
             if (len(event) > 1) and ("response" in event[1]):
                 callback()

@@ -483,7 +483,7 @@ def Page():
                             age_calc_short1=get_free_response(LOCAL_STATE, "shortcoming-1").get("response"),
                             age_calc_short2=get_free_response(LOCAL_STATE, "shortcoming-2").get("response"),
                             age_calc_short_other=get_free_response(LOCAL_STATE, "other-shortcomings").get("response"),    
-                            event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                            event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                             free_responses=[get_free_response(LOCAL_STATE,'shortcoming-4'), get_free_response(LOCAL_STATE,'systematic-uncertainty')]   
                         )
             
@@ -539,7 +539,7 @@ def Page():
                         age_calc_short1=get_free_response(LOCAL_STATE, "shortcoming-1").get("response"),
                         age_calc_short2=get_free_response(LOCAL_STATE, "shortcoming-2").get("response"),
                         age_calc_short_other=get_free_response(LOCAL_STATE, "other-shortcomings").get("response"),  
-                        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                        event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                         free_responses=[get_free_response(LOCAL_STATE, 'shortcoming-4'), get_free_response(LOCAL_STATE, 'systematic-uncertainty')]
                 )
 
@@ -612,10 +612,10 @@ def Page():
         event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
         can_advance=COMPONENT_STATE.value.can_transition(next=True),
         show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik4),
-        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+        event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
         state_view={
             'free_response_a': get_free_response(LOCAL_STATE,'best-guess-age'),
-            'best_guess_answered': LOCAL_STATE.value.question_completed("best-guess-age"),
+            # 'best_guess_answered': LOCAL_STATE.value.question_completed("best-guess-age"),
             'free_response_b': get_free_response(LOCAL_STATE,'my-reasoning')
         }
     )
@@ -626,11 +626,11 @@ def Page():
         event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
         can_advance=COMPONENT_STATE.value.can_transition(next=True),
         show=COMPONENT_STATE.value.is_current_step(Marker.con_int3),
-        event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+        event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
         state_view={
             'free_response_a': get_free_response(LOCAL_STATE,'likely-low-age'),
             'free_response_b': get_free_response(LOCAL_STATE,'likely-high-age'),
-            'high_low_answered': LOCAL_STATE.value.question_completed("likely-low-age") and LOCAL_STATE.value.question_completed("likely-high-age"),
+            # 'high_low_answered': LOCAL_STATE.value.question_completed("likely-low-age") and LOCAL_STATE.value.question_completed("likely-high-age"),
             'free_response_c': get_free_response(LOCAL_STATE,'my-reasoning-2'),
         }
     )
@@ -712,7 +712,7 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.two_his5),
-                    event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                    event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                     state_view={
                         'free_response': get_free_response(LOCAL_STATE,'unc-range-change-reasoning'),
                     }
@@ -737,7 +737,7 @@ def Page():
             event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
             can_advance=COMPONENT_STATE.value.can_transition(next=True),
             show=COMPONENT_STATE.value.is_current_step(Marker.con_int2c),
-            event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+            event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
             state_view={
                 "low_guess": get_free_response(LOCAL_STATE, "likely-low-age").get("response"),
                 "high_guess": get_free_response(LOCAL_STATE, "likely-high-age").get("response"),
