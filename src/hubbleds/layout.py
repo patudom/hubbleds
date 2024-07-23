@@ -19,31 +19,36 @@ def Layout(children=[]):
     student_id = Ref(GLOBAL_STATE.fields.student.id)
     loaded_states = solara.use_reactive(False)
 
-    async def _load_local_state():
-        if not GLOBAL_STATE.value.student.id:
-            logger.warning("Failed to load measurements: no student was found.")
-            return
-
-        logger.info(
-            "Loading story stage and measurements for user `%s`.",
-            GLOBAL_STATE.value.student.id,
-        )
-
-        # Retrieve the student's app and local states
-        LOCAL_API.get_story_state(GLOBAL_STATE, LOCAL_STATE)
-
+    async def _load_measurements():
+  
         # Load in the student's measurements
         measurements = LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
         sample_measurements = LOCAL_API.get_sample_measurements(
             GLOBAL_STATE, LOCAL_STATE
         )
 
-        logger.info("Finished loading state.")
+        logger.info("Finished loading measurements.")
         loaded_states.set(True)
 
         Ref(LOCAL_STATE.fields.measurements_loaded).set(True)
 
-    solara.lab.use_task(_load_local_state, dependencies=[student_id.value])
+    def _on_student_info_loaded():
+        if not GLOBAL_STATE.value.student.id:
+            logger.warning("Failed to load app and story states: no student was found.")
+            return
+
+        logger.info(
+            "Loading app and story states for user `%s`.",
+            GLOBAL_STATE.value.student.id,
+        )
+
+        # Retrieve the student's app and local states
+        LOCAL_API.get_app_story_states(GLOBAL_STATE, LOCAL_STATE)
+
+        logger.info("Finished loading state.")
+
+        solara.lab.use_task(_load_measurements, dependencies=[])
+
     # solara.use_memo(_load_local_state, dependencies=[student_id.value])
 
     async def _write_local_global_states():
@@ -68,5 +73,6 @@ def Layout(children=[]):
         children=children,
         story_name=LOCAL_STATE.value.story_id,
         story_title=LOCAL_STATE.value.title,
+        on_student_info_loaded=_on_student_info_loaded,
     ):
         pass
