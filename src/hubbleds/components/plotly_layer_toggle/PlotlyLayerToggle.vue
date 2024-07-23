@@ -27,6 +27,7 @@
             <v-checkbox
               :input-value="selected.includes(layer_indices.length - 1 - index)"
               :color="colors[layer_indices.length - 1 - index]"
+              :disabled="!enabled[layer_indices.length - 1 - index]"
             />
           </v-list-item-action>
         </template>
@@ -39,7 +40,7 @@
 
 <script>
 export default {
-  props: ["chart_id", "layer_indices", "labels", "colors", "initial_selected"],
+  props: ["chart_id", "layer_indices", "initial_selected", "enabled", "colors", "labels", ],
   data() {
     return {
       element: null,
@@ -67,15 +68,17 @@ export default {
       Plotly.restyle(this.element, { visible }, {}, index);
     },
     toggleVisibility(index) {
-      let makeVisible = false;
-      if (this.selected.includes(index)) {
-        this.selected = this.selected.filter(idx => idx !== index);
-      } else {
-        this.selected = this.selected.concat([index]);
-        makeVisible = true;
+      if (this.enabled[index]) {
+        let makeVisible = false;
+        if (this.selected.includes(index)) {
+          this.selected = this.selected.filter(idx => idx !== index);
+        } else {
+          this.selected = this.selected.concat([index]);
+          makeVisible = true;
+        }
+        const layerIndex = this.layer_indices[index];
+        this.setLayerVisible(layerIndex, makeVisible);
       }
-      const layerIndex = this.layer_indices[index];
-      this.setLayerVisible(layerIndex, makeVisible);
     }
   }
 }

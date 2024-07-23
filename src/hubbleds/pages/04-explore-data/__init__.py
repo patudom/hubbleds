@@ -340,6 +340,7 @@ def Page():
                         PlotlyLayerToggle(chart_id="line-draw-viewer",
                                           layer_indices=(3, 4),
                                           initial_selected=(1, 1),
+                                          enabled=(False, True),
                                           colors=colors,
                                           labels=("Class Data", "My Data"))
                     with rv.Col(class_="no-padding"):
