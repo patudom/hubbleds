@@ -52,7 +52,6 @@
             <v-card-text
                 v-intersect="typesetMathJax"
                 class="pt-8"
-            >
               <p>
                 Great! Now we'll continue the velocity calculation process in the sequence of this pop-up window to give
                 ourselves some more space to work.
@@ -927,12 +926,29 @@ mjx-mpadded {
 <script>
 export default {
   methods: {
-    typesetMathJax(entries, _observer, intersecting) {
+    mathJaxObserver(entries, _observer, intersecting) {
       if (intersecting) {
         this.$nextTick(() => {
-          MathJax.typesetPromise(entries.map(entry => entry.target));
+          this.refreshMathJax(entries.map(entry => entry.target));
         });
+        this.refreshMathJax(entries.map(entry => entry.target));
       }
+    },
+
+    removeMathJax(containers) {
+      containers.forEach(container => container.querySelectorAll("mjx-container").forEach(el => container.remove(el)));
+      MathJax.typesetClear(containers);
+    },
+
+    refreshMathJax(containers) {
+      const containersToReset = containers.filter(this.containsMathJax);
+      this.removeMathJax(containersToReset);
+      MathJax.typesetPromise(containersToReset);
+    },
+
+    containsMathJax(container) {
+      const mathJaxOpeningDelimiters = [ "$$", "\\(", "\\[" ];
+      return mathJaxOpeningDelimiters.some(delim => container.innerHTML.includes(delim));
     },
 
     getValue(inputID) {
