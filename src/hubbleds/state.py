@@ -216,7 +216,7 @@ def mc_callback(
     """
 
     mc_scoring = Ref(local_state.fields.mc_scoring)
-    piggybank_total = Ref(GLOBAL_STATE.fields.piggybank_total)
+    piggybank_total = Ref(local_state.fields.piggybank_total)
     new = mc_scoring.value.model_copy(deep=True)
     logger.info(f"MC Callback Event: {event[0]}")
     logger.info(f"Current mc_scoring: {new}")
