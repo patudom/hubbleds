@@ -1,5 +1,5 @@
 import solara
-from hubbleds.state import LOCAL_STATE, GLOBAL_STATE
+from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, mc_callback
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 from glue_jupyter import JupyterApplication
@@ -535,10 +535,12 @@ def Page():
                 max_step_completed_5 = Ref(
                     COMPONENT_STATE.fields.doppler_state.max_step_completed_5
                 )
+                student_c = Ref(
+                    COMPONENT_STATE.fields.doppler_state.student_c
+                )
                 velocity_calculated = Ref(
                     COMPONENT_STATE.fields.doppler_state.velocity_calculated
                 )
-                light_speed = Ref(COMPONENT_STATE.fields.doppler_state.light_speed)
 
                 def _velocity_calculated_callback(value):
                     example_measurement_index = (
@@ -571,17 +573,20 @@ def Page():
                     max_step_completed_5=COMPONENT_STATE.value.doppler_state.max_step_completed_5,
                     failed_validation_5=COMPONENT_STATE.value.doppler_state.validation_5_failed,
                     interact_steps_5=COMPONENT_STATE.value.doppler_state.interact_steps_5,
-                    student_vel=COMPONENT_STATE.value.velocity,
-                    student_c=COMPONENT_STATE.value.doppler_state.light_speed,
+                    student_c=COMPONENT_STATE.value.doppler_state.student_c,
                     student_vel_calc=COMPONENT_STATE.value.doppler_state.velocity_calculated,
                     event_set_dialog=show_doppler_dialog.set,
                     event_set_step=step.set,
                     event_set_failed_validation_5=validation_5_failed.set,
                     event_set_max_step_completed_5=max_step_completed_5.set,
                     event_set_student_vel_calc=velocity_calculated.set,
-                    event_set_student_c=light_speed.set,
-                    event_set_student_vel=_velocity_calculated_callback,
+                    event_set_student_c=student_c.set,
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    state_view={
+                        "mc_score": get_multiple_choice(LOCAL_STATE, "interpret-velocity"),
+                        "score_tag": "interpret-velocity"
+                    }                    
                 )
 
             if COMPONENT_STATE.value.current_step_between(
@@ -623,19 +628,24 @@ def Page():
                             )
                             example_measurements_glue.style.color = "red"
                             gjapp.data_collection.append(example_measurements_glue)
-                            egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                            add_link(
-                                egsd,
-                                DB_VELOCITY_FIELD,
-                                example_measurements_glue,
-                                "velocity_value",
-                            )
-                            add_link(
-                                egsd,
-                                DB_MEASWAVE_FIELD,
-                                example_measurements_glue,
-                                "obs_wave_value",
-                            )
+                        else:
+                            example_measurements_glue = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                            example_measurements_glue.style.color = "red"
+
+                
+                        egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                        add_link(
+                            egsd,
+                            DB_VELOCITY_FIELD,
+                            example_measurements_glue,
+                            "velocity_value",
+                        )
+                        add_link(
+                            egsd,
+                            DB_MEASWAVE_FIELD,
+                            example_measurements_glue,
+                            "obs_wave_value",
+                        )
 
                 add_example_measurements_to_glue()
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
@@ -648,11 +658,51 @@ def Page():
                 DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD)
 
             if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
-                reflection_completed = Ref(COMPONENT_STATE.fields.reflection_complete)
+                show_reflection_dialog=Ref(COMPONENT_STATE.fields.show_reflection_dialog)
+                reflect_step = Ref(COMPONENT_STATE.fields.velocity_reflection_state.step)
+                reflect_max_step_completed = Ref(
+                    COMPONENT_STATE.fields.velocity_reflection_state.max_step_completed
+                )
+                reflection_complete = Ref(COMPONENT_STATE.fields.reflection_complete)
 
                 ReflectVelocitySlideshow(
+                    length=8,
+                    titles= [
+                        "Reflect on your data",
+                        "What would a 1920's scientist wonder?",
+                        "Observed vs. rest wavelengths",
+                        "How galaxies move",
+                        "Do your data agree with 1920's thinking?",
+                        "Do your data agree with 1920's thinking?",
+                        "Did your peers find what you found?",
+                        "Reflection complete"
+                    ],
+                    interact_steps=[2, 3, 4, 5, 6],
+                    require_responses=True,
+
+                    dialog = COMPONENT_STATE.value.show_reflection_dialog,
+                    step=COMPONENT_STATE.value.velocity_reflection_state.step, 
+                    max_step_completed=COMPONENT_STATE.value.velocity_reflection_state.max_step_completed,
                     reflection_complete=COMPONENT_STATE.value.reflection_complete,
-                    event_on_reflection_completed=lambda _: reflection_completed.set(
+                    state_view={
+                        "mc_score_2": get_multiple_choice(LOCAL_STATE, "wavelength-comparison"),
+                        "score_tag_2": "wavelength-comparison",
+                        "mc_score_3": get_multiple_choice(LOCAL_STATE, "galaxy-motion"),
+                        "score_tag_3": "galaxy-motion",
+                        "mc_score_4": get_multiple_choice(LOCAL_STATE, "steady-state-consistent"),
+                        "score_tag_4": "steady-state-consistent",
+                        "mc_score_5": get_multiple_choice(LOCAL_STATE, "moving-randomly-consistent"),
+                        "score_tag_5": "moving-randomly-consistent",
+                        "mc_score_6": get_multiple_choice(LOCAL_STATE, "peers-data-agree"),
+                        "score_tag_6": "peers-data-agree",
+                    },  
+
+                    event_set_dialog = show_reflection_dialog.set,
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    # These are numbered based on window-item value
+                    event_set_step=reflect_step.set,
+                    event_set_max_step_completed=reflect_max_step_completed.set,
+                    event_on_reflection_complete=lambda _: reflection_complete.set(
                         True
                     ),
                 )

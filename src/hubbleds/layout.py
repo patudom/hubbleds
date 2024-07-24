@@ -19,7 +19,7 @@ def Layout(children=[]):
     student_id = Ref(GLOBAL_STATE.fields.student.id)
     loaded_states = solara.use_reactive(False)
 
-    async def _load_local_state():
+    async def _load_global_local_states():
         if not GLOBAL_STATE.value.student.id:
             logger.warning("Failed to load measurements: no student was found.")
             return
@@ -30,7 +30,7 @@ def Layout(children=[]):
         )
 
         # Retrieve the student's app and local states
-        LOCAL_API.get_story_state(GLOBAL_STATE, LOCAL_STATE)
+        LOCAL_API.get_app_story_states(GLOBAL_STATE, LOCAL_STATE)
 
         # Load in the student's measurements
         measurements = LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
@@ -43,7 +43,8 @@ def Layout(children=[]):
 
         Ref(LOCAL_STATE.fields.measurements_loaded).set(True)
 
-    solara.lab.use_task(_load_local_state, dependencies=[student_id.value])
+    solara.lab.use_task(_load_global_local_states, dependencies=[student_id.value])
+
     # solara.use_memo(_load_local_state, dependencies=[student_id.value])
 
     async def _write_local_global_states():
@@ -65,6 +66,7 @@ def Layout(children=[]):
     )
 
     with BaseLayout(
+        local_state=LOCAL_STATE,
         children=children,
         story_name=LOCAL_STATE.value.story_id,
         story_title=LOCAL_STATE.value.title,

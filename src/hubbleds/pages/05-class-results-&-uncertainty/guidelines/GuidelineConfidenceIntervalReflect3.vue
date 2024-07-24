@@ -88,7 +88,7 @@
             type="float"
             :initial-response="state_view.free_response_a.response"
             :initialized="state_view.free_response_a.initialized"
-            @fr-emit="fr_callback($event)"
+            @fr-emit="(e) => {likely_low_answered = true; fr_callback(e)}"
           ></free-response>
         </v-col>
         <v-col
@@ -106,7 +106,7 @@
             type="float"
             :initial-response="state_view.free_response_b.response"
             :initialized="state_view.free_response_b.initialized"
-            @fr-emit="fr_callback($event)"
+            @fr-emit="(e) => {likely_high_answered = true; fr_callback(e)}"
           ></free-response>
         </v-col>
         <v-col
@@ -116,14 +116,14 @@
       </v-row>
 
       <v-row
-        v-if="state_view.high_low_answered"
+        v-if="high_low_answered"
       >
         <v-col>
           4. Explain why you chose your values using information from the histogram or other viewers:
         </v-col>
       </v-row>
       <v-row
-        v-if="state_view.high_low_answered"
+        v-if="high_low_answered"
       >
         <v-col>
           <free-response
@@ -149,8 +149,15 @@ export default {
   data() {
     return {
       dialog: false,
+      likely_low_answered: false,
+      likely_high_answered: false,
     }
   },
+  computed: {
+    high_low_answered() {
+      return this.likely_low_answered && this.likely_high_answered;
+    }
+  }
 }
 </script>
 
