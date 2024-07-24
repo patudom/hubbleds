@@ -26,7 +26,7 @@ from hubbleds.state import (
     get_multiple_choice
     )
 
-from ...utils import HST_KEY_AGE
+from ...utils import HST_KEY_AGE, models_to_glue_data
 
 from .component_state import COMPONENT_STATE, Marker
 
@@ -42,6 +42,7 @@ from ...viewers import HubbleFitView
 
 from typing import Tuple, cast
 from ...data_management import HUBBLE_1929_DATA_LABEL, HUBBLE_KEY_DATA_LABEL
+import numpy as np
 
 # from ...data_management import *
 
@@ -104,9 +105,24 @@ def Page():
             gjapp.data_collection.append(load_data(data_dir / f"{HUBBLE_KEY_DATA_LABEL}.csv"))
         if HUBBLE_1929_DATA_LABEL not in gjapp.data_collection:
             gjapp.data_collection.append(load_data(data_dir / f"{HUBBLE_1929_DATA_LABEL}.csv"))
+        
+        if len(LOCAL_STATE.value.class_measurements) == 0:
+            class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
+            measurements = Ref(LOCAL_STATE.fields.class_measurements)
+            student_ids = Ref(LOCAL_STATE.fields.stage_5_class_data_students)
+            if class_measurements and not student_ids.value:
+                ids = list(np.unique([m.student_id for m in class_measurements]))
+                student_ids.set(ids)
+            measurements.set(class_measurements)
+        
+        if 'Class Data' not in gjapp.data_collection:
+            class_data = models_to_glue_data(LOCAL_STATE.value.class_measurements, label="Class Data")
+            class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
 
         add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)')
         add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)')
+        add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', 'Class Data', 'est_dist_value')
+        add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', 'Class Data', 'velocity_value')
 
         viewer = cast(PlotlyBaseView,gjapp.new_data_viewer(HubbleFitView, show=False))
         viewer.state.title = "Professional Data"
@@ -130,6 +146,16 @@ def Page():
     
     
     def add_data_by_marker(viewer ):
+        
+        data = gjapp.data_collection['Class Data']
+        if data not in viewer.state.layers_data:
+            print('adding class data')
+            data.style.markersize = 10
+            data.style.color = '#FF6D00'
+            viewer.add_data(data)
+            viewer.state.x_att = data.id['est_dist_value']
+            viewer.state.y_att = data.id['velocity_value']
+            layer = viewer.layer_artist_for_data(data)
         
         if COMPONENT_STATE.value.current_step.value == Marker.pro_dat1.value:
             data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
