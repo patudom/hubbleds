@@ -166,8 +166,15 @@ def Page():
             }
         viewer.figure.update_layout(**layout_update)
         return
+
+    def legend_hide_layer_traces(viewer):
+        for layer in viewer.layers:
+            for trace in layer.traces():
+                trace.update(showlegend=False)
+
     # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
     add_data_by_marker(viewer)
+    legend_hide_layer_traces(viewer)
     show_legend(viewer, show=True)
     
     # print('\n =============  setting up mc scoring ============= \n')
