@@ -108,7 +108,7 @@ def Page():
         add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)')
         add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)')
 
-        viewer = cast(PlotlyBaseView,gjapp.new_data_viewer(HubbleFitView, show=False))
+        viewer = cast(PlotlyBaseView, gjapp.new_data_viewer(HubbleFitView, show=False))
         viewer.state.title = "Professional Data"
         viewer.figure.update_xaxes(showline=True, mirror=False)
         viewer.figure.update_yaxes(showline=True, mirror=False)
@@ -156,15 +156,15 @@ def Page():
         viewer.state.reset_limits()
     
     def show_legend(viewer, show=True):
-        viewer.figure.update_layout(showlegend=show)
+        layout_update = {"showlegend": show}
         if show:
-            viewer.figure.update_layout(
-            legend = {
+            layout_update["legend"] = {
                 'yanchor': 'top',
                 'xanchor': 'left',
                 "y": 0.99,
                 "x": 0.01
-            })
+            }
+        viewer.figure.update_layout(**layout_update)
         return
     # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
     add_data_by_marker(viewer)
