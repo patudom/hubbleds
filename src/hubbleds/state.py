@@ -216,6 +216,7 @@ def mc_callback(
     """
 
     mc_scoring = Ref(local_state.fields.mc_scoring)
+    piggybank_total = Ref(local_state.fields.piggybank_total)
     new = mc_scoring.value.model_copy(deep=True)
     logger.info(f"MC Callback Event: {event[0]}")
     logger.info(f"Current mc_scoring: {new}")
@@ -231,7 +232,16 @@ def mc_callback(
     # mc-score event returns a data which is an mc-score dictionary (includes tag)
     elif event[0] == "mc-score":
         new.update_mc_score(**event[1])
+
+        # update piggybank_total
+        try:
+            score = int(event[1]["score"])
+        except (TypeError, ValueError):
+            score = 0
+        total_score = piggybank_total.value + score
+        piggybank_total.set(total_score)
         mc_scoring.set(new)
+        
         if callback is not None:
             callback(new)
 
