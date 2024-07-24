@@ -74,17 +74,17 @@ class ComponentState(BaseComponentState, BaseState):
     def mos_lik1_gate(self) -> bool:
         return COMPONENT_STATE.value.uncertainty_slideshow_finished
 
-    @property
-    def con_int1_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("best-guess-age") and LOCAL_STATE.value.question_completed("my-reasoning")    
+    # @property
+    # def con_int1_gate(self) -> bool:
+    #     return LOCAL_STATE.value.question_completed("best-guess-age") and LOCAL_STATE.value.question_completed("my-reasoning")    
     
-    @property
-    def cla_dat1_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("likely-low-age") and LOCAL_STATE.value.question_completed("likely-high-age") and LOCAL_STATE.value.question_completed("my-reasoning-2")  
+    # @property
+    # def cla_dat1_gate(self) -> bool:
+    #     return LOCAL_STATE.value.question_completed("likely-low-age") and LOCAL_STATE.value.question_completed("likely-high-age") and LOCAL_STATE.value.question_completed("my-reasoning-2")  
     
-    @property
-    def two_his1_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("new-most-likely-age") and LOCAL_STATE.value.question_completed("new-likely-low-age") and LOCAL_STATE.value.question_completed("new-likely-high-age") and LOCAL_STATE.value.question_completed("my-updated-reasoning")  
+    # @property
+    # def two_his1_gate(self) -> bool:
+    #     return LOCAL_STATE.value.question_completed("new-most-likely-age") and LOCAL_STATE.value.question_completed("new-likely-low-age") and LOCAL_STATE.value.question_completed("new-likely-high-age") and LOCAL_STATE.value.question_completed("my-updated-reasoning")  
 
     @property
     def two_his3_gate(self) -> bool:
@@ -98,9 +98,9 @@ class ComponentState(BaseComponentState, BaseState):
     def two_his5_gate(self) -> bool:
         return LOCAL_STATE.value.question_completed("histogram-distribution")
 
-    @property
-    def mor_dat1_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("unc-range-change-reasoning")
+    # @property
+    # def mor_dat1_gate(self) -> bool:
+    #     return LOCAL_STATE.value.question_completed("unc-range-change-reasoning")
     
 
 COMPONENT_STATE = solara.reactive(ComponentState())

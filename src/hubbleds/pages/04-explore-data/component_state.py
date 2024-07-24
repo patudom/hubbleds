@@ -66,9 +66,9 @@ class ComponentState(BaseComponentState, BaseState):
     def tre_lin1_gate(self) -> bool:
         return COMPONENT_STATE.value.hubble_slideshow_finished
     
-    @property
-    def sho_est2_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("shortcoming-1") and LOCAL_STATE.value.question_completed("shortcoming-2")
+    # @property
+    # def sho_est2_gate(self) -> bool:
+    #     return LOCAL_STATE.value.question_completed("shortcoming-1") and LOCAL_STATE.value.question_completed("shortcoming-2")
 
 
 COMPONENT_STATE = solara.reactive(ComponentState())

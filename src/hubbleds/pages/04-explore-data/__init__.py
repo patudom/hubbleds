@@ -315,7 +315,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est1),
-                event_fr_callback=lambda event: fr_callback(event=event, local_state=LOCAL_STATE),
+                event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                 state_view={
                     'free_response_a': get_free_response(LOCAL_STATE, 'shortcoming-1'),
                     'free_response_b': get_free_response(LOCAL_STATE, 'shortcoming-2'),

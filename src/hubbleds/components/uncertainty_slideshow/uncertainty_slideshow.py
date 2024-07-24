@@ -11,7 +11,7 @@ def UncertaintySlideshow(
     dialog=False,
     image_location=f"{IMAGE_BASE_URL}/stage_five",
     event_on_slideshow_finished=None,
-    event_fr_callback=None,
+    event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
     free_responses=[],
     titles = [
                 'What is the true age of the universe?',

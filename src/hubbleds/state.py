@@ -8,6 +8,7 @@ from functools import cached_property
 from astropy.table import Table
 from pydantic import Field
 
+
 from solara.toestand import Ref
 
 from .free_response import FreeResponses
@@ -252,29 +253,29 @@ def mc_callback(
 def fr_callback(
     event: Tuple[str, dict[str, str]],
     local_state: Reactive[LocalState],
-    callback: Optional[Callable[[FreeResponses], None]] = None,
+    callback: Optional[Callable] = None,
 ):
     """
     Free Response callback function
     """
-
-    free_responses = Ref(local_state.fields.free_responses)
-    new = free_responses.value.model_copy(deep=True)
-
+    
+    free_responses = local_state.value.free_responses
+    
     logger.info(f"Free Response Callback Event: {event[0]}")
     logger.info(f"Current fr_response value: {free_responses}")
     if event[0] == "fr-initialize":
-        if event[1]["tag"] not in free_responses.value:
-            new.add(event[1]["tag"])
-            free_responses.set(new)
+        if event[1]["tag"] not in free_responses:
+            free_responses.add(event[1]["tag"])
+            LOCAL_STATE.set(local_state.value)
             if callback is not None:
-                callback(new)
+                callback()
 
     elif event[0] == "fr-update":
-        new.update(event[1]["tag"], response=event[1]["response"])
-        free_responses.set(new)
+        free_responses.update(event[1]["tag"], response=event[1]["response"])
+        LOCAL_STATE.set(local_state.value)
+        print(f"local state set")
         if callback is not None:
             if (len(event) > 1) and ("response" in event[1]):
-                callback(new)
+                callback()
     else:
         raise ValueError(f"Unknown event in fr_callback: <<{event}>> ")

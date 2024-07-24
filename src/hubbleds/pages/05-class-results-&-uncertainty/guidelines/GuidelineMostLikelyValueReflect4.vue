@@ -83,7 +83,7 @@
             type="float"
             :initial-response="state_view.free_response_a.response"
             :initialized="state_view.free_response_a.initialized"
-            @fr-emit="fr_callback($event)"
+            @fr-emit="(e) => {best_guess_answered = true;fr_callback(e);}"
           ></free-response>
         </v-col>
         <v-col>
@@ -93,14 +93,14 @@
 
 
       <v-row
-        v-if="state_view.best_guess_answered"
+        v-if="best_guess_answered"
       >
         <v-col>
           2. Explain why you picked that value and how your choice is connected to your understanding of the mean, median, or mode.
         </v-col>
       </v-row>
       <v-row
-        v-if="state_view.best_guess_answered"
+        v-if="best_guess_answered"
       >
         <v-col>
           <free-response
@@ -124,6 +124,7 @@ export default {
   data() {
     return {
       dialog: false,
+      best_guess_answered: false,
     }
   },
 }
