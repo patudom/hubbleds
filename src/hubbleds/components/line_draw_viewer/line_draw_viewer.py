@@ -11,7 +11,9 @@ def LineDrawPlot(chart_id: str,
                  event_line_fit: Optional[Callable[[list[float]], None]]=None,
                  plot_data: Optional[list[dict]]=None,
                  x_axis_label: Optional[str]=None,
-                 y_axis_label: Optional[str]=None
+                 y_axis_label: Optional[str]=None,
+                 height: Optional[int]=None,
+                 margins: Optional[dict]=None,
 ):
     pass
 
@@ -19,8 +21,11 @@ def LineDrawPlot(chart_id: str,
 @solara.component
 def LineDrawViewer(chart_id: str,
                    plot_data: Optional[list[dict]]=None,
+                   title: Optional[str]="Line Draw Viewer",
                    x_axis_label: Optional[str]=None,
                    y_axis_label: Optional[str]=None,
+                   viewer_height: Optional[int]=None,
+                   plot_margins: Optional[dict]=None,
                    on_line_drawn: Optional[Callable]=None,
                    on_line_fit: Optional[Callable[[list[float]], None]]=None):
 
@@ -42,8 +47,8 @@ def LineDrawViewer(chart_id: str,
 
     with rv.Card():
         with rv.Toolbar(class_="toolbar", dense=True):
-            with rv.ToolbarTitle(class_="toolbar"):
-                solara.Text("LINE DRAW VIEWER")
+            with rv.ToolbarTitle(class_="toolbar toolbar-title"):
+                solara.Text(title)
 
             rv.Spacer()
 
@@ -58,5 +63,7 @@ def LineDrawViewer(chart_id: str,
                      event_line_fit=on_line_fit,
                      plot_data=plot_data,
                      x_axis_label=x_axis_label,
-                     y_axis_label=y_axis_label
+                     y_axis_label=y_axis_label,
+                     height=viewer_height,
+                     margins=plot_margins,
         )

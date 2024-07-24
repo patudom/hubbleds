@@ -1,4 +1,4 @@
-from cosmicds.utils import empty_data_from_model_class
+from cosmicds.utils import empty_data_from_model_class, DEFAULT_VIEWER_HEIGHT
 from cosmicds.viewers import CDSScatterView
 from glue.core import Data
 from glue_jupyter import JupyterApplication
@@ -16,7 +16,7 @@ from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_mu
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.utils import AGE_CONSTANT, models_to_glue_data
+from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS
 
 from cosmicds.logger import setup_logger
 
@@ -97,6 +97,9 @@ def Page():
         race_viewer.state.y_att = race_data.id["Velocity (km/hr)"]
         race_viewer.state.x_max = 1.1 * race_viewer.state.x_max
         race_viewer.state.y_max = 1.1 * race_viewer.state.y_max
+        race_viewer.state.x_min = 0
+        race_viewer.state.y_min = 0
+        race_viewer.state.title = "Race Data"
 
         layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
 
@@ -130,7 +133,8 @@ def Page():
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
-        layer_viewer.state.y_axislabel = "Velocity"
+        layer_viewer.state.y_axislabel = "Velocity (km/s)"
+        layer_viewer.state.title = "Our Data"
 
         class_plot_data.set(class_data_points)
 
@@ -329,25 +333,29 @@ def Page():
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
                 with solara.Columns([3,9], classes=["no-padding"]):
-                    colors = ("blue", "red")
+                    colors = ("#3A86FF", "#FB5607")
+                    sizes = (8, 12)
+                    layers_visible = (False, True)
                     with rv.Col(class_="no-padding"):
                         PlotlyLayerToggle(chart_id="line-draw-viewer",
                                           layer_indices=(3, 4),
-                                          initial_selected=(0, 1),
+                                          initial_selected=(1, 1),
                                           colors=colors,
                                           labels=("Class Data", "My Data"))
                     with rv.Col(class_="no-padding"):
                         if student_plot_data.value and class_plot_data.value:
                             # Note the ordering here - we want the student data on top
                             layers = (class_plot_data.value, student_plot_data.value)
+
                             plot_data=[
                                 {
                                     "x": [t.est_dist_value for t in data],
                                     "y": [t.velocity_value for t in data],
                                     "mode": "markers",
-                                    "marker": { "color": color, "size": 12 },
+                                    "marker": { "color": color, "size": size },
+                                    "visible": visibility,    
                                     "hoverinfo": "none"
-                                } for data, color in zip(layers, colors)
+                                } for data, color, size, visibility in zip(layers, colors, sizes, layers_visible)
                             ]
 
                             best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
@@ -355,10 +363,13 @@ def Page():
                                 # The student data is second in our tuple above
                                 best_fit_slope.set(slopes[1])
                             LineDrawViewer(chart_id="line-draw-viewer",
+                                           title="Our Data",
                                            plot_data=plot_data,
                                            on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
-                                           y_axis_label="Velocity (km / s)")
+                                           y_axis_label="Velocity (km/s)",
+                                           viewer_height=DEFAULT_VIEWER_HEIGHT,
+                                           plot_margins=PLOTLY_MARGINS)
 
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(
