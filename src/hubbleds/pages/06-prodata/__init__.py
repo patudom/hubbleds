@@ -129,7 +129,7 @@ def Page():
     solara.use_memo(_state_callback_setup)    
     
     
-    def add_data_by_marker(viewer ):
+    def add_data_by_marker(viewer):
         
         if COMPONENT_STATE.value.current_step.value == Marker.pro_dat1.value:
             data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
@@ -140,7 +140,6 @@ def Page():
                 viewer.add_data(data)
                 viewer.state.x_att = data.id['Distance (Mpc)']
                 viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
-                layer = viewer.layer_artist_for_data(data)
                 
         if COMPONENT_STATE.value.current_step.value == Marker.pro_dat5.value:
             data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
@@ -151,7 +150,6 @@ def Page():
                 viewer.add_data(data)
                 viewer.state.x_att = data.id['Distance (Mpc)']
                 viewer.state.y_att = data.id['Velocity (km/s)']
-                layer = viewer.layer_artist_for_data(data)
         
         viewer.state.reset_limits()
     
