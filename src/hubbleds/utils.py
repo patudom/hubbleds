@@ -52,6 +52,8 @@ MG_REST_LAMBDA = 5172  # The value used by SDSS is actually 5176.7, but that wav
 GALAXY_FOV = 1.5 * u.arcmin
 FULL_FOV = 60 * u.deg
 
+PLOTLY_MARGINS = {"l": 60, "r": 20, "t": 20, "b": 60}
+
 IMAGE_BASE_URL = "https://cosmicds.github.io/cds-website/hubbleds_images"
 
 
