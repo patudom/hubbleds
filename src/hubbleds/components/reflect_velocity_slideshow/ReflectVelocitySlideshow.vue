@@ -10,10 +10,10 @@
         block
         color="warning"
         elevation="2"
-        @click.stop="dialog = true"
+        @click.stop="set_dialog(true)"
       >
         <v-spacer></v-spacer>
-        {{ button_text }}
+        Reflect
         <v-spacer></v-spacer>
         <v-icon
           class="ml-4"
@@ -35,18 +35,18 @@
           class="text-h6 text-uppercase font-weight-regular"
           style="color: white;"
         >
-          {{ currentTitle }}
+          {{ titles[step] }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <speech-synthesizer
+        <!-- <speech-synthesizer
           :root="() => this.$refs.content.$el"
           :autospeak-on-change="step"
           :speak-flag="dialog"
           :selectors="['label > div', 'div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
         >
-        </speech-synthesizer>
+        </speech-synthesizer> -->
         <span
-          @click="() => closeDialog()"
+          @click="() => set_dialog(false)"
         >
           <v-btn icon>
             <v-icon> mdi-close </v-icon>
@@ -148,8 +148,10 @@
                       'That is an unexpected result. For each galaxy, compare the values for rest wavelength (column 3) and observed wavelength (column 4). Check with an instructor in case your measurements need adjustment.'
                     ]"
                     :correct-answers="[1]"
-                    @select="(state) => { if(state.correct) { max_step_completed = Math.max(max_step_completed, 2); } }"
-                    score-tag="wavelength-comparison"
+                    @select="(option) => { if(option.correct) { set_max_step_completed(Math.max(max_step_completed, 2)); } }"
+                    @mc-emit="mc_callback($event)"
+                    :score-tag="state_view.score_tag_2"
+                    :initialization="state_view.mc_score_2"
                   >
                   </mc-radiogroup>
                 </v-col>
@@ -186,8 +188,10 @@
                       'Try again. Recall that when the observed wavelength is LONGER than the rest wavelength, this indicates motion AWAY from the observer.'
                     ]"
                     :correct-answers="[1]"
-                    @select="(state) => { if(state.correct) { max_step_completed = Math.max(max_step_completed, 3); } }"
-                    score-tag="galaxy-motion"
+                    @select="(option) => { if(option.correct) { set_max_step_completed(Math.max(max_step_completed, 3)); } }"
+                    @mc-emit="mc_callback($event)"
+                    :score-tag="state_view.score_tag_3"
+                    :initialization="state_view.mc_score_3"
                   >
                   </mc-radiogroup>
                 </v-col>
@@ -223,8 +227,10 @@
                     ]"
                     :correct-answers="[1]"
                     :neutral-answers="[2]"
-                    @select="(state) => { if(state.correct || state.neutral) { max_step_completed = Math.max(max_step_completed, 4); } }"
-                    score-tag="steady-state-consistent"
+                    @select="(option) => { if(option.correct || option.neutral) { set_max_step_completed(Math.max(max_step_completed, 4)); } }"
+                    @mc-emit="mc_callback($event)"
+                    :score-tag="state_view.score_tag_4"
+                    :initialization="state_view.mc_score_4"
                   >
                   </mc-radiogroup>
                 </v-col>
@@ -259,8 +265,10 @@
                       'That\'s fair. With only 5 galaxies, it is difficult to draw strong conclusions about the motion of galaxies. However, note that your galaxies all seem to be moving in the same direction (away from us). If galaxies move randomly, you would expect some to be moving toward us and some to be moving away.'
                     ]"
                     :neutral-answers='[0,1,2]'
-                    @select="(state) => { if(state.neutral) { max_step_completed = Math.max(max_step_completed, 5); } }"
-                    score-tag="moving-randomly-consistent"
+                    @select="(option) => { if(option.neutral) { set_max_step_completed(Math.max(max_step_completed, 5)); } }"
+                    @mc-emit="mc_callback($event)"
+                    :score-tag="state_view.score_tag_5"
+                    :initialization="state_view.mc_score_5"
                   >
                   </mc-radiogroup>
                 </v-col>
@@ -295,8 +303,10 @@
                       'No problem. Checking the Cosmic Data Stories database, everyone else who has completed this story also found that their galaxies are all moving away from us. Does that give you more confidence in your conclusions?']"
                     :correct-answers="[0,2]"
                     :neutral-answers="[1]"
-                    @select="(state) => { if(state.correct || state.neutral) { max_step_completed = Math.max(max_step_completed, 6); } }"
-                    score-tag="peers-data-agree"
+                    @select="(option) => { if(option.correct || option.neutral) { set_max_step_completed(Math.max(max_step_completed, 6)); } }"
+                    @mc-emit="mc_callback($event)"
+                    :score-tag="state_view.score_tag_6"
+                    :initialization="state_view.mc_score_6"
                   >
                   </mc-radiogroup>
                 </v-col>
@@ -348,7 +358,7 @@
           class="black--text"
           color="accent"
           depressed
-          @click="step--"
+          @click="set_step(step - 1)"
         >
           Back
         </v-btn>
@@ -361,14 +371,14 @@
           <v-item
             v-for="n in length"
             :key="`btn-${n}`"
-            v-slot="{ active, toggle }"
+            v-slot="{ active }"
           >
           <!-- vue's v-for with a range starts the count at 1, so we have to add 2 in the disabled step instead of 1 to account for the fact that we are otherwise counting the windows from 0 https://v2.vuejs.org/v2/guide/list.html?redirect=true#v-for-with-a-Range-->
             <v-btn
               :disabled="require_responses && n > max_step_completed + 2"
               :input-value="active"
               icon
-              @click="toggle"
+              @click="set_step(n-1);"
             >
               <v-icon
                 color="info"
@@ -385,7 +395,7 @@
           class="black--text"
           color="accent"
           depressed
-          @click="step++;"
+          @click="set_step(step + 1)"
         >
           Next
         </v-btn>
@@ -394,9 +404,9 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('submit'); dialog = false; step = 0; on_reflection_completed()}"
+          @click="() => { set_dialog(false); set_step(0); on_reflection_complete()}"
         >
-          {{ close_text }}
+          Done
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -413,45 +423,12 @@
 
 <script>
 module.exports = {
-  mounted() {
-    console.log(this);
-  },
-  computed: {
-    currentTitle () {
-      switch (this.step) {
-        case 0: return "Reflect on your data"
-        case 1: return "What would a 1920's scientist wonder?"
-        case 2: return "Observed vs. rest wavelengths"
-        case 3: return "How galaxies move"
-        case 4: return "Do your data agree with 1920's thinking?"
-        case 5: return "Do your data agree with 1920's thinking?"
-        case 6: return "Did your peers find what you found?"
-        default: return "Reflection complete"
-      }
-    },
-  },
-
-  methods: {
-    closeDialog(force = false) {
-    // component does not have show_team_interface or allow_advancing variable available, so it can't be bypassed
-      reachedEnd = this.max_step_completed >= this.interact_steps[this.interact_steps.length - 1];
-      if (reachedEnd || force || !this.require_responses) {
-        console.log('closing doppler reflection sequence');
-        this.$emit('submit');
-        this.dialog = false;
-        on_reflection_completed()
-      } else {
-        console.log('user has not reached end of sequence')
-        this.dialog = false;
-      }
-    }
-  },
 
   watch: {
     step(newStep, oldStep) {
         const isInteractStep = this.interact_steps.includes(newStep);
         const newCompleted = isInteractStep ? newStep - 1 : newStep;
-        this.max_step_completed = Math.max(this.max_step_completed, newCompleted)
+        this.set_max_step_completed(Math.max(this.max_step_completed, newCompleted));
     }
   }
 };

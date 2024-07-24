@@ -58,7 +58,7 @@ class DopplerCalculation(BaseModel):
     validation_5_failed: bool = False
     interact_steps_5: list[int] = [3, 4]
     max_step_completed_5: int = 0
-    light_speed: float = 0
+    student_c: float = 0
     velocity_calculated: bool = False
     completed: bool = False
 
@@ -80,6 +80,9 @@ class DotPlotTutorial(BaseModel):
     max_step_completed: int = 0
     current_title: str = ""
 
+class VelocityReflection(BaseModel):
+    step: int = 0
+    max_step_completed: int = 0
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.mee_gui1
@@ -96,7 +99,6 @@ class ComponentState(BaseComponentState, BaseState):
     zoom_tool_activated: bool = False
     doppler_calc_reached: bool = False
     obs_wave: float = 0
-    velocity: float = 0
     show_doppler_dialog: bool = False
     doppler_state: DopplerCalculation = DopplerCalculation()
     show_dotplot_tutorial_dialog: bool = False
@@ -106,6 +108,8 @@ class ComponentState(BaseComponentState, BaseState):
     has_multiple_bad_velocities: bool = False
     obs_wave_total: int = 0
     velocities_total: int = 0
+    show_reflection_dialog: bool = False
+    velocity_reflection_state: VelocityReflection = VelocityReflection()
     reflection_complete: bool = False
 
     @field_validator("current_step", mode="before")
