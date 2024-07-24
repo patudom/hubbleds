@@ -10,6 +10,7 @@ from cosmicds.components import (
     ViewerLayout
 )
 from cosmicds.logger import setup_logger
+from cosmicds.utils import show_legend, show_layer_traces_in_legend
 
 # hubbleds
 from hubbleds.remote import LOCAL_API
@@ -24,7 +25,7 @@ from hubbleds.state import (
     fr_callback, 
     get_free_response, 
     get_multiple_choice
-    )
+)
 
 from ...utils import HST_KEY_AGE
 
@@ -115,7 +116,6 @@ def Page():
         
         return gjapp, viewer
     
-    
 
     gjapp, viewer = solara.use_memo(_glue_setup)
 
@@ -153,26 +153,11 @@ def Page():
         
         viewer.state.reset_limits()
     
-    def show_legend(viewer, show=True):
-        layout_update = {"showlegend": show}
-        if show:
-            layout_update["legend"] = {
-                'yanchor': 'top',
-                'xanchor': 'left',
-                "y": 0.99,
-                "x": 0.01
-            }
-        viewer.figure.update_layout(**layout_update)
-        return
 
-    def legend_hide_layer_traces(viewer):
-        for layer in viewer.layers:
-            for trace in layer.traces():
-                trace.update(showlegend=False)
 
     # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
     add_data_by_marker(viewer)
-    legend_hide_layer_traces(viewer)
+    show_layer_traces_in_legend(viewer)
     show_legend(viewer, show=True)
     
     # print('\n =============  setting up mc scoring ============= \n')
