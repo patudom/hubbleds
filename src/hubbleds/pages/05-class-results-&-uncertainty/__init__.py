@@ -212,7 +212,7 @@ def Page():
         slider_viewer.state.y_att = class_data.id['velocity_value']
         slider_viewer.state.x_axislabel = "Distance (Mpc)"
         slider_viewer.state.y_axislabel = "Velocity"
-        slider_viewer.state.title = "Stage 5 Class Data Viewer"
+        slider_viewer.state.title = "My Class Data"
         slider_viewer.add_subset(student_slider_subset)
         slider_viewer.layers[0].state.visible = False
 
@@ -284,7 +284,7 @@ def Page():
         slider_viewer.add_data(all_data)
         slider_viewer.state.x_att = all_data.id['est_dist_value']
         slider_viewer.state.y_att = all_data.id['velocity_value']
-        slider_viewer.state.title = "All Classes Data Viewer"
+        slider_viewer.state.title = "All Classes Data"
         slider_viewer.layers[0].state.visible = False
         slider_viewer.add_subset(class_slider_subset)
 
