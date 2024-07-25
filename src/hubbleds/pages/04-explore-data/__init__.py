@@ -164,9 +164,8 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.age_uni3),
                 state_view={
                     "age_const": AGE_CONSTANT,
-                    # TODO: Update these once real values are hooked up
-                    "hypgal_distance": 100,
-                    "hypgal_velocity": 8000,
+                    "hypgal_distance": COMPONENT_STATE.value.best_fit_gal_dist,
+                    "hypgal_velocity": COMPONENT_STATE.value.best_fit_gal_vel,
                 }
             )
             ScaffoldAlert(
@@ -177,9 +176,8 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.age_uni4),
                 state_view={
                     "age_const": AGE_CONSTANT,
-                    # TODO: Update these once real values are hooked up
-                    "hypgal_distance": 100,
-                    "hypgal_velocity": 8000,
+                    "hypgal_distance": COMPONENT_STATE.value.best_fit_gal_dist,
+                    "hypgal_velocity": COMPONENT_STATE.value.best_fit_gal_vel,
                 }
             )
 
@@ -432,8 +430,8 @@ def Page():
                                 # student line is the 2nd of the 2 layers, so index=1
                                 best_fit_slope.set(args["slopes"][1]) 
                                 range = args["range"]
-                                best_fit_gal_dist.set(range/2)
-                                best_fit_gal_vel.set(best_fit_slope.value * best_fit_gal_dist.value)
+                                best_fit_gal_dist.set(round(range/2))
+                                best_fit_gal_vel.set(round(best_fit_slope.value * best_fit_gal_dist.value))
 
                             LineDrawViewer(chart_id="line-draw-viewer",
                                            title="Our Data",

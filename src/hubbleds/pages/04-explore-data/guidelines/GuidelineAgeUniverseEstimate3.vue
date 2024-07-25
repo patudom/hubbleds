@@ -16,9 +16,9 @@
     >
     <v-card color="error" class="mb-4">
         <v-card-text>
-          For now, enter<br> 
-          distance: {{ state_view.hypgal_distance }} <br>
-          velocity: {{ state_view.hypgal_velocity }} until we've properly wired up the student data.
+          These values need to go into the table<br> 
+          distance: {{ state_view.hypgal_distance }} Mpc <br>
+          velocity: {{ state_view.hypgal_velocity }} km/s
         </v-card-text>
       </v-card>
       <p>
