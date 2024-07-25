@@ -344,6 +344,8 @@ def Page():
 
         # Are the plotly traces actively displayed?
         display_best_fit_gal = solara.use_reactive(False)
+        clear_drawn_line = solara.use_reactive(False)
+        clear_fit_line = solara.use_reactive(False)
 
         def _on_marker_update(marker):
             if Marker.is_between(marker, Marker.tre_dat2, Marker.hub_exp1):
@@ -366,6 +368,12 @@ def Page():
             else:
                 display_best_fit_gal.set(False)
 
+            # Commenting for now because this is not working correctly
+            # if Marker.is_on(marker, Marker.age_uni1):
+            #     clear_drawn_line.set(True)
+            # else:
+            #     clear_drawn_line.set(False)
+            
         Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_update)
 
         with rv.Col(class_="no-padding"):
@@ -424,7 +432,9 @@ def Page():
                                            fit_enabled=fit_enabled.value,
                                            display_best_fit_gal = display_best_fit_gal.value,
                                            # Use student data for best fit galaxy
-                                           best_fit_gal_layer_index=0,)
+                                           best_fit_gal_layer_index=0,
+                                           clear_drawn_line=clear_drawn_line.value,
+                                           clear_fit_line=clear_fit_line.value,)
 
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(

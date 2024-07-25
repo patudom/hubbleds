@@ -27,6 +27,10 @@ class BaseMarker(metaclass=EnumMeta):
     @classmethod
     def last(cls):
         return cls(len(cls))
+    
+    @classmethod
+    def is_on(cls, marker: 'BaseMarker', is_on: 'BaseMarker'):
+        return marker.value is is_on.value
 
     @staticmethod
     def is_between(marker: 'BaseMarker', start: 'BaseMarker', end: 'BaseMarker'):
