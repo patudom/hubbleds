@@ -1,5 +1,6 @@
 from cosmicds.utils import empty_data_from_model_class, DEFAULT_VIEWER_HEIGHT
 from cosmicds.viewers import CDSScatterView
+from echo import delay_callback
 from glue.core import Data
 from glue_jupyter import JupyterApplication
 from hubbleds.base_component_state import transition_next, transition_previous
@@ -132,6 +133,10 @@ def Page():
         layer_viewer.add_data(class_data)
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
+        with delay_callback(layer_viewer.state, 'x_max', 'y_max'):
+            layer_viewer.state.reset_limits()
+            layer_viewer.state.x_max = 1.06 * layer_viewer.state.x_max
+            layer_viewer.state.y_max = 1.06 * layer_viewer.state.y_max   
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
         layer_viewer.state.y_axislabel = "Velocity (km/s)"
         layer_viewer.state.title = "Our Data"
