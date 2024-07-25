@@ -342,6 +342,7 @@ def Page():
 
         # Are the plotly traces actively displayed?
         display_best_fit_gal = solara.use_reactive(False)
+        clear_class_layer = solara.use_reactive(False)
         clear_drawn_line = solara.use_reactive(False)
         clear_fit_line = solara.use_reactive(False)
 
@@ -366,11 +367,24 @@ def Page():
             else:
                 display_best_fit_gal.set(False)
 
-            # Commenting for now because this is not working correctly
-            # if Marker.is_on(marker, Marker.age_uni1):
-            #     clear_drawn_line.set(True)
-            # else:
-            #     clear_drawn_line.set(False)
+            if Marker.is_on(marker, Marker.tre_lin1):
+            # What we really want is for the viewer to check if this layer is visible when it gets to this marker, and if so, clear it.
+                if(clear_class_layer.value == False):
+                    clear_class_layer.set(True)
+                else:
+                # This is hokey, but if the student moves around and comes back to this guideline with this set to True already, it won't trigger the line to be cleared.    
+                    clear_class_layer.set(False)
+                    clear_class_layer.set(True)
+
+            #This has the same issues as above.
+            if Marker.is_on(marker, Marker.age_uni1):
+                if(clear_drawn_line.value == False):
+                    clear_drawn_line.set(True)
+                else: 
+                    clear_drawn_line.set(False)
+                    clear_drawn_line.set(True)
+
+            
             
         Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_update)
 
@@ -448,6 +462,7 @@ def Page():
                                            display_best_fit_gal = display_best_fit_gal.value,
                                            # Use student data for best fit galaxy
                                            best_fit_gal_layer_index=0,
+                                           clear_class_layer=clear_class_layer.value,
                                            clear_drawn_line=clear_drawn_line.value,
                                            clear_fit_line=clear_fit_line.value,)
 
