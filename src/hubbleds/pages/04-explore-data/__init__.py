@@ -335,9 +335,15 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),
             )
 
+        # Which data layers to display in plotly viewer
         layers_enabled = solara.use_reactive((False, True))
+
+        # Are the buttons available to press?
         draw_enabled = solara.use_reactive(False)
         fit_enabled = solara.use_reactive(False)
+
+        # Are the plotly traces actively displayed?
+        display_best_fit_gal = solara.use_reactive(False)
 
         def _on_marker_update(marker):
             if Marker.is_between(marker, Marker.tre_dat2, Marker.hub_exp1):
@@ -355,9 +361,12 @@ def Page():
             else:
                 fit_enabled.set(False)
 
+            if Marker.is_at_or_after(marker, Marker.hyp_gal1):
+                display_best_fit_gal.set(True)
+            else:
+                display_best_fit_gal.set(False)
+
         Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_update)
-
-
 
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
@@ -410,7 +419,12 @@ def Page():
                                            x_axis_label="Distance (Mpc)",
                                            y_axis_label="Velocity (km/s)",
                                            viewer_height=DEFAULT_VIEWER_HEIGHT,
-                                           plot_margins=PLOTLY_MARGINS,draw_enabled=draw_enabled.value, fit_enabled=fit_enabled.value)
+                                           plot_margins=PLOTLY_MARGINS,
+                                           draw_enabled=draw_enabled.value,
+                                           fit_enabled=fit_enabled.value,
+                                           display_best_fit_gal = display_best_fit_gal.value,
+                                           # Use student data for best fit galaxy
+                                           best_fit_gal_layer_index=0,)
 
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(
