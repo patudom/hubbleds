@@ -10,7 +10,7 @@
       v-model="selected"
     >
       <v-list-item
-        v-for="(layer, index) in reversedLayerIndices"
+        v-for="(layer, index) in reversedLayerIndices.filter((_, idx) => enabled[layer_indices.length - 1 - idx])"
         :key="layer_indices.length - 1 - index"
         :value="layer_indices.length - 1 - index"
         color="black"
@@ -68,17 +68,15 @@ export default {
       Plotly.restyle(this.element, { visible }, {}, index);
     },
     toggleVisibility(index) {
-      if (this.enabled[index]) {
-        let makeVisible = false;
-        if (this.selected.includes(index)) {
-          this.selected = this.selected.filter(idx => idx !== index);
-        } else {
-          this.selected = this.selected.concat([index]);
-          makeVisible = true;
-        }
-        const layerIndex = this.layer_indices[index];
-        this.setLayerVisible(layerIndex, makeVisible);
+      let makeVisible = false;
+      if (this.selected.includes(index)) {
+        this.selected = this.selected.filter(idx => idx !== index);
+      } else {
+        this.selected = this.selected.concat([index]);
+        makeVisible = true;
       }
+      const layerIndex = this.layer_indices[index];
+      this.setLayerVisible(layerIndex, makeVisible);
     }
   }
 }
