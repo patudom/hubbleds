@@ -126,7 +126,7 @@ def DotplotViewer(
                 dx = (state.x_max - state.x_min) * .005
                 y0 = state.y_min
                 dy = (state.y_max - state.y_min) * 2
-                self.selection_layer.update(x0=x0, dx=dx, y0=y0, dy=dy)
+                self.selection_layer.update(x0=x0 - dx, dx=dx, y0=y0, dy=dy)
 
             dotplot_view._update_selection_layer_bounds = new_update_selection
                 
@@ -193,7 +193,7 @@ def DotplotViewer(
             dotplot_view.figure.update_layout(clickmode="event", hovermode="closest")
             dotplot_view.selection_layer.on_click(on_click)
             dotplot_view.set_selection_active(True)
-            dotplot_view.selection_layer.update(visible=True, z = [list(range(200))], opacity=.5)
+            dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0)
             
             
             if line_marker_at.value is not None:
