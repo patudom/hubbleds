@@ -1,6 +1,6 @@
 import reacton.ipyvuetify as rv
 import solara
-from typing import Callable, Optional
+from typing import Callable, Optional, Dict
 
 
 @solara.component_vue("LineDrawPlot.vue")
@@ -8,7 +8,7 @@ def LineDrawPlot(chart_id: str,
                  active: bool,
                  fit_active: bool=False,
                  event_line_drawn: Optional[Callable]=None,
-                 event_line_fit: Optional[Callable[[list[float]], None]]=None,
+                 event_line_fit: Optional[Callable[[Dict],None]] = None,
                  plot_data: Optional[list[dict]]=None,
                  x_axis_label: Optional[str]=None,
                  y_axis_label: Optional[str]=None,
@@ -33,7 +33,7 @@ def LineDrawViewer(chart_id: str,
                    on_draw_clicked: Optional[Callable]=None,
                    on_best_fit_clicked: Optional[Callable]=None,
                    on_line_drawn: Optional[Callable]=None,
-                   on_line_fit: Optional[Callable[[list[float]], None]]=None,
+                   on_line_fit: Optional[Callable[[Dict],None]] = None,
                    draw_enabled: Optional[bool]=True,
                    fit_enabled: Optional[bool]=True,
                    display_best_fit_gal: Optional[bool]=False,

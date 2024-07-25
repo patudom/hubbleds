@@ -92,6 +92,7 @@ export default {
       lastFitSlopes: [],
       actualEndpointTraceIndex: 0,
       bestFitGalaxyTraceIndex: 0,
+      range: 0,
     };
   },
   methods: {
@@ -330,8 +331,10 @@ export default {
           slopes.push(a);
         }
         this.lastFitSlopes = slopes;
+        this.range = this.element._fullLayout.xaxis.range[1] - this.element._fullLayout.xaxis.range[0];  
+        console.log("range", this.range);      
         if (this.line_fit) {
-          this.line_fit(slopes);
+          this.line_fit({slopes, range: this.range});
         }
       } else {
         Plotly.update(this.chart_id, { visible: false }, {}, this.fitLineTraceIndices);
@@ -340,7 +343,7 @@ export default {
     display_best_fit_gal(value) {
       if (value) {
         if (this.fit_active) {
-          x_best_fit_galaxy = 0.5 * ( this.element._fullLayout.xaxis.range[1] - this.element._fullLayout.xaxis.range[0]);
+          x_best_fit_galaxy = 0.5 * this.range;
           const slopes = this.lastFitSlopes;
           if (slopes.length > 0) {
             const bestfitslope = slopes[this.best_fit_gal_layer_index];

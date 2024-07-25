@@ -416,22 +416,24 @@ def Page():
                                 } for data, color, size, visibility in zip(layers, colors, sizes, layers_visible)
                             ]
 
-                            best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
-                            def line_fit_cb(slopes: list[float]):
-                                # The student data is second in our tuple above
-                                best_fit_slope.set(slopes[1])
-
                             draw_click_count = Ref(COMPONENT_STATE.fields.draw_click_count)
                             best_fit_click_count = Ref(COMPONENT_STATE.fields.best_fit_click_count)
-
-                            # best_fit_gal_vel = Ref(COMPONENT_STATE.fields.best_fit_gal_vel)
-                            # best_fit_gal_dist = Ref(COMPONENT_STATE.fields.best_fit_gal_dist)
+                            best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
+                            best_fit_gal_vel = Ref(COMPONENT_STATE.fields.best_fit_gal_vel)
+                            best_fit_gal_dist = Ref(COMPONENT_STATE.fields.best_fit_gal_dist)
 
                             def draw_click_cb():
                                 draw_click_count.set(draw_click_count.value + 1)    
 
                             def best_fit_click_cb():
                                 best_fit_click_count.set(best_fit_click_count.value + 1)
+
+                            def line_fit_cb(args: Dict):
+                                # student line is the 2nd of the 2 layers, so index=1
+                                best_fit_slope.set(args["slopes"][1]) 
+                                range = args["range"]
+                                best_fit_gal_dist.set(range/2)
+                                best_fit_gal_vel.set(best_fit_slope.value * best_fit_gal_dist.value)
 
                             LineDrawViewer(chart_id="line-draw-viewer",
                                            title="Our Data",
