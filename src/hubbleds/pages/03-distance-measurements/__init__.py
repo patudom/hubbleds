@@ -655,11 +655,33 @@ def Page():
                         egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
                         add_link(egsd, DB_ANGSIZE_FIELD, example_measurements_glue,"ang_size_value")
                         add_link(egsd, DB_DISTANCE_FIELD, example_measurements_glue,"est_dist_value")
-
                 
-                def on_click(trace, points, selector):
-                    print(points)
+                angular_size_line = solara.Reactive(None)
+                distance_line = solara.Reactive(None)
                 
+                
+                def set_angular_size_line(trace, points, selector):
+                    logger.info("Called set_angular_size_line")
+                    if len(points.xs) > 0:
+                        logger.info(f"Setting angular size line with {points.xs}")
+                        distance = points.xs[0]
+                        angular_size = DISTANCE_CONSTANT / distance
+                        angular_size_line.set(angular_size)
+                
+                def set_distance_line(trace, points, selector):
+                    logger.info("Called set_distance_line")
+                    if len(points.xs) > 0:
+                        logger.info(f"Setting distance line with {points.xs}")
+                        angular_size = points.xs[0]
+                        distance = DISTANCE_CONSTANT / angular_size
+                        distance_line.set(distance)
+                
+                # button to turn on dotplot lines
+                def toggle_dotplot_lines():
+                    show_dotplot_lines = Ref(COMPONENT_STATE.fields.show_dotplot_lines)
+                    show_dotplot_lines.set(not show_dotplot_lines.value)
+                
+                solara.Button("Toggle Dotplot Lines", on_click=toggle_dotplot_lines)
                 
                 if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.dot_seq5):
                     add_example_measurements_to_glue()
@@ -670,9 +692,9 @@ def Page():
                                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
                                             ],
                                             component_id="ang_size_value",
-                                            vertical_line_visible=True,
-                                            line_marker_at=52,
-                                            on_click_callback=on_click
+                                            vertical_line_visible=Ref(COMPONENT_STATE.fields.show_dotplot_lines),
+                                            line_marker_at=angular_size_line,
+                                            on_click_callback=set_distance_line
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
                             DotplotViewer(gjapp, 
@@ -681,8 +703,9 @@ def Page():
                                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
                                             ],
                                             component_id="est_dist_value",
-                                            vertical_line_visible=True,
-                                            on_click_callback=on_click
+                                            vertical_line_visible=Ref(COMPONENT_STATE.fields.show_dotplot_lines),
+                                            line_marker_at=distance_line,
+                                            on_click_callback=set_angular_size_line
                                             )
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")
