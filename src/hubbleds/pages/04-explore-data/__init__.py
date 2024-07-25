@@ -420,9 +420,24 @@ def Page():
                             def line_fit_cb(slopes: list[float]):
                                 # The student data is second in our tuple above
                                 best_fit_slope.set(slopes[1])
+
+                            draw_click_count = Ref(COMPONENT_STATE.fields.draw_click_count)
+                            best_fit_click_count = Ref(COMPONENT_STATE.fields.best_fit_click_count)
+
+                            # best_fit_gal_vel = Ref(COMPONENT_STATE.fields.best_fit_gal_vel)
+                            # best_fit_gal_dist = Ref(COMPONENT_STATE.fields.best_fit_gal_dist)
+
+                            def draw_click_cb():
+                                draw_click_count.set(draw_click_count.value + 1)    
+
+                            def best_fit_click_cb():
+                                best_fit_click_count.set(best_fit_click_count.value + 1)
+
                             LineDrawViewer(chart_id="line-draw-viewer",
                                            title="Our Data",
                                            plot_data=plot_data,
+                                           on_draw_clicked = draw_click_cb,
+                                           on_best_fit_clicked = best_fit_click_cb,
                                            on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
                                            y_axis_label="Velocity (km/s)",

@@ -30,6 +30,8 @@ def LineDrawViewer(chart_id: str,
                    y_axis_label: Optional[str]=None,
                    viewer_height: Optional[int]=None,
                    plot_margins: Optional[dict]=None,
+                   on_draw_clicked: Optional[Callable]=None,
+                   on_best_fit_clicked: Optional[Callable]=None,
                    on_line_drawn: Optional[Callable]=None,
                    on_line_fit: Optional[Callable[[list[float]], None]]=None,
                    draw_enabled: Optional[bool]=True,
@@ -44,13 +46,17 @@ def LineDrawViewer(chart_id: str,
     fit_active = solara.use_reactive(False)
     # best_fit_active = solara.use_reactive(False)
 
-    def on_draw_clicked():
+    def _on_draw_clicked():
         fit_active.set(False)
         draw_active.set(not draw_active.value)
+        if on_draw_clicked is not None:
+            on_draw_clicked()
 
-    def on_fit_clicked():
+    def _on_fit_clicked():
         draw_active.set(False)
         fit_active.set(not fit_active.value)
+        if on_best_fit_clicked is not None:
+            on_best_fit_clicked()
 
     # def on_best_fit_clicked():
     #     best_fit_active.set(not best_fit_active.value)
@@ -68,12 +74,12 @@ def LineDrawViewer(chart_id: str,
             rv.Spacer()
 
             fit_button = solara.IconButton(
-                classes=["toolbar"], icon_name="mdi-chart-timeline-variant", on_click=on_fit_clicked,
+                classes=["toolbar"], icon_name="mdi-chart-timeline-variant", on_click=_on_fit_clicked,
                 disabled=(not fit_enabled)
             )
 
             draw_button = solara.IconButton(
-                classes=["toolbar"], icon_name="mdi-message-draw", on_click=on_draw_clicked, 
+                classes=["toolbar"], icon_name="mdi-message-draw", on_click=_on_draw_clicked, 
                 disabled=(not draw_enabled)
             )
 
