@@ -5,16 +5,19 @@ from glue.core import Data
 from reacton import ipyvuetify as rv
 
 from hubbleds.viewers.hubble_dotplot import HubbleDotPlotView, HubbleDotPlotViewer
+from cosmicds.viewers.dotplot.state import DotPlotViewerState
+
 from glue.viewers.common.viewer import Viewer
 from glue_plotly.viewers.common import PlotlyBaseView
 from cosmicds.utils import vertical_line_mark
 from itertools import chain
 from uuid import uuid4
 from plotly.graph_objects import Scatter
+import plotly.graph_objects as go
 from numbers import Number
-from typing import Callable, Iterable, List, cast
+from typing import Callable, Iterable, List, cast, Union, Optional
 from solara.toestand import Reactive
-
+import numpy as np
 
 @solara.component
 def DotplotViewer(
@@ -24,9 +27,9 @@ def DotplotViewer(
     title = None, 
     height=400, 
     on_click_callback = None, 
-    line_marker_at = None, 
+    line_marker_at: Optional[Reactive | int | float] = Reactive(None), 
     line_marker_color = 'red', 
-    vertical_line_visible = True
+    vertical_line_visible: Union[Reactive[bool], bool] = Reactive(True)
     ):
     
     """
@@ -54,6 +57,8 @@ def DotplotViewer(
     
     """
     
+    line_marker_at = solara.Reactive(line_marker_at)
+    vertical_line_visible = solara.Reactive(vertical_line_visible)
     
     with rv.Card() as main:
         with rv.Toolbar(dense=True, class_="toolbar"):
@@ -114,7 +119,17 @@ def DotplotViewer(
                         dotplot_view.add_data(viewer_data)
             
             
-                        
+            # override the default selection layer
+            def new_update_selection(self=dotplot_view):
+                state = cast(DotPlotViewerState, self.state)
+                x0 = state.x_min
+                dx = (state.x_max - state.x_min) * .005
+                y0 = state.y_min
+                dy = (state.y_max - state.y_min) * 2
+                self.selection_layer.update(x0=x0 - dx, dx=dx, y0=y0, dy=dy)
+
+            dotplot_view._update_selection_layer_bounds = new_update_selection
+                
 
             
             line_ids = [] #[_line_ids_for_viewer(dotplot_view)]
@@ -126,7 +141,7 @@ def DotplotViewer(
                 
                 line_ids.clear()
                 
-                if vertical_line_visible and value is not None:
+                if vertical_line_visible.value and value is not None:
                     _add_vertical_line(dotplot_view, value, line_marker_color, label = "Line Marker", line_ids = line_ids)
                 
                 # line_ids.append(_line_ids_for_viewer(dotplot_view))
@@ -164,18 +179,28 @@ def DotplotViewer(
             )
             
             def on_click(trace, points, selector):
-                _update_lines(value = randint(36, 44))
-                if on_click_callback is not None:
-                    on_click_callback(trace, points, selector)
+                print('Dotplot clicked')
+                if len(points.xs) > 0:
+                    value = points.xs[0]
+                    _update_lines(value = value)
+                    if on_click_callback is not None:
+                        on_click_callback(trace, points, selector)
+                else:
+                   print("No points selected")
+
+                
                 
             dotplot_view.figure.update_layout(clickmode="event", hovermode="closest")
             dotplot_view.selection_layer.on_click(on_click)
             dotplot_view.set_selection_active(True)
-            dotplot_view.selection_layer.update(visible=True, z=[[1]], opacity=0)
+            dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0)
             
             
-            if line_marker_at is not None:
-                _update_lines(value = line_marker_at)
+            if line_marker_at.value is not None:
+                _update_lines(value = line_marker_at.value)
+                
+            line_marker_at.subscribe(lambda new_val: _update_lines(value = new_val))
+            vertical_line_visible.subscribe(lambda new_val: _update_lines())
 
             def cleanup():
                 for cnt in (title_widget, toolbar_widget, viewer_widget):
