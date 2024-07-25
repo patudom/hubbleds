@@ -10,6 +10,7 @@ from cosmicds.components import (
     ViewerLayout
 )
 from cosmicds.logger import setup_logger
+from cosmicds.utils import show_legend, show_layer_traces_in_legend
 
 # hubbleds
 from hubbleds.remote import LOCAL_API
@@ -24,7 +25,7 @@ from hubbleds.state import (
     fr_callback, 
     get_free_response, 
     get_multiple_choice
-    )
+)
 
 from ...utils import HST_KEY_AGE
 
@@ -108,13 +109,12 @@ def Page():
         add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', HUBBLE_KEY_DATA_LABEL, 'Distance (Mpc)')
         add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', HUBBLE_KEY_DATA_LABEL, 'Velocity (km/s)')
 
-        viewer = cast(PlotlyBaseView,gjapp.new_data_viewer(HubbleFitView, show=False))
+        viewer = cast(PlotlyBaseView, gjapp.new_data_viewer(HubbleFitView, show=False))
         viewer.state.title = "Professional Data"
         viewer.figure.update_xaxes(showline=True, mirror=False)
         viewer.figure.update_yaxes(showline=True, mirror=False)
         
         return gjapp, viewer
-    
     
 
     gjapp, viewer = solara.use_memo(_glue_setup)
@@ -129,7 +129,7 @@ def Page():
     solara.use_memo(_state_callback_setup)    
     
     
-    def add_data_by_marker(viewer ):
+    def add_data_by_marker(viewer):
         
         if COMPONENT_STATE.value.current_step.value == Marker.pro_dat1.value:
             data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
@@ -140,7 +140,6 @@ def Page():
                 viewer.add_data(data)
                 viewer.state.x_att = data.id['Distance (Mpc)']
                 viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
-                layer = viewer.layer_artist_for_data(data)
                 
         if COMPONENT_STATE.value.current_step.value == Marker.pro_dat5.value:
             data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
@@ -151,23 +150,14 @@ def Page():
                 viewer.add_data(data)
                 viewer.state.x_att = data.id['Distance (Mpc)']
                 viewer.state.y_att = data.id['Velocity (km/s)']
-                layer = viewer.layer_artist_for_data(data)
         
         viewer.state.reset_limits()
     
-    def show_legend(viewer, show=True):
-        viewer.figure.update_layout(showlegend=show)
-        if show:
-            viewer.figure.update_layout(
-            legend = {
-                'yanchor': 'top',
-                'xanchor': 'left',
-                "y": 0.99,
-                "x": 0.01
-            })
-        return
+
+
     # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
     add_data_by_marker(viewer)
+    show_layer_traces_in_legend(viewer)
     show_legend(viewer, show=True)
     
     # print('\n =============  setting up mc scoring ============= \n')
