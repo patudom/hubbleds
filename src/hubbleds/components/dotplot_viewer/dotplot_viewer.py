@@ -15,7 +15,7 @@ from uuid import uuid4
 from plotly.graph_objects import Scatter
 import plotly.graph_objects as go
 from numbers import Number
-from typing import Callable, Iterable, List, cast
+from typing import Callable, Iterable, List, cast, Union, Optional
 from solara.toestand import Reactive
 import numpy as np
 
@@ -27,9 +27,9 @@ def DotplotViewer(
     title = None, 
     height=400, 
     on_click_callback = None, 
-    line_marker_at = Reactive(None), 
+    line_marker_at: Optional[Reactive | int | float] = Reactive(None), 
     line_marker_color = 'red', 
-    vertical_line_visible = Reactive(True)
+    vertical_line_visible: Union[Reactive[bool], bool] = Reactive(True)
     ):
     
     """
@@ -58,6 +58,7 @@ def DotplotViewer(
     """
     
     line_marker_at = solara.Reactive(line_marker_at)
+    vertical_line_visible = solara.Reactive(vertical_line_visible)
     
     with rv.Card() as main:
         with rv.Toolbar(dense=True, class_="toolbar"):

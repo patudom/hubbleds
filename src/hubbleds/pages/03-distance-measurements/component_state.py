@@ -13,7 +13,7 @@ from hubbleds.base_component_state import (
 )
 from hubbleds.state import LOCAL_STATE
 
-from typing import Any
+from typing import Any, Optional
 
 class Marker(enum.Enum, BaseMarker):
     ang_siz1 = enum.auto()
@@ -58,7 +58,10 @@ class ComponentState(BaseComponentState, BaseState):
     meas_theta: float = 0.0
     ruler_click_count: int = 0
     n_meas: int = 0
+    
     show_dotplot_lines: bool = True
+    angular_size_line: Optional[float | int] = None
+    distance_line: Optional[float | int] = None
     
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:
