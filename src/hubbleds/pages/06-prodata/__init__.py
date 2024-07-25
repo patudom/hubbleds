@@ -344,9 +344,5 @@ def Page():
                 with rv.Col(class_="no-padding"):
                     # TODO: LayerToggle should refresh when the data changes
                     LayerToggle(viewer)
-                    with solara.Card(style="background-color: var(--error);"):
-                        solara.Markdown("Layer Toggle")
                 with rv.Col(class_="no-padding"):
                     ViewerLayout(viewer)
-                    with solara.Card(style="background-color: var(--error);"):
-                        solara.Markdown("Hubble Viewer")
