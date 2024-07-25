@@ -372,7 +372,7 @@ def Page():
                 if(clear_class_layer.value == False):
                     clear_class_layer.set(True)
                 else:
-                # This is hokey, but if the student moves around and comes back to this guideline with this set to True already, it won't trigger the line to be cleared.    
+                # The intention here was to catch a case where if the student moves around and comes back to this guideline with this set to True already, it doesn't trigger the line to be cleared. It doesn't work, though - I'm guessing maybe the double-setting is happening too fast for the viewer to catch it?    
                     clear_class_layer.set(False)
                     clear_class_layer.set(True)
 
