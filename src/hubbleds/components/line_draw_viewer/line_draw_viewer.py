@@ -1,5 +1,6 @@
 import reacton.ipyvuetify as rv
 import solara
+from solara import Reactive
 from typing import Callable, Optional, Dict
 
 
@@ -34,15 +35,18 @@ def LineDrawViewer(chart_id: str,
                    on_draw_clicked: Optional[Callable]=None,
                    on_best_fit_clicked: Optional[Callable]=None,
                    on_line_drawn: Optional[Callable]=None,
-                   on_line_fit: Optional[Callable[[Dict],None]] = None,
+                   on_line_fit: Optional[Callable[[Dict],None]]=None,
                    draw_enabled: Optional[bool]=True,
                    fit_enabled: Optional[bool]=True,
                    display_best_fit_gal: Optional[bool]=False,
                    best_fit_gal_layer_index: Optional[int]=None,
+
+                   # The particular values of these don't matter;
+                   # we're essentially just using them as signals
                    clear_class_layer: Optional[bool]=False,
                    clear_drawn_line: Optional[bool]=False,
                    clear_fit_line: Optional[bool]=False,
-                   ):
+):
 
     draw_active = solara.use_reactive(False)
     fit_active = solara.use_reactive(False)

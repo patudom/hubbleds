@@ -43,6 +43,8 @@ export default {
         this.setupPlotlyHandlers(this.draw_active);
         this.setupPlotlyRestyleHandler();
       });
+
+    this.drawing = this.draw_active;
   },
   data() {
     const baseAxis = {
@@ -79,6 +81,7 @@ export default {
         layout: { xaxis, yaxis, hovermode: "none", dragmode: false, showlegend: false },
         config: { displayModeBar: false, responsive: true },
       },
+      drawing: false,
       element: null,
       lineDrawn: false,
       mouseDown: false,
@@ -189,6 +192,9 @@ export default {
         this.dragLayer.classList.remove("cursor-crosshair");
       }
     },
+    setDrawnLineVisibility(visible) {
+      Plotly.update(this.chart_id, { visible }, {}, [this.drawnLineTraceIndex]);
+    },
     clearEndpoint() {
       const dataTracesCount = this.plot_data?.length ?? 0;
       if (this.element.data.length > dataTracesCount + 1) {
@@ -199,6 +205,7 @@ export default {
           console.warn(e);
         }
       }
+      this.lastEndpoint = null;
     },
     overEndpoint(event) {
       if (this.lastEndpoint === null) {
@@ -303,9 +310,15 @@ export default {
       );
     },
     draw_active(value) {
+      this.drawing = value;
+    },
+    drawing(value) {
       this.movingLine = value && this.lastEndpoint === null;
+      console.log(value, this.lastEndpoint, this.movingLine);
       console.log("making visible trace index", this.drawnLineTraceIndex);
-      Plotly.update(this.chart_id, { visible: true }, {}, [this.drawnLineTraceIndex]);
+      if (value) {
+        this.setDrawnLineVisibility(true);
+      }
       this.setupMouseHandlers(value);
       this.setupPlotlyHandlers(value);
     },
@@ -354,9 +367,8 @@ export default {
             };
             Plotly.addTraces(this.chart_id, trace);
             // Store best fit galaxy trace index
-            const chartElement = document.getElementById(this.chart_id);
-            if (chartElement) {
-              const nTraces = chartElement.data.length;
+            if (this.element) {
+              const nTraces = this.element.data.length;
               this.bestFitGalaxyTraceIndex = nTraces - 1;
             }
           }
@@ -364,8 +376,9 @@ export default {
           // If fit is not active, no best fit galaxy to display
           return;
         }
-      } else {
+      } else if (this.bestFitGalaxyTraceIndex > 0) {
         try {
+          console.log(this.bestFitGalaxyTraceIndex);
           console.log("clearing best fit galaxy trace", this.bestFitGalaxyTraceIndex);
           Plotly.update(this.chart_id, { visible: false }, {} [this.bestFitGalaxyTraceIndex]);
         } catch (e) {
@@ -374,21 +387,20 @@ export default {
       }
     },
     clear_drawn_line(value) {
-      if (value) {
-        try {
-          console.log("clearing drawn line, index", 0);
-          Plotly.update(this.chart_id, { visible: false }, {}, [0]);
-          this.clearEndpoint()
-        } catch (e) {
-          console.warn(e);
-        }        
-      }
+      try {
+        console.log("clearing drawn line, index", this.drawnLineTraceIndex);
+        this.clearEndpoint();
+        this.drawing = false;
+        this.setDrawnLineVisibility(false);
+      } catch (e) {
+        console.warn(e);
+      } 
     },
     clear_class_layer(value) {
       if (value) {
         try {
-          console.log("clearing class layer, index", 3);
-          Plotly.update(this.chart_id, { visible: false }, {}, [3]);
+          console.log("clearing class layer, index", this.plotDataCount + 1);
+          Plotly.update(this.chart_id, { visible: false }, {}, [this.plotDataCount + 1]);
         } catch (e) {
           console.warn(e);
         }        

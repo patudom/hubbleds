@@ -12,7 +12,7 @@ from solara.toestand import Ref
 from typing import Dict, List, Tuple
 
 from cosmicds.components import ScaffoldAlert, StateEditor, ViewerLayout
-from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
+from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle, line_draw_viewer
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
@@ -368,22 +368,18 @@ def Page():
                 display_best_fit_gal.set(False)
 
             if Marker.is_on(marker, Marker.tre_lin1):
-            # What we really want is for the viewer to check if this layer is visible when it gets to this marker, and if so, clear it.
-                if(clear_class_layer.value == False):
+                # What we really want is for the viewer to check if this layer is visible when it gets to this marker, and if so, clear it.
+                if not clear_class_layer.value:
                     clear_class_layer.set(True)
                 else:
-                # The intention here was to catch a case where if the student moves around and comes back to this guideline with this set to True already, it doesn't trigger the line to be cleared. It doesn't work, though - I'm guessing maybe the double-setting is happening too fast for the viewer to catch it?    
+                    # The intention here was to catch a case where if the student moves around and comes back to this guideline with this set to True already, it doesn't trigger the line to be cleared. It doesn't work, though - I'm guessing maybe the double-setting is happening too fast for the viewer to catch it?    
                     clear_class_layer.set(False)
                     clear_class_layer.set(True)
 
             #This has the same issues as above.
             if Marker.is_on(marker, Marker.age_uni1):
-                if(clear_drawn_line.value == False):
-                    clear_drawn_line.set(True)
-                else: 
-                    clear_drawn_line.set(False)
-                    clear_drawn_line.set(True)
-
+                print("SETTING")
+                clear_drawn_line.set(not clear_drawn_line.value)
             
             
         Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_update)
@@ -450,7 +446,7 @@ def Page():
                             LineDrawViewer(chart_id="line-draw-viewer",
                                            title="Our Data",
                                            plot_data=plot_data,
-                                           on_draw_clicked = draw_click_cb,
+                                           on_draw_clicked=draw_click_cb,
                                            on_best_fit_clicked = best_fit_click_cb,
                                            on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
