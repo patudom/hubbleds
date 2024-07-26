@@ -196,6 +196,12 @@ def Page():
         student_hist_viewer.state.title = "My class ages (5 galaxies each)"
         student_hist_viewer.layers[0].state.color = "#8338EC"
 
+        student_low_age = Ref(COMPONENT_STATE.fields.student_low_age)
+        student_high_age = Ref(COMPONENT_STATE.fields.student_high_age)
+
+        student_low_age.set(round(min(class_summary_data["age_value"])))
+        student_high_age.set(round(max(class_summary_data["age_value"])))
+
         all_data = models_to_glue_data(all_measurements, label="All Measurements")
         all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
 
@@ -233,6 +239,9 @@ def Page():
         class_hist_viewer.state.x_axislabel = "Age (Gyr)"
         class_hist_viewer.state.title = "All class ages (~100 galaxies each)"
         class_hist_viewer.layers[0].state.color = "#619EFF"
+
+        Ref(COMPONENT_STATE.fields.class_low_age).set(round(min(all_class_summ_data["age_value"])))
+        Ref(COMPONENT_STATE.fields.class_high_age).set(round(max(all_class_summ_data["age_value"])))
 
         # This looks weird, and it kinda is!
         # The idea here is that the all students viewer will always have a wider range than the all classes viewer
