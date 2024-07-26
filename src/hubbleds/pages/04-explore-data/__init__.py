@@ -1,5 +1,6 @@
 from cosmicds.utils import empty_data_from_model_class, DEFAULT_VIEWER_HEIGHT
 from cosmicds.viewers import CDSScatterView
+from echo import delay_callback
 from glue.core import Data
 from glue_jupyter import JupyterApplication
 from hubbleds.base_component_state import transition_next, transition_previous
@@ -132,6 +133,10 @@ def Page():
         layer_viewer.add_data(class_data)
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
+        with delay_callback(layer_viewer.state, 'x_max', 'y_max'):
+            layer_viewer.state.reset_limits()
+            layer_viewer.state.x_max = 1.06 * layer_viewer.state.x_max
+            layer_viewer.state.y_max = 1.06 * layer_viewer.state.y_max   
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
         layer_viewer.state.y_axislabel = "Velocity (km/s)"
         layer_viewer.state.title = "Our Data"
@@ -330,22 +335,67 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),
             )
 
+        # Which data layers to display in plotly viewer
+        layers_enabled = solara.use_reactive((False, True))
+
+        # Are the buttons available to press?
+        draw_enabled = solara.use_reactive(False)
+        fit_enabled = solara.use_reactive(False)
+
+        # Are the plotly traces actively displayed?
+        display_best_fit_gal = solara.use_reactive(False)
+
+        def _on_marker_update(marker):
+            if Marker.is_between(marker, Marker.tre_dat2, Marker.hub_exp1):
+                layers_enabled.set((True, True))
+            else:
+                layers_enabled.set((False, True))
+
+            if Marker.is_at_or_after(marker, Marker.tre_lin2):
+                draw_enabled.set(True)
+            else:
+                draw_enabled.set(False)
+
+            if Marker.is_at_or_after(marker, Marker.bes_fit1):
+                fit_enabled.set(True)
+            else:
+                fit_enabled.set(False)
+
+            if Marker.is_at_or_after(marker, Marker.hyp_gal1):
+                display_best_fit_gal.set(True)
+            else:
+                display_best_fit_gal.set(False)
+
+        Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_update)
+
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
                 with solara.Columns([3,9], classes=["no-padding"]):
                     colors = ("#3A86FF", "#FB5607")
                     sizes = (8, 12)
-                    layers_visible = (False, True)
                     with rv.Col(class_="no-padding"):
                         PlotlyLayerToggle(chart_id="line-draw-viewer",
+                        # (Plotly calls layers traces, but we'll use layers for consistency with glue).
+                        # For the line draw viewer:
+                        # Layer 0 = line that the student draws
+                        # Layer 1, 2 = fit lines for data layers.
+                        # Layer 3, 4 = data layers.
+                        # Layer 5 = endpoint for drawn line.
+                        # Add Layer 6 = best fit galaxy marker.
                                           layer_indices=(3, 4),
-                                          initial_selected=(1, 1),
+
+                        # These are the indices (within the specified tuple, which has 2 data layers) of the layers that we want to have initially checked/displayed. 
+                        # If only 1 layer is selected, you still need the comma, otherwise this will be interpreted as an int instead of a tuple. This means "check & display layer 1, which is the student data layer."
+
+                                          initial_selected=(1,),
+                                          enabled=layers_enabled.value,
                                           colors=colors,
                                           labels=("Class Data", "My Data"))
                     with rv.Col(class_="no-padding"):
                         if student_plot_data.value and class_plot_data.value:
                             # Note the ordering here - we want the student data on top
                             layers = (class_plot_data.value, student_plot_data.value)
+                            layers_visible = (False, True)
 
                             plot_data=[
                                 {
@@ -369,7 +419,12 @@ def Page():
                                            x_axis_label="Distance (Mpc)",
                                            y_axis_label="Velocity (km/s)",
                                            viewer_height=DEFAULT_VIEWER_HEIGHT,
-                                           plot_margins=PLOTLY_MARGINS)
+                                           plot_margins=PLOTLY_MARGINS,
+                                           draw_enabled=draw_enabled.value,
+                                           fit_enabled=fit_enabled.value,
+                                           display_best_fit_gal = display_best_fit_gal.value,
+                                           # Use student data for best fit galaxy
+                                           best_fit_gal_layer_index=0,)
 
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(

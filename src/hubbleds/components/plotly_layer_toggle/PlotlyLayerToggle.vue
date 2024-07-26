@@ -10,7 +10,7 @@
       v-model="selected"
     >
       <v-list-item
-        v-for="(layer, index) in reversedLayerIndices"
+        v-for="(layer, index) in reversedLayerIndices.filter((_, idx) => enabled[layer_indices.length - 1 - idx])"
         :key="layer_indices.length - 1 - index"
         :value="layer_indices.length - 1 - index"
         color="black"
@@ -27,6 +27,7 @@
             <v-checkbox
               :input-value="selected.includes(layer_indices.length - 1 - index)"
               :color="colors[layer_indices.length - 1 - index]"
+              :disabled="!enabled[layer_indices.length - 1 - index]"
             />
           </v-list-item-action>
         </template>
@@ -39,7 +40,7 @@
 
 <script>
 export default {
-  props: ["chart_id", "layer_indices", "labels", "colors", "initial_selected"],
+  props: ["chart_id", "layer_indices", "initial_selected", "enabled", "colors", "labels", ],
   data() {
     return {
       element: null,
@@ -52,9 +53,9 @@ export default {
     this.selected = this.initial_selected || Array.from({length: this.layer_indices.length}, (x, i) => true);
   },
   computed: {
-  reversedLayerIndices() {
-    return this.layer_indices.slice().reverse();
-  }
+    reversedLayerIndices() {
+      return this.layer_indices.slice().reverse();
+    }
   },  
   methods: {
     getElement() {
