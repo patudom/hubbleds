@@ -43,6 +43,10 @@ class ComponentState(BaseComponentState, BaseState):
     show_hubble_slideshow_dialog: bool = False
     hubble_slideshow_finished: bool = False
     hubble_slideshow_state: HubbleSlideshow = HubbleSlideshow()
+    draw_click_count: int = 0
+    best_fit_click_count: int = 0
+    best_fit_gal_vel: float = 100
+    best_fit_gal_dist: float = 8000
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:
@@ -65,6 +69,15 @@ class ComponentState(BaseComponentState, BaseState):
     @property
     def tre_lin1_gate(self) -> bool:
         return COMPONENT_STATE.value.hubble_slideshow_finished
+    
+    @property
+    def bes_fit1_gate(self) -> bool:
+        return COMPONENT_STATE.value.draw_click_count > 0
+    
+    @property
+    def age_uni1_gate(self) -> bool:
+        return COMPONENT_STATE.value.best_fit_click_count > 0
+
     
     # @property
     # def sho_est2_gate(self) -> bool:

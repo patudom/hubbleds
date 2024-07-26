@@ -1,6 +1,6 @@
 import reacton.ipyvuetify as rv
 import solara
-from typing import Callable, Optional
+from typing import Callable, Optional, Dict
 
 
 @solara.component_vue("LineDrawPlot.vue")
@@ -8,7 +8,7 @@ def LineDrawPlot(chart_id: str,
                  active: bool,
                  fit_active: bool=False,
                  event_line_drawn: Optional[Callable]=None,
-                 event_line_fit: Optional[Callable[[list[float]], None]]=None,
+                 event_line_fit: Optional[Callable[[Dict],None]] = None,
                  plot_data: Optional[list[dict]]=None,
                  x_axis_label: Optional[str]=None,
                  y_axis_label: Optional[str]=None,
@@ -16,6 +16,8 @@ def LineDrawPlot(chart_id: str,
                  margins: Optional[dict]=None,
                  display_best_fit_gal: Optional[bool]=False,
                  best_fit_gal_layer_index: Optional[int]=None,
+                 clear_drawn_line: Optional[bool]=False,
+                 clear_fit_line: Optional[bool]=False,
 ):
     pass
 
@@ -28,24 +30,33 @@ def LineDrawViewer(chart_id: str,
                    y_axis_label: Optional[str]=None,
                    viewer_height: Optional[int]=None,
                    plot_margins: Optional[dict]=None,
+                   on_draw_clicked: Optional[Callable]=None,
+                   on_best_fit_clicked: Optional[Callable]=None,
                    on_line_drawn: Optional[Callable]=None,
-                   on_line_fit: Optional[Callable[[list[float]], None]]=None,
+                   on_line_fit: Optional[Callable[[Dict],None]] = None,
                    draw_enabled: Optional[bool]=True,
                    fit_enabled: Optional[bool]=True,
                    display_best_fit_gal: Optional[bool]=False,
-                   best_fit_gal_layer_index: Optional[int]=None,):
+                   best_fit_gal_layer_index: Optional[int]=None,
+                   clear_drawn_line: Optional[bool]=False,
+                   clear_fit_line: Optional[bool]=False,
+                   ):
 
     draw_active = solara.use_reactive(False)
     fit_active = solara.use_reactive(False)
     # best_fit_active = solara.use_reactive(False)
 
-    def on_draw_clicked():
+    def _on_draw_clicked():
         fit_active.set(False)
         draw_active.set(not draw_active.value)
+        if on_draw_clicked is not None:
+            on_draw_clicked()
 
-    def on_fit_clicked():
+    def _on_fit_clicked():
         draw_active.set(False)
         fit_active.set(not fit_active.value)
+        if on_best_fit_clicked is not None:
+            on_best_fit_clicked()
 
     # def on_best_fit_clicked():
     #     best_fit_active.set(not best_fit_active.value)
@@ -63,12 +74,12 @@ def LineDrawViewer(chart_id: str,
             rv.Spacer()
 
             fit_button = solara.IconButton(
-                classes=["toolbar"], icon_name="mdi-chart-timeline-variant", on_click=on_fit_clicked,
+                classes=["toolbar"], icon_name="mdi-chart-timeline-variant", on_click=_on_fit_clicked,
                 disabled=(not fit_enabled)
             )
 
             draw_button = solara.IconButton(
-                classes=["toolbar"], icon_name="mdi-message-draw", on_click=on_draw_clicked, 
+                classes=["toolbar"], icon_name="mdi-message-draw", on_click=_on_draw_clicked, 
                 disabled=(not draw_enabled)
             )
 
@@ -89,5 +100,7 @@ def LineDrawViewer(chart_id: str,
                      height=viewer_height,
                      margins=plot_margins,
                      display_best_fit_gal=display_best_fit_gal,
-                     best_fit_gal_layer_index=best_fit_gal_layer_index
+                     best_fit_gal_layer_index=best_fit_gal_layer_index,
+                     clear_drawn_line = clear_drawn_line,
+                     clear_fit_line = clear_fit_line,
         )

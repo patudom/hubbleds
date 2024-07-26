@@ -90,7 +90,9 @@ export default {
       fitLineTraceIndices: [],
       endpointSize: 10,
       lastFitSlopes: [],
+      actualEndpointTraceIndex: 0,
       bestFitGalaxyTraceIndex: 0,
+      range: 0,
     };
   },
   methods: {
@@ -154,18 +156,19 @@ export default {
       }
     },
     plotlyClickHandler(event) {
-      if (event.points[0].curveNumber === this.endpointTraceIndex) {
+      console.log("calculatedEndpointTraceIndex", this.calculatedEndpointTraceIndex);
+      if (event.points[0].curveNumber === this.calculatedEndpointTraceIndex) {
         this.movingLine = true;
         this.clearEndpoint();
       }
     },
     plotlyHoverHandler(event) {
-      if (event.points[0].curveNumber === this.endpointTraceIndex) {
+      if (event.points[0].curveNumber === this.calculatedEndpointTraceIndex) {
         this.setCursor("grab");
       }
     },
     plotlyUnhoverHandler(event) {
-      if (event.points[0].curveNumber === this.endpointTraceIndex) {
+      if (event.points[0].curveNumber === this.calculatedEndpointTraceIndex) {
         let cursor;
         if (this.movingLine) {
           cursor = this.lineDrawn ? "grabbing" : "default";
@@ -190,7 +193,8 @@ export default {
       const dataTracesCount = this.plot_data?.length ?? 0;
       if (this.element.data.length > dataTracesCount + 1) {
         try {
-          Plotly.deleteTraces(this.chart_id, this.endpointTraceIndex);
+          console.log("clearing endpointTraceIndex", this.actualEndpointTraceIndex);
+          Plotly.deleteTraces(this.chart_id, this.actualEndpointTraceIndex);
         } catch (e) {
           console.warn(e);
         }
@@ -218,6 +222,13 @@ export default {
       const y = line.y[1];
       Plotly.addTraces(this.chart_id, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: this.endpointSize, color: "#000000" }, hoverinfo: "none" });
       this.lastEndpoint = [x, y];
+      // Try storing actual endpoint trace index
+      const chartElement = document.getElementById(this.chart_id);
+      if (chartElement) {
+        const nTraces = chartElement.data.length;
+        this.actualEndpointTraceIndex = nTraces - 1;
+        console.log("actualEndpointTraceIndex", this.actualEndpointTraceIndex)
+      }
     },
     linearRegression(x, y, forceOrigin=true) {
       const sum = (s, a) => s + a;
@@ -284,7 +295,7 @@ export default {
 
   },
   computed: {
-    endpointTraceIndex() {
+    calculatedEndpointTraceIndex() {
       return 2 * this.plotDataCount + 1;
     },
   },
@@ -320,8 +331,10 @@ export default {
           slopes.push(a);
         }
         this.lastFitSlopes = slopes;
+        this.range = this.element._fullLayout.xaxis.range[1] - this.element._fullLayout.xaxis.range[0];  
+        console.log("range", this.range);      
         if (this.line_fit) {
-          this.line_fit(slopes);
+          this.line_fit({slopes, range: this.range});
         }
       } else {
         Plotly.update(this.chart_id, { visible: false }, {}, this.fitLineTraceIndices);
@@ -330,7 +343,7 @@ export default {
     display_best_fit_gal(value) {
       if (value) {
         if (this.fit_active) {
-          x_best_fit_galaxy = 0.5 * ( this.element._fullLayout.xaxis.range[1] - this.element._fullLayout.xaxis.range[0]);
+          x_best_fit_galaxy = 0.5 * this.range;
           const slopes = this.lastFitSlopes;
           if (slopes.length > 0) {
             const bestfitslope = slopes[this.best_fit_gal_layer_index];
@@ -361,6 +374,17 @@ export default {
         } catch (e) {
           console.warn(e);
         }
+      }
+    },
+    clear_drawn_line(value) {
+      if (value) {
+        console.log("clearing drawn line, endpoint trace", this.actualEndpointTraceIndex);
+        try {
+          Plotly.deleteTraces(this.chart_id, 0)
+          this.clearEndpoint()
+        } catch (e) {
+          console.warn(e);
+        }        
       }
     },
     movingLine(value) {

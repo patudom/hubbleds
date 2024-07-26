@@ -164,9 +164,8 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.age_uni3),
                 state_view={
                     "age_const": AGE_CONSTANT,
-                    # TODO: Update these once real values are hooked up
-                    "hypgal_distance": 100,
-                    "hypgal_velocity": 8000,
+                    "hypgal_distance": COMPONENT_STATE.value.best_fit_gal_dist,
+                    "hypgal_velocity": COMPONENT_STATE.value.best_fit_gal_vel,
                 }
             )
             ScaffoldAlert(
@@ -177,9 +176,8 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.age_uni4),
                 state_view={
                     "age_const": AGE_CONSTANT,
-                    # TODO: Update these once real values are hooked up
-                    "hypgal_distance": 100,
-                    "hypgal_velocity": 8000,
+                    "hypgal_distance": COMPONENT_STATE.value.best_fit_gal_dist,
+                    "hypgal_velocity": COMPONENT_STATE.value.best_fit_gal_vel,
                 }
             )
 
@@ -344,6 +342,8 @@ def Page():
 
         # Are the plotly traces actively displayed?
         display_best_fit_gal = solara.use_reactive(False)
+        clear_drawn_line = solara.use_reactive(False)
+        clear_fit_line = solara.use_reactive(False)
 
         def _on_marker_update(marker):
             if Marker.is_between(marker, Marker.tre_dat2, Marker.hub_exp1):
@@ -366,6 +366,12 @@ def Page():
             else:
                 display_best_fit_gal.set(False)
 
+            # Commenting for now because this is not working correctly
+            # if Marker.is_on(marker, Marker.age_uni1):
+            #     clear_drawn_line.set(True)
+            # else:
+            #     clear_drawn_line.set(False)
+            
         Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_update)
 
         with rv.Col(class_="no-padding"):
@@ -408,13 +414,30 @@ def Page():
                                 } for data, color, size, visibility in zip(layers, colors, sizes, layers_visible)
                             ]
 
+                            draw_click_count = Ref(COMPONENT_STATE.fields.draw_click_count)
+                            best_fit_click_count = Ref(COMPONENT_STATE.fields.best_fit_click_count)
                             best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
-                            def line_fit_cb(slopes: list[float]):
-                                # The student data is second in our tuple above
-                                best_fit_slope.set(slopes[1])
+                            best_fit_gal_vel = Ref(COMPONENT_STATE.fields.best_fit_gal_vel)
+                            best_fit_gal_dist = Ref(COMPONENT_STATE.fields.best_fit_gal_dist)
+
+                            def draw_click_cb():
+                                draw_click_count.set(draw_click_count.value + 1)    
+
+                            def best_fit_click_cb():
+                                best_fit_click_count.set(best_fit_click_count.value + 1)
+
+                            def line_fit_cb(args: Dict):
+                                # student line is the 2nd of the 2 layers, so index=1
+                                best_fit_slope.set(args["slopes"][1]) 
+                                range = args["range"]
+                                best_fit_gal_dist.set(round(range/2))
+                                best_fit_gal_vel.set(round(best_fit_slope.value * best_fit_gal_dist.value))
+
                             LineDrawViewer(chart_id="line-draw-viewer",
                                            title="Our Data",
                                            plot_data=plot_data,
+                                           on_draw_clicked = draw_click_cb,
+                                           on_best_fit_clicked = best_fit_click_cb,
                                            on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
                                            y_axis_label="Velocity (km/s)",
@@ -424,7 +447,9 @@ def Page():
                                            fit_enabled=fit_enabled.value,
                                            display_best_fit_gal = display_best_fit_gal.value,
                                            # Use student data for best fit galaxy
-                                           best_fit_gal_layer_index=0,)
+                                           best_fit_gal_layer_index=0,
+                                           clear_drawn_line=clear_drawn_line.value,
+                                           clear_fit_line=clear_fit_line.value,)
 
             with rv.Col(cols=10, offset=1):
                 if COMPONENT_STATE.value.current_step_at_or_after(
