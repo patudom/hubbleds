@@ -15,7 +15,7 @@ import reacton.ipyvuetify as rv
 from typing import Dict, Iterable, Optional, Tuple
 
 from cosmicds.components import PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
-from cosmicds.utils import empty_data_from_model_class
+from cosmicds.utils import empty_data_from_model_class, show_legend, show_layer_traces_in_legend
 from cosmicds.viewers import CDSHistogramView
 from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
@@ -180,6 +180,9 @@ def Page():
         student_slider_viewer.state.title = "My Class Data"
         student_slider_viewer.add_subset(student_slider_subset)
         student_slider_viewer.layers[0].state.visible = False
+        student_slider_viewer.toolbar.tools["hubble:linefit"].activate()
+        show_layer_traces_in_legend(student_slider_viewer)
+        show_legend(student_slider_viewer, show=True)
 
         class_summary_data = make_summary_data(class_data,
                                                input_id_field="student_id",
@@ -215,6 +218,9 @@ def Page():
         class_slider_viewer.state.title = "All Classes Data"
         class_slider_viewer.layers[0].state.visible = False
         class_slider_viewer.add_subset(class_slider_subset)
+        class_slider_viewer.toolbar.tools["hubble:linefit"].activate()
+        show_layer_traces_in_legend(class_slider_viewer)
+        show_legend(class_slider_viewer, show=True)        
 
         all_student_hist_viewer.add_data(student_summ_data)
         all_student_hist_viewer.state.x_att = student_summ_data.id['age_value']
