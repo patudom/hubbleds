@@ -196,12 +196,6 @@ def Page():
         student_hist_viewer.state.title = "My class ages (5 galaxies each)"
         student_hist_viewer.layers[0].state.color = "#8338EC"
 
-        student_low_age = Ref(COMPONENT_STATE.fields.student_low_age)
-        student_high_age = Ref(COMPONENT_STATE.fields.student_high_age)
-
-        student_low_age.set(round(min(class_summary_data["age_value"])))
-        student_high_age.set(round(max(class_summary_data["age_value"])))
-
         all_data = models_to_glue_data(all_measurements, label="All Measurements")
         all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
 
@@ -240,9 +234,6 @@ def Page():
         class_hist_viewer.state.title = "All class ages (~100 galaxies each)"
         class_hist_viewer.layers[0].state.color = "#619EFF"
 
-        Ref(COMPONENT_STATE.fields.class_low_age).set(round(min(all_class_summ_data["age_value"])))
-        Ref(COMPONENT_STATE.fields.class_high_age).set(round(max(all_class_summ_data["age_value"])))
-
         # This looks weird, and it kinda is!
         # The idea here is that the all students viewer will always have a wider range than the all classes viewer
         # So we force the home tool of the class viewer to limit-resetting based on the students viewer
@@ -277,6 +268,26 @@ def Page():
     logger.info("DATA IS READY")
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
+
+    def _on_component_state_loaded(value: bool):
+        if not value:
+            return
+
+        student_low_age = Ref(COMPONENT_STATE.fields.student_low_age)
+        student_high_age = Ref(COMPONENT_STATE.fields.student_high_age)
+
+        class_low_age = Ref(COMPONENT_STATE.fields.class_low_age)
+        class_high_age = Ref(COMPONENT_STATE.fields.class_high_age)
+
+        class_summary_data = GLOBAL_STATE.value.glue_data_collection["Class Summaries"]
+        student_low_age.set(round(min(class_summary_data["age_value"])))
+        student_high_age.set(round(max(class_summary_data["age_value"])))
+
+        all_class_summ_data = GLOBAL_STATE.value.glue_data_collection["All Class Summaries"]
+        class_low_age.set(round(min(all_class_summ_data["age_value"])))
+        class_high_age.set(round(max(all_class_summ_data["age_value"])))
+
+    loaded_component_state.subscribe(_on_component_state_loaded)
 
     #--------------------- Row 1: OUR DATA HUBBLE VIEWER -----------------------
     if (
