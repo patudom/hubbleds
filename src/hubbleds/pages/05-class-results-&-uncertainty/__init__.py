@@ -60,44 +60,6 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
-    class_data_loaded = solara.use_reactive(False)
-    async def _load_class_data():
-        class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
-        measurements = Ref(LOCAL_STATE.fields.class_measurements)
-        student_ids = Ref(LOCAL_STATE.fields.stage_5_class_data_students)
-        if class_measurements and not student_ids.value:
-            ids = list(np.unique([m.student_id for m in class_measurements]))
-            student_ids.set(ids)
-        measurements.set(class_measurements)
-        class_data_loaded.set(True)
-
-    solara.lab.use_task(_load_class_data)
-
-
-    all_data_loaded = solara.use_reactive(False)
-    async def _load_all_data():
-
-        # This data is external to the current class and won't change
-        # so there's never a need to load it more than once
-        if "All Measurements" not in GLOBAL_STATE.value.glue_data_collection:
-            all_measurements, student_summaries, class_summaries = LOCAL_API.get_all_data(LOCAL_STATE)
-            measurements = Ref(LOCAL_STATE.fields.all_measurements)
-            stu_summaries = Ref(LOCAL_STATE.fields.student_summaries)
-            cls_summaries = Ref(LOCAL_STATE.fields.class_summaries)
-            measurements.set(all_measurements)
-            stu_summaries.set(student_summaries)
-            cls_summaries.set(class_summaries)
-
-        all_data_loaded.set(True)
-
-    solara.lab.use_task(_load_all_data)
-
-    async def _load_student_data():
-        if not LOCAL_STATE.value.measurements_loaded:
-            print("Getting measurements for student")
-            LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
-    solara.lab.use_task(_load_student_data)
-
 
     default_color = "#3A86FF"
     highlight_color = "#FF5A00"
@@ -127,6 +89,7 @@ def Page():
                 viewer.state.hist_x_min = xmin
                 viewer.state.hist_x_max = xmax
 
+    data_ready = solara.use_reactive(False)
     def glue_setup() -> Tuple[JupyterApplication, Dict[str, PlotlyBaseView]]:
         # NOTE: use_memo has to be part of the main page render. Including it
         #  in a conditional will result in an error.
@@ -153,6 +116,105 @@ def Page():
         for att in ('x_min', 'x_max'):
             link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
 
+        if not LOCAL_STATE.value.measurements_loaded:
+            LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
+
+        class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
+        measurements = Ref(LOCAL_STATE.fields.class_measurements)
+        student_ids = Ref(LOCAL_STATE.fields.stage_5_class_data_students)
+        if class_measurements and not student_ids.value:
+            ids = list(np.unique([m.student_id for m in class_measurements]))
+            student_ids.set(ids)
+        measurements.set(class_measurements)
+
+        all_measurements, student_summaries, class_summaries = LOCAL_API.get_all_data(LOCAL_STATE)
+        all_meas = Ref(LOCAL_STATE.fields.all_measurements)
+        all_stu_summaries = Ref(LOCAL_STATE.fields.student_summaries)
+        all_cls_summaries = Ref(LOCAL_STATE.fields.class_summaries)
+        all_meas.set(all_measurements)
+        all_stu_summaries.set(student_summaries)
+        all_cls_summaries.set(class_summaries)
+
+        student_data = models_to_glue_data(LOCAL_STATE.value.measurements, label="My Data")
+        if not student_data.components:
+            student_data = empty_data_from_model_class(StudentMeasurement, label="My Data")
+        student_data = GLOBAL_STATE.value.add_or_update_data(student_data)
+
+        class_ids = LOCAL_STATE.value.stage_5_class_data_students
+        class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
+        class_data = models_to_glue_data(class_data_points, label="Class Data")
+        class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
+
+        for component in ("est_dist_value", "velocity_value"):
+            gjapp.add_link(student_data, component, class_data, component)
+        layer_viewer.add_data(student_data)
+
+        layer_viewer.add_data(class_data)
+        layer_viewer.state.x_att = class_data.id['est_dist_value']
+        layer_viewer.state.y_att = class_data.id['velocity_value']
+        layer_viewer.state.x_axislabel = "Distance (Mpc)"
+        layer_viewer.state.y_axislabel = "Velocity"
+
+        if len(class_data.subsets) == 0:
+            student_slider_subset = class_data.new_subset(label="student_slider_subset", alpha=1, markersize=10)
+        else:
+            student_slider_subset = class_data.subsets[0]
+        student_slider_viewer.add_data(class_data)
+        student_slider_viewer.state.x_att = class_data.id['est_dist_value']
+        student_slider_viewer.state.y_att = class_data.id['velocity_value']
+        student_slider_viewer.state.x_axislabel = "Distance (Mpc)"
+        student_slider_viewer.state.y_axislabel = "Velocity"
+        student_slider_viewer.state.title = "Stage 5 Class Data Viewer"
+        student_slider_viewer.add_subset(student_slider_subset)
+        student_slider_viewer.layers[0].state.visible = False
+
+        class_summary_data = make_summary_data(class_data,
+                                               input_id_field="student_id",
+                                               output_id_field="id",
+                                               label="Class Summaries")
+        class_summary_data = GLOBAL_STATE.value.add_or_update_data(class_summary_data)
+
+        student_hist_viewer.add_data(class_summary_data)
+        student_hist_viewer.state.x_att = class_summary_data.id['age_value']
+        student_hist_viewer.state.x_axislabel = "Age (Gyr)"
+        student_hist_viewer.state.title = "My class ages (5 galaxies each)"
+        student_hist_viewer.layers[0].state.color = "red"
+
+        all_data = models_to_glue_data(all_measurements, label="All Measurements")
+        all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
+
+        student_summ_data = models_to_glue_data(student_summaries, label="All Student Summaries")
+        student_summ_data = GLOBAL_STATE.value.add_or_update_data(student_summ_data)
+
+        all_class_summ_data = models_to_glue_data(class_summaries, label="All Class Summaries")
+        all_class_summ_data = GLOBAL_STATE.value.add_or_update_data(all_class_summ_data)
+
+        if len(all_data.subsets) == 0:
+            class_slider_subset = all_data.new_subset(label="class_slider_subset", alpha=1, markersize=10)
+        else:
+            class_slider_subset = all_data.subsets[0]
+
+        class_slider_viewer.add_data(all_data)
+        class_slider_viewer.state.x_att = all_data.id['est_dist_value']
+        class_slider_viewer.state.y_att = all_data.id['velocity_value']
+        class_slider_viewer.state.x_axislabel = "Distance (Mpc)"
+        class_slider_viewer.state.y_axislabel = "Velocity"
+        class_slider_viewer.state.title = "Stage 5 All Classes Data Viewer"
+        class_slider_viewer.layers[0].state.visible = False
+        class_slider_viewer.add_subset(class_slider_subset)
+
+        all_student_hist_viewer.add_data(student_summ_data)
+        all_student_hist_viewer.state.x_att = student_summ_data.id['age_value']
+        all_student_hist_viewer.state.x_axislabel = "Age (Gyr)"
+        all_student_hist_viewer.state.title = "All student ages (5 galaxies each)"
+        all_student_hist_viewer.layers[0].state.color = "red"
+
+        class_hist_viewer.add_data(all_class_summ_data)
+        class_hist_viewer.state.x_att = all_class_summ_data.id['age_value']
+        class_hist_viewer.state.x_axislabel = "Age (Gyr)"
+        class_hist_viewer.state.title = "All class ages (5 galaxies each)"
+        class_hist_viewer.layers[0].state.color = "blue"
+
         # This looks weird, and it kinda is!
         # The idea here is that the all students viewer will always have a wider range than the all classes viewer
         # So we force the home tool of the class viewer to limit-resetting based on the students viewer
@@ -166,148 +228,11 @@ def Page():
                                             handler=partial(_update_bins, [student_hist_viewer]),
                                             filter=lambda msg: msg.data.label in ("All Student Summaries", "All Class Summaries"))
 
+        data_ready.set(True)
+
         return gjapp, viewers
 
     gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
-
-
-    links_setup = solara.use_reactive(False)
-    def _setup_links(_value: bool):
-        if not (class_data_added.value and student_data_added.value):
-            return
-        student_data = gjapp.data_collection["My Data"]
-        class_data = gjapp.data_collection["Class Data"]
-        for component in ("est_dist_value", "velocity_value"):
-            gjapp.add_link(student_data, component, class_data, component)
-        links_setup.set(True)
-        viewers["layer"].add_data(student_data)
-
-    class_data_added = solara.use_reactive(False)
-    def _on_class_data_loaded(value: bool):
-        if not value:
-            return
-        
-        class_ids = LOCAL_STATE.value.stage_5_class_data_students
-        class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
-        class_data = models_to_glue_data(class_data_points, label="Class Data")
-        class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
-
-        layer_viewer = viewers["layer"]
-        layer_viewer.state.x_axislabel = "Distance (Mpc)"
-        layer_viewer.state.y_axislabel = "Velocity"
-        layer_viewer.add_data(class_data)
-        layer_viewer.state.x_att = class_data.id['est_dist_value']
-        layer_viewer.state.y_att = class_data.id['velocity_value']
-
-        if len(class_data.subsets) == 0:
-            student_slider_subset = class_data.new_subset(label="student_slider_subset", alpha=1, markersize=10)
-        else:
-            student_slider_subset = class_data.subsets[0]
-        slider_viewer = viewers["student_slider"]
-        slider_viewer.add_data(class_data)
-        slider_viewer.state.x_att = class_data.id['est_dist_value']
-        slider_viewer.state.y_att = class_data.id['velocity_value']
-        slider_viewer.state.x_axislabel = "Distance (Mpc)"
-        slider_viewer.state.y_axislabel = "Velocity"
-        slider_viewer.state.title = "Stage 5 Class Data Viewer"
-        slider_viewer.add_subset(student_slider_subset)
-        slider_viewer.layers[0].state.visible = False
-
-        class_summary_data = make_summary_data(class_data,
-                                               input_id_field="student_id",
-                                               output_id_field="id",
-                                               label="Class Summaries")
-        class_summary_data = GLOBAL_STATE.value.add_or_update_data(class_summary_data)
-
-        hist_viewer = viewers["student_hist"]
-        hist_viewer.add_data(class_summary_data)
-        hist_viewer.state.x_att = class_summary_data.id['age_value']
-        hist_viewer.state.title = "My class ages (5 galaxies each)"
-        hist_viewer.layers[0].state.color = "red"
-
-        class_data_added.set(True)
-
-    class_data_loaded.subscribe(_on_class_data_loaded)
-
-    measurements_loaded = Ref(LOCAL_STATE.fields.measurements_loaded)
-    student_data_added = solara.use_reactive(False)
-    def _on_student_data_loaded(value: bool):
-        if not value:
-            return
-        student_data = models_to_glue_data(LOCAL_STATE.value.measurements, label="My Data", ignore_components=["galaxy"])
-        # NB: If there are no components, Data::size returns 1 (empty product)
-        # so that can't be our check
-        if not student_data.components:
-            student_data = empty_data_from_model_class(StudentMeasurement, label="My Data")
-        student_data = GLOBAL_STATE.value.add_or_update_data(student_data)
-        student_data_added.set(True)
-
-
-    if measurements_loaded.value:
-        _on_student_data_loaded(True)
-    else:
-        measurements_loaded.subscribe(_on_student_data_loaded)
-
-    all_data_added = solara.use_reactive(False)
-    def _on_all_data_loaded(value):
-        if not value:
-            return
-
-        all_measurements = LOCAL_STATE.value.all_measurements
-        student_summaries = LOCAL_STATE.value.student_summaries
-        class_summaries = LOCAL_STATE.value.class_summaries
-
-        if all_measurements and student_summaries and class_summaries:
-            all_data = models_to_glue_data(all_measurements, label="All Measurements")
-            all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
-
-            student_summ_data = models_to_glue_data(student_summaries, label="All Student Summaries")
-            student_summ_data = GLOBAL_STATE.value.add_or_update_data(student_summ_data)
-
-            all_class_summ_data = models_to_glue_data(class_summaries, label="All Class Summaries")
-            all_class_summ_data = GLOBAL_STATE.value.add_or_update_data(all_class_summ_data)
-        else:
-            # If we've gotten here but the arrays are empty, it means that glue already has the data
-            all_data = gjapp.data_collection["All Measurements"]
-            student_summ_data = gjapp.data_collection["All Student Summaries"]
-            all_class_summ_data = gjapp.data_collection["All Class Summaries"]
-
-        if len(all_data.subsets) == 0:
-            class_slider_subset = all_data.new_subset(label="class_slider_subset", alpha=1, markersize=10)
-        else:
-            class_slider_subset = all_data.subsets[0]
-
-        slider_viewer = viewers["class_slider"]
-        slider_viewer.add_data(all_data)
-        slider_viewer.state.x_att = all_data.id['est_dist_value']
-        slider_viewer.state.y_att = all_data.id['velocity_value']
-        slider_viewer.state.title = "Stage 5 All Classes Data Viewer"
-        slider_viewer.layers[0].state.visible = False
-        slider_viewer.add_subset(class_slider_subset)
-
-        student_hist_viewer = viewers["all_student_hist"]
-        student_hist_viewer.add_data(student_summ_data)
-        student_hist_viewer.state.x_att = student_summ_data.id['age_value']
-        student_hist_viewer.state.title = "All student ages (5 galaxies each)"
-        student_hist_viewer.layers[0].state.color = "red"
-
-        class_hist_viewer = viewers["class_hist"]
-        class_hist_viewer.add_data(all_class_summ_data)
-        class_hist_viewer.state.x_att = all_class_summ_data.id['age_value']
-        class_hist_viewer.state.title = "All class ages (5 galaxies each)"
-        class_hist_viewer.layers[0].state.color = "blue"
-
-        all_data_added.set(True)
-
-    all_data_loaded.subscribe(_on_all_data_loaded)
-
-
-    student_data_added.subscribe(_setup_links)
-    class_data_added.subscribe(_setup_links)
-
-    @solara.lab.computed
-    def data_ready():
-        return student_data_added.value and class_data_added.value and all_data_added.value
 
     if not data_ready.value:
         rv.ProgressCircular(
