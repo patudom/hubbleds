@@ -8,9 +8,6 @@
     <div
       class="mb-4"
     >
-      <v-card color="purple" class="pa-3 mb-4">
-        Do NOT scroll more than 1/3 across the age range or this will crash.
-      </v-card>
       <p>
         Now let’s look at age estimates of the universe from other classes who have already completed this data story.
       </p>
