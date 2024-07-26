@@ -339,11 +339,13 @@ def Page():
         # Are the buttons available to press?
         draw_enabled = solara.use_reactive(False)
         fit_enabled = solara.use_reactive(False)
+        draw_active = solara.use_reactive(False)
 
         # Are the plotly traces actively displayed?
         display_best_fit_gal = solara.use_reactive(False)
-        clear_drawn_line = solara.use_reactive(False)
-        clear_fit_line = solara.use_reactive(False)
+        clear_class_layer = solara.use_reactive(0)
+        clear_drawn_line = solara.use_reactive(0)
+        clear_fit_line = solara.use_reactive(0)
 
         def _on_marker_update(marker):
             if Marker.is_between(marker, Marker.tre_dat2, Marker.hub_exp1):
@@ -366,11 +368,15 @@ def Page():
             else:
                 display_best_fit_gal.set(False)
 
-            # Commenting for now because this is not working correctly
-            # if Marker.is_on(marker, Marker.age_uni1):
-            #     clear_drawn_line.set(True)
-            # else:
-            #     clear_drawn_line.set(False)
+            if Marker.is_on(marker, Marker.tre_lin1):
+                # What we really want is for the viewer to check if this layer is visible when it gets to this marker, and if so, clear it.
+                clear_class_layer.set(clear_class_layer.value + 1)
+
+            #This has the same issues as above.
+            if Marker.is_on(marker, Marker.age_uni1):
+                clear_drawn_line.set(clear_drawn_line.value + 1)
+                draw_active.set(False)
+            
             
         Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_update)
 
@@ -436,7 +442,7 @@ def Page():
                             LineDrawViewer(chart_id="line-draw-viewer",
                                            title="Our Data",
                                            plot_data=plot_data,
-                                           on_draw_clicked = draw_click_cb,
+                                           on_draw_clicked=draw_click_cb,
                                            on_best_fit_clicked = best_fit_click_cb,
                                            on_line_fit=line_fit_cb,
                                            x_axis_label="Distance (Mpc)",
@@ -446,8 +452,10 @@ def Page():
                                            draw_enabled=draw_enabled.value,
                                            fit_enabled=fit_enabled.value,
                                            display_best_fit_gal = display_best_fit_gal.value,
+                                           draw_active=draw_active,
                                            # Use student data for best fit galaxy
                                            best_fit_gal_layer_index=0,
+                                           clear_class_layer=clear_class_layer.value,
                                            clear_drawn_line=clear_drawn_line.value,
                                            clear_fit_line=clear_fit_line.value,)
 

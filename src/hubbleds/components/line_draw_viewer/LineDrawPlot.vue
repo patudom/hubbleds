@@ -1,7 +1,7 @@
 <script>
 export default {
   name: "LineDrawPlot",
-  props: ["chart_id", "active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label", "height", "margins", "display_best_fit_gal", "best_fit_gal_layer_index"],
+  props: ["chart_id", "draw_active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label", "height", "margins", "display_best_fit_gal", "best_fit_gal_layer_index", "clear_class_layer", "clear_drawn_line", "clear_fit_line"],
   async mounted() {
     await window.plotlyPromise;
 
@@ -39,10 +39,11 @@ export default {
           Plotly.addTraces(this.chart_id, this.plot_data);
         }
         this.fitLineTraceIndices = Array.from({length: count}, (x, i) => i + 1);
-        this.setupMouseHandlers(this.active);
-        this.setupPlotlyHandlers(this.active);
+        this.setupMouseHandlers(this.draw_active);
+        this.setupPlotlyHandlers(this.draw_active);
         this.setupPlotlyRestyleHandler();
       });
+
   },
   data() {
     const baseAxis = {
@@ -86,11 +87,11 @@ export default {
       lastEndpoint: null,
       hoveringEndpoint: false,
       plotDataCount: 0,
-      lineTraceIndex: 0,
+      drawnLineTraceIndex: 0,
       fitLineTraceIndices: [],
       endpointSize: 10,
       lastFitSlopes: [],
-      actualEndpointTraceIndex: 0,
+      endpointTraceIndex: 0,
       bestFitGalaxyTraceIndex: 0,
       range: 0,
     };
@@ -131,7 +132,7 @@ export default {
         this.chart_id,
         { 'x.1': xWorld, 'y.1': yWorld },
         {},
-        [this.lineTraceIndex]
+        [this.drawnLineTraceIndex]
       );
     },
     mouseMoveHandler(event) {
@@ -156,19 +157,19 @@ export default {
       }
     },
     plotlyClickHandler(event) {
-      console.log("calculatedEndpointTraceIndex", this.calculatedEndpointTraceIndex);
-      if (event.points[0].curveNumber === this.calculatedEndpointTraceIndex) {
+      console.log("endpointTraceIndex", this.endpointTraceIndex);
+      if (event.points[0].curveNumber === this.endpointTraceIndex) {
         this.movingLine = true;
         this.clearEndpoint();
       }
     },
     plotlyHoverHandler(event) {
-      if (event.points[0].curveNumber === this.calculatedEndpointTraceIndex) {
+      if (event.points[0].curveNumber === this.endpointTraceIndex) {
         this.setCursor("grab");
       }
     },
     plotlyUnhoverHandler(event) {
-      if (event.points[0].curveNumber === this.calculatedEndpointTraceIndex) {
+      if (event.points[0].curveNumber === this.endpointTraceIndex) {
         let cursor;
         if (this.movingLine) {
           cursor = this.lineDrawn ? "grabbing" : "default";
@@ -189,16 +190,20 @@ export default {
         this.dragLayer.classList.remove("cursor-crosshair");
       }
     },
+    setDrawnLineVisibility(visible) {
+      Plotly.update(this.chart_id, { visible }, {}, [this.drawnLineTraceIndex]);
+    },
     clearEndpoint() {
       const dataTracesCount = this.plot_data?.length ?? 0;
       if (this.element.data.length > dataTracesCount + 1) {
         try {
-          console.log("clearing endpointTraceIndex", this.actualEndpointTraceIndex);
-          Plotly.deleteTraces(this.chart_id, this.actualEndpointTraceIndex);
+          console.log("clearing endpointTraceIndex", this.endpointTraceIndex);
+          Plotly.update(this.chart_id, { visible: false }, {}, [this.endpointTraceIndex]);
         } catch (e) {
           console.warn(e);
         }
       }
+      this.lastEndpoint = null;
     },
     overEndpoint(event) {
       if (this.lastEndpoint === null) {
@@ -217,7 +222,7 @@ export default {
       // If the mouse is moving quickly, it's possible for the endpoint to be
       // a bit off from the line if we just use the screen coordinates of the event.
       // So instead, just draw the endpoint at the end of the line
-      const line = this.element.data[this.lineTraceIndex];
+      const line = this.element.data[this.drawnLineTraceIndex];
       const x = line.x[1];
       const y = line.y[1];
       Plotly.addTraces(this.chart_id, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: this.endpointSize, color: "#000000" }, hoverinfo: "none" });
@@ -226,8 +231,8 @@ export default {
       const chartElement = document.getElementById(this.chart_id);
       if (chartElement) {
         const nTraces = chartElement.data.length;
-        this.actualEndpointTraceIndex = nTraces - 1;
-        console.log("actualEndpointTraceIndex", this.actualEndpointTraceIndex)
+        this.endpointTraceIndex = nTraces - 1;
+        console.log("endpointTraceIndex", this.endpointTraceIndex)
       }
     },
     linearRegression(x, y, forceOrigin=true) {
@@ -263,12 +268,12 @@ export default {
       const visible = event[0]["visible"];
       Plotly.update(this.chart_id, { visible }, {}, relevantIndices);
     },
-    setupMouseHandlers(active) {
+    setupMouseHandlers(draw_active) {
       // Using document as the event listener for mouseup is intentional
       // See this thread here: https://community.plotly.com/t/plotly-onmousedown-and-onmouseup/4812
       // For some reason, mousedown works fine on the Plotly graph, but not mouseup
       // Any ideas on how to not need to do this would be great!
-      if (active) {
+      if (draw_active) {
         this.element.addEventListener("mousemove", this.mouseMoveHandler);
         this.element.addEventListener("mousedown", this.mouseDownHandler);
         document.addEventListener("mouseup", this.mouseUpHandler);
@@ -278,8 +283,8 @@ export default {
         document.removeEventListener("mouseup", this.mouseUpHandler);
       }
     },
-    setupPlotlyHandlers(active) {
-      if (active) {
+    setupPlotlyHandlers(draw_active) {
+      if (draw_active) {
         this.element.on("plotly_click", this.plotlyClickHandler);
         this.element.on("plotly_hover", this.plotlyHoverHandler);
         this.element.on("plotly_unhover", this.plotlyUnhoverHandler);
@@ -294,11 +299,6 @@ export default {
     },
 
   },
-  computed: {
-    calculatedEndpointTraceIndex() {
-      return 2 * this.plotDataCount + 1;
-    },
-  },
   watch: {
     chart() {
       Plotly.react(
@@ -307,9 +307,13 @@ export default {
         this.chart.layout
       );
     },
-    active(value) {
+    draw_active(value) {
       this.movingLine = value && this.lastEndpoint === null;
-      Plotly.update(this.chart_id, { visible: true }, {}, this.lineTraceIndex);
+      console.log(value, this.lastEndpoint, this.movingLine);
+      console.log("making visible trace index", this.drawnLineTraceIndex);
+      if (value) {
+        this.setDrawnLineVisibility(true);
+      }
       this.setupMouseHandlers(value);
       this.setupPlotlyHandlers(value);
     },
@@ -331,12 +335,12 @@ export default {
           slopes.push(a);
         }
         this.lastFitSlopes = slopes;
-        this.range = this.element._fullLayout.xaxis.range[1] - this.element._fullLayout.xaxis.range[0];  
-        console.log("range", this.range);      
+        this.range = this.element._fullLayout.xaxis.range[1] - this.element._fullLayout.xaxis.range[0];     
         if (this.line_fit) {
           this.line_fit({slopes, range: this.range});
         }
       } else {
+        console.log("clearing fit line traces", this.fitLineTraceIndices);
         Plotly.update(this.chart_id, { visible: false }, {}, this.fitLineTraceIndices);
       }
     },
@@ -358,9 +362,8 @@ export default {
             };
             Plotly.addTraces(this.chart_id, trace);
             // Store best fit galaxy trace index
-            const chartElement = document.getElementById(this.chart_id);
-            if (chartElement) {
-              const nTraces = chartElement.data.length;
+            if (this.element) {
+              const nTraces = this.element.data.length;
               this.bestFitGalaxyTraceIndex = nTraces - 1;
             }
           }
@@ -368,24 +371,32 @@ export default {
           // If fit is not active, no best fit galaxy to display
           return;
         }
-      } else {
+      } else if (this.bestFitGalaxyTraceIndex > 0) {
         try {
-          Plotly.deleteTraces(this.chart_id, this.bestFitGalaxyTraceIndex);
+          console.log(this.bestFitGalaxyTraceIndex);
+          console.log("clearing best fit galaxy trace", this.bestFitGalaxyTraceIndex);
+          Plotly.update(this.chart_id, { visible: false }, {} [this.bestFitGalaxyTraceIndex]);
         } catch (e) {
           console.warn(e);
         }
       }
     },
     clear_drawn_line(value) {
-      if (value) {
-        console.log("clearing drawn line, endpoint trace", this.actualEndpointTraceIndex);
-        try {
-          Plotly.deleteTraces(this.chart_id, 0)
-          this.clearEndpoint()
-        } catch (e) {
-          console.warn(e);
-        }        
-      }
+      try {
+        console.log("clearing drawn line, index", this.drawnLineTraceIndex);
+        this.clearEndpoint();
+        this.setDrawnLineVisibility(false);
+      } catch (e) {
+        console.warn(e);
+      } 
+    },
+    clear_class_layer(value) {
+      try {
+        console.log("clearing class layer, index", this.plotDataCount + 1);
+        Plotly.update(this.chart_id, { visible: false }, {}, [this.plotDataCount + 1]);
+      } catch (e) {
+        console.warn(e);
+      }        
     },
     movingLine(value) {
       if (value) {

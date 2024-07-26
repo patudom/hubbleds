@@ -1,11 +1,12 @@
 import reacton.ipyvuetify as rv
 import solara
+from solara import Reactive
 from typing import Callable, Optional, Dict
 
 
 @solara.component_vue("LineDrawPlot.vue")
 def LineDrawPlot(chart_id: str,
-                 active: bool,
+                 draw_active: bool,
                  fit_active: bool=False,
                  event_line_drawn: Optional[Callable]=None,
                  event_line_fit: Optional[Callable[[Dict],None]] = None,
@@ -16,8 +17,9 @@ def LineDrawPlot(chart_id: str,
                  margins: Optional[dict]=None,
                  display_best_fit_gal: Optional[bool]=False,
                  best_fit_gal_layer_index: Optional[int]=None,
-                 clear_drawn_line: Optional[bool]=False,
-                 clear_fit_line: Optional[bool]=False,
+                 clear_class_layer: Optional[int]=False,
+                 clear_drawn_line: Optional[int]=False,
+                 clear_fit_line: Optional[int]=False,
 ):
     pass
 
@@ -33,16 +35,21 @@ def LineDrawViewer(chart_id: str,
                    on_draw_clicked: Optional[Callable]=None,
                    on_best_fit_clicked: Optional[Callable]=None,
                    on_line_drawn: Optional[Callable]=None,
-                   on_line_fit: Optional[Callable[[Dict],None]] = None,
+                   on_line_fit: Optional[Callable[[Dict],None]]=None,
                    draw_enabled: Optional[bool]=True,
                    fit_enabled: Optional[bool]=True,
                    display_best_fit_gal: Optional[bool]=False,
                    best_fit_gal_layer_index: Optional[int]=None,
-                   clear_drawn_line: Optional[bool]=False,
-                   clear_fit_line: Optional[bool]=False,
-                   ):
+                   draw_active: Optional[Reactive[bool]]=None,
 
-    draw_active = solara.use_reactive(False)
+                   # The particular values of these don't matter;
+                   # we're essentially just using them as signals
+                   clear_class_layer: Optional[int]=False,
+                   clear_drawn_line: Optional[int]=False,
+                   clear_fit_line: Optional[int]=False,
+):
+
+    draw_active = draw_active or solara.use_reactive(False)
     fit_active = solara.use_reactive(False)
     # best_fit_active = solara.use_reactive(False)
 
@@ -64,7 +71,7 @@ def LineDrawViewer(chart_id: str,
     # If we want to disable the tool after finishing a line draw
     # pass this function to `LineDrawPlot` as `event_line_drawn`
     # def disable(*args):
-    #     active.set(False)
+    #     draw_active.set(False)
 
     with rv.Card():
         with rv.Toolbar(class_="toolbar", dense=True):
@@ -90,7 +97,7 @@ def LineDrawViewer(chart_id: str,
             rv.BtnToggle(v_model="selected", children=[fit_button, draw_button], background_color="primary", borderless=True)
 
         LineDrawPlot(chart_id=chart_id,
-                     active=draw_active.value,
+                     draw_active=draw_active.value,
                      fit_active=fit_active.value,
                      event_line_drawn=on_line_drawn,
                      event_line_fit=on_line_fit,
@@ -101,6 +108,7 @@ def LineDrawViewer(chart_id: str,
                      margins=plot_margins,
                      display_best_fit_gal=display_best_fit_gal,
                      best_fit_gal_layer_index=best_fit_gal_layer_index,
+                     clear_class_layer=clear_class_layer,
                      clear_drawn_line = clear_drawn_line,
                      clear_fit_line = clear_fit_line,
         )

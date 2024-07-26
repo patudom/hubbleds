@@ -79,7 +79,7 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
     solara.use_effect(turn_ruler_on, [show_ruler])
 
     def _define_callbacks():
-        widget =  cast(DistanceTool,solara.get_widget(tool))
+        widget = cast(DistanceTool,solara.get_widget(tool))
 
         def update_angular_size(change):
             if widget.measuring:
