@@ -44,7 +44,6 @@ export default {
         this.setupPlotlyRestyleHandler();
       });
 
-    this.drawing = this.draw_active;
   },
   data() {
     const baseAxis = {
@@ -81,7 +80,6 @@ export default {
         layout: { xaxis, yaxis, hovermode: "none", dragmode: false, showlegend: false },
         config: { displayModeBar: false, responsive: true },
       },
-      drawing: false,
       element: null,
       lineDrawn: false,
       mouseDown: false,
@@ -310,9 +308,6 @@ export default {
       );
     },
     draw_active(value) {
-      this.drawing = value;
-    },
-    drawing(value) {
       this.movingLine = value && this.lastEndpoint === null;
       console.log(value, this.lastEndpoint, this.movingLine);
       console.log("making visible trace index", this.drawnLineTraceIndex);
@@ -390,21 +385,18 @@ export default {
       try {
         console.log("clearing drawn line, index", this.drawnLineTraceIndex);
         this.clearEndpoint();
-        this.drawing = false;
         this.setDrawnLineVisibility(false);
       } catch (e) {
         console.warn(e);
       } 
     },
     clear_class_layer(value) {
-      if (value) {
-        try {
-          console.log("clearing class layer, index", this.plotDataCount + 1);
-          Plotly.update(this.chart_id, { visible: false }, {}, [this.plotDataCount + 1]);
-        } catch (e) {
-          console.warn(e);
-        }        
-      }
+      try {
+        console.log("clearing class layer, index", this.plotDataCount + 1);
+        Plotly.update(this.chart_id, { visible: false }, {}, [this.plotDataCount + 1]);
+      } catch (e) {
+        console.warn(e);
+      }        
     },
     movingLine(value) {
       if (value) {

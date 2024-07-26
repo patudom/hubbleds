@@ -17,9 +17,9 @@ def LineDrawPlot(chart_id: str,
                  margins: Optional[dict]=None,
                  display_best_fit_gal: Optional[bool]=False,
                  best_fit_gal_layer_index: Optional[int]=None,
-                 clear_class_layer: Optional[bool]=False,
-                 clear_drawn_line: Optional[bool]=False,
-                 clear_fit_line: Optional[bool]=False,
+                 clear_class_layer: Optional[int]=False,
+                 clear_drawn_line: Optional[int]=False,
+                 clear_fit_line: Optional[int]=False,
 ):
     pass
 
@@ -40,15 +40,16 @@ def LineDrawViewer(chart_id: str,
                    fit_enabled: Optional[bool]=True,
                    display_best_fit_gal: Optional[bool]=False,
                    best_fit_gal_layer_index: Optional[int]=None,
+                   draw_active: Optional[Reactive[bool]]=None,
 
                    # The particular values of these don't matter;
                    # we're essentially just using them as signals
-                   clear_class_layer: Optional[bool]=False,
-                   clear_drawn_line: Optional[bool]=False,
-                   clear_fit_line: Optional[bool]=False,
+                   clear_class_layer: Optional[int]=False,
+                   clear_drawn_line: Optional[int]=False,
+                   clear_fit_line: Optional[int]=False,
 ):
 
-    draw_active = solara.use_reactive(False)
+    draw_active = draw_active or solara.use_reactive(False)
     fit_active = solara.use_reactive(False)
     # best_fit_active = solara.use_reactive(False)
 
