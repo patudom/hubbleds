@@ -15,7 +15,7 @@ import reacton.ipyvuetify as rv
 from typing import Dict, Iterable, Optional, Tuple
 
 from cosmicds.components import PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
-from cosmicds.utils import empty_data_from_model_class
+from cosmicds.utils import empty_data_from_model_class, show_legend, show_layer_traces_in_legend
 from cosmicds.viewers import CDSHistogramView
 from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
@@ -60,9 +60,11 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
+    student_default_color = "#3A86FF"
+    student_highlight_color = "#FF5A00"
 
-    default_color = "#3A86FF"
-    highlight_color = "#FF5A00"
+    class_default_color = "#FF006E"
+    class_highlight_color = "#3A86FF"
 
     def _update_bins(viewers: Iterable[CDSHistogramView], _msg: Optional[NumericalDataChangedMessage]=None):
         props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
@@ -148,12 +150,25 @@ def Page():
         for component in ("est_dist_value", "velocity_value"):
             gjapp.add_link(student_data, component, class_data, component)
         layer_viewer.add_data(student_data)
+        student_layer = layer_viewer.layers[0]
+        student_layer.state.color = student_highlight_color
+        student_layer.state.size = 12
+        student_layer.state.zorder = 5
 
+        layer_viewer.ignore(lambda data: data.label == "student_slider_subset")
         layer_viewer.add_data(class_data)
+        class_layer = layer_viewer.layers[1]
+        class_layer.state.zorder = 1
+        class_layer.state.color = "#3A86FF"
+        class_layer.state.size = 8
+        class_layer.state.visible = False
+
+
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
-        layer_viewer.state.y_axislabel = "Velocity"
+        layer_viewer.state.y_axislabel = "Velocity (km/s)"
+        layer_viewer.state.title = "Our Data"
 
         if len(class_data.subsets) == 0:
             student_slider_subset = class_data.new_subset(label="student_slider_subset", alpha=1, markersize=10)
@@ -163,10 +178,13 @@ def Page():
         student_slider_viewer.state.x_att = class_data.id['est_dist_value']
         student_slider_viewer.state.y_att = class_data.id['velocity_value']
         student_slider_viewer.state.x_axislabel = "Distance (Mpc)"
-        student_slider_viewer.state.y_axislabel = "Velocity"
-        student_slider_viewer.state.title = "Stage 5 Class Data Viewer"
+        student_slider_viewer.state.y_axislabel = "Velocity (km/s)"
+        student_slider_viewer.state.title = "My Class Data"
         student_slider_viewer.add_subset(student_slider_subset)
         student_slider_viewer.layers[0].state.visible = False
+        student_slider_viewer.toolbar.tools["hubble:linefit"].activate()
+        show_layer_traces_in_legend(student_slider_viewer)
+        show_legend(student_slider_viewer, show=True)
 
         class_summary_data = make_summary_data(class_data,
                                                input_id_field="student_id",
@@ -178,7 +196,7 @@ def Page():
         student_hist_viewer.state.x_att = class_summary_data.id['age_value']
         student_hist_viewer.state.x_axislabel = "Age (Gyr)"
         student_hist_viewer.state.title = "My class ages (5 galaxies each)"
-        student_hist_viewer.layers[0].state.color = "red"
+        student_hist_viewer.layers[0].state.color = "#8338EC"
 
         all_data = models_to_glue_data(all_measurements, label="All Measurements")
         all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
@@ -198,22 +216,25 @@ def Page():
         class_slider_viewer.state.x_att = all_data.id['est_dist_value']
         class_slider_viewer.state.y_att = all_data.id['velocity_value']
         class_slider_viewer.state.x_axislabel = "Distance (Mpc)"
-        class_slider_viewer.state.y_axislabel = "Velocity"
-        class_slider_viewer.state.title = "Stage 5 All Classes Data Viewer"
+        class_slider_viewer.state.y_axislabel = "Velocity (km/s)"
+        class_slider_viewer.state.title = "All Classes Data"
         class_slider_viewer.layers[0].state.visible = False
         class_slider_viewer.add_subset(class_slider_subset)
+        class_slider_viewer.toolbar.tools["hubble:linefit"].activate()
+        show_layer_traces_in_legend(class_slider_viewer)
+        show_legend(class_slider_viewer, show=True)        
 
         all_student_hist_viewer.add_data(student_summ_data)
         all_student_hist_viewer.state.x_att = student_summ_data.id['age_value']
         all_student_hist_viewer.state.x_axislabel = "Age (Gyr)"
         all_student_hist_viewer.state.title = "All student ages (5 galaxies each)"
-        all_student_hist_viewer.layers[0].state.color = "red"
+        all_student_hist_viewer.layers[0].state.color = "#FFBE0B"
 
         class_hist_viewer.add_data(all_class_summ_data)
         class_hist_viewer.state.x_att = all_class_summ_data.id['age_value']
         class_hist_viewer.state.x_axislabel = "Age (Gyr)"
-        class_hist_viewer.state.title = "All class ages (5 galaxies each)"
-        class_hist_viewer.layers[0].state.color = "blue"
+        class_hist_viewer.state.title = "All class ages (~100 galaxies each)"
+        class_hist_viewer.layers[0].state.color = "#619EFF"
 
         # This looks weird, and it kinda is!
         # The idea here is that the all students viewer will always have a wider range than the all classes viewer
@@ -248,7 +269,47 @@ def Page():
 
     logger.info("DATA IS READY")
 
+    def show_class_data(marker):
+        if "Class Data" in GLOBAL_STATE.value.glue_data_collection:
+            class_data = GLOBAL_STATE.value.glue_data_collection["Class Data"]
+            layer = viewers["layer"].layer_artist_for_data(class_data)
+            layer.state.visible = Marker.is_at_or_after(marker, Marker.cla_dat1)
+
+    def show_student_data(marker):
+        if "My Data" in GLOBAL_STATE.value.glue_data_collection:
+            student_data = GLOBAL_STATE.value.glue_data_collection["My Data"]
+            layer = viewers["layer"].layer_artist_for_data(student_data)
+            layer.state.visible = Marker.is_at_or_before(marker, Marker.fin_cla1)
+
+    current_step = Ref(COMPONENT_STATE.fields.current_step)
+    
+    current_step.subscribe(show_class_data)
+    show_class_data(COMPONENT_STATE.value.current_step)
+
+    current_step.subscribe(show_student_data)
+    show_student_data(COMPONENT_STATE.value.current_step)   
+
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
+
+    def _on_component_state_loaded(value: bool):
+        if not value:
+            return
+
+        student_low_age = Ref(COMPONENT_STATE.fields.student_low_age)
+        student_high_age = Ref(COMPONENT_STATE.fields.student_high_age)
+
+        class_low_age = Ref(COMPONENT_STATE.fields.class_low_age)
+        class_high_age = Ref(COMPONENT_STATE.fields.class_high_age)
+
+        class_summary_data = GLOBAL_STATE.value.glue_data_collection["Class Summaries"]
+        student_low_age.set(round(min(class_summary_data["age_value"])))
+        student_high_age.set(round(max(class_summary_data["age_value"])))
+
+        all_class_summ_data = GLOBAL_STATE.value.glue_data_collection["All Class Summaries"]
+        class_low_age.set(round(min(all_class_summ_data["age_value"])))
+        class_high_age.set(round(max(all_class_summ_data["age_value"])))
+
+    loaded_component_state.subscribe(_on_component_state_loaded)
 
     #--------------------- Row 1: OUR DATA HUBBLE VIEWER -----------------------
     if (
@@ -410,8 +471,9 @@ def Page():
                 class_data = gjapp.data_collection["Class Data"]
                 student_slider_subset = class_data.subsets[0]
                 student_slider_subset.subset_state = RangeSubsetState(id, id, class_data.id['student_id'])
-                color = highlight_color if highlighted else default_color
+                color = student_highlight_color if highlighted else student_default_color
                 student_slider_subset.style.color = color
+                student_slider_subset.style.markersize = 12
 
             with rv.Col(class_="no-padding"):
                 ViewerLayout(viewer=viewers["student_slider"])
@@ -423,8 +485,8 @@ def Page():
                     highlight_ids=[GLOBAL_STATE.value.student.id],
                     id_component=class_summary_data.id['id'],
                     value_component=class_summary_data.id['age_value'],
-                    default_color=default_color,
-                    highlight_color=highlight_color
+                    default_color=student_default_color,
+                    highlight_color=student_highlight_color
                 )
 
         if COMPONENT_STATE.value.current_step_between(Marker.lea_unc1, Marker.you_age1c):
@@ -471,7 +533,7 @@ def Page():
                 all_data = gjapp.data_collection["All Measurements"]
                 class_slider_subset = all_data.subsets[0]
                 class_slider_subset.subset_state = RangeSubsetState(id, id, all_data.id['class_id'])
-                color = highlight_color if highlighted else default_color
+                color = class_highlight_color if highlighted else class_default_color
                 class_slider_subset.style.color = color
 
             with rv.Col():
@@ -484,8 +546,8 @@ def Page():
                     highlight_ids=[GLOBAL_STATE.value.classroom.class_info.get("id", 0)],
                     id_component=all_summary_data.id['class_id'],
                     value_component=all_summary_data.id['age_value'],
-                    default_color=default_color,
-                    highlight_color=highlight_color
+                    default_color=class_default_color,
+                    highlight_color=class_highlight_color
                 )
 
                 with rv.Col(cols=10, offset=1):
@@ -504,23 +566,22 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with rv.Row():
-                    if class_data_added.value:
-                        class_summary_data = gjapp.data_collection["Class Summaries"]
-                        with rv.Col():
-                            if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
-                                StatisticsSelector(
-                                    viewers=[viewers["student_hist"]],
-                                    glue_data=[class_summary_data],
-                                    units=["counts"],
-                                    transform=round,
-                                )
+                    class_summary_data = gjapp.data_collection["Class Summaries"]
+                    with rv.Col():
+                        if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
+                            StatisticsSelector(
+                                viewers=[viewers["student_hist"]],
+                                glue_data=[class_summary_data],
+                                units=["counts"],
+                                transform=round,
+                            )
 
-                        with rv.Col():
-                            if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
-                                PercentageSelector(
-                                    viewers=[viewers["student_hist"]],
-                                    glue_data=[class_summary_data],
-                                )
+                    with rv.Col():
+                        if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
+                            PercentageSelector(
+                                viewers=[viewers["student_hist"]],
+                                glue_data=[class_summary_data],
+                            )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
