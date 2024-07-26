@@ -524,23 +524,22 @@ def Page():
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with rv.Row():
-                    if class_data_added.value:
-                        class_summary_data = gjapp.data_collection["Class Summaries"]
-                        with rv.Col():
-                            if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
-                                StatisticsSelector(
-                                    viewers=[viewers["student_hist"]],
-                                    glue_data=[class_summary_data],
-                                    units=["counts"],
-                                    transform=round,
-                                )
+                    class_summary_data = gjapp.data_collection["Class Summaries"]
+                    with rv.Col():
+                        if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
+                            StatisticsSelector(
+                                viewers=[viewers["student_hist"]],
+                                glue_data=[class_summary_data],
+                                units=["counts"],
+                                transform=round,
+                            )
 
-                        with rv.Col():
-                            if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
-                                PercentageSelector(
-                                    viewers=[viewers["student_hist"]],
-                                    glue_data=[class_summary_data],
-                                )
+                    with rv.Col():
+                        if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
+                            PercentageSelector(
+                                viewers=[viewers["student_hist"]],
+                                glue_data=[class_summary_data],
+                            )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
