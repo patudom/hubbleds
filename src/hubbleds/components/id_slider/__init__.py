@@ -1,3 +1,4 @@
+from functools import partial
 from glue.core.message import NumericalDataChangedMessage
 from numpy import where
 import solara
@@ -22,14 +23,14 @@ def IdSlider(gjapp,
              highlight_ids=None,
 ):
 
-    def _sort_key(id):
-        idx = where(glue_data[id_component] == id)[0][0]
-        return glue_data[value_component][idx]
+    def _sort_key(id, data):
+        idx = where(data[id_component] == id)[0][0]
+        return data[value_component][idx]
 
     glue_data = data
     index, set_index = solara.use_state(0, key="index")
     values = solara.use_reactive(sorted(data[value_component]))
-    ids = solara.use_reactive(sorted(data[id_component], key=_sort_key))
+    ids = solara.use_reactive(sorted(data[id_component], key=partial(_sort_key, data=data)))
     tick_labels = solara.use_reactive([])
     color = solara.use_reactive(default_color)
     selected_value = solara.use_reactive(0)
@@ -42,7 +43,7 @@ def IdSlider(gjapp,
 
     def _refresh(data):
         values.set(sorted(data[value_component]))
-        ids.set(sorted(data[id_component], key=_sort_key))
+        ids.set(sorted(data[id_component], key=partial(_sort_key, data=data)))
         vmax = len(values.value) - 1
         vmax_even = vmax % 2 == 0
         half_vmax = vmax / 2 if vmax_even else (vmax + 1) / 2
@@ -53,8 +54,8 @@ def IdSlider(gjapp,
 
     def _on_index(idx):
         set_index(idx)
-        selected_id = glue_data[id_component][idx]
-        selected_value.set(glue_data[value_component][idx])
+        selected_id = ids.value[idx]
+        selected_value.set(values.value[idx])
         highlight = selected_id in highlight_ids
         color.set(highlight_color if highlight else default_color)
         if on_id is not None:
