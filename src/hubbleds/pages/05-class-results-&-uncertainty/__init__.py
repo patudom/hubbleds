@@ -155,12 +155,14 @@ def Page():
         student_layer.state.size = 12
         student_layer.state.zorder = 5
 
+        layer_viewer.ignore(lambda data: data.label == "student_slider_subset")
         layer_viewer.add_data(class_data)
         class_layer = layer_viewer.layers[1]
         class_layer.state.zorder = 1
         class_layer.state.color = "#3A86FF"
         class_layer.state.size = 8
         class_layer.state.visible = False
+
 
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
@@ -266,6 +268,15 @@ def Page():
     _update_bins((viewers["student_hist"],))
 
     logger.info("DATA IS READY")
+
+    def show_class_data(marker):
+        if "Class Data" in GLOBAL_STATE.value.glue_data_collection:
+            class_data = GLOBAL_STATE.value.glue_data_collection["Class Data"]
+            layer = viewers["layer"].layer_artist_for_data(class_data)
+            layer.state.visible = Marker.is_at_or_after(marker, Marker.cla_dat1)
+
+    current_step = Ref(COMPONENT_STATE.fields.current_step)
+    current_step.subscribe(show_class_data)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
