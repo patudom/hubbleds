@@ -275,8 +275,19 @@ def Page():
             layer = viewers["layer"].layer_artist_for_data(class_data)
             layer.state.visible = Marker.is_at_or_after(marker, Marker.cla_dat1)
 
+    def show_student_data(marker):
+        if "My Data" in GLOBAL_STATE.value.glue_data_collection:
+            student_data = GLOBAL_STATE.value.glue_data_collection["My Data"]
+            layer = viewers["layer"].layer_artist_for_data(student_data)
+            layer.state.visible = Marker.is_at_or_before(marker, Marker.fin_cla1)
+
     current_step = Ref(COMPONENT_STATE.fields.current_step)
+    
     current_step.subscribe(show_class_data)
+    show_class_data(COMPONENT_STATE.value.current_step)
+
+    current_step.subscribe(show_student_data)
+    show_student_data(COMPONENT_STATE.value.current_step)   
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
