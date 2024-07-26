@@ -60,9 +60,11 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
+    student_default_color = "#3A86FF"
+    student_highlight_color = "#FF5A00"
 
-    default_color = "#3A86FF"
-    highlight_color = "#FF5A00"
+    class_default_color = "#FF006E"
+    class_highlight_color = "#3A86FF"
 
     def _update_bins(viewers: Iterable[CDSHistogramView], _msg: Optional[NumericalDataChangedMessage]=None):
         props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
@@ -148,8 +150,18 @@ def Page():
         for component in ("est_dist_value", "velocity_value"):
             gjapp.add_link(student_data, component, class_data, component)
         layer_viewer.add_data(student_data)
+        student_layer = layer_viewer.layers[0]
+        student_layer.state.color = student_highlight_color
+        student_layer.state.size = 12
+        student_layer.state.zorder = 5
 
         layer_viewer.add_data(class_data)
+        class_layer = layer_viewer.layers[1]
+        class_layer.state.zorder = 1
+        class_layer.state.color = "#3A86FF"
+        class_layer.state.size = 8
+        class_layer.state.visible = False
+
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
@@ -250,12 +262,6 @@ def Page():
     logger.info("DATA IS READY")
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
-
-    student_default_color = "#3A86FF"
-    student_highlight_color = "#FF5A00"
-
-    class_default_color = "#FF006E"
-    class_highlight_color = "#3A86FF"
 
     #--------------------- Row 1: OUR DATA HUBBLE VIEWER -----------------------
     if (
@@ -419,6 +425,7 @@ def Page():
                 student_slider_subset.subset_state = RangeSubsetState(id, id, class_data.id['student_id'])
                 color = student_highlight_color if highlighted else student_default_color
                 student_slider_subset.style.color = color
+                student_slider_subset.style.markersize = 12
 
             with rv.Col(class_="no-padding"):
                 ViewerLayout(viewer=viewers["student_slider"])
