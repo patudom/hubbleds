@@ -15,13 +15,6 @@
       class="mb-4"
       v-intersect="typesetMathJax"
     >
-    <v-card color="error" class="mb-4">
-        <v-card-text>
-          For now, enter<br> 
-          low age: {{ state_view.class_low_age }} <br>
-          high age: {{ state_view.class_high_age }} until we've properly wired up the student data.
-        </v-card-text>
-      </v-card>    
       <p>
         Let's consider the range of age estimates for the universe obtained by all the classes who have completed this Data Story.
       </p>
