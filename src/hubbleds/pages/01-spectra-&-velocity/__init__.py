@@ -580,6 +580,7 @@ def Page():
                     event_set_failed_validation_5=validation_5_failed.set,
                     event_set_max_step_completed_5=max_step_completed_5.set,
                     event_set_student_vel_calc=velocity_calculated.set,
+                    event_set_student_vel=_velocity_calculated_callback,
                     event_set_student_c=student_c.set,
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),

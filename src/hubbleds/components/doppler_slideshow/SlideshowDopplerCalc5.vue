@@ -815,6 +815,7 @@
               validateLightSpeed(['speed_light']) ? set_step(step + 1) : null;
               if (validateLightSpeed(['speed_light'])) {
                 set_student_c(parseAnswer(['speed_light']));
+                storeStudentVel(parseAnswer(['speed_light']), [lambda_obs, lambda_rest]);
               }
           }"
         >
@@ -902,7 +903,13 @@ module.exports = {
         this.set_failed_validation_5((!(value <= 3e5 && value >= 299790)));
         return value <= 3e5 && value >= 299790;
       });
-    }
+    },
+    
+    storeStudentVel(student_c, lambdas) {
+      console.log(student_c, lambdas, student_c * (lambdas[0] / lambdas[1] - 1));
+      this.set_student_vel(student_c * (lambdas[0] / lambdas[1] - 1));
+    },
+    
   },
   computed: {
     // step() {
