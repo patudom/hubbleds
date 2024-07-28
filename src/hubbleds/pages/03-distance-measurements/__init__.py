@@ -645,13 +645,10 @@ def Page():
 
                 def add_example_measurements_to_glue():
                     if len(LOCAL_STATE.value.example_measurements) > 0:
-                        if EXAMPLE_GALAXY_MEASUREMENTS not in gjapp.data_collection:
-                            example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
-                            example_measurements_glue.style.color = "red"
-                            gjapp.data_collection.append(example_measurements_glue)
-                        else:
-                            example_measurements_glue = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-                            example_measurements_glue.style.color = "red"
+                        example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
+                        example_measurements_glue.style.color = "red"
+                        example_measurements_glue = GLOBAL_STATE.value.add_or_update_data(example_measurements_glue)
+
                         egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
                         add_link(egsd, DB_ANGSIZE_FIELD, example_measurements_glue,"ang_size_value")
                         add_link(egsd, DB_DISTANCE_FIELD, example_measurements_glue,"est_dist_value")
