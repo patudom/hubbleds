@@ -145,8 +145,7 @@ def Page():
     solara.use_memo(_state_callback_setup)    
     
     
-    def add_data_by_marker(viewer):
-        
+    def show_class_data(viewer):
         data = gjapp.data_collection['Class Data']
         if data not in viewer.state.layers_data:
             print('adding class data')
@@ -155,40 +154,71 @@ def Page():
             viewer.add_data(data)
             viewer.state.x_att = data.id['est_dist_value']
             viewer.state.y_att = data.id['velocity_value']
-        
-        if COMPONENT_STATE.value.current_step.value == Marker.pro_dat1.value:
-            data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
-            if data not in viewer.state.layers_data:
-                print('adding Hubble 1929')
-                data.style.markersize = 10
-                data.style.color = '#D500F9'
-                viewer.add_data(data)
-                viewer.state.x_att = data.id['Distance (Mpc)']
-                viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+            viewer.state.reset_limits()
+        else:
+            viewer.layer_artist_for_data(data).visible = True
+
+    def show_hubble1929_data(viewer):
+        data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
+        if data not in viewer.state.layers_data:
+            print('adding Hubble 1929')
+            data.style.markersize = 10
+            data.style.color = '#D500F9'
+            viewer.add_data(data)
+            viewer.state.x_att = data.id['Distance (Mpc)']
+            viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+            viewer.state.reset_limits()
+        else:
+            viewer.layer_artist_for_data(data).visible = True
                 
-        if COMPONENT_STATE.value.current_step.value == Marker.pro_dat5.value:
-            data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
-            if data not in viewer.state.layers_data:
-                print('adding HST key')
-                data.style.markersize = 10
-                data.style.color = '#AEEA00'
-                viewer.add_data(data)
-                viewer.state.x_att = data.id['Distance (Mpc)']
-                viewer.state.y_att = data.id['Velocity (km/s)']
-        
-        viewer.state.reset_limits()
+    def show_hst_key_data(viewer):
+        data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
+        if data not in viewer.state.layers_data:
+            print('adding HST key')
+            data.style.markersize = 10
+            data.style.color = '#AEEA00'
+            viewer.add_data(data)
+            viewer.state.x_att = data.id['Distance (Mpc)']
+            viewer.state.y_att = data.id['Velocity (km/s)']  
+            viewer.state.reset_limits()
+        else:
+            viewer.layer_artist_for_data(data).visible = True
+
+    def hide_hubble1929_data(viewer):
+        data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
+        if data in viewer.state.layers_data:
+            viewer.layer_artist_for_data(data).visible = False
+
+    def hide_hstkey_data(viewer):
+        data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
+        if data in viewer.state.layers_data:
+            viewer.layer_artist_for_data(data).visible = False
+
     
-
-
-    # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
-    add_data_by_marker(viewer)
-    show_layer_traces_in_legend(viewer)
-    show_legend(viewer, show=True)
+    def add_data_by_marker(viewer, marker):
+        if Marker.is_at_or_after(marker, Marker.pro_dat0):
+            show_class_data(viewer)
+        if Marker.is_between(marker, Marker.pro_dat1, Marker.pro_dat4):
+            show_class_data(viewer)
+            show_hubble1929_data(viewer)
+            hide_hstkey_data(viewer)
+        if Marker.is_between(marker, Marker.pro_dat5, Marker.pro_dat7):
+            show_class_data(viewer)
+            show_hst_key_data(viewer)
+            hide_hubble1929_data(viewer)
+        if Marker.is_at_or_after(marker, Marker.pro_dat8):
+            show_class_data(viewer)
+            show_hubble1929_data(viewer)
+            show_hst_key_data(viewer)
 
     def display_fit_legend(marker):
         show_legend(viewer, show=Marker.is_at_or_after(marker, Marker.pro_dat8))
 
     current_step = Ref(COMPONENT_STATE.fields.current_step)
+    current_step.subscribe(lambda step: add_data_by_marker(viewer, step))
+    add_data_by_marker(viewer, current_step.value)
+
+    show_layer_traces_in_legend(viewer)
 
     current_step.subscribe(display_fit_legend)
     display_fit_legend(COMPONENT_STATE.value.current_step)
@@ -329,6 +359,10 @@ def Page():
             with solara.Columns([3,9], classes=["no-padding"]):
                 with rv.Col(class_="no-padding"):
                     # TODO: LayerToggle should refresh when the data changes
-                    LayerToggle(viewer)
+                    LayerToggle(viewer, names={
+                        "Class Data": "Class Data",
+                        HUBBLE_1929_DATA_LABEL: "Hubble 1929 Data",
+                        HUBBLE_KEY_DATA_LABEL: "HST Key Project 2001 Data"
+                    })
                 with rv.Col(class_="no-padding"):
                     ViewerLayout(viewer)
