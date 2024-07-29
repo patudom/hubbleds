@@ -31,7 +31,7 @@ class Marker(enum.Enum, BaseMarker):
     con_int3 = enum.auto()
 
     cla_dat1 = enum.auto()
-    tre_lin2c = enum.auto()
+    # tre_lin2c = enum.auto()
     bes_fit1c = enum.auto()
     you_age1c = enum.auto()
     cla_res1c = enum.auto()
