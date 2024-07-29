@@ -155,7 +155,6 @@ def Page():
             viewer.add_data(data)
             viewer.state.x_att = data.id['est_dist_value']
             viewer.state.y_att = data.id['velocity_value']
-            layer = viewer.layer_artist_for_data(data)
         
         if COMPONENT_STATE.value.current_step.value == Marker.pro_dat1.value:
             data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
@@ -185,20 +184,17 @@ def Page():
     add_data_by_marker(viewer)
     show_layer_traces_in_legend(viewer)
     show_legend(viewer, show=True)
-    
-    # print('\n =============  setting up mc scoring ============= \n')
-    # mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
-    # print('\n =============  done setting up mc scoring ============= \n')
+
+    def display_fit_legend(marker):
+        show_legend(viewer, show=Marker.is_at_or_after(marker, Marker.pro_dat8))
+
+    current_step = Ref(COMPONENT_STATE.fields.current_step)
+
+    current_step.subscribe(display_fit_legend)
+    display_fit_legend(COMPONENT_STATE.value.current_step)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
-
-    # with solara.Card():
-    #     with solara.Div():
-    #         solara.Text(f"mc_scoring: {LOCAL_STATE.value.mc_scoring}")
-    #     with solara.Div():
-    #         solara.Text(f"free_responses: {LOCAL_STATE.value.free_responses}")
     
-
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
             ScaffoldAlert(
