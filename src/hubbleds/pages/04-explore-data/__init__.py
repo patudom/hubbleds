@@ -454,7 +454,7 @@ def Page():
                                            display_best_fit_gal = display_best_fit_gal.value,
                                            draw_active=draw_active,
                                            # Use student data for best fit galaxy
-                                           best_fit_gal_layer_index=0,
+                                           best_fit_gal_layer_index=1,
                                            clear_class_layer=clear_class_layer.value,
                                            clear_drawn_line=clear_drawn_line.value,
                                            clear_fit_line=clear_fit_line.value,)
