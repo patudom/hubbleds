@@ -1,5 +1,5 @@
 from contextlib import ExitStack
-from echo import delay_callback
+from echo import delay_callback, add_callback
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
@@ -281,6 +281,12 @@ def Page():
             layer = viewers["layer"].layer_artist_for_data(student_data)
             layer.state.visible = Marker.is_at_or_before(marker, Marker.fin_cla1)
 
+    def activate_linefit(marker):
+        layer_viewer = viewers["layer"]
+        show_layer_traces_in_legend(layer_viewer)
+        show_legend(layer_viewer, show=True)
+        layer_viewer.toolbar.set_tool_enabled("hubble:linefit", not Marker.is_on(marker, marker.cla_dat1))
+
     current_step = Ref(COMPONENT_STATE.fields.current_step)
     
     current_step.subscribe(show_class_data)
@@ -288,6 +294,18 @@ def Page():
 
     current_step.subscribe(show_student_data)
     show_student_data(COMPONENT_STATE.value.current_step)   
+
+    current_step.subscribe(activate_linefit)
+    activate_linefit(COMPONENT_STATE.value.current_step)
+
+    class_best_fit_clicked = Ref(COMPONENT_STATE.fields.class_best_fit_clicked)
+
+    def _on_best_fit_line_shown(active):
+        if not class_best_fit_clicked.value:
+            class_best_fit_clicked.set(active)
+
+    line_fit_tool = viewers["layer"].toolbar.tools['hubble:linefit']
+    add_callback(line_fit_tool, 'active',  _on_best_fit_line_shown)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 

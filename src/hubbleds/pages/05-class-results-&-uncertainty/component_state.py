@@ -59,6 +59,7 @@ class ComponentState(BaseComponentState, BaseState):
     class_high_age: int = 0
     uncertainty_state: UncertaintyState = UncertaintyState()
     uncertainty_slideshow_finished: bool = False
+    class_best_fit_clicked: bool = False
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:
@@ -81,6 +82,10 @@ class ComponentState(BaseComponentState, BaseState):
     # @property
     # def cla_dat1_gate(self) -> bool:
     #     return LOCAL_STATE.value.question_completed("likely-low-age") and LOCAL_STATE.value.question_completed("likely-high-age") and LOCAL_STATE.value.question_completed("my-reasoning-2")  
+
+    @property
+    def you_age1c_gate(self) -> bool:
+        return COMPONENT_STATE.value.class_best_fit_clicked
     
     # @property
     # def two_his1_gate(self) -> bool:
