@@ -39,7 +39,7 @@ class ComponentState(BaseComponentState, BaseState):
     class_age: float = 0
     
     ages_within: float = 0.15
-    allow_too_close_correct: bool = False
+    allow_too_close_correct: bool = True
     
     fit_line_shown: bool = False
     

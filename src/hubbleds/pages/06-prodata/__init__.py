@@ -1,6 +1,7 @@
 import solara
 from solara.toestand import Ref
 import reacton.ipyvuetify as rv
+from numpy import where
 
 # cosmicds
 from cosmicds.components import (
@@ -27,7 +28,7 @@ from hubbleds.state import (
     get_multiple_choice
 )
 
-from ...utils import HST_KEY_AGE, models_to_glue_data
+from ...utils import HST_KEY_AGE, models_to_glue_data, AGE_CONSTANT
 
 from .component_state import COMPONENT_STATE, Marker
 
@@ -194,7 +195,6 @@ def Page():
         if data in viewer.state.layers_data:
             viewer.layer_artist_for_data(data).visible = False
 
-    
     def add_data_by_marker(viewer, marker):
         if Marker.is_at_or_after(marker, Marker.pro_dat0):
             show_class_data(viewer)
@@ -222,6 +222,28 @@ def Page():
 
     current_step.subscribe(display_fit_legend)
     display_fit_legend(COMPONENT_STATE.value.current_step)
+
+    @staticmethod
+    def linear_slope(x, y):
+        # returns the slope, m,  of y(x) = m*x
+        return sum(x * y) / sum(x * x)
+
+    def _on_component_state_loaded(value: bool):
+        if not value:
+            return
+
+        class_age = Ref(COMPONENT_STATE.fields.class_age)
+
+        data = gjapp.data_collection['Class Data']
+        vel = data['velocity_value']
+        dist = data['est_dist_value']
+        # only accept rows where both velocity and distance exist
+        indices = where((vel != 0) & (vel is not None) & (dist != 0) & (dist is not None))
+        if (indices[0].size > 0):
+            slope = linear_slope(dist[indices], vel[indices])
+            class_age.set(round(AGE_CONSTANT / slope, 8))     
+
+    loaded_component_state.subscribe(_on_component_state_loaded) 
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
     
@@ -292,6 +314,8 @@ def Page():
                 state_view={
                     'hst_age': HST_KEY_AGE, 
                     'class_age': COMPONENT_STATE.value.class_age,
+                    'ages_within': COMPONENT_STATE.value.ages_within,
+                    'allow_too_close_correct': COMPONENT_STATE.value.allow_too_close_correct,
                     'mc_score': get_multiple_choice(LOCAL_STATE, 'pro-dat6'), 
                     'score_tag': 'pro-dat6'
                 }
