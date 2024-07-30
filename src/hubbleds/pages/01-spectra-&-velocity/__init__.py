@@ -53,6 +53,10 @@ def selected_example_measurement():
 def selected_measurement():
     return LOCAL_STATE.value.get_measurement(COMPONENT_STATE.value.selected_galaxy)
 
+def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
+    z_meas =  (measwave - restwave) / restwave
+    fractional_difference = (((z_meas - z) / z)** 2)**0.5
+    return fractional_difference > tolerance
 
 @solara.component
 def Page():
@@ -219,6 +223,32 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
 
     solara.Button(label="Fill data points", on_click=_fill_data_points)
+    
+
+    def num_bad_velocities():
+        measurements = Ref(LOCAL_STATE.fields.measurements)
+        num = 0
+        for meas in measurements.value:
+            if meas.obs_wave_value is None or meas.rest_wave_value is None:
+                # Skip measurements with missing data cuz they have not been attempted
+                continue
+            elif is_wavelength_poorly_measured(meas.obs_wave_value, meas.rest_wave_value, meas.galaxy.z):
+                num += 1
+        
+        has_multiple_bad_velocities = Ref(COMPONENT_STATE.fields.has_multiple_bad_velocities)
+        has_multiple_bad_velocities.set(num > 1)
+        return num
+    
+    def set_obs_wave_total():
+        obs_wave_total = Ref(COMPONENT_STATE.fields.obs_wave_total)
+        measurements = LOCAL_STATE.value.measurements
+        num = 0
+        for meas in measurements:
+            print(meas)
+            if meas.obs_wave_value is not None:
+                num += 1
+        obs_wave_total.set(num)
+    
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -849,11 +879,15 @@ def Page():
                                 COMPONENT_STATE.value.selected_example_galaxy
                             )
                         )
+                        if example_measurement_index is None:
+                            return
+                        
                         example_measurement = Ref(
                             LOCAL_STATE.fields.example_measurements[
                                 example_measurement_index
                             ]
                         )
+                        
                         example_measurement.set(
                             example_measurement.value.model_copy(
                                 update={"obs_wave_value": value}
@@ -904,20 +938,38 @@ def Page():
                         measurement_index = LOCAL_STATE.value.get_measurement_index(
                             COMPONENT_STATE.value.selected_galaxy
                         )
-                        measurement = Ref(
-                            LOCAL_STATE.fields.measurements[measurement_index]
+                        if measurement_index is None:
+                            return
+
+                        has_bad_velocities = Ref(
+                            COMPONENT_STATE.fields.has_bad_velocities
                         )
-                        measurement.set(
-                            measurement.value.model_copy(
-                                update={"obs_wave_value": value}
+                        is_bad = is_wavelength_poorly_measured(
+                            value,
+                            selected_measurement.value.rest_wave_value,
+                            selected_measurement.value.galaxy.z,
+                        )
+                        has_bad_velocities.set(is_bad)
+                        num_bad_velocities()
+
+                        if not is_bad:
+                            measurement = Ref(
+                                LOCAL_STATE.fields.measurements[measurement_index]
                             )
-                        )
+                            measurement.set(
+                                measurement.value.model_copy(
+                                    update={"obs_wave_value": value}
+                                )
+                            )
 
-                        obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
-                        obs_wave.set(value)
-
-                        obs_wave_total = Ref(COMPONENT_STATE.fields.obs_wave_total)
-                        obs_wave_total.set(obs_wave_total.value + 1)
+                            obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                            obs_wave.set(value)
+                            
+                            set_obs_wave_total()
+                            
+                            
+                        else:
+                            logger.info('Wavelength measurement is bad')
 
                     SpectrumViewer(
                         galaxy_data=(

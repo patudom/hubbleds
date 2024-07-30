@@ -47,7 +47,7 @@
     <div
       v-if="state_view.has_bad_velocities || state_view.has_multiple_bad_velocities"
     >
-      <p>
+      <p style="font-weight:bold; font-size:1.1em;">
         Your measured wavelength value is not within the expected range. Please try again.
       </p>
       <p>
