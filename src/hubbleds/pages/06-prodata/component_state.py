@@ -75,9 +75,9 @@ class ComponentState(BaseComponentState, BaseState):
     def pro_dat8_gate(self) -> bool:
         return LOCAL_STATE.value.question_completed("pro-dat7") #and LOCAL_STATE.value.question_completed("prodata-free-7")
     
-    @property
-    def pro_dat9_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("prodata-reflect-8a") #and LOCAL_STATE.value.question_completed("prodata-reflect-8b") and LOCAL_STATE.value.question_completed("prodata-reflect-8c")
+    # @property
+    # def pro_dat9_gate(self) -> bool:
+    #     return LOCAL_STATE.value.question_completed("prodata-reflect-8a") #and LOCAL_STATE.value.question_completed("prodata-reflect-8b") and LOCAL_STATE.value.question_completed("prodata-reflect-8c")
     
     @property
     def sto_fin1_gate(self) -> bool:
