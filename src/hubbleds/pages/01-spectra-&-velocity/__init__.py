@@ -456,7 +456,7 @@ def Page():
                         Marker.dop_cal6
                     ),
                     event_on_row_selected=_on_table_row_selected,
-                    event_button_pressed=lambda _: _on_calculate_velocity(),
+                    event_on_button_pressed=lambda _: _on_calculate_velocity(),
                 )
 
     with rv.Row():

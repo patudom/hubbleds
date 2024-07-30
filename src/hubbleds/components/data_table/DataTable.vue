@@ -18,7 +18,7 @@
           {{ title }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon @click="calculate_velocity" v-if="show_button">
+      <v-btn icon @click="on_button_pressed" v-if="show_button">
         <v-icon> {{ button_icon.replace(/['"]/g, '') }} </v-icon>
       </v-btn>
     </v-toolbar>

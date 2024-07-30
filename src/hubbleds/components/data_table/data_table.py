@@ -33,6 +33,6 @@ def DataTable(
     show_button: bool = False,
     show_select: bool = False,
     event_on_row_selected: Callable = lambda: None,
-    event_button_pressed: Callable = lambda: None,
+    event_on_button_pressed: Callable = lambda: None,
 ):
     pass
