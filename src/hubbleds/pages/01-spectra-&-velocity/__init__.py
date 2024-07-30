@@ -657,9 +657,7 @@ def Page():
                     ]
                 else:
                     viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
-                DotplotViewer(
-                    gjapp,  # component_id=DB_VELOCITY_FIELD  # data=viewer_data,
-                )
+                DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD)
 
             if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
                 show_reflection_dialog = Ref(
