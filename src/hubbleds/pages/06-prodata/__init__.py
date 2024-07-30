@@ -87,7 +87,7 @@ def Page():
     
     # === Setup Glue ===
     
-    def _glue_setup() -> Tuple[JupyterApplication, PlotlyBaseView]:
+    def _glue_setup() -> Tuple[JupyterApplication, HubbleFitView]:
         # NOTE: use_memo has to be part of the main page render. Including it
         #  in a conditional will result in an error.
         gjapp = JupyterApplication(
@@ -125,10 +125,11 @@ def Page():
         add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', 'Class Data', 'est_dist_value')
         add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', 'Class Data', 'velocity_value')
 
-        viewer = cast(PlotlyBaseView, gjapp.new_data_viewer(HubbleFitView, show=False))
+        viewer = cast(HubbleFitView, gjapp.new_data_viewer(HubbleFitView, show=False))
         viewer.state.title = "Professional Data"
         viewer.figure.update_xaxes(showline=True, mirror=False)
         viewer.figure.update_yaxes(showline=True, mirror=False)
+        viewer.ignore(lambda data: data.label == "student_slider_subset")
         
         return gjapp, viewer
     
