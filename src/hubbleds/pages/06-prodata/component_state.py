@@ -39,7 +39,7 @@ class ComponentState(BaseComponentState, BaseState):
     class_age: float = 0
     
     ages_within: float = 0.15
-    allow_too_close_correct: bool = False
+    allow_too_close_correct: bool = True
     
     fit_line_shown: bool = False
     
@@ -75,9 +75,9 @@ class ComponentState(BaseComponentState, BaseState):
     def pro_dat8_gate(self) -> bool:
         return LOCAL_STATE.value.question_completed("pro-dat7") #and LOCAL_STATE.value.question_completed("prodata-free-7")
     
-    @property
-    def pro_dat9_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("prodata-reflect-8a") #and LOCAL_STATE.value.question_completed("prodata-reflect-8b") and LOCAL_STATE.value.question_completed("prodata-reflect-8c")
+    # @property
+    # def pro_dat9_gate(self) -> bool:
+    #     return LOCAL_STATE.value.question_completed("prodata-reflect-8a") #and LOCAL_STATE.value.question_completed("prodata-reflect-8b") and LOCAL_STATE.value.question_completed("prodata-reflect-8c")
     
     @property
     def sto_fin1_gate(self) -> bool:
