@@ -169,6 +169,8 @@ def Page():
         layer_viewer.state.x_axislabel = "Distance (Mpc)"
         layer_viewer.state.y_axislabel = "Velocity (km/s)"
         layer_viewer.state.title = "Our Data"
+        show_layer_traces_in_legend(layer_viewer)
+        show_legend(layer_viewer, show=True)
 
         if len(class_data.subsets) == 0:
             student_slider_subset = class_data.new_subset(label="student_slider_subset", alpha=1, markersize=10)
@@ -281,12 +283,6 @@ def Page():
             layer = viewers["layer"].layer_artist_for_data(student_data)
             layer.state.visible = Marker.is_at_or_before(marker, Marker.fin_cla1)
 
-    def activate_linefit(marker):
-        layer_viewer = viewers["layer"]
-        show_layer_traces_in_legend(layer_viewer)
-        show_legend(layer_viewer, show=True)
-        layer_viewer.toolbar.set_tool_enabled("hubble:linefit", not Marker.is_on(marker, marker.cla_dat1))
-
     current_step = Ref(COMPONENT_STATE.fields.current_step)
     
     current_step.subscribe(show_class_data)
@@ -294,9 +290,6 @@ def Page():
 
     current_step.subscribe(show_student_data)
     show_student_data(COMPONENT_STATE.value.current_step)   
-
-    current_step.subscribe(activate_linefit)
-    activate_linefit(COMPONENT_STATE.value.current_step)
 
     class_best_fit_clicked = Ref(COMPONENT_STATE.fields.class_best_fit_clicked)
 
@@ -367,8 +360,9 @@ def Page():
                         "class_data_size": COMPONENT_STATE.value.class_data_size
                     }                    
                 )
+
+                # Skipping this guideline for now since we don't have linedraw functionality in glue viewer.
                 # ScaffoldAlert(
-                #     # TODO: This will need to be wired up once viewer is implemented
                 #     GUIDELINE_ROOT / "GuidelineTrendLinesDraw2c.vue",
                 #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -376,7 +370,6 @@ def Page():
                 #     show=COMPONENT_STATE.value.is_current_step(Marker.tre_lin2c),
                 # )
                 ScaffoldAlert(
-                    # TODO: This will need to be wired up once viewer is implemented
                     GUIDELINE_ROOT / "GuidelineBestFitLinec.vue",
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -384,7 +377,6 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.bes_fit1c),
                 )
                 ScaffoldAlert(
-                    # TODO: This will need to be wired up once viewer is implemented
                     GUIDELINE_ROOT / "GuidelineYourAgeEstimatec.vue",
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
