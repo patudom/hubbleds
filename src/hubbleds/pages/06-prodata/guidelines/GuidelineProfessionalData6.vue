@@ -53,12 +53,12 @@ module.exports = {
   methods: {
 
     hst_age_less_then_class_age() {
-      return parseFloat(this.state_viewhst_age) < parseFloat(this.state_viewclass_age)
+      return parseFloat(this.state_view.hst_age) < parseFloat(this.state_view.class_age)
     },
 
     too_close() {
-      if (this.state_viewallow_too_close_correct) {
-        return Math.abs(parseFloat(this.state_viewhst_age) - parseFloat(this.state_viewclass_age)) < this.state_viewages_within
+      if (this.state_view.allow_too_close_correct) {
+        return Math.abs(parseFloat(this.state_view.hst_age) - parseFloat(this.state_view.class_age)) < this.state_view.ages_within
       } else {
         // never too close with the zoom tool
         return false
@@ -68,7 +68,7 @@ module.exports = {
 
     too_close_feedback() {
 
-      if (!this.state_viewallow_too_close_correct) {
+      if (!this.state_view.allow_too_close_correct) {
         // feedback for it's too close but we don't want to give away the correct answer
         return "Try again! Use the zoom tool to zoom in on the lines."
       }
@@ -109,7 +109,7 @@ module.exports = {
       if (this.hst_age_less_then_class_age()) {
         return this.too_close() ? [0,2] : [0]
       } else {
-        return this.too_close() [1] ? [1,2] : [1]
+        return this.too_close() ? [1,2] : [1]
       }
     },
 
@@ -119,7 +119,7 @@ module.exports = {
         return this.too_close() ? [1] : [1,2]
       } else {
         // return [0]
-        return this.too_close() [0] ? [0] : [0,2]
+        return this.too_close() ? [0] : [0,2]
       }
     }
   },

@@ -92,7 +92,7 @@ def Page():
         race_data = GLOBAL_STATE.value.add_or_update_data(race_data)
         race_data.style.color = "#111111"
         race_data.style.alpha = 1
-        race_data.style.markersize = 14
+        race_data.style.markersize = 10
         race_viewer.add_data(race_data)
         race_viewer.state.x_att = race_data.id["Distance (km)"]
         race_viewer.state.y_att = race_data.id["Velocity (km/hr)"]
@@ -127,7 +127,7 @@ def Page():
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
         class_data.style.color = "#3A86FF"
         class_data.style.alpha = 1
-        class_data.style.markersize = 14
+        class_data.style.markersize = 10
 
         layer_viewer = viewers["layer"]
         layer_viewer.add_data(class_data)
@@ -454,7 +454,7 @@ def Page():
                                            display_best_fit_gal = display_best_fit_gal.value,
                                            draw_active=draw_active,
                                            # Use student data for best fit galaxy
-                                           best_fit_gal_layer_index=0,
+                                           best_fit_gal_layer_index=1,
                                            clear_class_layer=clear_class_layer.value,
                                            clear_drawn_line=clear_drawn_line.value,
                                            clear_fit_line=clear_fit_line.value,)

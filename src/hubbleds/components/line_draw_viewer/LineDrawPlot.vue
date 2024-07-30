@@ -353,8 +353,8 @@ export default {
             const bestfitslope = slopes[this.best_fit_gal_layer_index];
             y_best_fit_galaxy = bestfitslope * x_best_fit_galaxy;
             const trace = {
-              x: [x_best_fit_galaxy],
-              y: [y_best_fit_galaxy],
+              x: [Math.round(x_best_fit_galaxy)],
+              y: [Math.round(y_best_fit_galaxy)],
               mode: "markers", 
               marker: { size: 14, color: "orange" },
               visible: true,

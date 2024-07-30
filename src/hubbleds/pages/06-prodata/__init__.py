@@ -1,6 +1,7 @@
 import solara
 from solara.toestand import Ref
 import reacton.ipyvuetify as rv
+from numpy import where
 
 # cosmicds
 from cosmicds.components import (
@@ -27,7 +28,7 @@ from hubbleds.state import (
     get_multiple_choice
 )
 
-from ...utils import HST_KEY_AGE, models_to_glue_data
+from ...utils import HST_KEY_AGE, models_to_glue_data, AGE_CONSTANT
 
 from .component_state import COMPONENT_STATE, Marker
 
@@ -87,7 +88,7 @@ def Page():
     
     # === Setup Glue ===
     
-    def _glue_setup() -> Tuple[JupyterApplication, PlotlyBaseView]:
+    def _glue_setup() -> Tuple[JupyterApplication, HubbleFitView]:
         # NOTE: use_memo has to be part of the main page render. Including it
         #  in a conditional will result in an error.
         gjapp = JupyterApplication(
@@ -125,10 +126,11 @@ def Page():
         add_link(HUBBLE_1929_DATA_LABEL, 'Distance (Mpc)', 'Class Data', 'est_dist_value')
         add_link(HUBBLE_1929_DATA_LABEL, 'Tweaked Velocity (km/s)', 'Class Data', 'velocity_value')
 
-        viewer = cast(PlotlyBaseView, gjapp.new_data_viewer(HubbleFitView, show=False))
+        viewer = cast(HubbleFitView, gjapp.new_data_viewer(HubbleFitView, show=False))
         viewer.state.title = "Professional Data"
         viewer.figure.update_xaxes(showline=True, mirror=False)
         viewer.figure.update_yaxes(showline=True, mirror=False)
+        viewer.ignore(lambda data: data.label == "student_slider_subset")
         
         return gjapp, viewer
     
@@ -145,8 +147,7 @@ def Page():
     solara.use_memo(_state_callback_setup)    
     
     
-    def add_data_by_marker(viewer):
-        
+    def show_class_data(viewer):
         data = gjapp.data_collection['Class Data']
         if data not in viewer.state.layers_data:
             print('adding class data')
@@ -155,50 +156,98 @@ def Page():
             viewer.add_data(data)
             viewer.state.x_att = data.id['est_dist_value']
             viewer.state.y_att = data.id['velocity_value']
-            layer = viewer.layer_artist_for_data(data)
-        
-        if COMPONENT_STATE.value.current_step.value == Marker.pro_dat1.value:
-            data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
-            if data not in viewer.state.layers_data:
-                print('adding Hubble 1929')
-                data.style.markersize = 10
-                data.style.color = '#D500F9'
-                viewer.add_data(data)
-                viewer.state.x_att = data.id['Distance (Mpc)']
-                viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+            viewer.state.reset_limits()
+        else:
+            viewer.layer_artist_for_data(data).visible = True
+
+    def show_hubble1929_data(viewer):
+        data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
+        if data not in viewer.state.layers_data:
+            print('adding Hubble 1929')
+            data.style.markersize = 10
+            data.style.color = '#D500F9'
+            viewer.add_data(data)
+            viewer.state.x_att = data.id['Distance (Mpc)']
+            viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+            viewer.state.reset_limits()
+        else:
+            viewer.layer_artist_for_data(data).visible = True
                 
-        if COMPONENT_STATE.value.current_step.value == Marker.pro_dat5.value:
-            data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
-            if data not in viewer.state.layers_data:
-                print('adding HST key')
-                data.style.markersize = 10
-                data.style.color = '#AEEA00'
-                viewer.add_data(data)
-                viewer.state.x_att = data.id['Distance (Mpc)']
-                viewer.state.y_att = data.id['Velocity (km/s)']
-        
-        viewer.state.reset_limits()
-    
+    def show_hst_key_data(viewer):
+        data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
+        if data not in viewer.state.layers_data:
+            print('adding HST key')
+            data.style.markersize = 10
+            data.style.color = '#AEEA00'
+            viewer.add_data(data)
+            viewer.state.x_att = data.id['Distance (Mpc)']
+            viewer.state.y_att = data.id['Velocity (km/s)']  
+            viewer.state.reset_limits()
+        else:
+            viewer.layer_artist_for_data(data).visible = True
 
+    def hide_hubble1929_data(viewer):
+        data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
+        if data in viewer.state.layers_data:
+            viewer.layer_artist_for_data(data).visible = False
 
-    # viewer.toolbar.set_tool_enabled("hubble:linefit", False)
-    add_data_by_marker(viewer)
+    def hide_hstkey_data(viewer):
+        data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
+        if data in viewer.state.layers_data:
+            viewer.layer_artist_for_data(data).visible = False
+
+    def add_data_by_marker(viewer, marker):
+        if Marker.is_at_or_after(marker, Marker.pro_dat0):
+            show_class_data(viewer)
+        if Marker.is_between(marker, Marker.pro_dat1, Marker.pro_dat4):
+            show_class_data(viewer)
+            show_hubble1929_data(viewer)
+            hide_hstkey_data(viewer)
+        if Marker.is_between(marker, Marker.pro_dat5, Marker.pro_dat7):
+            show_class_data(viewer)
+            show_hst_key_data(viewer)
+            hide_hubble1929_data(viewer)
+        if Marker.is_at_or_after(marker, Marker.pro_dat8):
+            show_class_data(viewer)
+            show_hubble1929_data(viewer)
+            show_hst_key_data(viewer)
+
+    def display_fit_legend(marker):
+        show_legend(viewer, show=Marker.is_at_or_after(marker, Marker.pro_dat8))
+
+    current_step = Ref(COMPONENT_STATE.fields.current_step)
+    current_step.subscribe(lambda step: add_data_by_marker(viewer, step))
+    add_data_by_marker(viewer, current_step.value)
+
     show_layer_traces_in_legend(viewer)
-    show_legend(viewer, show=True)
-    
-    # print('\n =============  setting up mc scoring ============= \n')
-    # mc_scoring, set_mc_scoring  = solara.use_state(LOCAL_STATE.mc_scoring.value)
-    # print('\n =============  done setting up mc scoring ============= \n')
+
+    current_step.subscribe(display_fit_legend)
+    display_fit_legend(COMPONENT_STATE.value.current_step)
+
+    @staticmethod
+    def linear_slope(x, y):
+        # returns the slope, m,  of y(x) = m*x
+        return sum(x * y) / sum(x * x)
+
+    def _on_component_state_loaded(value: bool):
+        if not value:
+            return
+
+        class_age = Ref(COMPONENT_STATE.fields.class_age)
+
+        data = gjapp.data_collection['Class Data']
+        vel = data['velocity_value']
+        dist = data['est_dist_value']
+        # only accept rows where both velocity and distance exist
+        indices = where((vel != 0) & (vel is not None) & (dist != 0) & (dist is not None))
+        if (indices[0].size > 0):
+            slope = linear_slope(dist[indices], vel[indices])
+            class_age.set(round(AGE_CONSTANT / slope, 8))     
+
+    loaded_component_state.subscribe(_on_component_state_loaded) 
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
-
-    # with solara.Card():
-    #     with solara.Div():
-    #         solara.Text(f"mc_scoring: {LOCAL_STATE.value.mc_scoring}")
-    #     with solara.Div():
-    #         solara.Text(f"free_responses: {LOCAL_STATE.value.free_responses}")
     
-
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
             ScaffoldAlert(
@@ -266,6 +315,8 @@ def Page():
                 state_view={
                     'hst_age': HST_KEY_AGE, 
                     'class_age': COMPONENT_STATE.value.class_age,
+                    'ages_within': COMPONENT_STATE.value.ages_within,
+                    'allow_too_close_correct': COMPONENT_STATE.value.allow_too_close_correct,
                     'mc_score': get_multiple_choice(LOCAL_STATE, 'pro-dat6'), 
                     'score_tag': 'pro-dat6'
                 }
@@ -333,6 +384,10 @@ def Page():
             with solara.Columns([3,9], classes=["no-padding"]):
                 with rv.Col(class_="no-padding"):
                     # TODO: LayerToggle should refresh when the data changes
-                    LayerToggle(viewer)
+                    LayerToggle(viewer, names={
+                        "Class Data": "Class Data",
+                        HUBBLE_1929_DATA_LABEL: "Hubble 1929 Data",
+                        HUBBLE_KEY_DATA_LABEL: "HST Key Project 2001 Data"
+                    })
                 with rv.Col(class_="no-padding"):
                     ViewerLayout(viewer)

@@ -57,6 +57,7 @@ def selected_measurement():
 @solara.component
 def Page():
     loaded_component_state = solara.use_reactive(False)
+    router = solara.use_router()
 
     async def _load_component_state():
         # Load stored component state from database, measurement data is
@@ -427,7 +428,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: print("Transition next stage."),
+                event_next_callback=lambda _: router.push("02-distance-introduction"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),
@@ -583,9 +584,7 @@ def Page():
                 max_step_completed_5 = Ref(
                     COMPONENT_STATE.fields.doppler_state.max_step_completed_5
                 )
-                student_c = Ref(
-                    COMPONENT_STATE.fields.doppler_state.student_c
-                )
+                student_c = Ref(COMPONENT_STATE.fields.doppler_state.student_c)
                 velocity_calculated = Ref(
                     COMPONENT_STATE.fields.doppler_state.velocity_calculated
                 )
@@ -635,9 +634,11 @@ def Page():
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
                     state_view={
-                        "mc_score": get_multiple_choice(LOCAL_STATE, "interpret-velocity"),
-                        "score_tag": "interpret-velocity"
-                    }                    
+                        "mc_score": get_multiple_choice(
+                            LOCAL_STATE, "interpret-velocity"
+                        ),
+                        "score_tag": "interpret-velocity",
+                    },
                 )
 
             if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14):
@@ -671,21 +672,17 @@ def Page():
                     return DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD, vertical_line_visible=False)
                 
                 
-                # if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                #     viewer_data = [
-                #         gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
-                #         gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                #     ]
-                # else:
-                #     viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
-                # DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD, vertical_line_visible=False)
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                     add_example_measurements_to_glue() # make sure updated measurements are in glue
                     create_dotplot_viewer()
 
             if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
-                show_reflection_dialog=Ref(COMPONENT_STATE.fields.show_reflection_dialog)
-                reflect_step = Ref(COMPONENT_STATE.fields.velocity_reflection_state.step)
+                show_reflection_dialog = Ref(
+                    COMPONENT_STATE.fields.show_reflection_dialog
+                )
+                reflect_step = Ref(
+                    COMPONENT_STATE.fields.velocity_reflection_state.step
+                )
                 reflect_max_step_completed = Ref(
                     COMPONENT_STATE.fields.velocity_reflection_state.max_step_completed
                 )
@@ -693,7 +690,7 @@ def Page():
 
                 ReflectVelocitySlideshow(
                     length=8,
-                    titles= [
+                    titles=[
                         "Reflect on your data",
                         "What would a 1920's scientist wonder?",
                         "Observed vs. rest wavelengths",
@@ -701,29 +698,35 @@ def Page():
                         "Do your data agree with 1920's thinking?",
                         "Do your data agree with 1920's thinking?",
                         "Did your peers find what you found?",
-                        "Reflection complete"
+                        "Reflection complete",
                     ],
                     interact_steps=[2, 3, 4, 5, 6],
                     require_responses=True,
-
-                    dialog = COMPONENT_STATE.value.show_reflection_dialog,
-                    step=COMPONENT_STATE.value.velocity_reflection_state.step, 
+                    dialog=COMPONENT_STATE.value.show_reflection_dialog,
+                    step=COMPONENT_STATE.value.velocity_reflection_state.step,
                     max_step_completed=COMPONENT_STATE.value.velocity_reflection_state.max_step_completed,
                     reflection_complete=COMPONENT_STATE.value.reflection_complete,
                     state_view={
-                        "mc_score_2": get_multiple_choice(LOCAL_STATE, "wavelength-comparison"),
+                        "mc_score_2": get_multiple_choice(
+                            LOCAL_STATE, "wavelength-comparison"
+                        ),
                         "score_tag_2": "wavelength-comparison",
                         "mc_score_3": get_multiple_choice(LOCAL_STATE, "galaxy-motion"),
                         "score_tag_3": "galaxy-motion",
-                        "mc_score_4": get_multiple_choice(LOCAL_STATE, "steady-state-consistent"),
+                        "mc_score_4": get_multiple_choice(
+                            LOCAL_STATE, "steady-state-consistent"
+                        ),
                         "score_tag_4": "steady-state-consistent",
-                        "mc_score_5": get_multiple_choice(LOCAL_STATE, "moving-randomly-consistent"),
+                        "mc_score_5": get_multiple_choice(
+                            LOCAL_STATE, "moving-randomly-consistent"
+                        ),
                         "score_tag_5": "moving-randomly-consistent",
-                        "mc_score_6": get_multiple_choice(LOCAL_STATE, "peers-data-agree"),
+                        "mc_score_6": get_multiple_choice(
+                            LOCAL_STATE, "peers-data-agree"
+                        ),
                         "score_tag_6": "peers-data-agree",
-                    },  
-
-                    event_set_dialog = show_reflection_dialog.set,
+                    },
+                    event_set_dialog=show_reflection_dialog.set,
                     event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
                     # These are numbered based on window-item value
                     event_set_step=reflect_step.set,
