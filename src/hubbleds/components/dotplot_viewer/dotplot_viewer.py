@@ -166,6 +166,7 @@ def DotplotViewer(
             dotplot_view.figure_widget.update_layout(height=None, width=None)
             dotplot_view.figure_widget.update_layout(autosize=True, height=height)
             dotplot_view.figure_widget.update_layout(
+                showlegend=False,
                 hovermode="x",
                 spikedistance=-1,
                 xaxis=dict(
@@ -190,10 +191,13 @@ def DotplotViewer(
 
                 
                 
-            dotplot_view.figure.update_layout(clickmode="event", hovermode="closest")
+            dotplot_view.figure.update_layout(clickmode="event", hovermode="closest", showlegend=False)
             dotplot_view.selection_layer.on_click(on_click)
             dotplot_view.set_selection_active(True)
-            dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0)
+            # special treatment for go.Heatmap from https://stackoverflow.com/questions/58630928/how-to-hide-the-colorbar-and-legend-in-plotly-express-bar-graph#comment131880779_68555667
+            dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0, coloraxis='coloraxis')
+            dotplot_view.figure.update_coloraxes(showscale=False)
+
             
             
             if line_marker_at.value is not None:
