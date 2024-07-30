@@ -57,6 +57,7 @@ class ComponentState(BaseComponentState, BaseState):
     student_high_age: int = 0
     class_low_age: int = 0
     class_high_age: int = 0
+    class_data_size: int = 0
     uncertainty_state: UncertaintyState = UncertaintyState()
     uncertainty_slideshow_finished: bool = False
     class_best_fit_clicked: bool = False

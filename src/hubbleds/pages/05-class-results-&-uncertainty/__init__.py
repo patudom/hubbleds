@@ -319,9 +319,12 @@ def Page():
         class_low_age = Ref(COMPONENT_STATE.fields.class_low_age)
         class_high_age = Ref(COMPONENT_STATE.fields.class_high_age)
 
+        class_data_size = Ref(COMPONENT_STATE.fields.class_data_size)
+
         class_summary_data = GLOBAL_STATE.value.glue_data_collection["Class Summaries"]
         student_low_age.set(round(min(class_summary_data["age_value"])))
         student_high_age.set(round(max(class_summary_data["age_value"])))
+        class_data_size.set(len(class_summary_data["age_value"]))
 
         all_class_summ_data = GLOBAL_STATE.value.glue_data_collection["All Class Summaries"]
         class_low_age.set(round(min(all_class_summ_data["age_value"])))
@@ -351,7 +354,7 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.fin_cla1),
                     state_view={
-                        "class_data_size": 10  # TODO: This is a placeholder
+                        "class_data_size": COMPONENT_STATE.value.class_data_size
                     }
                 )
                 ScaffoldAlert(
@@ -361,7 +364,7 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_dat1),
                     state_view={
-                        "class_data_size": 10  # TODO: This is a placeholder
+                        "class_data_size": COMPONENT_STATE.value.class_data_size
                     }                    
                 )
                 # ScaffoldAlert(
@@ -408,7 +411,7 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_res1),
                     state_view={
-                        "class_data_size": 10  # TODO: This is a placeholder
+                        "class_data_size": COMPONENT_STATE.value.class_data_size
                     }
                 )
                 ScaffoldAlert(
