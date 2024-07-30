@@ -29,9 +29,10 @@ def DataTable(
     items: list = [],
     selected: list = [],
     highlighted: bool = False,
-    show_velocity_button: bool = False,
+    button_icon: str = "",
+    show_button: bool = False,
     show_select: bool = False,
     event_on_row_selected: Callable = lambda: None,
-    event_calculate_velocity: Callable = lambda: None,
+    event_button_pressed: Callable = lambda: None,
 ):
     pass

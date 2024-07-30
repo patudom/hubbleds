@@ -451,11 +451,12 @@ def Page():
                     show_select=COMPONENT_STATE.value.current_step_at_or_after(
                         Marker.cho_row1
                     ),
-                    show_velocity_button=COMPONENT_STATE.value.is_current_step(
+                    button_icon="mdi-run-fast",
+                    show_button=COMPONENT_STATE.value.is_current_step(
                         Marker.dop_cal6
                     ),
                     event_on_row_selected=_on_table_row_selected,
-                    event_calculate_velocity=lambda _: _on_calculate_velocity(),
+                    event_button_pressed=lambda _: _on_calculate_velocity(),
                 )
 
     with rv.Row():
