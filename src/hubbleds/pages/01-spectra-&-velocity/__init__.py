@@ -606,6 +606,8 @@ def Page():
                             update={"velocity_value": round(value)}
                         )
                     )
+                    
+                    add_example_measurements_to_glue()
 
                 DopplerSlideshow(
                     dialog=COMPONENT_STATE.value.show_doppler_dialog,
@@ -675,6 +677,7 @@ def Page():
                 #     viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
                 # DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD, vertical_line_visible=False)
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                    add_example_measurements_to_glue() # make sure updated measurements are in glue
                     create_dotplot_viewer()
 
             if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
