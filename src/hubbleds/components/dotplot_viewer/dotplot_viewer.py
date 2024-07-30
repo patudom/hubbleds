@@ -118,6 +118,10 @@ def DotplotViewer(
                     for viewer_data in data[1:]:
                         dotplot_view.add_data(viewer_data)
             
+            for layer in dotplot_view.layers:
+                for trace in layer.traces():
+                    trace.update(hoverinfo="skip", hovertemplate=None)
+                    print(trace)
             
             # override the default selection layer
             def new_update_selection(self=dotplot_view):
@@ -192,6 +196,7 @@ def DotplotViewer(
                 
             dotplot_view.figure.update_layout(clickmode="event", hovermode="closest")
             dotplot_view.selection_layer.on_click(on_click)
+            dotplot_view.selection_layer.update(hovertemplate="%{x:,.0f} km / s<extra></extra>")
             dotplot_view.set_selection_active(True)
             dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0)
             
