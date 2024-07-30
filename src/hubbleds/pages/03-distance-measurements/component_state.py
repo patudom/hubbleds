@@ -58,6 +58,7 @@ class ComponentState(BaseComponentState, BaseState):
     meas_theta: float = 0.0
     ruler_click_count: int = 0
     n_meas: int = 0
+    bad_measurement: bool = False
     
     show_dotplot_lines: bool = True
     angular_size_line: Optional[float | int] = None
