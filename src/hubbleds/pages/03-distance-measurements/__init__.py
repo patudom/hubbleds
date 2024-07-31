@@ -60,7 +60,7 @@ logger = setup_logger("STAGE3")
 
 
 @solara.component
-def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback):
+def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback, use_guard, bad_measurement_callback):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -77,6 +77,16 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
         widget.show_ruler = show_ruler
 
     solara.use_effect(turn_ruler_on, [show_ruler])
+    
+    def turn_on_guard():
+        widget = cast(DistanceTool,solara.get_widget(tool))
+        if use_guard:
+            widget.activate_guard()
+        else:
+            widget.deactivate_guard()
+    
+    solara.use_effect(turn_on_guard, [use_guard])
+    
 
     def _define_callbacks():
         widget = cast(DistanceTool,solara.get_widget(tool))
@@ -84,7 +94,10 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
         def update_angular_size(change):
             if widget.measuring:
                 angle = change["new"]
-                angular_size_callback(angle)
+                if not widget.bad_measurement:
+                    angular_size_callback(angle)
+                else:
+                    bad_measurement_callback()
 
         widget.observe(update_angular_size, ["angular_size"])
 
@@ -95,6 +108,8 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
         widget.observe(get_ruler_click_count, ["ruler_click_count"])
 
     solara.use_effect(_define_callbacks, [])
+    
+    
 
 @solara.component
 def Page():
@@ -361,7 +376,15 @@ def Page():
                     meas_theta.set(value)
                     n_meas = Ref(COMPONENT_STATE.fields.n_meas)
                     n_meas.set(COMPONENT_STATE.value.n_meas + 1)
-
+                if COMPONENT_STATE.value.bad_measurement:
+                    bad_measurement = Ref(COMPONENT_STATE.fields.bad_measurement)
+                    bad_measurement.set(False)
+            
+            def _bad_measurement_cb():
+                bad_measurement = Ref(COMPONENT_STATE.fields.bad_measurement)
+                bad_measurement.set(True)
+                
+            
             def _distance_cb(theta):
                 """
                 Callback for when the distance is estimated. This function
@@ -381,7 +404,12 @@ def Page():
                 show_ruler=COMPONENT_STATE.value.show_ruler,
                 angular_size_callback=_ang_size_cb,
                 ruler_count_callback=_get_ruler_clicks_cb,
+                bad_measurement_callback=_bad_measurement_cb,
+                use_guard=True
             )
+            
+            if COMPONENT_STATE.value.bad_measurement:
+                solara.Error("This measurement seems to be too large/small. Make sure you are appropriately zoomed in on the galaxy and are measuring the full size.")
 
             with rv.Col(cols=6, offset=3):
                 if COMPONENT_STATE.value.current_step_at_or_after(Marker.ang_siz5a):
@@ -658,7 +686,13 @@ def Page():
                     if len(LOCAL_STATE.value.example_measurements) > 0:
                         example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
                         example_measurements_glue.style.color = "red"
-                        example_measurements_glue = GLOBAL_STATE.value.add_or_update_data(example_measurements_glue)
+                        if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                            existing = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                            existing.update_values_from_data(example_measurements_glue)
+                            example_measurements_glue = existing
+                        else:
+                            gjapp.data_collection.append(example_measurements_glue)
+                            example_measurements_glue = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
 
                         egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
                         add_link(egsd, DB_ANGSIZE_FIELD, example_measurements_glue,"ang_size_value")

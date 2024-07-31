@@ -59,6 +59,7 @@ class ComponentState(BaseComponentState, BaseState):
     meas_theta: float = 0.0
     ruler_click_count: int = 0
     n_meas: int = 0
+    bad_measurement: bool = False
     distances_total: int = 0
     
     show_dotplot_lines: bool = True
