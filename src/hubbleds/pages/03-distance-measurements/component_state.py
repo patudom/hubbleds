@@ -101,6 +101,10 @@ class ComponentState(BaseComponentState, BaseState):
         return (
             bool(self.dosdonts_tutorial_opened)
         )
+    
+    @property
+    def fil_rem1_gate(self):
+        return self.angular_sizes_total >=5
 
     @property
     def end_sta3_gate(self):

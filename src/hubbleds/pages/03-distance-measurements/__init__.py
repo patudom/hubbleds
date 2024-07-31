@@ -270,7 +270,6 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.ang_siz2b),
             )
             ScaffoldAlert(
-                # TODO This will need to be wired up once measuring tool is implemented
                 GUIDELINE_ROOT / "GuidelineAngsizeMeas3.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -278,7 +277,6 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.ang_siz3),
             )
             ScaffoldAlert(
-                # TODO This will need to be wired up once measuring tool is implemented
                 GUIDELINE_ROOT / "GuidelineAngsizeMeas4.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -397,7 +395,6 @@ def Page():
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
             ScaffoldAlert(
-                # TODO This will need to be wired up once table is implemented
                 GUIDELINE_ROOT / "GuidelineChooseRow1.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -429,7 +426,6 @@ def Page():
                 },
             )
             ScaffoldAlert(
-                # TODO This will need to be wired up once measuring tool is implemented
                 GUIDELINE_ROOT / "GuidelineEstimateDistance3.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -476,6 +472,12 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.rep_rem1),
                 scroll_on_mount=False,
+                state_view={
+                    "angular_sizes_total": COMPONENT_STATE.value.angular_sizes_total,
+
+                    # TODO: will need to fix this once we have an angular size measurement guard.
+                    "bad_angsize": False
+                }
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
