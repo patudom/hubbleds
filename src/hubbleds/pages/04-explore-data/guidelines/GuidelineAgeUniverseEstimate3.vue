@@ -14,9 +14,9 @@
       class="mb-4"
       v-intersect="typesetMathJax"
     >
-    <v-card color="error" class="mb-4">
-        <v-card-text>
-          These values need to go into the table<br> 
+    <v-card color="alert" class="mb-4">
+        <v-card-text style="color: blue;">
+          Your Best Fit Galaxy values:<br> 
           distance: {{ state_view.hypgal_distance }} Mpc <br>
           velocity: {{ state_view.hypgal_velocity }} km/s
         </v-card-text>

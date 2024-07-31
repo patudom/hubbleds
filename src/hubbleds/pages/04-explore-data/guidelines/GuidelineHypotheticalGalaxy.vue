@@ -14,7 +14,7 @@
       <!-- we have two values state_view.hypgal_distance and state_view.hypgal_velocity. display these nicely, not as an equation -->
       <v-card color="alert" class="mb-4">
         <v-card-text style="font-weight: bold; color: blue;">
-          You best fit galaxy is at<br>
+          Your best fit galaxy is at<br>
           Distance: {{ state_view.hypgal_distance }} Mpc<br>
           Velocity: {{ state_view.hypgal_velocity }} km/s
         </v-card-text>
