@@ -688,7 +688,11 @@ def Page():
                     step=COMPONENT_STATE.value.dotplot_tutorial_state.step,
                     length=COMPONENT_STATE.value.dotplot_tutorial_state.length,
                     max_step_completed=COMPONENT_STATE.value.dotplot_tutorial_state.max_step_completed,
-                    dotplot_viewer=DotplotViewer(gjapp, data = tut_viewer_data, component_id=DB_VELOCITY_FIELD,  vertical_line_visible=False),
+                    dotplot_viewer=DotplotViewer(gjapp,
+                                                 data=tut_viewer_data,
+                                                 component_id=DB_VELOCITY_FIELD,
+                                                 vertical_line_visible=False,
+                                                 unit="km / s"),
                     event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
                         True
                     ),
@@ -703,7 +707,11 @@ def Page():
                         ]
                     else:
                         viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
-                    return DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD, vertical_line_visible=False)
+                    return DotplotViewer(gjapp,
+                                         data=viewer_data,
+                                         component_id=DB_VELOCITY_FIELD,
+                                         vertical_line_visible=False,
+                                         unit="km / s")
                 
                 
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:

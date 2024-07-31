@@ -29,7 +29,8 @@ def DotplotViewer(
     on_click_callback = None, 
     line_marker_at: Optional[Reactive | int | float] = Reactive(None), 
     line_marker_color = 'red', 
-    vertical_line_visible: Union[Reactive[bool], bool] = Reactive(True)
+    vertical_line_visible: Union[Reactive[bool], bool] = Reactive(True),
+    unit: Optional[str] = None,
     ):
     
     """
@@ -52,7 +53,7 @@ def DotplotViewer(
     - `line_marker_at`: The value at which the vertical line marker should be placed (passed value is displayed)
     - `line_marker_color`: The color of the vertical line marker (default: 'red')
     - `vertical_line_visible`: Whether the vertical line marker should be visible (default: True)
-    
+    - `unit`: The unit for the x-axis values, used in the label for the vertical line (default: None)
     
     
     """
@@ -109,6 +110,7 @@ def DotplotViewer(
             
             dotplot_view: HubbleDotPlotViewer = gjapp.new_data_viewer(
                 HubbleDotPlotView, data=viewer_data, show=False)
+
             
             if component_id is not None:
                 dotplot_view.state.x_att = viewer_data.id[component_id]
@@ -118,7 +120,19 @@ def DotplotViewer(
                     for viewer_data in data[1:]:
                         dotplot_view.add_data(viewer_data)
             
+            for layer in dotplot_view.layers:
+                for trace in layer.traces():
+                    trace.update(hoverinfo="skip", hovertemplate=None)
+
+            for layer in dotplot_view.layers:
+                original_update_data = layer._update_data
+                def no_hover_update():
+                    original_update_data()
+                    for trace in layer.traces():
+                        trace.update(hoverinfo="skip", hovertemplate=None)
+                layer._update_data = no_hover_update
             
+
             # override the default selection layer
             def new_update_selection(self=dotplot_view):
                 state = cast(DotPlotViewerState, self.state)
@@ -193,6 +207,8 @@ def DotplotViewer(
                 
             dotplot_view.figure.update_layout(clickmode="event", hovermode="closest", showlegend=False)
             dotplot_view.selection_layer.on_click(on_click)
+            unit_str = f" {unit}" if unit else ""
+            dotplot_view.selection_layer.update(hovertemplate=f"%{{x:,.0f}}{unit_str}<extra></extra>")
             dotplot_view.set_selection_active(True)
             # special treatment for go.Heatmap from https://stackoverflow.com/questions/58630928/how-to-hide-the-colorbar-and-legend-in-plotly-express-bar-graph#comment131880779_68555667
             dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0, coloraxis='coloraxis')
