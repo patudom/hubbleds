@@ -122,7 +122,10 @@ def SpectrumViewer(
         fig = px.line(spec_data_task.value, x="wave", y="flux")
 
         fig.update_layout(
-            margin=dict(l=0, r=10, t=10, b=0), yaxis=dict(fixedrange=True)
+            margin=dict(l=0, r=10, t=10, b=0), 
+            yaxis=dict(fixedrange=True),
+            xaxis_title="Wavelength (Angstroms)", 
+            yaxis_title="Brightness"
         )
 
         fig.add_vline(

@@ -692,7 +692,11 @@ def Page():
                                                  data=tut_viewer_data,
                                                  component_id=DB_VELOCITY_FIELD,
                                                  vertical_line_visible=False,
-                                                 unit="km / s"),
+                                                 unit="km / s",
+                                                 x_label="Velocity (km/s)",
+                                                 y_label="Number"
+                                                 ),
+                                                 
                     event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
                         True
                     ),
@@ -711,7 +715,9 @@ def Page():
                                          data=viewer_data,
                                          component_id=DB_VELOCITY_FIELD,
                                          vertical_line_visible=False,
-                                         unit="km / s")
+                                         unit="km / s",
+                                         x_label="Velocity (km/s)",
+                                         y_label="Number")
                 
                 
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
