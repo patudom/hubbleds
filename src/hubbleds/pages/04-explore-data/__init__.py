@@ -91,7 +91,7 @@ def Page():
             "Velocity (km/hr)": [4, 8, 10],
         })
         race_data = GLOBAL_STATE.value.add_or_update_data(race_data)
-        race_data.style.color = "#ff0"
+        race_data.style.color = "#f00"
         race_data.style.alpha = 1
         race_data.style.markersize = 10
         race_viewer.add_data(race_data)
