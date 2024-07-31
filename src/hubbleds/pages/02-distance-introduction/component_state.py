@@ -11,7 +11,6 @@ class Marker(enum.Enum, BaseMarker):
 class DistanceSlideshow(BaseModel):
     step: int = 0
     max_step_completed: int = 0
-    complete: bool = False
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.mea_dis1

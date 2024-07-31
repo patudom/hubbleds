@@ -45,6 +45,7 @@ class Marker(enum.Enum, BaseMarker):
     two_his4 = enum.auto() # MC histogram-distribution
     two_his5 = enum.auto()
     mor_dat1 = enum.auto()
+    end_sta5 = enum.auto() # This avoids the last guideline "next" being locked by the can_transition logic.
 
 
 class UncertaintyState(BaseModel):

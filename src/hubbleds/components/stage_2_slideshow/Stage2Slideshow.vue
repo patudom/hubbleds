@@ -850,10 +850,9 @@
         class="black--text"
         depressed
         @click="() => {
-          slideshow_finished();
           set_step(0)
+          slideshow_finished();
           //this.$refs.synth.stopSpeaking();
-          // TODO: this should advance to Stage 3
         }"
       >
         get started
@@ -881,7 +880,6 @@ module.exports = {
     step(newStep, oldStep) {
       const isInteractStep = this.interact_steps.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
-      // FIX: change this to a callback
       this.set_max_step_completed(Math.max(this.max_step_completed, newCompleted));
     },
   },

@@ -454,7 +454,9 @@ def Page():
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
                 show=COMPONENT_STATE.value.is_current_step(Marker.ref_vel1),
+                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, "reflect_vel_value"), 'score_tag': 'reflect_vel_value'},
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
@@ -529,11 +531,12 @@ def Page():
                     show_select=COMPONENT_STATE.value.current_step_at_or_after(
                         Marker.cho_row1
                     ),
-                    show_velocity_button=COMPONENT_STATE.value.is_current_step(
+                    button_icon="mdi-run-fast",
+                    show_button=COMPONENT_STATE.value.is_current_step(
                         Marker.dop_cal6
                     ),
                     event_on_row_selected=_on_table_row_selected,
-                    event_calculate_velocity=lambda _: _on_calculate_velocity(),
+                    event_on_button_pressed=lambda _: _on_calculate_velocity(),
                 )
 
     with rv.Row():

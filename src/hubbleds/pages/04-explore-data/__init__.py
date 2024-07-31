@@ -45,6 +45,7 @@ async def load_class_data():
 @solara.component
 def Page():
     loaded_component_state = solara.use_reactive(False)
+    router = solara.use_router()
 
     async def _load_component_state():
         # Load stored component state from database, measurement data is
@@ -212,7 +213,6 @@ def Page():
                 }
             )
             ScaffoldAlert(
-                # TODO: This will need to be wired up once viewer is implemented
                 GUIDELINE_ROOT / "GuidelineTrendsData2.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -251,7 +251,6 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.tre_lin1),               
             )
             ScaffoldAlert(
-                # TODO This will need to be wired up once linedraw tool is implemented
                 GUIDELINE_ROOT / "GuidelineTrendLinesDraw2.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -259,7 +258,6 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.tre_lin2),
             )
             ScaffoldAlert(
-                # TODO This will need to be wired up once best fit line tool is implemented
                 GUIDELINE_ROOT / "GuidelineBestFitLine.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -312,7 +310,6 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.you_age1),
             )
             ScaffoldAlert(
-                # TODO - add free response functionality
                 GUIDELINE_ROOT / "GuidelineShortcomingsEstReflect1.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -327,7 +324,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",
-                # TODO: event_next_callback should go to next stage but I don't know how to set that up.
+                event_next_callback=lambda _: router.push("05-class-results-uncertainty"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),

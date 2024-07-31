@@ -152,7 +152,7 @@ mjx-mstyle {
 
 
 <script>
-module.exports = {
+export default {
   data: () => ({
     state_view: {
       failed_validation_4: false
@@ -161,7 +161,9 @@ module.exports = {
   methods: {
     typesetMathJax(entries, _observer, intersecting) {
       if (intersecting) {
-        MathJax.typesetPromise(entries.map(entry => entry.target));
+        this.$nextTick(() => {
+          MathJax.typesetPromise(entries.map(entry => entry.target));
+        });
       }
     },
 
