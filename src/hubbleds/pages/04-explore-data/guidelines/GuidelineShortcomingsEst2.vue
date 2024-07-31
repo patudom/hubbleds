@@ -1,9 +1,11 @@
 <template>
   <scaffold-alert
+    next-text="Stage 5"
     title-text="Shortcomings in Your Estimate"
+    @next="next_callback()"
     @back="back_callback()"
+    :can-advance="can_advance"
   >
-  <!-- state.marker = 'ran_var1'; -->
     <div
       class="mb-4"
     >
