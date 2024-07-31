@@ -740,6 +740,8 @@ def Page():
                                             line_marker_at=Ref(COMPONENT_STATE.fields.distance_line),
                                             on_click_callback=set_angular_size_line,
                                             unit="Mpc",
+                                            x_label="Distance (Mpc)",
+                                            y_label="Number",
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
                             DotplotViewer(gjapp, 
@@ -752,6 +754,8 @@ def Page():
                                                 line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
                                                 on_click_callback=set_distance_line,
                                                 unit="arcsec",
+                                                x_label="Angular Size (arcsec)",
+                                                y_label="Number",
                                                 )
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")

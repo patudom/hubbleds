@@ -25,12 +25,14 @@ def DotplotViewer(
     data=None, 
     component_id=None, 
     title = None, 
-    height=400, 
+    height=300, 
     on_click_callback = None, 
     line_marker_at: Optional[Reactive | int | float] = Reactive(None), 
     line_marker_color = 'red', 
     vertical_line_visible: Union[Reactive[bool], bool] = Reactive(True),
     unit: Optional[str] = None,
+    x_label: Optional[str] = None,
+    y_label: Optional[str] = None
     ):
     
     """
@@ -54,7 +56,8 @@ def DotplotViewer(
     - `line_marker_color`: The color of the vertical line marker (default: 'red')
     - `vertical_line_visible`: Whether the vertical line marker should be visible (default: True)
     - `unit`: The unit for the x-axis values, used in the label for the vertical line (default: None)
-    
+    - `x_label`: x_label (Optional[str]): The label for the x-axis of the dot plot. If None, the label will be the name of the x attribute.
+    - `y_label`: y_label (Optional[str]): The label for the y-axis of the dot plot. If None, the label will be the name of the y attribute.
     
     """
     
@@ -69,7 +72,7 @@ def DotplotViewer(
             rv.Spacer()
             toolbar_container = rv.Html(tag="div")
 
-        viewer_container = rv.Html(tag="div", style_=f"width: 100%; height: {height}px")
+        viewer_container = rv.Html(tag="div", style_=f"width: 100%; height: {height}px", class_="mb-4")
         
         def _line_ids_for_viewer(viewer: PlotlyBaseView):
             line_ids = []
@@ -143,7 +146,12 @@ def DotplotViewer(
                 self.selection_layer.update(x0=x0 - dx, dx=dx, y0=y0, dy=dy)
 
             dotplot_view._update_selection_layer_bounds = new_update_selection
-                
+
+            if x_label is not None:    
+                dotplot_view.state.x_axislabel = x_label
+
+            if y_label is not None:    
+                dotplot_view.state.y_axislabel = y_label
 
             
             line_ids = [] #[_line_ids_for_viewer(dotplot_view)]
