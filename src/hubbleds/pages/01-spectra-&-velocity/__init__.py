@@ -222,7 +222,8 @@ def Page():
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
 
-    solara.Button(label="Fill data points", on_click=_fill_data_points)
+    if (GLOBAL_STATE.value.show_team_interface):
+        solara.Button(label="Fill data points", on_click=_fill_data_points)
     
 
     def num_bad_velocities():
@@ -330,6 +331,14 @@ def Page():
                         )
                     ]
                 )
+                
+                
+            total_galaxies = Ref(COMPONENT_STATE.fields.total_galaxies)
+            def advance_on_total_galaxies(value):
+                if COMPONENT_STATE.value.current_step == Marker.sel_gal2:
+                    if value == 1:
+                        transition_to(COMPONENT_STATE, Marker.sel_gal3)
+            total_galaxies.subscribe(advance_on_total_galaxies)
 
             def _galaxy_selected_callback(galaxy_data: GalaxyData | None):
                 if galaxy_data is None:
@@ -596,7 +605,12 @@ def Page():
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq8),
+                state_view={
+                    "mc_score": get_multiple_choice(LOCAL_STATE, "vel_meas_consensus"),
+                    "score_tag": "vel_meas_consensus",
+                },
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotSequence09.vue",

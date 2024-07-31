@@ -222,9 +222,10 @@ def Page():
                             }
                         )
                 )
+                count.set(count.value + 1)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
-        count.set(count.value + 1)
+   
         
         
             
@@ -539,7 +540,7 @@ def Page():
                     put_measurements(samples=False)
                     distances_total.set(count)
 
-                if COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1):
+                if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
                     solara.Button("Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances())
 
 

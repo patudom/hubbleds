@@ -91,7 +91,7 @@ def Page():
             "Velocity (km/hr)": [4, 8, 10],
         })
         race_data = GLOBAL_STATE.value.add_or_update_data(race_data)
-        race_data.style.color = "#111111"
+        race_data.style.color = "#f00"
         race_data.style.alpha = 1
         race_data.style.markersize = 10
         race_viewer.add_data(race_data)
@@ -284,6 +284,10 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.hyp_gal1),
+                state_view={
+                    "hypgal_distance": COMPONENT_STATE.value.best_fit_gal_dist,
+                    "hypgal_velocity": COMPONENT_STATE.value.best_fit_gal_vel,
+                }
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAgeRaceEquation.vue",

@@ -25,9 +25,10 @@
             ]" 
           :correct-answers="[1]"
           :neutral-answers="[0, 2]"
-          @select="(opt) => { if (opt.correct) { $emit('ready'); } }"
-          score-tag="vel_meas_consensus">
-            >
+          :score-tag="state_view.score_tag"
+          @mc-emit="mc_callback($event)"
+          :initialization="state_view.mc_score"
+          >
           </mc-radiogroup>
     </div>
   </scaffold-alert>

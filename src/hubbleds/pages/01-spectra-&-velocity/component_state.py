@@ -7,6 +7,8 @@ from hubbleds.base_component_state import BaseComponentState
 import solara
 from typing import Any
 
+from hubbleds.state import LOCAL_STATE
+
 
 class Marker(enum.Enum, BaseMarker):
     mee_gui1 = enum.auto()
@@ -173,6 +175,10 @@ class ComponentState(BaseComponentState, BaseState):
     @property
     def dot_seq1_gate(self) -> bool:
         return self.dotplot_tutorial_finished
+    
+    @property
+    def dot_seq9_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("vel_meas_consensus")
 
     @property
     def ref_dat1_gate(self) -> bool:
