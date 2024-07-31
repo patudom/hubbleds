@@ -656,13 +656,10 @@ def Page():
 
                 def add_example_measurements_to_glue():
                     if len(LOCAL_STATE.value.example_measurements) > 0:
-                        if EXAMPLE_GALAXY_MEASUREMENTS not in gjapp.data_collection:
-                            example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
-                            example_measurements_glue.style.color = "red"
-                            gjapp.data_collection.append(example_measurements_glue)
-                        else:
-                            example_measurements_glue = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-                            example_measurements_glue.style.color = "red"
+                        example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
+                        example_measurements_glue.style.color = "red"
+                        example_measurements_glue = GLOBAL_STATE.value.add_or_update_data(example_measurements_glue)
+
                         egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
                         add_link(egsd, DB_ANGSIZE_FIELD, example_measurements_glue,"ang_size_value")
                         add_link(egsd, DB_DISTANCE_FIELD, example_measurements_glue,"est_dist_value")
@@ -704,22 +701,23 @@ def Page():
                                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA], 
                                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
                                             ],
-                                            component_id="ang_size_value",
-                                            vertical_line_visible=show_dotplot_lines,
-                                            line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
-                                            on_click_callback=set_distance_line
-                                            )
-                        if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
-                            DotplotViewer(gjapp, 
-                                        data = [
-                                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA], 
-                                            gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-                                            ],
                                             component_id="est_dist_value",
                                             vertical_line_visible=show_dotplot_lines,
                                             line_marker_at=Ref(COMPONENT_STATE.fields.distance_line),
                                             on_click_callback=set_angular_size_line
                                             )
+                        if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
+                            DotplotViewer(gjapp, 
+                                            data = [
+                                                gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA], 
+                                                gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                                                ],
+                                                component_id="ang_size_value",
+                                                vertical_line_visible=show_dotplot_lines,
+                                                line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
+                                                on_click_callback=set_distance_line
+                                                )
+                            
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")
                         pass

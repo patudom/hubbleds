@@ -148,6 +148,54 @@ def Page():
         _load_spectrum,
         dependencies=[COMPONENT_STATE.value.selected_galaxy],
     )
+    
+    def add_link(from_dc_name, from_att, to_dc_name, to_att):
+        if isinstance(from_dc_name, Data):
+            from_dc = from_dc_name
+        else:
+            from_dc = gjapp.data_collection[from_dc_name]
+
+        if isinstance(to_dc_name, Data):
+            to_dc = to_dc_name
+        else:
+            to_dc = gjapp.data_collection[to_dc_name]
+        gjapp.add_link(from_dc, from_att, to_dc, to_att)
+    
+
+    def add_example_measurements_to_glue():
+        print('in add_example_measurements_to_glue')
+        if len(LOCAL_STATE.value.example_measurements) > 0:
+            print('has example measurements')
+            example_measurements_glue = measurement_list_to_glue_data(
+                LOCAL_STATE.value.example_measurements,
+                label=EXAMPLE_GALAXY_MEASUREMENTS,
+            )
+            example_measurements_glue.style.color = "red"
+            if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                existing = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                existing.update_values_from_data(example_measurements_glue)
+                use_this = existing
+            else:
+                gjapp.data_collection.append(example_measurements_glue)
+                use_this = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+            use_this.style.color = "red"
+    
+            egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+            add_link(
+                egsd,
+                DB_VELOCITY_FIELD,
+                use_this,
+                "velocity_value",
+            )
+            add_link(
+                egsd,
+                DB_MEASWAVE_FIELD,
+                use_this,
+                "obs_wave_value",
+            )
+
+    add_example_measurements_to_glue()
+
 
     # solara.Text(f"{GLOBAL_STATE.value.dict()}")
     # solara.Text(f"{LOCAL_STATE.value.dict()}")
@@ -560,6 +608,8 @@ def Page():
                             update={"velocity_value": round(value)}
                         )
                     )
+                    
+                    add_example_measurements_to_glue()
 
                 DopplerSlideshow(
                     dialog=COMPONENT_STATE.value.show_doppler_dialog,
@@ -582,6 +632,7 @@ def Page():
                     event_set_failed_validation_5=validation_5_failed.set,
                     event_set_max_step_completed_5=max_step_completed_5.set,
                     event_set_student_vel_calc=velocity_calculated.set,
+                    event_set_student_vel=_velocity_calculated_callback,
                     event_set_student_c=student_c.set,
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
@@ -593,74 +644,40 @@ def Page():
                     },
                 )
 
-            if COMPONENT_STATE.value.current_step_between(
-                Marker.int_dot1, Marker.dot_seq14
-            ):
+            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14):
                 dotplot_tutorial_finished = Ref(
                     COMPONENT_STATE.fields.dotplot_tutorial_finished
                 )
-
+                
+                tut_viewer_data = None
+                if EXAMPLE_GALAXY_SEED_DATA in gjapp.data_collection:
+                    tut_viewer_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
                 DotplotTutorialSlideshow(
                     dialog=COMPONENT_STATE.value.show_dotplot_tutorial_dialog,
                     step=COMPONENT_STATE.value.dotplot_tutorial_state.step,
                     length=COMPONENT_STATE.value.dotplot_tutorial_state.length,
                     max_step_completed=COMPONENT_STATE.value.dotplot_tutorial_state.max_step_completed,
-                    dotplot_viewer=DotplotViewer(gjapp),
+                    dotplot_viewer=DotplotViewer(gjapp, data = tut_viewer_data, component_id=DB_VELOCITY_FIELD,  vertical_line_visible=False),
                     event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
                         True
                     ),
                 )
 
-                def add_link(from_dc_name, from_att, to_dc_name, to_att):
-                    if isinstance(from_dc_name, Data):
-                        from_dc = from_dc_name
+                                
+                def create_dotplot_viewer():
+                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                        viewer_data = [
+                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
+                            gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
+                        ]
                     else:
-                        from_dc = gjapp.data_collection[from_dc_name]
-
-                    if isinstance(to_dc_name, Data):
-                        to_dc = to_dc_name
-                    else:
-                        to_dc = gjapp.data_collection[to_dc_name]
-                    gjapp.add_link(from_dc, from_att, to_dc, to_att)
-
-                def add_example_measurements_to_glue():
-                    if len(LOCAL_STATE.value.example_measurements) > 0:
-                        if EXAMPLE_GALAXY_MEASUREMENTS not in gjapp.data_collection:
-                            example_measurements_glue = measurement_list_to_glue_data(
-                                LOCAL_STATE.value.example_measurements,
-                                label=EXAMPLE_GALAXY_MEASUREMENTS,
-                            )
-                            example_measurements_glue.style.color = "red"
-                            gjapp.data_collection.append(example_measurements_glue)
-                        else:
-                            example_measurements_glue = gjapp.data_collection[
-                                EXAMPLE_GALAXY_MEASUREMENTS
-                            ]
-                            example_measurements_glue.style.color = "red"
-
-                        egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                        add_link(
-                            egsd,
-                            DB_VELOCITY_FIELD,
-                            example_measurements_glue,
-                            "velocity_value",
-                        )
-                        add_link(
-                            egsd,
-                            DB_MEASWAVE_FIELD,
-                            example_measurements_glue,
-                            "obs_wave_value",
-                        )
-
-                add_example_measurements_to_glue()
+                        viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
+                    return DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD, vertical_line_visible=False)
+                
+                
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                    viewer_data = [
-                        gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
-                        gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                    ]
-                else:
-                    viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
-                DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD)
+                    add_example_measurements_to_glue() # make sure updated measurements are in glue
+                    create_dotplot_viewer()
 
             if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
                 show_reflection_dialog = Ref(
