@@ -604,7 +604,12 @@ def Page():
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq8),
+                state_view={
+                    "mc_score": get_multiple_choice(LOCAL_STATE, "vel_meas_consensus"),
+                    "score_tag": "vel_meas_consensus",
+                },
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotSequence09.vue",
