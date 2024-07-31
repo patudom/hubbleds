@@ -101,6 +101,7 @@ def Page():
     
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
+    router = solara.use_router()
     
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -478,17 +479,22 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
-                # event_next_callback should go to next stage but I don't know how to set that up.
+                event_next_callback=lambda _: router.push("04-explore-data"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.fil_rem1),
+                state_view={
+                    "distances_total": COMPONENT_STATE.value.distances_total
+                }
             )
 
         with rv.Col():
             with rv.Card(class_="pa-0 ma-0", elevation=0):
 
-                def fill_galaxy_distances():
+                distances_total = Ref(COMPONENT_STATE.fields.distances_total)  
+
+                def fill_galaxy_distances(): 
                     dataset = LOCAL_STATE.value.measurements
-                    print('Filling galaxy distances')
                     count = 0
                     has_ang_size = all(measurement.ang_size_value is not None for measurement in dataset)
                     if not has_ang_size:
@@ -501,6 +507,7 @@ def Page():
                             logger.info(f"Galaxy {measurement.galaxy_id} has no angular size")
                     print(f"Filled {count} distances")
                     put_measurements(samples=False)
+                    distances_total.set(count)
 
                 if COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1):
                     solara.Button("Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances())
@@ -560,8 +567,9 @@ def Page():
                         "highlighted": False,  # TODO: Set the markers for this,
                         "event_on_row_selected": update_galaxy,
                         "show_select": True,
-                        "show_velocity_button": COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1),
-                        "event_calculate_velocity": lambda _: fill_galaxy_distances()
+                        "button_icon": "mdi-tape-measure",
+                        "show_button": COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1),
+                        "event_on_button_pressed": lambda _: fill_galaxy_distances()
                     }
 
                 DataTable(**table_kwargs.value)
