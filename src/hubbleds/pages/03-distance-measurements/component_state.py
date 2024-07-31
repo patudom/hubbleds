@@ -42,6 +42,7 @@ class Marker(enum.Enum, BaseMarker):
     # dot_seq7 = enum.auto()
     rep_rem1 = enum.auto()
     fil_rem1 = enum.auto()
+    end_sta3 = enum.auto() #This guideline doesn't actually exist - just including it to allow an exit gate on the previous guideline.
 
 
 
@@ -58,6 +59,7 @@ class ComponentState(BaseComponentState, BaseState):
     meas_theta: float = 0.0
     ruler_click_count: int = 0
     n_meas: int = 0
+    distances_total: int = 0
     
     show_dotplot_lines: bool = True
     angular_size_line: Optional[float | int] = None
@@ -99,6 +101,13 @@ class ComponentState(BaseComponentState, BaseState):
         return (
             bool(self.dosdonts_tutorial_opened)
         )
+    
+    @property
+    def fil_rem1_gate(self):
+        return self.angular_sizes_total >=5
 
+    @property
+    def end_sta3_gate(self):
+        return self.distances_total >= 5
 
 COMPONENT_STATE = solara.reactive(ComponentState())

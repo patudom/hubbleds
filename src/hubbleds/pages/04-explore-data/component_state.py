@@ -30,6 +30,7 @@ class Marker(enum.Enum, BaseMarker):
     you_age1 = enum.auto()
     sho_est1 = enum.auto()
     sho_est2 = enum.auto()
+    end_sta4 = enum.auto() # This avoids the last guideline "next" being locked by the can_transition logic.
 
 
 class HubbleSlideshow(BaseModel):
