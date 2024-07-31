@@ -330,6 +330,14 @@ def Page():
                         )
                     ]
                 )
+                
+                
+            total_galaxies = Ref(COMPONENT_STATE.fields.total_galaxies)
+            def advance_on_total_galaxies(value):
+                if COMPONENT_STATE.value.current_step == Marker.sel_gal2:
+                    if value == 1:
+                        transition_to(COMPONENT_STATE, Marker.sel_gal3)
+            total_galaxies.subscribe(advance_on_total_galaxies)
 
             def _galaxy_selected_callback(galaxy_data: GalaxyData | None):
                 if galaxy_data is None:
