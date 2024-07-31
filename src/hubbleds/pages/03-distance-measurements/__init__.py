@@ -185,8 +185,8 @@ def Page():
         
     solara.use_memo(_state_callback_setup)
 
-
-    StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API)
+    if (GLOBAL_STATE.value.show_team_interface):
+        StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API)
     
 
     def put_measurements(samples):
@@ -539,7 +539,7 @@ def Page():
                     put_measurements(samples=False)
                     distances_total.set(count)
 
-                if COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1):
+                if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
                     solara.Button("Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances())
 
 

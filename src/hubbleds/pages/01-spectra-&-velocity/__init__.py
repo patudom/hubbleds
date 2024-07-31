@@ -222,7 +222,8 @@ def Page():
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
 
-    solara.Button(label="Fill data points", on_click=_fill_data_points)
+    if (GLOBAL_STATE.value.show_team_interface):
+        solara.Button(label="Fill data points", on_click=_fill_data_points)
     
 
     def num_bad_velocities():
@@ -249,8 +250,8 @@ def Page():
                 num += 1
         obs_wave_total.set(num)
     
-
-    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
+    if (GLOBAL_STATE.value.show_team_interface):
+        StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
     with rv.Row():
         with rv.Col(cols=4):
