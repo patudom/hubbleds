@@ -3,7 +3,9 @@
   <scaffold-alert
     title-text="More Data and Narrow Distributions"
     next-text="stage 6"
+    @next="next_callback()"
     @back="back_callback()"
+    :can-advance="can_advance"
   >
     <div
       class="mb-4"

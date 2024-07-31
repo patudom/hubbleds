@@ -30,11 +30,19 @@
             ]" 
           :correct-answers="[1]"
           :wrong-answers="[0, 2]"
-          @select="(opt) => { if (opt.correct) { console.log('correct'); $emit('ready'); } }"
-          score-tag="reflect_vel_value">
+          :score-tag="state_view.score_tag"
+          @mc-emit="mc_callback($event)"
+          :initialization="state_view.mc_score"
             >
           </mc-radiogroup>
     </div>
   </scaffold-alert>
 </template>
-
+<script>
+module.exports = {
+  data() {
+    return {
+    };
+  },
+};
+</script>

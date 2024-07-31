@@ -53,6 +53,10 @@ def selected_example_measurement():
 def selected_measurement():
     return LOCAL_STATE.value.get_measurement(COMPONENT_STATE.value.selected_galaxy)
 
+def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
+    z_meas =  (measwave - restwave) / restwave
+    fractional_difference = (((z_meas - z) / z)** 2)**0.5
+    return fractional_difference > tolerance
 
 @solara.component
 def Page():
@@ -148,6 +152,54 @@ def Page():
         _load_spectrum,
         dependencies=[COMPONENT_STATE.value.selected_galaxy],
     )
+    
+    def add_link(from_dc_name, from_att, to_dc_name, to_att):
+        if isinstance(from_dc_name, Data):
+            from_dc = from_dc_name
+        else:
+            from_dc = gjapp.data_collection[from_dc_name]
+
+        if isinstance(to_dc_name, Data):
+            to_dc = to_dc_name
+        else:
+            to_dc = gjapp.data_collection[to_dc_name]
+        gjapp.add_link(from_dc, from_att, to_dc, to_att)
+    
+
+    def add_example_measurements_to_glue():
+        print('in add_example_measurements_to_glue')
+        if len(LOCAL_STATE.value.example_measurements) > 0:
+            print('has example measurements')
+            example_measurements_glue = measurement_list_to_glue_data(
+                LOCAL_STATE.value.example_measurements,
+                label=EXAMPLE_GALAXY_MEASUREMENTS,
+            )
+            example_measurements_glue.style.color = "red"
+            if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                existing = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                existing.update_values_from_data(example_measurements_glue)
+                use_this = existing
+            else:
+                gjapp.data_collection.append(example_measurements_glue)
+                use_this = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+            use_this.style.color = "red"
+    
+            egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+            add_link(
+                egsd,
+                DB_VELOCITY_FIELD,
+                use_this,
+                "velocity_value",
+            )
+            add_link(
+                egsd,
+                DB_MEASWAVE_FIELD,
+                use_this,
+                "obs_wave_value",
+            )
+
+    add_example_measurements_to_glue()
+
 
     # solara.Text(f"{GLOBAL_STATE.value.dict()}")
     # solara.Text(f"{LOCAL_STATE.value.dict()}")
@@ -171,6 +223,32 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
 
     solara.Button(label="Fill data points", on_click=_fill_data_points)
+    
+
+    def num_bad_velocities():
+        measurements = Ref(LOCAL_STATE.fields.measurements)
+        num = 0
+        for meas in measurements.value:
+            if meas.obs_wave_value is None or meas.rest_wave_value is None:
+                # Skip measurements with missing data cuz they have not been attempted
+                continue
+            elif is_wavelength_poorly_measured(meas.obs_wave_value, meas.rest_wave_value, meas.galaxy.z):
+                num += 1
+        
+        has_multiple_bad_velocities = Ref(COMPONENT_STATE.fields.has_multiple_bad_velocities)
+        has_multiple_bad_velocities.set(num > 1)
+        return num
+    
+    def set_obs_wave_total():
+        obs_wave_total = Ref(COMPONENT_STATE.fields.obs_wave_total)
+        measurements = LOCAL_STATE.value.measurements
+        num = 0
+        for meas in measurements:
+            print(meas)
+            if meas.obs_wave_value is not None:
+                num += 1
+        obs_wave_total.set(num)
+    
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -376,7 +454,9 @@ def Page():
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
                 show=COMPONENT_STATE.value.is_current_step(Marker.ref_vel1),
+                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, "reflect_vel_value"), 'score_tag': 'reflect_vel_value'},
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
@@ -451,11 +531,12 @@ def Page():
                     show_select=COMPONENT_STATE.value.current_step_at_or_after(
                         Marker.cho_row1
                     ),
-                    show_velocity_button=COMPONENT_STATE.value.is_current_step(
+                    button_icon="mdi-run-fast",
+                    show_button=COMPONENT_STATE.value.is_current_step(
                         Marker.dop_cal6
                     ),
                     event_on_row_selected=_on_table_row_selected,
-                    event_calculate_velocity=lambda _: _on_calculate_velocity(),
+                    event_on_button_pressed=lambda _: _on_calculate_velocity(),
                 )
 
     with rv.Row():
@@ -557,6 +638,8 @@ def Page():
                             update={"velocity_value": round(value)}
                         )
                     )
+                    
+                    add_example_measurements_to_glue()
 
                 DopplerSlideshow(
                     dialog=COMPONENT_STATE.value.show_doppler_dialog,
@@ -579,6 +662,7 @@ def Page():
                     event_set_failed_validation_5=validation_5_failed.set,
                     event_set_max_step_completed_5=max_step_completed_5.set,
                     event_set_student_vel_calc=velocity_calculated.set,
+                    event_set_student_vel=_velocity_calculated_callback,
                     event_set_student_c=student_c.set,
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
@@ -590,74 +674,48 @@ def Page():
                     },
                 )
 
-            if COMPONENT_STATE.value.current_step_between(
-                Marker.int_dot1, Marker.dot_seq14
-            ):
+            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14):
                 dotplot_tutorial_finished = Ref(
                     COMPONENT_STATE.fields.dotplot_tutorial_finished
                 )
-
+                
+                tut_viewer_data = None
+                if EXAMPLE_GALAXY_SEED_DATA in gjapp.data_collection:
+                    tut_viewer_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
                 DotplotTutorialSlideshow(
                     dialog=COMPONENT_STATE.value.show_dotplot_tutorial_dialog,
                     step=COMPONENT_STATE.value.dotplot_tutorial_state.step,
                     length=COMPONENT_STATE.value.dotplot_tutorial_state.length,
                     max_step_completed=COMPONENT_STATE.value.dotplot_tutorial_state.max_step_completed,
-                    dotplot_viewer=DotplotViewer(gjapp, unit="km / s"),
+                    dotplot_viewer=DotplotViewer(gjapp,
+                                                 data=tut_viewer_data,
+                                                 component_id=DB_VELOCITY_FIELD,
+                                                 vertical_line_visible=False,
+                                                 unit="km / s"),
                     event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
                         True
                     ),
                 )
 
-                def add_link(from_dc_name, from_att, to_dc_name, to_att):
-                    if isinstance(from_dc_name, Data):
-                        from_dc = from_dc_name
+                                
+                def create_dotplot_viewer():
+                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                        viewer_data = [
+                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
+                            gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
+                        ]
                     else:
-                        from_dc = gjapp.data_collection[from_dc_name]
-
-                    if isinstance(to_dc_name, Data):
-                        to_dc = to_dc_name
-                    else:
-                        to_dc = gjapp.data_collection[to_dc_name]
-                    gjapp.add_link(from_dc, from_att, to_dc, to_att)
-
-                def add_example_measurements_to_glue():
-                    if len(LOCAL_STATE.value.example_measurements) > 0:
-                        if EXAMPLE_GALAXY_MEASUREMENTS not in gjapp.data_collection:
-                            example_measurements_glue = measurement_list_to_glue_data(
-                                LOCAL_STATE.value.example_measurements,
-                                label=EXAMPLE_GALAXY_MEASUREMENTS,
-                            )
-                            example_measurements_glue.style.color = "red"
-                            gjapp.data_collection.append(example_measurements_glue)
-                        else:
-                            example_measurements_glue = gjapp.data_collection[
-                                EXAMPLE_GALAXY_MEASUREMENTS
-                            ]
-                            example_measurements_glue.style.color = "red"
-
-                        egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                        add_link(
-                            egsd,
-                            DB_VELOCITY_FIELD,
-                            example_measurements_glue,
-                            "velocity_value",
-                        )
-                        add_link(
-                            egsd,
-                            DB_MEASWAVE_FIELD,
-                            example_measurements_glue,
-                            "obs_wave_value",
-                        )
-
-                add_example_measurements_to_glue()
+                        viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
+                    return DotplotViewer(gjapp,
+                                         data=viewer_data,
+                                         component_id=DB_VELOCITY_FIELD,
+                                         vertical_line_visible=False,
+                                         unit="km / s")
+                
+                
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                    viewer_data = [
-                        gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
-                        gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                    ]
-                else:
-                    viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
-                DotplotViewer(gjapp, data=viewer_data, component_id=DB_VELOCITY_FIELD, unit="km / s")
+                    add_example_measurements_to_glue() # make sure updated measurements are in glue
+                    create_dotplot_viewer()
 
             if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
                 show_reflection_dialog = Ref(
@@ -832,11 +890,15 @@ def Page():
                                 COMPONENT_STATE.value.selected_example_galaxy
                             )
                         )
+                        if example_measurement_index is None:
+                            return
+                        
                         example_measurement = Ref(
                             LOCAL_STATE.fields.example_measurements[
                                 example_measurement_index
                             ]
                         )
+                        
                         example_measurement.set(
                             example_measurement.value.model_copy(
                                 update={"obs_wave_value": value}
@@ -887,20 +949,38 @@ def Page():
                         measurement_index = LOCAL_STATE.value.get_measurement_index(
                             COMPONENT_STATE.value.selected_galaxy
                         )
-                        measurement = Ref(
-                            LOCAL_STATE.fields.measurements[measurement_index]
+                        if measurement_index is None:
+                            return
+
+                        has_bad_velocities = Ref(
+                            COMPONENT_STATE.fields.has_bad_velocities
                         )
-                        measurement.set(
-                            measurement.value.model_copy(
-                                update={"obs_wave_value": value}
+                        is_bad = is_wavelength_poorly_measured(
+                            value,
+                            selected_measurement.value.rest_wave_value,
+                            selected_measurement.value.galaxy.z,
+                        )
+                        has_bad_velocities.set(is_bad)
+                        num_bad_velocities()
+
+                        if not is_bad:
+                            measurement = Ref(
+                                LOCAL_STATE.fields.measurements[measurement_index]
                             )
-                        )
+                            measurement.set(
+                                measurement.value.model_copy(
+                                    update={"obs_wave_value": value}
+                                )
+                            )
 
-                        obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
-                        obs_wave.set(value)
-
-                        obs_wave_total = Ref(COMPONENT_STATE.fields.obs_wave_total)
-                        obs_wave_total.set(obs_wave_total.value + 1)
+                            obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                            obs_wave.set(value)
+                            
+                            set_obs_wave_total()
+                            
+                            
+                        else:
+                            logger.info('Wavelength measurement is bad')
 
                     SpectrumViewer(
                         galaxy_data=(

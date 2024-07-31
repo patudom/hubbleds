@@ -15,6 +15,7 @@ logger = setup_logger("STAGE 2")
 @solara.component
 def Page():
     loaded_component_state = solara.use_reactive(False)
+    router = solara.use_router()
 
     async def _load_component_state():
         # Load stored component state from database, measurement data is
@@ -44,9 +45,6 @@ def Page():
     )
     max_step_completed = Ref(
         COMPONENT_STATE.fields.distance_slideshow_state.max_step_completed
-    )
-    slideshow_finished = Ref(
-        COMPONENT_STATE.fields.distance_slideshow_state.complete
     )
 
     Stage2Slideshow(
@@ -84,6 +82,6 @@ def Page():
                 ), 
             "score_tag_2": "how-much-closer-galaxies",
         },
-        event_slideshow_finished=lambda _: slideshow_finished.set(True),
+        event_slideshow_finished=lambda _: router.push("03-distance-measurements"),
         debug = LOCAL_STATE.value.debug_mode,
     )
