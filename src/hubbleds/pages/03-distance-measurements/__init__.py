@@ -691,22 +691,23 @@ def Page():
                                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA], 
                                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
                                             ],
-                                            component_id="ang_size_value",
-                                            vertical_line_visible=show_dotplot_lines,
-                                            line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
-                                            on_click_callback=set_distance_line
-                                            )
-                        if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
-                            DotplotViewer(gjapp, 
-                                        data = [
-                                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA], 
-                                            gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-                                            ],
                                             component_id="est_dist_value",
                                             vertical_line_visible=show_dotplot_lines,
                                             line_marker_at=Ref(COMPONENT_STATE.fields.distance_line),
                                             on_click_callback=set_angular_size_line
                                             )
+                        if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
+                            DotplotViewer(gjapp, 
+                                            data = [
+                                                gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA], 
+                                                gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                                                ],
+                                                component_id="ang_size_value",
+                                                vertical_line_visible=show_dotplot_lines,
+                                                line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
+                                                on_click_callback=set_distance_line
+                                                )
+                            
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")
                         pass
