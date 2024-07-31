@@ -411,20 +411,21 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq12),
-                event_remeasure_example_galaxy=lambda _: transition_to(
-                    COMPONENT_STATE, Marker.dot_seq13, force=True
-                ),
-                event_continue_to_galaxies=lambda _: transition_to(
-                    COMPONENT_STATE, Marker.rem_gal1, force=True
-                ),
+                # event_remeasure_example_galaxy=lambda _: transition_to(
+                #     COMPONENT_STATE, Marker.dot_seq13, force=True
+                # ),
+                # event_continue_to_galaxies=lambda _: transition_to(
+                #     COMPONENT_STATE, Marker.rem_gal1, force=True
+                # ),
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence13.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13),
-            )
+            # Skip for now since we aren't offering 2nd measurement.
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotSequence13.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13),
+            # )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRemainingGals.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -472,7 +473,7 @@ def Page():
 
         with rv.Col(cols=8):
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-                Marker.cho_row1, Marker.dot_seq14
+                Marker.cho_row1, Marker.dot_seq12 # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
             )
 
             if show_example_data_table:
@@ -674,7 +675,7 @@ def Page():
                     },
                 )
 
-            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14):
+            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq12): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
                 dotplot_tutorial_finished = Ref(
                     COMPONENT_STATE.fields.dotplot_tutorial_finished
                 )
@@ -866,7 +867,7 @@ def Page():
             show_example_spectrum = COMPONENT_STATE.value.current_step_between(
                 Marker.mee_spe1, Marker.che_mea1
             ) or COMPONENT_STATE.value.current_step_between(
-                Marker.dot_seq4, Marker.dot_seq14
+                Marker.dot_seq4, Marker.dot_seq12 # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
             )
 
             show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(
