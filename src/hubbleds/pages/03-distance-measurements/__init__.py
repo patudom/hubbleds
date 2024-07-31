@@ -676,7 +676,13 @@ def Page():
                     if len(LOCAL_STATE.value.example_measurements) > 0:
                         example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
                         example_measurements_glue.style.color = "red"
-                        example_measurements_glue = GLOBAL_STATE.value.add_or_update_data(example_measurements_glue)
+                        if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                            existing = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                            existing.update_values_from_data(example_measurements_glue)
+                            example_measurements_glue = existing
+                        else:
+                            gjapp.data_collection.append(example_measurements_glue)
+                            example_measurements_glue = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
 
                         egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
                         add_link(egsd, DB_ANGSIZE_FIELD, example_measurements_glue,"ang_size_value")
