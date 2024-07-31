@@ -52,7 +52,7 @@ class ComponentState(BaseComponentState, BaseState):
     
     example_angular_sizes_total: int = 0
     angular_sizes_total: int = 0
-    dosdonts_tutorial_opened: bool = True
+    dosdonts_tutorial_opened: bool = False
     selected_galaxy: dict = {}
     selected_example_galaxy: dict = {}
     show_ruler: bool = False
