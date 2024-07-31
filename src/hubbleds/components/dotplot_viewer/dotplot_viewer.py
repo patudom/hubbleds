@@ -109,6 +109,7 @@ def DotplotViewer(
             
             dotplot_view: HubbleDotPlotViewer = gjapp.new_data_viewer(
                 HubbleDotPlotView, data=viewer_data, show=False)
+
             
             if component_id is not None:
                 dotplot_view.state.x_att = viewer_data.id[component_id]
@@ -121,8 +122,16 @@ def DotplotViewer(
             for layer in dotplot_view.layers:
                 for trace in layer.traces():
                     trace.update(hoverinfo="skip", hovertemplate=None)
-                    print(trace)
+
+            for layer in dotplot_view.layers:
+                original_update_data = layer._update_data
+                def no_hover_update():
+                    original_update_data()
+                    for trace in layer.traces():
+                        trace.update(hoverinfo="skip", hovertemplate=None)
+                layer._update_data = no_hover_update
             
+
             # override the default selection layer
             def new_update_selection(self=dotplot_view):
                 state = cast(DotPlotViewerState, self.state)
