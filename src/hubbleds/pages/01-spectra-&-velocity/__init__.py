@@ -222,7 +222,8 @@ def Page():
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
 
-    solara.Button(label="Fill data points", on_click=_fill_data_points)
+    if (GLOBAL_STATE.value.show_team_interface):
+        solara.Button(label="Fill data points", on_click=_fill_data_points)
     
 
     def num_bad_velocities():
