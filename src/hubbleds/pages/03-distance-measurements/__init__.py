@@ -222,9 +222,10 @@ def Page():
                             }
                         )
                 )
+                count.set(count.value + 1)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
-        count.set(count.value + 1)
+   
         
         
             
