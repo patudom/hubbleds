@@ -316,7 +316,14 @@ def Page():
             )
 
         with rv.Col(cols=8):
-
+            
+            show_snackbar = Ref(LOCAL_STATE.fields.show_snackbar)
+            async def snackbar_off(value = None):
+                if show_snackbar.value:
+                    await asyncio.sleep(3)
+                    show_snackbar.set(False)
+            solara.lab.use_task(snackbar_off, dependencies=[show_snackbar])
+            
             def _galaxy_added_callback(galaxy_data: GalaxyData):
                 already_exists = galaxy_data.id in [
                     x.galaxy_id for x in LOCAL_STATE.value.measurements
@@ -333,6 +340,7 @@ def Page():
                     snackbar_message.set(
                         "You've already selected 5 galaxies. Continue forth!"
                     )
+                    logger.info("Attempted to add more than 5 galaxies.")
                     return
 
                 logger.info("Adding galaxy `%s` to measurements.", galaxy_data.id)
@@ -366,7 +374,7 @@ def Page():
 
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
-                    [Marker.sel_gal2, Marker.sel_gal3]
+                    [Marker.sel_gal2, Marker.not_gal_tab, Marker.sel_gal3]
                 ),
                 galaxy_selected_callback=_galaxy_selected_callback,
                 galaxy_added_callback=_galaxy_added_callback,
@@ -376,6 +384,9 @@ def Page():
                     else None
                 ),
             )
+            
+            if show_snackbar.value:
+                solara.Info(label=LOCAL_STATE.value.snackbar_message)        
 
     with rv.Row():
         with rv.Col(cols=4):
