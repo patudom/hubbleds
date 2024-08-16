@@ -9,8 +9,10 @@ from cosmicds.logger import setup_logger
 
 logger = setup_logger("STATE")
 
+from typing import TypeVar
+BaseComponentStateT = TypeVar('BaseComponentStateT', bound='BaseComponentState')
 
-def transition_to(component_state: Reactive[BaseState], step: BaseMarker, force=False):
+def transition_to(component_state: Reactive[BaseComponentStateT], step: BaseMarker, force=False):
     if component_state.value.can_transition(step) or force:
         Ref(component_state.fields.current_step).set(step)
     else:
@@ -20,14 +22,14 @@ def transition_to(component_state: Reactive[BaseState], step: BaseMarker, force=
         )
 
 
-def transition_next(component_state: Reactive[BaseState], force=False):
+def transition_next(component_state: Reactive[BaseComponentStateT], force=False):
     next_marker = component_state.value.current_step.next(
         component_state.value.current_step
     )
     transition_to(component_state, next_marker, force=force)
 
 
-def transition_previous(component_state: Reactive[BaseState], force=True):
+def transition_previous(component_state: Reactive[BaseComponentStateT], force=True):
     previous_marker = component_state.value.current_step.previous(
         component_state.value.current_step
     )
