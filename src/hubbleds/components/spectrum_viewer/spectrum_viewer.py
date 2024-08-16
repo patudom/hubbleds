@@ -16,10 +16,16 @@ def SpectrumViewer(
     on_obs_wave_measured: Callable = None,
     on_obs_wave_tool_clicked: Callable = lambda: None,
     on_zoom_tool_clicked: Callable = lambda: None,
+    add_marker_here: float | None = None,
 ):
 
     vertical_line_visible = solara.use_reactive(False)
     toggle_group_state = solara.use_reactive([])
+
+    
+    def _on_change_marker_here():
+       print('add_marker_here', add_marker_here)
+    solara.use_effect(_on_change_marker_here, [add_marker_here])
 
     x_bounds = solara.use_reactive([])
     y_bounds = solara.use_reactive([])
@@ -137,6 +143,14 @@ def SpectrumViewer(
             # annotation_position="top right",
             visible=vertical_line_visible.value and obs_wave > 0.0,
         )
+
+        fig.add_vline(
+            x = add_marker_here,
+            line_width = 1,
+            line_color = "green",
+            visible = add_marker_here is not None
+        )
+        
 
         fig.add_shape(
             editable=False,

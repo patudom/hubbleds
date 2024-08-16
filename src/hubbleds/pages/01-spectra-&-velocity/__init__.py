@@ -743,8 +743,19 @@ def Page():
                         True
                     ),
                 )
-
-                                
+                
+                sync_spectrum_line = Ref(COMPONENT_STATE.fields.sync_spectrum_line)
+                sync_dotplot_line = Ref(COMPONENT_STATE.fields.sync_dotplot_line) 
+                def sync_dotplot_to_spectrum(velocity):
+                    print('====================', velocity)
+                    if len(LOCAL_STATE.value.example_measurements) > 0:
+                        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+                        lambda_obs = lambda_rest * ((velocity / 3e5) + 1)
+                        print('lambda_obs:', lambda_obs)
+                        sync_spectrum_line.set(lambda_obs)
+                    
+                sync_dotplot_line.subscribe(sync_dotplot_to_spectrum)
+                       
                 def create_dotplot_viewer():
                     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                         viewer_data = [
@@ -756,7 +767,9 @@ def Page():
                     return DotplotViewer(gjapp,
                                          data=viewer_data,
                                          component_id=DB_VELOCITY_FIELD,
-                                         vertical_line_visible=False,
+                                         vertical_line_visible=COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
+                                         line_marker_at=sync_dotplot_line,
+                                         on_click_callback=lambda _1, point, _2: sync_dotplot_to_spectrum(point.xs[0]),
                                          unit="km / s",
                                          x_label="Velocity (km/s)",
                                          y_label="Number")
@@ -980,6 +993,7 @@ def Page():
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
+                        add_marker_here=sync_spectrum_line.value,
                     )
 
                     spectrum_tutorial_opened = Ref(
