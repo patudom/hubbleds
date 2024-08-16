@@ -216,23 +216,22 @@ def mc_callback(
     Multiple Choice callback function
     """
 
-    mc_scoring = Ref(local_state.fields.mc_scoring)
+    mc_scoring = local_state.value.mc_scoring
     piggybank_total = Ref(local_state.fields.piggybank_total)
-    new = mc_scoring.value.model_copy(deep=True)
     logger.info(f"MC Callback Event: {event[0]}")
-    logger.info(f"Current mc_scoring: {new}")
+    logger.info(f"Current mc_scoring: {mc_scoring}")
 
     # mc-initialize-callback returns data which is a string
     if event[0] == "mc-initialize-response":
-        if event[1] not in new:
-            new.add(event[1])
-            mc_scoring.set(new)
+        if event[1] not in mc_scoring:
+            mc_scoring.add(event[1])
+            LOCAL_STATE.set(local_state.value)
             if callback is not None:
-                callback(new)
+                callback(mc_scoring)
 
     # mc-score event returns a data which is an mc-score dictionary (includes tag)
     elif event[0] == "mc-score":
-        new.update_mc_score(**event[1])
+        mc_scoring.update_mc_score(**event[1])
 
         # update piggybank_total
         try:
@@ -241,10 +240,9 @@ def mc_callback(
             score = 0
         total_score = piggybank_total.value + score
         piggybank_total.set(total_score)
-        mc_scoring.set(new)
         
         if callback is not None:
-            callback(new)
+            callback(mc_scoring)
 
     else:
         raise ValueError(f"Unknown event in mc_callback: <<{event}>> ")
