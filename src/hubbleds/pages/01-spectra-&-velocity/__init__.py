@@ -35,7 +35,7 @@ from ...data_management import (
 )
 import numpy as np
 from glue.core import Data
-from hubbleds.utils import measurement_list_to_glue_data
+from hubbleds.utils import models_to_glue_data
 
 logger = setup_logger("STAGE")
 
@@ -170,7 +170,7 @@ def Page():
         print('in add_example_measurements_to_glue')
         if len(LOCAL_STATE.value.example_measurements) > 0:
             print('has example measurements')
-            example_measurements_glue = measurement_list_to_glue_data(
+            example_measurements_glue = models_to_glue_data(
                 LOCAL_STATE.value.example_measurements,
                 label=EXAMPLE_GALAXY_MEASUREMENTS,
             )
@@ -200,10 +200,6 @@ def Page():
 
     add_example_measurements_to_glue()
 
-
-    # solara.Text(f"{GLOBAL_STATE.value.dict()}")
-    # solara.Text(f"{LOCAL_STATE.value.dict()}")
-    # solara.Text(f"{COMPONENT_STATE.value.dict()}")
 
     # Flag to show/hide the selection tool. TODO: we shouldn't need to be
     #   doing this here; revisit in the future and implement proper handling
@@ -250,6 +246,27 @@ def Page():
                 num += 1
         obs_wave_total.set(num)
     
+    ## ----- Make sure we are initialized in the correct state ----- ##
+    def _initialize_state(isloaded):
+        if (not isloaded):
+            return
+        
+        if COMPONENT_STATE.value.current_step == Marker.sel_gal2:
+            if COMPONENT_STATE.value.total_galaxies == 5:
+                transition_to(COMPONENT_STATE, Marker.sel_gal3, force=True)
+        
+        if COMPONENT_STATE.value.current_step > Marker.cho_row1:
+            COMPONENT_STATE.value.selected_example_galaxy = 1576 # id of the first example galaxy
+    
+    loaded_component_state.subscribe(_initialize_state)
+    
+    def print_selected_galaxy(galaxy):
+        print('selected galaxy is now:', galaxy)
+    Ref(COMPONENT_STATE.fields.selected_galaxy).subscribe(print_selected_galaxy)
+
+    def print_selected_example_galaxy(galaxy):
+        print('selected example galaxy is now:', galaxy)
+    Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -489,7 +506,7 @@ def Page():
                 selected_example_galaxy = Ref(
                     COMPONENT_STATE.fields.selected_example_galaxy
                 )
-
+                
                 DataTable(
                     title="Example Galaxy",
                     items=[x.dict() for x in LOCAL_STATE.value.example_measurements],
