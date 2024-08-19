@@ -389,22 +389,24 @@ class LocalAPI(BaseAPI):
 
     def get_example_seed_measurement(
             self, 
-            local_state: Reactive[LocalState]
+            local_state: Reactive[LocalState],
+            which="first"
             ) -> list[dict[str, Any]]:
         url = f"{self.API_URL}/{local_state.value.story_id}/sample-measurements"
         r = self.request_session.get(url)
-        res_json = r.json()
+        res_json = r.json()[5:]
         
         
         # TODO: Note that though this is from the old code
         # it seems to only pick the 2nd measurement
         vels = [record[DB_VELOCITY_FIELD] for record in res_json]
-        good = [vel is not None for vel in vels]
+        good = [(vel is not None and vel > 0) for vel in vels]
         seq = SeedSequence(42)
         gen = Generator(PCG64(seq))
         indices = arange(len(good))
-        indices = indices[1::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
-        random_subset = gen.choice(indices[good[1::2][:85]], size=40, replace=False)
+        init = 0 if which == "first" else 1
+        indices = indices[init::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
+        random_subset = gen.choice(indices[good[init::2][:85]], size=40, replace=False)
         # This is the subset
         # [121, 11, 143, 21, 161, 127, 111, 15, 69, 105, 
         # 81, 9, 129, 91, 99, 17, 35, 169, 67, 107, 119, 
