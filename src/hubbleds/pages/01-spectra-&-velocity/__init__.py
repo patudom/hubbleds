@@ -35,7 +35,7 @@ from ...data_management import (
 )
 import numpy as np
 from glue.core import Data
-from hubbleds.utils import models_to_glue_data
+from hubbleds.utils import models_to_glue_data, velocity_from_wavelengths
 
 logger = setup_logger("STAGE")
 
@@ -247,6 +247,25 @@ def Page():
         obs_wave_total.set(num)
     
     ## ----- Make sure we are initialized in the correct state ----- ##
+    def sync_example_velocity_to_wavelength(velocity):
+        print('====================', velocity)
+        if len(LOCAL_STATE.value.example_measurements) > 0:
+            sync_wavelength_line = Ref(COMPONENT_STATE.fields.sync_wavelength_line)
+            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+            lambda_obs = lambda_rest * ((velocity / 3e5) + 1)
+            print('lambda_obs:', lambda_obs)
+            sync_wavelength_line.set(lambda_obs)
+    
+    def sync_example_wavelength_to_velocity(wavelength):
+        print('====================', wavelength)
+        if len(LOCAL_STATE.value.example_measurements) > 0:
+            sync_velocity_line = Ref(COMPONENT_STATE.fields.sync_velocity_line)
+            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+            velocity = 3e5 * ((wavelength / lambda_rest) - 1)
+            print('velocity:', velocity)
+            sync_velocity_line.set(velocity)
+    
+            
     def _initialize_state(isloaded):
         if (not isloaded):
             return
@@ -257,8 +276,23 @@ def Page():
         
         if COMPONENT_STATE.value.current_step > Marker.cho_row1:
             COMPONENT_STATE.value.selected_example_galaxy = 1576 # id of the first example galaxy
+        
+        if (len(LOCAL_STATE.value.example_measurements) > 0):
+            meas = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+            sync_wavelength_line = Ref(COMPONENT_STATE.fields.sync_wavelength_line)
+            sync_wavelength_line.set(meas)
+            sync_example_wavelength_to_velocity(meas)
     
     loaded_component_state.subscribe(_initialize_state)
+    
+    def _sync_setup():
+        sync_velocity_line = Ref(COMPONENT_STATE.fields.sync_velocity_line)
+        sync_wavelength_line = Ref(COMPONENT_STATE.fields.sync_wavelength_line)
+            
+        sync_velocity_line.subscribe(sync_example_velocity_to_wavelength)
+        sync_wavelength_line.subscribe(sync_example_wavelength_to_velocity)
+    
+    solara.use_memo(_sync_setup)
     
     def print_selected_galaxy(galaxy):
         print('selected galaxy is now:', galaxy)
@@ -268,8 +302,9 @@ def Page():
         print('selected example galaxy is now:', galaxy)
     Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
     
-    sync_spectrum_line = Ref(COMPONENT_STATE.fields.sync_spectrum_line)
-    sync_dotplot_line = Ref(COMPONENT_STATE.fields.sync_dotplot_line) 
+   
+    
+
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -748,15 +783,7 @@ def Page():
                 )
                 
                 
-                def sync_dotplot_to_spectrum(velocity):
-                    print('====================', velocity)
-                    if len(LOCAL_STATE.value.example_measurements) > 0:
-                        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-                        lambda_obs = lambda_rest * ((velocity / 3e5) + 1)
-                        print('lambda_obs:', lambda_obs)
-                        sync_spectrum_line.set(lambda_obs)
-                    
-                sync_dotplot_line.subscribe(sync_dotplot_to_spectrum)
+                
                        
                 def create_dotplot_viewer():
                     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
@@ -770,8 +797,8 @@ def Page():
                                          data=viewer_data,
                                          component_id=DB_VELOCITY_FIELD,
                                          vertical_line_visible=COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
-                                         line_marker_at=sync_dotplot_line,
-                                         on_click_callback=lambda _1, point, _2: sync_dotplot_to_spectrum(point.xs[0]),
+                                         line_marker_at=Ref(COMPONENT_STATE.fields.sync_velocity_line),
+                                         on_click_callback=lambda _1, point, _2: sync_example_velocity_to_wavelength(point.xs[0]),
                                          unit="km / s",
                                          x_label="Velocity (km/s)",
                                          y_label="Number")
@@ -963,11 +990,19 @@ def Page():
                             ]
                         )
                         
-                        example_measurement.set(
-                            example_measurement.value.model_copy(
-                                update={"obs_wave_value": value}
+                        if example_measurement.value.velocity_value is None:
+                            example_measurement.set(
+                                example_measurement.value.model_copy(
+                                    update={"obs_wave_value": value}
+                                )
                             )
-                        )
+                        else:
+                            velocity = velocity_from_wavelengths(value, example_measurement.value.rest_wave_value)
+                            example_measurement.set(
+                                example_measurement.value.model_copy(
+                                    update={"obs_wave_value": value, "velocity_value": velocity}
+                                )
+                            )
                         obs_wave_tool_used.set(True)
                         obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
                         obs_wave.set(value)
@@ -995,7 +1030,7 @@ def Page():
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
-                        add_marker_here=sync_spectrum_line.value,
+                        add_marker_here=Ref(COMPONENT_STATE.fields.sync_wavelength_line).value,
                     )
 
                     spectrum_tutorial_opened = Ref(
