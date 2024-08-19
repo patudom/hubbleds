@@ -728,7 +728,7 @@ def Page():
                 else:
                     show_dotplot_lines.set(False)
                 
-                if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.dot_seq5):
+                if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.ang_siz5a):
                     add_example_measurements_to_glue()
                     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                         DotplotViewer(gjapp, 
@@ -744,7 +744,7 @@ def Page():
                                             x_label="Distance (Mpc)",
                                             y_label="Number",
                                             )
-                        if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
+                        if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
                             DotplotViewer(gjapp, 
                                             data = [
                                                 gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA], 
