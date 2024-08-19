@@ -19,12 +19,12 @@
             'I am not sure',
             ]"
             :feedbacks="[
+            'Correct. When we exclude outliers, we see that measurements are clustered around one velocity value.',
             'Try again. Make sure you zoom in to where most of the data points are and see if they are clustered around more than one velocity value.',
-            'Correct. When we exclude outliers, we see that measurements are clustered around more than one velocity value.',
             'Consider only the range of values that excludes outliers. If measurements are clustered around a single velocity value, there is consensus. If they are clustered around multiple values, there is not consensus.'
             ]" 
-          :correct-answers="[1]"
-          :neutral-answers="[0, 2]"
+          :correct-answers="[]"
+          :neutral-answers="[1, 2]"
           :score-tag="state_view.score_tag"
           @mc-emit="mc_callback($event)"
           :initialization="state_view.mc_score"
