@@ -390,7 +390,7 @@ class LocalAPI(BaseAPI):
     def get_example_seed_measurement(
             self, 
             local_state: Reactive[LocalState],
-            which="first"
+            which="second"
             ) -> list[dict[str, Any]]:
         url = f"{self.API_URL}/{local_state.value.story_id}/sample-measurements"
         r = self.request_session.get(url)
