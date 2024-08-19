@@ -267,6 +267,9 @@ def Page():
     def print_selected_example_galaxy(galaxy):
         print('selected example galaxy is now:', galaxy)
     Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
+    
+    sync_spectrum_line = Ref(COMPONENT_STATE.fields.sync_spectrum_line)
+    sync_dotplot_line = Ref(COMPONENT_STATE.fields.sync_dotplot_line) 
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -744,8 +747,7 @@ def Page():
                     ),
                 )
                 
-                sync_spectrum_line = Ref(COMPONENT_STATE.fields.sync_spectrum_line)
-                sync_dotplot_line = Ref(COMPONENT_STATE.fields.sync_dotplot_line) 
+                
                 def sync_dotplot_to_spectrum(velocity):
                     print('====================', velocity)
                     if len(LOCAL_STATE.value.example_measurements) > 0:
