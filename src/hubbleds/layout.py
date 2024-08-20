@@ -31,6 +31,7 @@ def Layout(children=[]):
 
         # Retrieve the student's app and local states
         LOCAL_API.get_app_story_states(GLOBAL_STATE, LOCAL_STATE)
+        Ref(GLOBAL_STATE.fields.update_db).set(False)
 
         # Load in the student's measurements
         measurements = LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
