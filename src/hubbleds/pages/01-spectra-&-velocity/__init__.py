@@ -274,7 +274,7 @@ def Page():
             if COMPONENT_STATE.value.total_galaxies == 5:
                 transition_to(COMPONENT_STATE, Marker.sel_gal3, force=True)
         
-        if COMPONENT_STATE.value.current_step > Marker.cho_row1:
+        if Marker.is_at_or_after(COMPONENT_STATE.value.current_step, Marker.cho_row1):
             COMPONENT_STATE.value.selected_example_galaxy = 1576 # id of the first example galaxy
         
         if (len(LOCAL_STATE.value.example_measurements) > 0):
