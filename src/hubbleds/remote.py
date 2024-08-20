@@ -6,7 +6,7 @@ import json
 from astropy.io import fits
 from hubbleds.state import GalaxyData, SpectrumData, LocalState
 from cosmicds.remote import BaseAPI
-from cosmicds.state import GlobalState, BaseState
+from cosmicds.state import GlobalState, BaseState, GLOBAL_STATE
 from solara import Reactive
 from solara.toestand import Ref
 from functools import cached_property
@@ -155,7 +155,12 @@ class LocalAPI(BaseAPI):
 
     def put_measurements(
         self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
-    ):
+    ):  
+        
+        if not GLOBAL_STATE.value.update_db: 
+            logger.info('Skipping DB write')
+            return
+        
         url = f"{self.API_URL}/{local_state.value.story_id}/submit-measurement/"
 
         for measurement in local_state.value.measurements:
@@ -176,6 +181,10 @@ class LocalAPI(BaseAPI):
     def put_sample_measurements(
         self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
     ):
+        if not GLOBAL_STATE.value.update_db: 
+            logger.info('Skipping DB write')
+            return
+        
         url = f"{self.API_URL}/{local_state.value.story_id}/sample-measurement/"
 
         for measurement in local_state.value.example_measurements:
@@ -344,6 +353,10 @@ class LocalAPI(BaseAPI):
         local_state: Reactive[LocalState],
         component_state: Reactive[BaseState],
     ):
+        if not GLOBAL_STATE.value.update_db: 
+            logger.info('Skipping DB write')
+            return
+        
         logger.info("Serializing stage state into DB.")
 
         comp_state_dict = component_state.value.dict(
@@ -368,6 +381,10 @@ class LocalAPI(BaseAPI):
         global_state: Reactive[GlobalState],
         local_state: Reactive[LocalState],
     ):
+        if not GLOBAL_STATE.value.update_db: 
+            logger.info('Skipping DB write')
+            return
+        
         logger.info("Serializing state into DB.")
 
         state = {
