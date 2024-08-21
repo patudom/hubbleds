@@ -232,10 +232,11 @@ def DotplotViewer(
                         layer.state.zorder = zorder[i]
                         print(f"Layer {layer} zorder: {layer.state.zorder}")
             
-            def extend_the_tools():         
+            def extend_the_tools():  
+                print("Extending the tools")       
                 extend_tool(dotplot_view, 'plotly:home', activate_cb=apply_zorder)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=apply_zorder)
-            solara.use_memo(extend_the_tools, dependencies=[])
+            extend_the_tools()
             tool = dotplot_view.toolbar.tools['plotly:home']
             if tool:
                 tool.activate()
