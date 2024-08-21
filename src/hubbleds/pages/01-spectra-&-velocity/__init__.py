@@ -409,7 +409,16 @@ def Page():
 
                 selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
                 selected_galaxy.set(galaxy_data.id)
+            
 
+            show_example_data_table = COMPONENT_STATE.value.current_step_between(
+            Marker.cho_row1, Marker.dot_seq12
+            )
+            if show_example_data_table:
+                selection_tool_galaxy = selected_example_measurement
+            else:
+                selection_tool_galaxy= selected_measurement
+            
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
                     [Marker.sel_gal2, Marker.not_gal_tab, Marker.sel_gal3]
@@ -417,8 +426,8 @@ def Page():
                 galaxy_selected_callback=_galaxy_selected_callback,
                 galaxy_added_callback=_galaxy_added_callback,
                 selected_measurement=(
-                    selected_measurement.value.dict()
-                    if selected_measurement.value is not None
+                    selection_tool_galaxy.value.dict()
+                    if selection_tool_galaxy.value is not None
                     else None
                 ),
             )
@@ -788,8 +797,8 @@ def Page():
                 def create_dotplot_viewer():
                     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                         viewer_data = [
-                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
+                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
                         ]
                     else:
                         viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
@@ -801,7 +810,9 @@ def Page():
                                          on_click_callback=lambda _1, point, _2: sync_example_velocity_to_wavelength(point.xs[0]),
                                          unit="km / s",
                                          x_label="Velocity (km/s)",
-                                         y_label="Number")
+                                         y_label="Number",
+                                         zorder=[5,1]
+                                         )
                 
                 
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
