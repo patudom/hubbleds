@@ -186,7 +186,7 @@ def Page():
     solara.use_memo(_state_callback_setup)
 
 
-    StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API)
+    StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
     def put_measurements(samples):

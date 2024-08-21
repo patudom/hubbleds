@@ -301,13 +301,12 @@ def Page():
         print('selected example galaxy is now:', galaxy)
     Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
     
-   
-    if (GLOBAL_STATE.value.show_team_interface):
-        with solara.Row():
-            with solara.Column():
-                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
-            with solara.Column():
-                solara.Button(label="Fill data points", on_click=_fill_data_points)
+
+    with solara.Row():
+        with solara.Column():
+            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
+        with solara.Column():
+            solara.Button(label="Fill data points", on_click=_fill_data_points)
 
     with rv.Row():
         with rv.Col(cols=4):
