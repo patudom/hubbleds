@@ -12,13 +12,13 @@ DEFAULT_HEADERS = [
     {"text": "Element", "value": "element"},
     {
         "text": "&lambda;<sub>rest</sub> (&Aring;)",
-        "value": "rest_wave",
+        "value": "rest_wave_value",
     },
     {
         "text": "&lambda;<sub>obs</sub> (&Aring;)",
-        "value": "obs_wave",
+        "value": "obs_wave_value",
     },
-    {"text": "Velocity (km/s)", "value": "velocity"},
+    {"text": "Velocity (km/s)", "value": "velocity_value"},
 ]
 
 
