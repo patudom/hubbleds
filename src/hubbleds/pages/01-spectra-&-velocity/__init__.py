@@ -220,6 +220,14 @@ def Page():
                                                    galaxy=measurement.galaxy))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
+    def _fill_lambdas():
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        measurements = LOCAL_STATE.value.measurements
+        for index, measurement in enumerate(measurements):
+            dummy_meas = next(m for m in dummy_measurements if m.galaxy_id == measurement.galaxy_id)
+            mref = Ref(LOCAL_STATE.fields.measurements[index])
+            mref.set(measurement.model_copy(update={"obs_wave_value": dummy_meas.obs_wave_value}))
+
 
     def _select_random_galaxies():
         pass
@@ -311,6 +319,7 @@ def Page():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
             solara.Button(label="Fill galaxies", on_click=_fill_galaxies)
+            solara.Button(label="Fill lambdas", on_click=_fill_lambdas)
 
     with rv.Row():
         with rv.Col(cols=4):
