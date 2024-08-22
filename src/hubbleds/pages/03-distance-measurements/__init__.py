@@ -184,9 +184,20 @@ def Page():
 
         
     solara.use_memo(_state_callback_setup)
+    
+    def _fill_data_points():
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        for measurement in dummy_measurements:
+            measurement.student_id = GLOBAL_STATE.value.student.id
+        Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
 
 
-    StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
+    with solara.Row():
+        with solara.Column():
+            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
+        with solara.Column():
+            solara.Button(label="Fill data points", on_click=_fill_data_points)
+    # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
     def put_measurements(samples):
