@@ -172,7 +172,7 @@ class ComponentState(BaseComponentState, BaseState):
 
     @property
     def res_wav1_gate(self) -> bool:
-        return bool(self.selected_example_galaxy) and self.spectrum_tutorial_opened
+        return self.spectrum_tutorial_opened
 
     @property
     def obs_wav1_gate(self) -> bool:

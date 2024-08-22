@@ -909,7 +909,7 @@
       </v-btn>
       <!-- first button below just being used for testing, delete when using live with students -->
       <v-btn
-        v-if="step < length-1 && show_team_interface"
+        v-if="step < length-1"
         color="success"
         class="black--text"
         depressed
