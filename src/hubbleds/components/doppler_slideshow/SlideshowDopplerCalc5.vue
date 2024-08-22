@@ -824,7 +824,7 @@
         <v-spacer></v-spacer>
 
         <v-btn
-            v-if="step < 4"
+            v-if="step < 2"
             :disabled="step > max_step_completed_5"
             class="black--text"
             color="accent"
@@ -847,7 +847,7 @@
         >
           calculate
         </v-btn>
-        <v-btn
+        <!-- <v-btn
             v-if="step === 5"
             class="black--text"
             color="accent"
@@ -856,6 +856,21 @@
               set_dialog(false);
               set_step(0);
               set_student_vel_calc(true);
+              next_callback();
+            }"
+        >
+          Done
+        </v-btn> -->
+        <v-btn
+            v-if="step === 2"
+            class="black--text"
+            color="accent"
+            depressed
+            @click="() => {
+              set_dialog(false);
+              set_step(0);
+              set_student_vel_calc(true);
+              storeStudentVel(300000, [lambda_obs, lambda_rest]);
               next_callback();
             }"
         >
