@@ -190,6 +190,7 @@ def Page():
         for measurement in dummy_measurements:
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
+        Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
 
 
     with solara.Row():
