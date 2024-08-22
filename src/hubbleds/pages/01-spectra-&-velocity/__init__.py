@@ -222,11 +222,12 @@ def Page():
 
     def _fill_lambdas():
         dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = LOCAL_STATE.value.measurements
-        for index, measurement in enumerate(measurements):
-            dummy_meas = next(m for m in dummy_measurements if m.galaxy_id == measurement.galaxy_id)
-            mref = Ref(LOCAL_STATE.fields.measurements[index])
-            mref.set(measurement.model_copy(update={"obs_wave_value": dummy_meas.obs_wave_value}))
+        measurements = []
+        for measurement in dummy_measurements:
+            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                                   obs_wave_value=measurement.obs_wave_value,
+                                                   galaxy=measurement.galaxy))
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
 
     def _select_random_galaxies():
