@@ -70,7 +70,7 @@ class Marker(enum.Enum, BaseMarker):
 
 class DopplerCalculation(BaseModel):
     step: int = 0
-    length: int = 6
+    length: int = 4
     current_title: str = ""
     validation_4_failed: bool = False
     validation_5_failed: bool = False
@@ -172,7 +172,7 @@ class ComponentState(BaseComponentState, BaseState):
 
     @property
     def res_wav1_gate(self) -> bool:
-        return bool(self.selected_example_galaxy) and self.spectrum_tutorial_opened
+        return self.spectrum_tutorial_opened
 
     @property
     def obs_wav1_gate(self) -> bool:

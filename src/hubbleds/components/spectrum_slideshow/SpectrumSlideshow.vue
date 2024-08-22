@@ -685,6 +685,20 @@
           next
         </v-btn>
         <v-btn
+          v-if="step < length-1"
+          color="success"
+          class="black--text"
+          depressed
+          @click="() => {
+            $emit('close');
+            dialog = false;
+            step = 0;
+            // this.$refs.synth.stopSpeaking();
+          }"
+        >
+          move on
+        </v-btn>
+        <v-btn
           v-if="step >= 10"
           color="accent"
           class="black--text"

@@ -775,7 +775,7 @@ def Page():
                     max_step_completed_5=COMPONENT_STATE.value.doppler_state.max_step_completed_5,
                     failed_validation_5=COMPONENT_STATE.value.doppler_state.validation_5_failed,
                     interact_steps_5=COMPONENT_STATE.value.doppler_state.interact_steps_5,
-                    student_c=COMPONENT_STATE.value.doppler_state.student_c,
+                    student_c=300000,
                     student_vel_calc=COMPONENT_STATE.value.doppler_state.velocity_calculated,
                     event_set_dialog=show_doppler_dialog.set,
                     event_set_step=step.set,
@@ -1061,7 +1061,7 @@ def Page():
                             else None
                         ),
                         obs_wave=COMPONENT_STATE.value.obs_wave,
-                        spectrum_click_enabled=COMPONENT_STATE.value.is_current_step(
+                        spectrum_click_enabled=COMPONENT_STATE.value.current_step_at_or_after(
                             Marker.obs_wav1),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
                         on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(
