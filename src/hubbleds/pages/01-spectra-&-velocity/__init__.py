@@ -229,6 +229,17 @@ def Page():
                                                    galaxy=measurement.galaxy))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
+    def _fill_stage1_go_stage3():
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        measurements = []
+        for measurement in dummy_measurements:
+            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                                   obs_wave_value=measurement.obs_wave_value,
+                                                   galaxy=measurement.galaxy,
+                                                   velocity_value=measurement.velocity_value))
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        router.push("03-distance-measurements")
+
 
     def _select_random_galaxies():
         pass
@@ -319,8 +330,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
-            solara.Button(label="Fill galaxies", on_click=_fill_galaxies)
-            solara.Button(label="Fill lambdas", on_click=_fill_lambdas)
+            solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -366,8 +376,8 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal4),
             )
-            if COMPONENT_STATE.value.current_step_at_or_after(Marker.sel_gal3):
-                solara.Button(label="Quick pick: fill random galaxies", on_click=_select_random_galaxies)
+            if COMPONENT_STATE.value.is_current_step(Marker.sel_gal3):
+                solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
 
         with rv.Col(cols=8):
             
@@ -544,6 +554,8 @@ def Page():
                     ),
                 },
             )
+            if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
+                solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
