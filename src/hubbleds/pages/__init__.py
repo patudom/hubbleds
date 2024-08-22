@@ -19,14 +19,11 @@ def Page():
 
     IntroSlideshowVue(
         step = COMPONENT_STATE.value.intro_slideshow_state.step,
-        length = 8,
+        length = 5,
         titles = [
         "Our Place in the Universe",
         "Answering Questions with Data",
         "Astronomy in the early 1900s",
-        "Explore the Cosmic Sky",
-        "What are the Fuzzy Things?",
-        "Spiral Nebulae and the Great Debate",
         "Henrietta Leavitt's Discovery",
         "Vesto Slipher and Spectral Data"
         ],
