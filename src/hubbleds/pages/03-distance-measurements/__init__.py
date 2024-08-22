@@ -194,12 +194,14 @@ def Page():
 
     def _fill_thetas():
         dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = LOCAL_STATE.value.measurements
-        for index, measurement in enumerate(measurements):
-            dummy_meas = next(m for m in dummy_measurements if m.galaxy_id == measurement.galaxy_id)
-            mref = Ref(LOCAL_STATE.fields.measurements[index])
-            mref.set(measurement.model_copy(update={"ang_size_value": dummy_meas.ang_size_value}))
-
+        measurements = []
+        for measurement in dummy_measurements:
+            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                                   obs_wave_value=measurement.obs_wave_value,
+                                                   velocity_value=measurement.velocity_value,
+                                                   ang_size_value=measurement.ang_size_value,
+                                                   galaxy=measurement.galaxy))
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
     with solara.Row():
         with solara.Column():
