@@ -1041,7 +1041,6 @@ def Page():
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
-                        add_marker_here=Ref(COMPONENT_STATE.fields.sync_wavelength_line).value,
                     )
 
                     spectrum_tutorial_opened = Ref(
