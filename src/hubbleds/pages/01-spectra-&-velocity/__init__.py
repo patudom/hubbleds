@@ -218,7 +218,8 @@ def Page():
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
 
-    
+    def _select_random_galaxies():
+        pass
     
 
     def num_bad_velocities():
@@ -352,6 +353,8 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal4),
             )
+            if COMPONENT_STATE.value.current_step_at_or_after(Marker.sel_gal3):
+                solara.Button(label="Quick pick: fill random galaxies", on_click=_select_random_galaxies)
 
         with rv.Col(cols=8):
             
