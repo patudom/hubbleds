@@ -12,10 +12,10 @@
       <v-toolbar-title
         class="text-h6 text-uppercase font-weight-regular"
       >
-        {{ currentTitle }}
+        {{ titles[step] }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <speech-synthesizer
+      <!-- <speech-synthesizer
         ref="synth"
         :root="$el"
         :element-filter="(element) => {
@@ -29,7 +29,7 @@
         }"
         :autospeak-on-change="step"
         :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text.black--text', 'h3', 'p']"
-      />
+      /> -->
     </v-toolbar>
 
     <v-window
@@ -208,7 +208,7 @@
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="3" 
+      <!-- <v-window-item :value="3" 
         class="no-transition"
       >
         <v-card-text>
@@ -542,7 +542,7 @@
             </v-snackbar>
           </v-container>
         </v-card-text>
-      </v-window-item>
+      </v-window-item> 
 
       <v-window-item :value="5" 
         class="no-transition"
@@ -718,9 +718,9 @@
             </v-snackbar>
           </v-container>   
         </v-card-text>
-      </v-window-item>
+      </v-window-item> -->
 
-      <v-window-item :value="6" 
+      <v-window-item :value="3" 
         class="no-transition"
       >
         <v-card-text>
@@ -787,7 +787,7 @@
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="7" 
+      <v-window-item :value="4" 
         class="no-transition"
         
       >
@@ -838,19 +838,19 @@
         depressed
         @click="() => {
           step--;
-          if(step==4) go_to_location_tool1({ // reset viewer to MW
-                                ra: 266.64, // default MW coords
-                                dec: -28.39,
-                                fov: 216000, // 60 degrees
-                                instant: true, // also optional, false by default
-                              })
-          if(step==5) go_to_location_tool2({ // Set to M31 with button pressed
-                                ra: 10.63,
-                                dec: 41.27,
-                                fov: 6000, // optional, in arcseconds, default is 90
-                                instant: true, // also optional, false by default
-                                target: 'M31' // name of object
-                              })
+          // if(step==4) go_to_location_tool1({ // reset viewer to MW
+          //                       ra: 266.64, // default MW coords
+          //                       dec: -28.39,
+          //                       fov: 216000, // 60 degrees
+          //                       instant: true, // also optional, false by default
+          //                     })
+          // if(step==5) go_to_location_tool2({ // Set to M31 with button pressed
+          //                       ra: 10.63,
+          //                       dec: 41.27,
+          //                       fov: 6000, // optional, in arcseconds, default is 90
+          //                       instant: true, // also optional, false by default
+          //                       target: 'M31' // name of object
+          //                     })
           }"
       >
         back
@@ -890,19 +890,19 @@
         depressed
         @click="() => {
           step++;
-          if(step==4) go_to_location_tool1({ // reset viewer to MW
-                                ra: 266.64, // default MW coords
-                                dec: -28.39,
-                                fov: 216000, // 60 degrees
-                                instant: true, // also optional, false by default
-                              })
-          if(step==5) go_to_location_tool2({ // Go to M31 with button pressed
-                                ra: 10.63,
-                                dec: 41.27,
-                                fov: 6000, // optional, in arcseconds, default is 90
-                                instant: true, // also optional, false by default
-                                target: 'M31' // name of object
-                              })
+          // if(step==4) go_to_location_tool1({ // reset viewer to MW
+          //                       ra: 266.64, // default MW coords
+          //                       dec: -28.39,
+          //                       fov: 216000, // 60 degrees
+          //                       instant: true, // also optional, false by default
+          //                     })
+          // if(step==5) go_to_location_tool2({ // Go to M31 with button pressed
+          //                       ra: 10.63,
+          //                       dec: 41.27,
+          //                       fov: 6000, // optional, in arcseconds, default is 90
+          //                       instant: true, // also optional, false by default
+          //                       target: 'M31' // name of object
+          //                     })
           }"
       >
         next
@@ -914,9 +914,9 @@
         class="black--text"
         depressed
         @click="() => {
-          intro_complete = true;
+          slideshow_finished();
           step = 0;
-          this.$refs.synth.stopSpeaking();
+          // this.$refs.synth.stopSpeaking();
         }"
       >
         get started
@@ -928,9 +928,9 @@
         class="black--text"
         depressed
         @click="() => { 
-          intro_complete = true;
+          slideshow_finished();
           step = 0;
-          this.$refs.synth.stopSpeaking();
+          // this.$refs.synth.stopSpeaking();
         }"
       >
         get started
