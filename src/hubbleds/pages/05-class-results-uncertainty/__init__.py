@@ -586,7 +586,7 @@ def Page():
                             StatisticsSelector(
                                 viewers=[viewers["student_hist"]],
                                 glue_data=[class_summary_data],
-                                units=["counts"],
+                                units=["Gyr"],
                                 transform=round,
                             )
 
@@ -595,6 +595,7 @@ def Page():
                             PercentageSelector(
                                 viewers=[viewers["student_hist"]],
                                 glue_data=[class_summary_data],
+                                units=["Gyr"],
                             )
 
                 ScaffoldAlert(
@@ -676,7 +677,7 @@ def Page():
                     all_class_summary_data = gjapp.data_collection["All Class Summaries"]
                     hist_viewers = [viewers["all_student_hist"], viewers["class_hist"]]
                     hist_data = [all_student_summary_data, all_class_summary_data]
-                    units = ["counts" for _ in range(len(hist_viewers))]
+                    units = ["Gyr" for _ in range(len(hist_viewers))]
                     with rv.Col():
                         StatisticsSelector(
                             viewers=hist_viewers,
@@ -689,6 +690,7 @@ def Page():
                         PercentageSelector(
                             viewers=hist_viewers,
                             glue_data=hist_data,
+                            units=units,
                         )
 
                 ScaffoldAlert(
