@@ -9,7 +9,7 @@ from cosmicds.viewers.dotplot.state import DotPlotViewerState
 
 from glue.viewers.common.viewer import Viewer
 from glue_plotly.viewers.common import PlotlyBaseView
-from cosmicds.utils import vertical_line_mark
+from cosmicds.utils import vertical_line_mark, extend_tool
 from itertools import chain
 from uuid import uuid4
 from plotly.graph_objects import Scatter
@@ -32,7 +32,8 @@ def DotplotViewer(
     vertical_line_visible: Union[Reactive[bool], bool] = Reactive(True),
     unit: Optional[str] = None,
     x_label: Optional[str] = None,
-    y_label: Optional[str] = None
+    y_label: Optional[str] = None,
+    zorder: Optional[list[int]] = None
     ):
     
     """
@@ -221,6 +222,25 @@ def DotplotViewer(
             # special treatment for go.Heatmap from https://stackoverflow.com/questions/58630928/how-to-hide-the-colorbar-and-legend-in-plotly-express-bar-graph#comment131880779_68555667
             dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0, coloraxis='coloraxis')
             dotplot_view.figure.update_coloraxes(showscale=False)
+            
+
+            def apply_zorder():
+                #enumerate dotplot_view.layers
+                if zorder:
+                    print("Applying zorder")
+                    for i, layer in enumerate(dotplot_view.layers):
+                        layer.state.zorder = zorder[i]
+                        print(f"Layer {layer} zorder: {layer.state.zorder}")
+            
+            def extend_the_tools():  
+                print("Extending the tools")       
+                extend_tool(dotplot_view, 'plotly:home', activate_cb=apply_zorder)
+                extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=apply_zorder)
+            extend_the_tools()
+            tool = dotplot_view.toolbar.tools['plotly:home']
+            if tool:
+                tool.activate()
+            
 
             
             

@@ -72,6 +72,12 @@
         to reset the view and choose a different green dot.
       </p>
     </div>
+    <div v-if="state_view.total_galaxies ==5">
+      <!-- we should never get here -->
+      <p>
+        You have already selected the maximum number of galaxies ({{ state_view.total_galaxies }} / 5). Click next to proceed to the next step.
+      </p>
+    </div>
   </scaffold-alert>
 </template>
 <script setup>

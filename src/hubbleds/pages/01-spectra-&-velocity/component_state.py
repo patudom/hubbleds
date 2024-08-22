@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, Field
 from cosmicds.state import BaseState
 from hubbleds.base_marker import BaseMarker
 import enum
@@ -113,6 +113,8 @@ class ComponentState(BaseComponentState, BaseState):
     show_reflection_dialog: bool = False
     velocity_reflection_state: VelocityReflection = VelocityReflection()
     reflection_complete: bool = False
+    sync_wavelength_line: float = Field(6565, exclude = True) # won't be saved to the database
+    sync_velocity_line: float = Field(0.0, exclude = True) # won't be saved to the database
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:

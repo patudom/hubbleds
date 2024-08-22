@@ -35,7 +35,7 @@ from ...data_management import (
 )
 import numpy as np
 from glue.core import Data
-from hubbleds.utils import measurement_list_to_glue_data
+from hubbleds.utils import models_to_glue_data, velocity_from_wavelengths
 
 logger = setup_logger("STAGE")
 
@@ -170,7 +170,7 @@ def Page():
         print('in add_example_measurements_to_glue')
         if len(LOCAL_STATE.value.example_measurements) > 0:
             print('has example measurements')
-            example_measurements_glue = measurement_list_to_glue_data(
+            example_measurements_glue = models_to_glue_data(
                 LOCAL_STATE.value.example_measurements,
                 label=EXAMPLE_GALAXY_MEASUREMENTS,
             )
@@ -200,10 +200,6 @@ def Page():
 
     add_example_measurements_to_glue()
 
-
-    # solara.Text(f"{GLOBAL_STATE.value.dict()}")
-    # solara.Text(f"{LOCAL_STATE.value.dict()}")
-    # solara.Text(f"{COMPONENT_STATE.value.dict()}")
 
     # Flag to show/hide the selection tool. TODO: we shouldn't need to be
     #   doing this here; revisit in the future and implement proper handling
@@ -250,6 +246,65 @@ def Page():
                 num += 1
         obs_wave_total.set(num)
     
+    ## ----- Make sure we are initialized in the correct state ----- ##
+    def sync_example_velocity_to_wavelength(velocity):
+        print('====================', velocity)
+        if len(LOCAL_STATE.value.example_measurements) > 0:
+            sync_wavelength_line = Ref(COMPONENT_STATE.fields.sync_wavelength_line)
+            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+            lambda_obs = lambda_rest * ((velocity / 3e5) + 1)
+            print('lambda_obs:', lambda_obs)
+            sync_wavelength_line.set(lambda_obs)
+    
+    def sync_example_wavelength_to_velocity(wavelength):
+        print('====================', wavelength)
+        if len(LOCAL_STATE.value.example_measurements) > 0:
+            sync_velocity_line = Ref(COMPONENT_STATE.fields.sync_velocity_line)
+            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+            velocity = 3e5 * ((wavelength / lambda_rest) - 1)
+            print('velocity:', velocity)
+            sync_velocity_line.set(velocity)
+    
+            
+    def _initialize_state(isloaded):
+        if (not isloaded):
+            return
+        
+        if COMPONENT_STATE.value.current_step == Marker.sel_gal2:
+            if COMPONENT_STATE.value.total_galaxies == 5:
+                transition_to(COMPONENT_STATE, Marker.sel_gal3, force=True)
+        
+        if COMPONENT_STATE.value.current_step > Marker.cho_row1:
+            COMPONENT_STATE.value.selected_example_galaxy = 1576 # id of the first example galaxy
+        
+        if (len(LOCAL_STATE.value.example_measurements) > 0):
+            meas = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+            sync_wavelength_line = Ref(COMPONENT_STATE.fields.sync_wavelength_line)
+            sync_wavelength_line.set(meas)
+            sync_example_wavelength_to_velocity(meas)
+    
+    loaded_component_state.subscribe(_initialize_state)
+    
+    def _sync_setup():
+        sync_velocity_line = Ref(COMPONENT_STATE.fields.sync_velocity_line)
+        sync_wavelength_line = Ref(COMPONENT_STATE.fields.sync_wavelength_line)
+            
+        sync_velocity_line.subscribe(sync_example_velocity_to_wavelength)
+        sync_wavelength_line.subscribe(sync_example_wavelength_to_velocity)
+    
+    solara.use_memo(_sync_setup)
+    
+    def print_selected_galaxy(galaxy):
+        print('selected galaxy is now:', galaxy)
+    Ref(COMPONENT_STATE.fields.selected_galaxy).subscribe(print_selected_galaxy)
+
+    def print_selected_example_galaxy(galaxy):
+        print('selected example galaxy is now:', galaxy)
+    Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
+    
+   
+    
+
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
 
@@ -299,7 +354,14 @@ def Page():
             )
 
         with rv.Col(cols=8):
-
+            
+            show_snackbar = Ref(LOCAL_STATE.fields.show_snackbar)
+            async def snackbar_off(value = None):
+                if show_snackbar.value:
+                    await asyncio.sleep(3)
+                    show_snackbar.set(False)
+            solara.lab.use_task(snackbar_off, dependencies=[show_snackbar])
+            
             def _galaxy_added_callback(galaxy_data: GalaxyData):
                 already_exists = galaxy_data.id in [
                     x.galaxy_id for x in LOCAL_STATE.value.measurements
@@ -316,6 +378,7 @@ def Page():
                     snackbar_message.set(
                         "You've already selected 5 galaxies. Continue forth!"
                     )
+                    logger.info("Attempted to add more than 5 galaxies.")
                     return
 
                 logger.info("Adding galaxy `%s` to measurements.", galaxy_data.id)
@@ -346,19 +409,31 @@ def Page():
 
                 selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
                 selected_galaxy.set(galaxy_data.id)
+            
 
+            show_example_data_table = COMPONENT_STATE.value.current_step_between(
+            Marker.cho_row1, Marker.dot_seq12
+            )
+            if show_example_data_table:
+                selection_tool_galaxy = selected_example_measurement
+            else:
+                selection_tool_galaxy= selected_measurement
+            
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
-                    [Marker.sel_gal2, Marker.sel_gal3]
+                    [Marker.sel_gal2, Marker.not_gal_tab, Marker.sel_gal3]
                 ),
                 galaxy_selected_callback=_galaxy_selected_callback,
                 galaxy_added_callback=_galaxy_added_callback,
                 selected_measurement=(
-                    selected_measurement.value.dict()
-                    if selected_measurement.value is not None
+                    selection_tool_galaxy.value.dict()
+                    if selection_tool_galaxy.value is not None
                     else None
                 ),
             )
+            
+            if show_snackbar.value:
+                solara.Info(label=LOCAL_STATE.value.snackbar_message)        
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -489,7 +564,7 @@ def Page():
                 selected_example_galaxy = Ref(
                     COMPONENT_STATE.fields.selected_example_galaxy
                 )
-
+                
                 DataTable(
                     title="Example Galaxy",
                     items=[x.dict() for x in LOCAL_STATE.value.example_measurements],
@@ -715,23 +790,29 @@ def Page():
                         True
                     ),
                 )
-
-                                
+                
+                
+                
+                       
                 def create_dotplot_viewer():
                     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                         viewer_data = [
-                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
+                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
                         ]
                     else:
                         viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
                     return DotplotViewer(gjapp,
                                          data=viewer_data,
                                          component_id=DB_VELOCITY_FIELD,
-                                         vertical_line_visible=False,
+                                         vertical_line_visible=COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
+                                         line_marker_at=Ref(COMPONENT_STATE.fields.sync_velocity_line),
+                                         on_click_callback=lambda _1, point, _2: sync_example_velocity_to_wavelength(point.xs[0]),
                                          unit="km / s",
                                          x_label="Velocity (km/s)",
-                                         y_label="Number")
+                                         y_label="Number",
+                                         zorder=[5,1]
+                                         )
                 
                 
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
@@ -920,11 +1001,19 @@ def Page():
                             ]
                         )
                         
-                        example_measurement.set(
-                            example_measurement.value.model_copy(
-                                update={"obs_wave_value": value}
+                        if example_measurement.value.velocity_value is None:
+                            example_measurement.set(
+                                example_measurement.value.model_copy(
+                                    update={"obs_wave_value": value}
+                                )
                             )
-                        )
+                        else:
+                            velocity = velocity_from_wavelengths(value, example_measurement.value.rest_wave_value)
+                            example_measurement.set(
+                                example_measurement.value.model_copy(
+                                    update={"obs_wave_value": value, "velocity_value": velocity}
+                                )
+                            )
                         obs_wave_tool_used.set(True)
                         obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
                         obs_wave.set(value)
@@ -952,6 +1041,7 @@ def Page():
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
+                        add_marker_here=Ref(COMPONENT_STATE.fields.sync_wavelength_line).value,
                     )
 
                     spectrum_tutorial_opened = Ref(
