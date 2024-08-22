@@ -70,7 +70,7 @@ class Marker(enum.Enum, BaseMarker):
 
 class DopplerCalculation(BaseModel):
     step: int = 0
-    length: int = 6
+    length: int = 4
     current_title: str = ""
     validation_4_failed: bool = False
     validation_5_failed: bool = False

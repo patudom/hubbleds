@@ -383,7 +383,7 @@
         </v-window-item>
 
 
-        <v-window-item :value="3"
+        <!-- <v-window-item :value="3"
                        class="no-transition"
         >
           <v-lazy>
@@ -645,9 +645,9 @@
               </v-card>
             </v-card-text>
           </v-lazy>
-        </v-window-item>
+        </v-window-item> -->
 
-        <v-window-item :value="5"
+        <v-window-item :value="3"
                        class="no-transition"
         >
           <v-lazy>
@@ -867,10 +867,21 @@
             color="accent"
             depressed
             @click="() => {
-              set_dialog(false);
-              set_step(0);
+              set_step(3);
               set_student_vel_calc(true);
               storeStudentVel(300000, [lambda_obs, lambda_rest]);
+            }"
+        >
+          Jump
+        </v-btn>
+        <v-btn
+            v-if="step === 3"
+            class="black--text"
+            color="accent"
+            depressed
+            @click="() => {
+              set_dialog(false);
+              set_step(0);
               next_callback();
             }"
         >
