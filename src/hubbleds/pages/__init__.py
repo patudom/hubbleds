@@ -4,7 +4,7 @@ from solara.toestand import Ref
 
 from hubbleds.components import IntroSlideshowVue
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE
-from .component_state import COMPONENT_STATE
+
 from hubbleds.remote import LOCAL_API
 from ..utils import IMAGE_BASE_URL
 
@@ -18,7 +18,7 @@ def Page():
     router = solara.use_router()
 
     IntroSlideshowVue(
-        step = COMPONENT_STATE.value.intro_slideshow_state.step,
+        step = 0,
         length = 5,
         titles = [
         "Our Place in the Universe",
