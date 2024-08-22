@@ -192,12 +192,23 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
 
+    def _fill_thetas():
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        measurements = []
+        for measurement in dummy_measurements:
+            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                                   obs_wave_value=measurement.obs_wave_value,
+                                                   velocity_value=measurement.velocity_value,
+                                                   ang_size_value=measurement.ang_size_value,
+                                                   galaxy=measurement.galaxy))
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
     with solara.Row():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
             solara.Button(label="Fill data points", on_click=_fill_data_points)
+            solara.Button(label="Fill thetas", on_click=_fill_thetas)
     # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
