@@ -218,8 +218,7 @@ def Page():
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
 
-    if (GLOBAL_STATE.value.show_team_interface):
-        solara.Button(label="Fill data points", on_click=_fill_data_points)
+    
     
 
     def num_bad_velocities():
@@ -274,7 +273,7 @@ def Page():
             if COMPONENT_STATE.value.total_galaxies == 5:
                 transition_to(COMPONENT_STATE, Marker.sel_gal3, force=True)
         
-        if COMPONENT_STATE.value.current_step > Marker.cho_row1:
+        if Marker.is_at_or_after(COMPONENT_STATE.value.current_step, Marker.cho_row1):
             COMPONENT_STATE.value.selected_example_galaxy = 1576 # id of the first example galaxy
         
         if (len(LOCAL_STATE.value.example_measurements) > 0):
@@ -302,11 +301,12 @@ def Page():
         print('selected example galaxy is now:', galaxy)
     Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
     
-   
-    
 
-
-    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
+    with solara.Row():
+        with solara.Column():
+            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
+        with solara.Column():
+            solara.Button(label="Fill data points", on_click=_fill_data_points)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -647,20 +647,20 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq2),
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence03.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq3),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence05.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
-            )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotSequence03.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq3),
+            # )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotSequence05.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
+            # )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotSequence06.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -764,7 +764,7 @@ def Page():
                     },
                 )
 
-            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq12): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq9): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
                 dotplot_tutorial_finished = Ref(
                     COMPONENT_STATE.fields.dotplot_tutorial_finished
                 )
@@ -943,27 +943,27 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal2),
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence04.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence10.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq10),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence11.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq11),
-            )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotSequence04.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
+            # )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotSequence10.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq10),
+            # )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotSequence11.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq11),
+            # )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineReflectOnData.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -976,7 +976,7 @@ def Page():
             show_example_spectrum = COMPONENT_STATE.value.current_step_between(
                 Marker.mee_spe1, Marker.che_mea1
             ) or COMPONENT_STATE.value.current_step_between(
-                Marker.dot_seq4, Marker.dot_seq12 # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+                Marker.dot_seq6, Marker.dot_seq12 # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
             )
 
             show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(
@@ -1033,15 +1033,14 @@ def Page():
                             else None
                         ),
                         obs_wave=COMPONENT_STATE.value.obs_wave,
-                        spectrum_click_enabled=COMPONENT_STATE.value.current_step_at_or_after(
-                            Marker.obs_wav1
-                        ),
+                        spectrum_click_enabled=COMPONENT_STATE.value.current_step_between(
+                            Marker.obs_wav1, Marker.obs_wav2
+                        ) or COMPONENT_STATE.value.is_current_step(Marker.dot_seq9),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
                         on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
-                        add_marker_here=Ref(COMPONENT_STATE.fields.sync_wavelength_line).value,
                     )
 
                     spectrum_tutorial_opened = Ref(

@@ -6,12 +6,12 @@
   >
     <div>
       <p>
-        To make sure everyone is making the best measurements, use the measuring tool to compare which spectrum features match the velocity bins.
-        
+        If your velocity measurement does not <em>reasonably</em> aggree with the concensus, use the Spectrum Viewer to remeasure the spectral line for your galaxy.
       </p>
-      <p>
+      <p> The velocity in the table and the dot plot will automatically update to reflect your new measurement. </p>
+      <!-- <p>
         (Notice we zoomed in to the corresponding wavelength range in the spectrum viewer below.)
-      </p>
+      </p> -->
     </div>
   </scaffold-alert>
 </template>

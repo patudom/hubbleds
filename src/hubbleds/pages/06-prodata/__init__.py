@@ -246,7 +246,7 @@ def Page():
 
     loaded_component_state.subscribe(_on_component_state_loaded) 
 
-    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API)
+    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
     
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():

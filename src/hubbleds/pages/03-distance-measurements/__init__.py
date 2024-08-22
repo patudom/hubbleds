@@ -186,7 +186,7 @@ def Page():
     solara.use_memo(_state_callback_setup)
 
 
-    StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API)
+    StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
     def put_measurements(samples):
@@ -728,7 +728,7 @@ def Page():
                 else:
                     show_dotplot_lines.set(False)
                 
-                if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.dot_seq5):
+                if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.ang_siz5a):
                     add_example_measurements_to_glue()
                     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                         DotplotViewer(gjapp, 
@@ -745,7 +745,7 @@ def Page():
                                             y_label="Number",
                                             zorder=[5,1],
                                             )
-                        if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
+                        if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
                             DotplotViewer(gjapp, 
                                             data = [
                                                 gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],

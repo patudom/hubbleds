@@ -7,7 +7,7 @@
   >
     <div>
       <p>
-        Recall that this dot plot provides one way to check our own velocity measurement using the <strong>wisdom of crowds</strong>. 
+        The dot plot provides one way to check our own velocity measurement using the <b>wisdom of crowds</b>. 
       </p>
     </div>
   </scaffold-alert>
