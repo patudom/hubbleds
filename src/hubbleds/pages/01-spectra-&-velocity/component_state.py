@@ -22,32 +22,48 @@ class Marker(enum.Enum, BaseMarker):
     # spe_tut1 = enum.auto()  # This step doesn't seem to do anything?
     res_wav1 = enum.auto()
     obs_wav1 = enum.auto()
-    obs_wav2 = enum.auto()
+
+    # skip for short demo
+    # obs_wav2 = enum.auto() 
+
     dop_cal0 = enum.auto()
     dop_cal2 = enum.auto()
     dop_cal4 = enum.auto()
     dop_cal5 = enum.auto()
-    che_mea1 = enum.auto()
-    int_dot1 = enum.auto()
-    dot_seq1 = enum.auto()
-    dot_seq2 = enum.auto()
+
+    # skip next block for short demo
+    # che_mea1 = enum.auto() 
+    # int_dot1 = enum.auto() 
+    # dot_seq1 = enum.auto() 
+    # dot_seq2 = enum.auto() 
+
     # dot_seq3 = enum.auto()
     # dot_seq4 = enum.auto()
     # dot_seq5 = enum.auto()
-    dot_seq6 = enum.auto()
-    dot_seq7 = enum.auto()
-    dot_seq8 = enum.auto()
-    dot_seq9 = enum.auto()
+
+    # skip next block for short demo
+    # dot_seq6 = enum.auto()
+    # dot_seq7 = enum.auto()
+    # dot_seq8 = enum.auto()
+    # dot_seq9 = enum.auto()
+
     # dot_seq10 = enum.auto()
     # dot_seq11 = enum.auto()
-    dot_seq12 = enum.auto()
+
+    # skip for short demo
+    # dot_seq12 = enum.auto()
+
     # dot_seq13 = enum.auto()
     # dot_seq13a = enum.auto()
     # dot_seq14 = enum.auto()
     rem_gal1 = enum.auto()
-    ref_dat1 = enum.auto()
+
+    # skip for short demo
+    # ref_dat1 = enum.auto()
     dop_cal6 = enum.auto()
-    ref_vel1 = enum.auto()
+    
+    # skip for short demo
+    # ref_vel1 = enum.auto()
     end_sta1 = enum.auto()
     nxt_stg = enum.auto()
 
@@ -162,37 +178,47 @@ class ComponentState(BaseComponentState, BaseState):
     def obs_wav1_gate(self) -> bool:
         return self.obs_wave_tool_activated
 
-    @property
-    def obs_wav2_gate(self) -> bool:
-        return self.obs_wave_tool_used
-
+    # @property
+    # def obs_wav2_gate(self) -> bool:
+    #     return self.obs_wave_tool_used
+    
+    # change gate to account for above and below being skipped
     @property
     def dop_cal0_gate(self) -> bool:
-        return self.zoom_tool_activated
+        return self.obs_wave_tool_used
 
-    @property
-    def che_mea1_gate(self) -> bool:
-        return self.doppler_state.velocity_calculated
+    # @property
+    # def dop_cal0_gate(self) -> bool:
+    #     return self.zoom_tool_activated
 
-    @property
-    def dot_seq1_gate(self) -> bool:
-        return self.dotplot_tutorial_finished
+    # @property
+    # def che_mea1_gate(self) -> bool:
+    #     return self.doppler_state.velocity_calculated
+
+    # @property
+    # def dot_seq1_gate(self) -> bool:
+    #     return self.dotplot_tutorial_finished
     
-    @property
-    def dot_seq9_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("vel_meas_consensus")
+    # @property
+    # def dot_seq9_gate(self) -> bool:
+    #     return LOCAL_STATE.value.question_completed("vel_meas_consensus")
 
-    @property
-    def ref_dat1_gate(self) -> bool:
-        return self.obs_wave_total >= 5
-
+    # @property
+    # def ref_dat1_gate(self) -> bool:
+    #     return self.obs_wave_total >= 5
+    
+    # change gate to account for above and below being skipped
     @property
     def dop_cal6_gate(self) -> bool:
-        return self.reflection_complete
+        return self.obs_wave_total >= 5
 
-    @property
-    def ref_vel1_gate(self) -> bool:
-        return self.velocities_total >= 5
+    # @property
+    # def dop_cal6_gate(self) -> bool:
+    #     return self.reflection_complete
+
+    # @property
+    # def ref_vel1_gate(self) -> bool:
+    #     return self.velocities_total >= 5
 
     @property
     def nxt_stg_gate(self) -> bool:
