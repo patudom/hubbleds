@@ -27,19 +27,22 @@ class Marker(enum.Enum, BaseMarker):
     est_dis2 = enum.auto()
     est_dis3 = enum.auto()
     est_dis4 = enum.auto()
-    dot_seq1 = enum.auto()
-    dot_seq2 = enum.auto() # MC ang_meas_consensus
-    dot_seq3 = enum.auto()
-    dot_seq4 = enum.auto()
-    dot_seq4a = enum.auto()	 # MC ang_meas_dist_relation
-    ang_siz5a  = enum.auto()
+
+    # skip next block for short demo
+    # dot_seq1 = enum.auto()
+    # dot_seq2 = enum.auto() # MC ang_meas_consensus
+    # dot_seq3 = enum.auto()
+    # dot_seq4 = enum.auto()
+    # dot_seq4a = enum.auto()	 # MC ang_meas_dist_relation
+    # ang_siz5a  = enum.auto()
     # ang_siz6  = enum.auto() We skipped this in the voila version
-    dot_seq5  = enum.auto()
+    # dot_seq5  = enum.auto()
     # dot_seq5a = enum.auto() Skipping 2nd meas. sequence 5a-7
     # dot_seq5b = enum.auto() 
     # dot_seq5c = enum.auto()
     # dot_seq6  = enum.auto()	# MC ang_meas_consensus_2
     # dot_seq7 = enum.auto()
+
     rep_rem1 = enum.auto()
     fil_rem1 = enum.auto()
     end_sta3 = enum.auto() #This guideline doesn't actually exist - just including it to allow an exit gate on the previous guideline.
@@ -85,23 +88,23 @@ class ComponentState(BaseComponentState, BaseState):
     def ang_siz5_gate(self):
         return self.n_meas > 0
 
-    @property
-    def dot_seq3_gate(self):
-        return LOCAL_STATE.value.question_completed("ang_meas_consensus")
+    # @property
+    # def dot_seq3_gate(self):
+    #     return LOCAL_STATE.value.question_completed("ang_meas_consensus")
 
-    @property
-    def ang_siz5a_gate(self):
-        return LOCAL_STATE.value.question_completed("ang_meas_dist_relation")
+    # @property
+    # def ang_siz5a_gate(self):
+    #     return LOCAL_STATE.value.question_completed("ang_meas_dist_relation")
 
-    @property
-    def dot_seq7_gate(self):
-        return LOCAL_STATE.value.question_completed("ang_meas_consensus_2")
+    # @property
+    # def dot_seq7_gate(self):
+    #     return LOCAL_STATE.value.question_completed("ang_meas_consensus_2")
 
-    @property
-    def dot_seq5_gate(self):
-        return (
-            bool(self.dosdonts_tutorial_opened)
-        )
+    # @property
+    # def dot_seq5_gate(self):
+    #     return (
+    #         bool(self.dosdonts_tutorial_opened)
+    #     )
     
     @property
     def fil_rem1_gate(self):

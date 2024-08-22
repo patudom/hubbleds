@@ -11,8 +11,8 @@
       const expectedAnswers = [state_view.meas_theta];
       
       if (validateAnswersJS(['gal_ang_size'], expectedAnswers)) {
-        set_distance(state_view.meas_theta);
         next_callback();
+        set_distance(state_view.meas_theta);
       }
     }"
     :can-advance="can_advance"

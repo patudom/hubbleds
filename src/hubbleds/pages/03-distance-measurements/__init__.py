@@ -190,6 +190,7 @@ def Page():
         for measurement in dummy_measurements:
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
+        Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
 
 
     with solara.Row():
@@ -310,16 +311,16 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.ang_siz4),
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineAngsizeMeas5a.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.ang_siz5a),
-                state_view={
-                    "dosdonts_tutorial_opened": COMPONENT_STATE.value.dosdonts_tutorial_opened
-                },
-            )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineAngsizeMeas5a.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.ang_siz5a),
+            #     state_view={
+            #         "dosdonts_tutorial_opened": COMPONENT_STATE.value.dosdonts_tutorial_opened
+            #     },
+            # )
             # This was skipped in voila version
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineAngsizeMeas6.vue",
@@ -331,14 +332,14 @@ def Page():
 
             # NOTE: We are skipping the 2nd measurement for now
             # So we want to skip forward to rep_rem1.
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotplotSeq5.vue",
-                # event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                event_next_callback=lambda _: transition_to(COMPONENT_STATE, Marker.rep_rem1), #
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
-            )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotplotSeq5.vue",
+            #     # event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     event_next_callback=lambda _: transition_to(COMPONENT_STATE, Marker.rep_rem1), #
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
+            # )
             # Not doing the 2nd measurement
             # ScaffoldAlert(
             #     # TODO This will need to be wired up once measuring tool is implemented
@@ -424,7 +425,7 @@ def Page():
                 solara.Error("This measurement seems to be too large/small. Make sure you are appropriately zoomed in on the galaxy and are measuring the full size.")
 
             with rv.Col(cols=6, offset=3):
-                if COMPONENT_STATE.value.current_step_at_or_after(Marker.ang_siz5a):
+                if COMPONENT_STATE.value.current_step_at_or_after(Marker.rep_rem1):
                     dosdonts_tutorial_opened = Ref(COMPONENT_STATE.fields.dosdonts_tutorial_opened)
                     AngsizeDosDontsSlideshow(
                         event_on_dialog_opened=lambda *args: dosdonts_tutorial_opened.set(
@@ -508,7 +509,7 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRepeatRemainingGalaxies.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_to(COMPONENT_STATE, Marker.dot_seq5),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.rep_rem1),
                 scroll_on_mount=False,
@@ -566,7 +567,7 @@ def Page():
                     { "text": "Distance (Mpc)", "value": "est_dist_value" },
                 ]
 
-            if COMPONENT_STATE.value.current_step_at_or_before(Marker.dot_seq5):
+            if COMPONENT_STATE.value.current_step_at_or_before(Marker.est_dis4):
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
                     value = galaxy["item"]["galaxy"] if flag else None
@@ -618,45 +619,46 @@ def Page():
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotplotSeq1.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq1),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotplotSeq2.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq2),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE),
-                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_consensus'), 'score_tag': 'ang_meas_consensus'}
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotplotSeq3.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq3),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotplotSeq4.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotplotSeq4a.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4a),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE),
-                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_dist_relation'), 'score_tag': 'ang_meas_dist_relation'}
-            )
+            pass
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotplotSeq1.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq1),
+            # )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotplotSeq2.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq2),
+            #     event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE),
+            #     state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_consensus'), 'score_tag': 'ang_meas_consensus'}
+            # )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotplotSeq3.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq3),
+            # )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotplotSeq4.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
+            # )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotplotSeq4a.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4a),
+            #     event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE),
+            #     state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_dist_relation'), 'score_tag': 'ang_meas_dist_relation'}
+            # )
             # Not doing the 2nd measurement #dot_seq6 is comparison of 1st and 2nd measurement
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineDotplotSeq6.vue",
@@ -733,44 +735,44 @@ def Page():
                 
                 
                 
-                show_dotplot_lines = Ref(COMPONENT_STATE.fields.show_dotplot_lines)
-                if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
-                    show_dotplot_lines.set(True)
-                else:
-                    show_dotplot_lines.set(False)
+                # show_dotplot_lines = Ref(COMPONENT_STATE.fields.show_dotplot_lines)
+                # if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4a):
+                #     show_dotplot_lines.set(True)
+                # else:
+                #     show_dotplot_lines.set(False)
                 
-                if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.ang_siz5a):
-                    add_example_measurements_to_glue()
-                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                        DotplotViewer(gjapp, 
-                                        data = [
-                                            gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                                            ],
-                                            component_id="est_dist_value",
-                                            vertical_line_visible=show_dotplot_lines,
-                                            line_marker_at=Ref(COMPONENT_STATE.fields.distance_line),
-                                            on_click_callback=set_angular_size_line,
-                                            unit="Mpc",
-                                            x_label="Distance (Mpc)",
-                                            y_label="Number",
-                                            zorder=[5,1],
-                                            )
-                        if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
-                            DotplotViewer(gjapp, 
-                                            data = [
-                                                gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                                                gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA] 
-                                                ],
-                                                component_id="ang_size_value",
-                                                vertical_line_visible=show_dotplot_lines,
-                                                line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
-                                                on_click_callback=set_distance_line,
-                                                unit="arcsec",
-                                                x_label="Angular Size (arcsec)",
-                                                y_label="Number",
-                                                zorder=[5,1],
-                                                )
-                    else:
-                        # raise ValueError("Example galaxy measurements not found in glue data collection")
-                        pass
+                # if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.ang_siz5a):
+                #     add_example_measurements_to_glue()
+                #     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                #         DotplotViewer(gjapp, 
+                #                         data = [
+                #                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
+                #                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                #                             ],
+                #                             component_id="est_dist_value",
+                #                             vertical_line_visible=show_dotplot_lines,
+                #                             line_marker_at=Ref(COMPONENT_STATE.fields.distance_line),
+                #                             on_click_callback=set_angular_size_line,
+                #                             unit="Mpc",
+                #                             x_label="Distance (Mpc)",
+                #                             y_label="Number",
+                #                             zorder=[5,1],
+                #                             )
+                #         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
+                #             DotplotViewer(gjapp, 
+                #                             data = [
+                #                                 gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
+                #                                 gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA] 
+                #                                 ],
+                #                                 component_id="ang_size_value",
+                #                                 vertical_line_visible=show_dotplot_lines,
+                #                                 line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
+                #                                 on_click_callback=set_distance_line,
+                #                                 unit="arcsec",
+                #                                 x_label="Angular Size (arcsec)",
+                #                                 y_label="Number",
+                #                                 zorder=[5,1],
+                #                                 )
+                #     else:
+                #         # raise ValueError("Example galaxy measurements not found in glue data collection")
+                #         pass

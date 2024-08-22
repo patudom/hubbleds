@@ -552,7 +552,7 @@ def Page():
             # )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: router.push("02-distance-introduction"),
+                event_next_callback=lambda _: router.push("03-distance-measurements"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),
