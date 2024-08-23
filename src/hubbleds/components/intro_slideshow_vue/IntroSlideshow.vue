@@ -728,7 +728,7 @@
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="3" 
+      <v-window-item :value="6" 
         class="no-transition"
       >
         <v-card-text>
@@ -795,7 +795,7 @@
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="4" 
+      <v-window-item :value="7" 
         class="no-transition"
         
       >
