@@ -39,7 +39,7 @@ def Page():
 
     IntroSlideshowVue(
         step = 0,
-        length = 5,
+        length = 8,
         titles = [
         "Our Place in the Universe",
         "Answering Questions with Data",
