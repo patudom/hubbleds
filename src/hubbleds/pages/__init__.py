@@ -29,7 +29,8 @@ def Page():
     def go_to_location(options):
         index = options.get("index", 0)
         tool = exploration_tools[index]
-        fov = options.get("fov", 216000) // 3600
+        fov_as = options.get("fov", 216000)
+        fov = fov_as * u.arcsec
         ra = options.get("ra")
         dec = options.get("dec")
         instant = options.get("instant", True)
@@ -52,4 +53,5 @@ def Page():
         exploration_tool=exploration_tool,
         exploration_tool1=exploration_tool1,
         exploration_tool2=exploration_tool2,
+        event_go_to_location=go_to_location,
     )

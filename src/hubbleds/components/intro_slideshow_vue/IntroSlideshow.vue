@@ -302,7 +302,7 @@
                 </div>
               </v-col>
             </v-row>
-            <v-snackbar
+            <!-- <v-snackbar
               v-model="timer_done[0]"
               timeout="500000"
               transition="fab-transition"
@@ -325,7 +325,7 @@
               >
                 move on
               </v-btn>
-            </v-snackbar>
+            </v-snackbar> -->
           </v-container>                                      
         </v-card-text>
       </v-window-item>
@@ -522,7 +522,7 @@
                 </div>
               </v-col>
             </v-row>
-            <v-snackbar
+            <!-- <v-snackbar
               v-model="timer_done[1]"
               timeout="500000"
               transition="fab-transition"
@@ -545,7 +545,7 @@
               >
                 move on
               </v-btn>
-            </v-snackbar>
+            </v-snackbar> -->
           </v-container>
         </v-card-text>
       </v-window-item> 
@@ -700,7 +700,7 @@
                 </div>
               </v-col>
             </v-row>
-            <v-snackbar
+            <!-- <v-snackbar
               v-model="timer_done[2]"
               timeout="500000"
               transition="fab-transition"
@@ -723,7 +723,7 @@
               >
                 move on
               </v-btn>
-            </v-snackbar>
+            </v-snackbar> -->
           </v-container>   
         </v-card-text>
       </v-window-item>
@@ -846,7 +846,7 @@
         depressed
         @click="() => {
           step--;
-          let options;
+          let options = null;
           if (step === 4) {
             options = {
               index: 1,
@@ -854,7 +854,7 @@
               dec: -28.39,
               fov: 216000, // 60 degrees
               instant: true, // also optional, false by default
-            });
+            };
           } else {
             options = {
               index: 2,
@@ -863,7 +863,7 @@
               fov: 6000, // optional, in arcseconds, default is 90
               instant: true, // also optional, false by default
               target: 'M31' // name of object
-            });
+            };
           }
           go_to_location(options)
         }"
@@ -905,7 +905,7 @@
         depressed
         @click="() => {
           step++;
-          let options;
+          let options = null;
           if (step === 4) {
             options = {
               index: 1,
@@ -913,7 +913,7 @@
               dec: -28.39,
               fov: 216000, // 60 degrees
               instant: true, // also optional, false by default
-            });
+            };
           } else {
             options = {
               index: 2,
@@ -922,7 +922,7 @@
               fov: 6000, // optional, in arcseconds, default is 90
               instant: true, // also optional, false by default
               target: 'M31' // name of object
-            });
+            };
           }
           go_to_location(options)
         }"
