@@ -208,8 +208,8 @@ def Page():
     with solara.Row():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
-        with solara.Column():
-            solara.Button(label="Shortcut: Fill in distance data & Go to Stage 4", on_click=_fill_data_points)
+        # with solara.Column():
+        #     solara.Button(label="Shortcut: Fill in distance data & Go to Stage 4", on_click=_fill_data_points)
     # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
@@ -532,8 +532,8 @@ def Page():
                     "bad_angsize": False
                 }
             )
-            if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
-                solara.Button(label="Shortcut: Fill Angular Size Measurements", on_click=_fill_thetas)
+            # if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
+            #     solara.Button(label="Shortcut: Fill Angular Size Measurements", on_click=_fill_thetas)
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
                 event_next_callback=lambda _: router.push("04-explore-data"),
