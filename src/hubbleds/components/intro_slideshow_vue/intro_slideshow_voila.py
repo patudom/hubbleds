@@ -11,7 +11,7 @@ from ...utils import GALAXY_FOV
 # theme_colors()
 
 class IntroSlideshow(v.VuetifyTemplate):
-    template = load_template("intro_slideshow.vue", __file__,
+    template = load_template("IntroSlideshow.vue", __file__,
                              traitlet=True).tag(sync=True)
     step = Int(0).tag(sync=True)
     length = Int(8).tag(sync=True)

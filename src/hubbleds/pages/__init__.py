@@ -1,3 +1,5 @@
+from astropy.coordinates import SkyCoord
+import astropy.units as u
 
 import solara
 from solara.toestand import Ref
@@ -6,6 +8,7 @@ from hubbleds.components import IntroSlideshowVue
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE
 
 from hubbleds.remote import LOCAL_API
+from hubbleds.widgets.exploration_tool.exploration_tool import ExplorationTool
 from ..utils import IMAGE_BASE_URL
 
 from hubbleds.layout import Layout
@@ -16,6 +19,22 @@ logger = setup_logger("STAGE INTRO")
 @solara.component
 def Page():
     router = solara.use_router()
+
+    exploration_tool = ExplorationTool()
+    exploration_tool1 = ExplorationTool()
+    exploration_tool2 = ExplorationTool()
+
+    exploration_tools = [exploration_tool, exploration_tool1, exploration_tool2]
+
+    def go_to_location(options):
+        index = options.get("index", 0)
+        tool = exploration_tools[index]
+        fov = options.get("fov", 216000) // 3600
+        ra = options.get("ra")
+        dec = options.get("dec")
+        instant = options.get("instant", True)
+        coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
+        tool.go_to_coordinates(coordinates, fov=fov, instant=instant)
 
     IntroSlideshowVue(
         step = 0,
@@ -29,5 +48,8 @@ def Page():
         ],
         image_location=f"{IMAGE_BASE_URL}/stage_intro",
         event_slideshow_finished=lambda _: router.push("01-spectra-&-velocity"),
-        debug = LOCAL_STATE.value.debug_mode,
+        debug=LOCAL_STATE.value.debug_mode,
+        exploration_tool=exploration_tool,
+        exploration_tool1=exploration_tool1,
+        exploration_tool2=exploration_tool2,
     )

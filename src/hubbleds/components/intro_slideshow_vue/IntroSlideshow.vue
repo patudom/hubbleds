@@ -237,7 +237,7 @@
                     >
                       <v-row>
                         <v-col>
-                          <c-exploration-tool id="exploration-tool">
+                          <jupyter-widget :widget="exploration_tool">
                         </v-col>
                       </v-row>
                       <v-row>
@@ -354,8 +354,8 @@
                     <v-col
                       cols="8"
                       offset-lg="1"
-                    >   
-                      <c-exploration-tool1 id="exploration-tool1">
+                    >
+                      <jupyter-widget :widget="exploration_tool1">
                     </v-col>
                     <v-col
                       cols="4"
@@ -569,7 +569,7 @@
                       cols="8"
                       offset-lg="1"
                     >
-                      <c-exploration-tool2 id="exploration-tool2">
+                      <jupyter-widget :widget="exploration_tool2">
                     </v-col>
                     <v-col
                       cols="4"
@@ -612,12 +612,12 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool2({
+                              go_to_location({
+                                index: 2,
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M31' // name of object
                               });
                               startTimerIfNeeded(2);
                             }"
@@ -648,12 +648,12 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool2({
+                              go_to_location({
+                                index: 2,
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M51' // name of object
                               });
                               startTimerIfNeeded(2);
                             }"
@@ -838,20 +838,26 @@
         depressed
         @click="() => {
           step--;
-          // if(step==4) go_to_location_tool1({ // reset viewer to MW
-          //                       ra: 266.64, // default MW coords
-          //                       dec: -28.39,
-          //                       fov: 216000, // 60 degrees
-          //                       instant: true, // also optional, false by default
-          //                     })
-          // if(step==5) go_to_location_tool2({ // Set to M31 with button pressed
-          //                       ra: 10.63,
-          //                       dec: 41.27,
-          //                       fov: 6000, // optional, in arcseconds, default is 90
-          //                       instant: true, // also optional, false by default
-          //                       target: 'M31' // name of object
-          //                     })
-          }"
+          let options;
+          if (step === 4) {
+            options = {
+              index: 1,
+              ra: 266.64, // default MW coords
+              dec: -28.39,
+              fov: 216000, // 60 degrees
+              instant: true, // also optional, false by default
+            });
+          } else {
+            options = {
+              index: 2,
+              ra: 10.63,
+              dec: 41.27,
+              fov: 6000, // optional, in arcseconds, default is 90
+              instant: true, // also optional, false by default
+            });
+          }
+          go_to_location(options)
+        }"
       >
         back
       </v-btn>
@@ -890,20 +896,26 @@
         depressed
         @click="() => {
           step++;
-          // if(step==4) go_to_location_tool1({ // reset viewer to MW
-          //                       ra: 266.64, // default MW coords
-          //                       dec: -28.39,
-          //                       fov: 216000, // 60 degrees
-          //                       instant: true, // also optional, false by default
-          //                     })
-          // if(step==5) go_to_location_tool2({ // Go to M31 with button pressed
-          //                       ra: 10.63,
-          //                       dec: 41.27,
-          //                       fov: 6000, // optional, in arcseconds, default is 90
-          //                       instant: true, // also optional, false by default
-          //                       target: 'M31' // name of object
-          //                     })
-          }"
+          let options;
+          if (step === 4) {
+            options = {
+              index: 1,
+              ra: 266.64, // default MW coords
+              dec: -28.39,
+              fov: 216000, // 60 degrees
+              instant: true, // also optional, false by default
+            });
+          } else {
+            options = {
+              index: 2,
+              ra: 10.63,
+              dec: 41.27,
+              fov: 6000, // optional, in arcseconds, default is 90
+              instant: true, // also optional, false by default
+            });
+          }
+          go_to_location(options)
+        }"
       >
         next
       </v-btn>
@@ -962,7 +974,7 @@
 
 <script>
 module.exports = {
-  props: ["continueText","target"],
+  props: ["continueText", "target"],
   methods: {
     startTimer(number) {
       setTimeout(() => {
