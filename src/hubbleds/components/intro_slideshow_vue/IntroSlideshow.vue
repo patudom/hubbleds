@@ -208,7 +208,7 @@
         </v-card-text>
       </v-window-item>
 
-      <!-- <v-window-item :value="3" 
+      <v-window-item :value="3" 
         class="no-transition"
       >
         <v-card-text>
@@ -370,12 +370,13 @@
                         >
                           <v-btn 
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 83.63,
                                 dec: 22.014,
                                 fov: 350, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M1' // name of object
+                                target: 'M1', // name of object
                               });
                               startTimerIfNeeded(1);
                             }"
@@ -393,12 +394,13 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 250.4,
                                 dec: 36.46,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M13' // name of object
+                                target: 'M13', // name of object
                               });
                               startTimerIfNeeded(1);
                             }"
@@ -416,7 +418,8 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
@@ -439,7 +442,8 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 83.82,
                                 dec: -5.39,
                                 fov:7500, // optional, in arcseconds, default is 90
@@ -462,7 +466,8 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
@@ -485,7 +490,8 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 148.97,
                                 dec: 69.68,
                                 fov: 400, // optional, in arcseconds, default is 90
@@ -618,6 +624,7 @@
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
+                                target: 'M31' // name of object
                               });
                               startTimerIfNeeded(2);
                             }"
@@ -654,6 +661,7 @@
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
+                                target: 'M51', // name of object
                               });
                               startTimerIfNeeded(2);
                             }"
@@ -718,7 +726,7 @@
             </v-snackbar>
           </v-container>   
         </v-card-text>
-      </v-window-item> -->
+      </v-window-item>
 
       <v-window-item :value="3" 
         class="no-transition"
@@ -854,6 +862,7 @@
               dec: 41.27,
               fov: 6000, // optional, in arcseconds, default is 90
               instant: true, // also optional, false by default
+              target: 'M31' // name of object
             });
           }
           go_to_location(options)
@@ -912,6 +921,7 @@
               dec: 41.27,
               fov: 6000, // optional, in arcseconds, default is 90
               instant: true, // also optional, false by default
+              target: 'M31' // name of object
             });
           }
           go_to_location(options)
