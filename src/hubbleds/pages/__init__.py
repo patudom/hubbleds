@@ -55,5 +55,5 @@ def Page():
         exploration_tool1=exploration_tool1,
         exploration_tool2=exploration_tool2,
         event_go_to_location=go_to_location,
-        speech=speech.value,
+        speech=speech.value.model_dump(),
     )
