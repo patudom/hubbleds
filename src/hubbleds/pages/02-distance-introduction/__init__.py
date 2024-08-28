@@ -85,5 +85,5 @@ def Page():
         },
         event_slideshow_finished=lambda _: router.push("03-distance-measurements"),
         debug = LOCAL_STATE.value.debug_mode,
-        speech=speech.value,
+        speech=speech.value.model_dump(),
     )
