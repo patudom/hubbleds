@@ -36,7 +36,7 @@
           return currentWindowItem?.contains(element) ?? false;
         }"
         :autospeak-on-change="step"
-        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text.black--text', 'h3', 'p']"
+        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text', 'h3', 'p']"
       />
     </v-toolbar>
 
