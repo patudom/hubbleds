@@ -7,8 +7,8 @@
     @back="back_callback()"
     @next="next_callback()"
     :can-advance="can_advance"
-    :title-text="state_view.obswaves_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'
-    "
+    :title-text="state_view.obswaves_total < 5 ? 'Repeat for Remaining Galaxies' : 'Nice Work'"
+    :speech="speech"
   >
     <template #before-next>
       <span v-if="!state_view.has_bad_velocities && !state_view.has_multiple_bad_velocities">

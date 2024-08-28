@@ -1,8 +1,9 @@
 <template>
   <scaffold-alert
-      @back="back_callback()"
-      @next="next_callback()"
-      :can-advance="can_advance"
+    @back="back_callback()"
+    @next="next_callback()"
+    :can-advance="can_advance"
+    :speech="speech"
   >
       <!-- :can-advance="(state) => state.meas_two_row_selected" -->
     <template #before-next>

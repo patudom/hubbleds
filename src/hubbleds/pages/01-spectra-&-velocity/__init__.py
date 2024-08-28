@@ -325,7 +325,8 @@ def Page():
         print('selected example galaxy is now:', galaxy)
     Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
     
-
+    speech = Ref(GLOBAL_STATE.fields.speech)
+    
     with solara.Row():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
@@ -339,6 +340,7 @@ def Page():
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.mee_gui1),
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies1.vue",
@@ -346,6 +348,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal1),
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies2.vue",
@@ -357,6 +360,7 @@ def Page():
                     "total_galaxies": COMPONENT_STATE.value.total_galaxies,
                     "selected_galaxy": bool(COMPONENT_STATE.value.selected_galaxy),
                 },
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies3.vue",
@@ -368,6 +372,7 @@ def Page():
                     "total_galaxies": COMPONENT_STATE.value.total_galaxies,
                     "selected_galaxy": bool(COMPONENT_STATE.value.selected_galaxy),
                 },
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies4.vue",
@@ -375,6 +380,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal4),
+                speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.sel_gal3):
                 solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
@@ -469,6 +475,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.not_gal_tab),
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineChooseRow.vue",
@@ -476,6 +483,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.cho_row1),
+                speech=speech.value,
             )
 
             def _on_validated_transition(validated):
@@ -507,6 +515,7 @@ def Page():
                 },
                 event_failed_validation_4_callback=validation_4_failed.set,
                 event_on_validated_transition=_on_validated_transition,
+                speech=speech.value,
             )
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
@@ -553,6 +562,7 @@ def Page():
                         else None
                     ),
                 },
+                speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
                 solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
@@ -562,6 +572,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal6),
+                speech=speech.value,
             )
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineReflectVelValues.vue",
@@ -582,6 +593,7 @@ def Page():
                     "has_bad_velocities": COMPONENT_STATE.value.has_bad_velocities,
                     "has_multiple_bad_velocities": COMPONENT_STATE.value.has_multiple_bad_velocities,
                 },
+                speech=speech.value,
             )
 
         with rv.Col(cols=8):
@@ -920,6 +932,7 @@ def Page():
                 state_view={
                     "spectrum_tutorial_opened": COMPONENT_STATE.value.spectrum_tutorial_opened
                 },
+                speech=speech.value,
             )
 
             selected_example_galaxy_data = (
@@ -939,6 +952,7 @@ def Page():
                     "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
                     "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
                 },
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineObswave1.vue",
@@ -947,6 +961,7 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav1),
                 state_view={"selected_example_galaxy": selected_example_galaxy_data},
+                speech=speech.value,
             )
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineObswave2.vue",
@@ -965,6 +980,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal0),
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc2.vue",
@@ -972,6 +988,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal2),
+                speech=speech.value,
             )
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineDotSequence04.vue",
