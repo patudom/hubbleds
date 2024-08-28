@@ -29,6 +29,7 @@
         }"
         :autospeak-on-change="step"
         :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text', 'h3', 'p']"
+        :options="speech"
       />
     </v-toolbar>
 

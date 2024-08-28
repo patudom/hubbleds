@@ -37,6 +37,7 @@ def Page():
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
         tool.go_to_coordinates(coordinates, fov=fov, instant=instant)
 
+    speech = Ref(GLOBAL_STATE.fields.speech)
     IntroSlideshowVue(
         step=0,
         length=8,
@@ -54,4 +55,5 @@ def Page():
         exploration_tool1=exploration_tool1,
         exploration_tool2=exploration_tool2,
         event_go_to_location=go_to_location,
+        speech=speech.value,
     )
