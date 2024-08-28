@@ -38,14 +38,14 @@ def Page():
         tool.go_to_coordinates(coordinates, fov=fov, instant=instant)
 
     IntroSlideshowVue(
-        step = 0,
-        length = 8,
-        titles = [
-        "Our Place in the Universe",
-        "Answering Questions with Data",
-        "Astronomy in the early 1900s",
-        "Henrietta Leavitt's Discovery",
-        "Vesto Slipher and Spectral Data"
+        step=0,
+        length=8,
+        titles=[
+            "Our Place in the Universe",
+            "Answering Questions with Data",
+            "Astronomy in the early 1900s",
+            "Henrietta Leavitt's Discovery",
+            "Vesto Slipher and Spectral Data"
         ],
         image_location=f"{IMAGE_BASE_URL}/stage_intro",
         event_slideshow_finished=lambda _: router.push("01-spectra-&-velocity"),
