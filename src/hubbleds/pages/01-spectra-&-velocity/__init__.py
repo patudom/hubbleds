@@ -212,13 +212,37 @@ def Page():
 
     solara.lab.use_task(_delay_selection_tool)
 
-    def _fill_data_points():
+    def _fill_galaxies():
         dummy_measurements = LOCAL_API.get_dummy_data()
+        measurements = []
         for measurement in dummy_measurements:
-            measurement.student_id = GLOBAL_STATE.value.student.id
-        Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
+            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                                   galaxy=measurement.galaxy))
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
-    
+    def _fill_lambdas():
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        measurements = []
+        for measurement in dummy_measurements:
+            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                                   obs_wave_value=measurement.obs_wave_value,
+                                                   galaxy=measurement.galaxy))
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+
+    def _fill_stage1_go_stage3():
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        measurements = []
+        for measurement in dummy_measurements:
+            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                                   obs_wave_value=measurement.obs_wave_value,
+                                                   galaxy=measurement.galaxy,
+                                                   velocity_value=measurement.velocity_value))
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        router.push("03-distance-measurements")
+
+
+    def _select_random_galaxies():
+        pass
     
 
     def num_bad_velocities():
@@ -304,9 +328,9 @@ def Page():
 
     with solara.Row():
         with solara.Column():
-            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
-        with solara.Column():
-            solara.Button(label="Fill data points", on_click=_fill_data_points)
+            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+        # with solara.Column():
+        #     solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -352,6 +376,8 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal4),
             )
+            # if COMPONENT_STATE.value.is_current_step(Marker.sel_gal3):
+            #     solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
 
         with rv.Col(cols=8):
             
@@ -510,6 +536,7 @@ def Page():
             #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
             #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13),
             # )
+            set_obs_wave_total()
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRemainingGals.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -527,6 +554,8 @@ def Page():
                     ),
                 },
             )
+            # if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
+            #     solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),

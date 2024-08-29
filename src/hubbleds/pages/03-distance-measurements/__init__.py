@@ -184,9 +184,33 @@ def Page():
 
         
     solara.use_memo(_state_callback_setup)
+    
+    def _fill_data_points():
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        for measurement in dummy_measurements:
+            measurement.student_id = GLOBAL_STATE.value.student.id
+        Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
+        Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
+        router.push("04-explore-data")
 
+    def _fill_thetas():
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        measurements = []
+        for measurement in dummy_measurements:
+            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                                   obs_wave_value=measurement.obs_wave_value,
+                                                   velocity_value=measurement.velocity_value,
+                                                   ang_size_value=measurement.ang_size_value,
+                                                   galaxy=measurement.galaxy))
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
 
-    StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
+    with solara.Row():
+        with solara.Column():
+            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+        # with solara.Column():
+        #     solara.Button(label="Shortcut: Fill in distance data & Go to Stage 4", on_click=_fill_data_points)
+    # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
     def put_measurements(samples):
@@ -508,6 +532,8 @@ def Page():
                     "bad_angsize": False
                 }
             )
+            # if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
+            #     solara.Button(label="Shortcut: Fill Angular Size Measurements", on_click=_fill_thetas)
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
                 event_next_callback=lambda _: router.push("04-explore-data"),
