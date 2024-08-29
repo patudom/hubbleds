@@ -44,6 +44,9 @@ def Page():
         "Our Place in the Universe",
         "Answering Questions with Data",
         "Astronomy in the early 1900s",
+        "Explore the Cosmic Sky",
+        "What are the Fuzzy Things?",
+        "Spiral Nebulae and the Great Debate",
         "Henrietta Leavitt's Discovery",
         "Vesto Slipher and Spectral Data"
         ],
