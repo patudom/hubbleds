@@ -39,14 +39,17 @@ def Page():
 
     speech = Ref(GLOBAL_STATE.fields.speech)
     IntroSlideshowVue(
-        step=0,
-        length=8,
-        titles=[
-            "Our Place in the Universe",
-            "Answering Questions with Data",
-            "Astronomy in the early 1900s",
-            "Henrietta Leavitt's Discovery",
-            "Vesto Slipher and Spectral Data"
+        step = 0,
+        length = 8,
+        titles = [
+        "Our Place in the Universe",
+        "Answering Questions with Data",
+        "Astronomy in the early 1900s",
+        "Explore the Cosmic Sky",
+        "What are the Fuzzy Things?",
+        "Spiral Nebulae and the Great Debate",
+        "Henrietta Leavitt's Discovery",
+        "Vesto Slipher and Spectral Data"
         ],
         image_location=f"{IMAGE_BASE_URL}/stage_intro",
         event_slideshow_finished=lambda _: router.push("01-spectra-&-velocity"),
