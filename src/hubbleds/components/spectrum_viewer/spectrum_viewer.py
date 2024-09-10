@@ -16,11 +16,12 @@ def SpectrumViewer(
     on_obs_wave_measured: Callable = None,
     on_obs_wave_tool_clicked: Callable = lambda: None,
     on_zoom_tool_clicked: Callable = lambda: None,
-    add_marker_here: float | None = None,
+    add_marker_here: solara.Reactive[float] = None,
 ):
 
     vertical_line_visible = solara.use_reactive(False)
     toggle_group_state = solara.use_reactive([])
+    # add_marker_here = solara.use_reactive(add_marker_here)
 
     
     def _on_change_marker_here():
@@ -74,6 +75,10 @@ def SpectrumViewer(
         if spectrum_click_enabled:
             vertical_line_visible.set(True)
             on_obs_wave_measured(round(kwargs["points"]["xs"][0]))
+        elif add_marker_here is not None:
+            vertical_line_visible.set(False)
+            add_marker_here.set(round(kwargs["points"]["xs"][0]))
+            
 
     with rv.Card():
         with rv.Toolbar(class_="toolbar", dense=True):
@@ -143,13 +148,14 @@ def SpectrumViewer(
             # annotation_position="top right",
             visible=vertical_line_visible.value and obs_wave > 0.0,
         )
-
-        fig.add_vline(
-            x = add_marker_here,
-            line_width = 1,
-            line_color = "green",
-            visible = add_marker_here is not None
-        )
+        
+        if (add_marker_here is not None) and (not spectrum_click_enabled):
+            fig.add_vline(
+                x = add_marker_here.value,
+                line_width = 1,
+                line_color = "green",
+                visible = True,
+            )
         
 
         fig.add_shape(
@@ -219,19 +225,25 @@ def SpectrumViewer(
         )
 
         fig.update_layout(dragmode="zoom" if 0 in toggle_group_state.value else "pan")
-
+        
+        dependencies = [
+            obs_wave,
+            spectrum_click_enabled,
+            vertical_line_visible.value,
+            toggle_group_state.value,
+            x_bounds.value,
+            y_bounds.value,
+            
+        ]
+        
+        if add_marker_here is not None:
+            dependencies.append(add_marker_here.value)
+        
         FigurePlotly(
             fig,
             on_click=lambda kwargs: _spectrum_clicked(**kwargs),
             on_relayout=_on_relayout,
-            dependencies=[
-                obs_wave,
-                spectrum_click_enabled,
-                vertical_line_visible.value,
-                toggle_group_state.value,
-                x_bounds.value,
-                y_bounds.value,
-            ],
+            dependencies=dependencies,
             config={
                 "displayModeBar": False,
             },
