@@ -85,6 +85,8 @@ def DotplotViewer(
             return line_ids
         
         def _remove_lines(viewers: List[PlotlyBaseView], line_ids: List[List[str]]):
+            if not line_ids:
+                return
             for (viewer, viewer_line_ids) in zip(viewers, line_ids):
                 lines = list(viewer.figure.select_traces(lambda t: t.meta in viewer_line_ids))
                 viewer.figure.data = list(reversed([t for t in viewer.figure.data if t not in lines]))
@@ -131,9 +133,10 @@ def DotplotViewer(
             for layer in dotplot_view.layers:
                 original_update_data = layer._update_data
                 def no_hover_update():
-                    original_update_data()
-                    for trace in layer.traces():
-                        trace.update(hoverinfo="skip", hovertemplate=None)
+                    with dotplot_view.figure.batch_update():
+                        original_update_data()
+                        for trace in layer.traces():
+                            trace.update(hoverinfo="skip", hovertemplate=None)
                 layer._update_data = no_hover_update
             
 
