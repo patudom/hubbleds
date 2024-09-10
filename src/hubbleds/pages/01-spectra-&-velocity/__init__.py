@@ -834,7 +834,7 @@ def Page():
                     return DotplotViewer(gjapp,
                                          data=viewer_data,
                                          component_id=DB_VELOCITY_FIELD,
-                                         vertical_line_visible=COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
+                                         vertical_line_visible=True, #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
                                          line_marker_at=Ref(COMPONENT_STATE.fields.sync_velocity_line),
                                          on_click_callback=lambda _1, point, _2: sync_example_velocity_to_wavelength(point.xs[0]),
                                          unit="km / s",
@@ -1070,6 +1070,7 @@ def Page():
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
+                        add_marker_here=Ref(COMPONENT_STATE.fields.sync_wavelength_line),
                     )
 
                     spectrum_tutorial_opened = Ref(
