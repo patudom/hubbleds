@@ -27,7 +27,7 @@ def DataTable(
     title: str = "",
     headers: list[dict] = DEFAULT_HEADERS,
     items: list = [],
-    selected: list = [],
+    selected_indices: list[int] = [],
     highlighted: bool = False,
     button_icon: str = "",
     show_button: bool = False,

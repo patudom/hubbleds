@@ -80,12 +80,30 @@
 </style>
 <script setup>
 module.exports = {
+  data() {
+    return {
+      selected: [],
+    };
+  },
   computed: {
-    indexedItems () {
+    indexedItems() {
       return this.items.map((item, index) => ({
         id: item.galaxy.name,
         ...item
       }))
+    }
+  },
+  methods: {
+    updateSelected(indices) {
+      this.selected = this.indexedItems.filter((element, index) => indices.includes(index));
+    }
+  },
+  watch: {
+    selected_indices(indices) {
+      this.updateSelected(indices);
+    },
+    items(newItems) {
+      this.updateSelected(this.selected_indices);
     }
   }
 }
