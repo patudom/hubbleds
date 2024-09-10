@@ -25,7 +25,7 @@ DEFAULT_HEADERS = [
 @solara.component_vue("DataTable.vue")
 def DataTable(
     title: str = "",
-    headers: dict = DEFAULT_HEADERS,
+    headers: list[dict] = DEFAULT_HEADERS,
     items: list = [],
     selected: list = [],
     highlighted: bool = False,
