@@ -269,11 +269,12 @@ def Page():
                 num += 1
         obs_wave_total.set(num)
     
+    sync_wavelength_line = solara.use_reactive(6565.0)
+    sync_velocity_line = solara.use_reactive(8000.0)
     ## ----- Make sure we are initialized in the correct state ----- ##
     def sync_example_velocity_to_wavelength(velocity):
         print('====================', velocity)
         if len(LOCAL_STATE.value.example_measurements) > 0:
-            sync_wavelength_line = Ref(COMPONENT_STATE.fields.sync_wavelength_line)
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
             lambda_obs = lambda_rest * ((velocity / 3e5) + 1)
             print('lambda_obs:', lambda_obs)
@@ -282,7 +283,6 @@ def Page():
     def sync_example_wavelength_to_velocity(wavelength):
         print('====================', wavelength)
         if len(LOCAL_STATE.value.example_measurements) > 0:
-            sync_velocity_line = Ref(COMPONENT_STATE.fields.sync_velocity_line)
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
             velocity = 3e5 * ((wavelength / lambda_rest) - 1)
             print('velocity:', velocity)
@@ -302,16 +302,12 @@ def Page():
         
         if (len(LOCAL_STATE.value.example_measurements) > 0):
             meas = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            sync_wavelength_line = Ref(COMPONENT_STATE.fields.sync_wavelength_line)
             sync_wavelength_line.set(meas)
             sync_example_wavelength_to_velocity(meas)
     
     loaded_component_state.subscribe(_initialize_state)
     
     def _sync_setup():
-        sync_velocity_line = Ref(COMPONENT_STATE.fields.sync_velocity_line)
-        sync_wavelength_line = Ref(COMPONENT_STATE.fields.sync_wavelength_line)
-            
         sync_velocity_line.subscribe(sync_example_velocity_to_wavelength)
         sync_wavelength_line.subscribe(sync_example_wavelength_to_velocity)
     
@@ -835,7 +831,7 @@ def Page():
                                          data=viewer_data,
                                          component_id=DB_VELOCITY_FIELD,
                                          vertical_line_visible=True, #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
-                                         line_marker_at=Ref(COMPONENT_STATE.fields.sync_velocity_line),
+                                         line_marker_at=sync_velocity_line,
                                          on_click_callback=lambda _1, point, _2: sync_example_velocity_to_wavelength(point.xs[0]),
                                          unit="km / s",
                                          x_label="Velocity (km/s)",
@@ -1070,7 +1066,7 @@ def Page():
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
-                        add_marker_here=Ref(COMPONENT_STATE.fields.sync_wavelength_line),
+                        add_marker_here=sync_wavelength_line,
                     )
 
                     spectrum_tutorial_opened = Ref(
