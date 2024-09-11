@@ -33,7 +33,8 @@ def DotplotViewer(
     unit: Optional[str] = None,
     x_label: Optional[str] = None,
     y_label: Optional[str] = None,
-    zorder: Optional[list[int]] = None
+    zorder: Optional[list[int]] = None,
+    nbin: int = 75,
     ):
     
     """
@@ -125,6 +126,8 @@ def DotplotViewer(
                 if len(data) > 1:
                     for viewer_data in data[1:]:
                         dotplot_view.add_data(viewer_data)
+            
+            dotplot_view.state.hist_n_bin = nbin
             
             for layer in dotplot_view.layers:
                 for trace in layer.traces():

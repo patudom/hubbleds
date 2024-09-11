@@ -102,7 +102,7 @@ def Page():
         )
 
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
-            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE)
+            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE, which='first')
             data = Data(
                 label=EXAMPLE_GALAXY_SEED_DATA,
                 **{
@@ -836,7 +836,8 @@ def Page():
                                          unit="km / s",
                                          x_label="Velocity (km/s)",
                                          y_label="Number",
-                                         zorder=[5,1]
+                                         zorder=[5,1],
+                                         nbin=75
                                          )
                 
                 

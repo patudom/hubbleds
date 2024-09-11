@@ -144,7 +144,7 @@ def Page():
         
         # Get the example seed data
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
-            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE)
+            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE, which = 'first')
             data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **{k: asarray([r[k] for r in example_seed_data]) for k in example_seed_data[0].keys()})
             gjapp.data_collection.append(data)
         
