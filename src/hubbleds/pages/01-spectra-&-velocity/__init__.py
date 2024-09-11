@@ -35,7 +35,7 @@ from ...data_management import (
 )
 import numpy as np
 from glue.core import Data
-from hubbleds.utils import models_to_glue_data, velocity_from_wavelengths
+from hubbleds.utils import models_to_glue_data, velocity_from_wavelengths, v2w, w2v
 
 logger = setup_logger("STAGE")
 
@@ -271,12 +271,14 @@ def Page():
     
     sync_wavelength_line = solara.use_reactive(6565.0)
     sync_velocity_line = solara.use_reactive(8000.0)
+    spectrum_bounds = solara.use_reactive([])
+    dotplot_bounds = solara.use_reactive([])
     ## ----- Make sure we are initialized in the correct state ----- ##
     def sync_example_velocity_to_wavelength(velocity):
         print('====================', velocity)
         if len(LOCAL_STATE.value.example_measurements) > 0:
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            lambda_obs = lambda_rest * ((velocity / 3e5) + 1)
+            lambda_obs = v2w(velocity, lambda_rest)
             print('lambda_obs:', lambda_obs)
             sync_wavelength_line.set(lambda_obs)
     
@@ -284,10 +286,27 @@ def Page():
         print('====================', wavelength)
         if len(LOCAL_STATE.value.example_measurements) > 0:
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            velocity = 3e5 * ((wavelength / lambda_rest) - 1)
+            velocity = w2v(wavelength, lambda_rest)
             print('velocity:', velocity)
             sync_velocity_line.set(velocity)
     
+    def sync_spectrum_to_dotplot_range(value):
+        print('sync_spectrum_to_dotplot_range', value)
+        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+        new_val = [w2v(v, lambda_rest) for v in value]
+        if len(dotplot_bounds.value) != 2 or not np.isclose(dotplot_bounds.value, new_val).all():
+            dotplot_bounds.set(new_val)
+        else:
+            print('dotplot_bounds already set')
+    
+    def sync_dotplot_to_spectrum_range(value):
+        print('sync_dotplot_to_spectrum_range', value)
+        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+        new_val = [v2w(v, lambda_rest) for v in value]
+        if len(spectrum_bounds.value) != 2 or not np.isclose(spectrum_bounds.value,new_val).all():
+            spectrum_bounds.set(new_val)
+        else:
+            print('spectrum_bounds already set')
             
     def _initialize_state(isloaded):
         if (not isloaded):
@@ -310,6 +329,8 @@ def Page():
     def _sync_setup():
         sync_velocity_line.subscribe(sync_example_velocity_to_wavelength)
         sync_wavelength_line.subscribe(sync_example_wavelength_to_velocity)
+        spectrum_bounds.subscribe(sync_spectrum_to_dotplot_range)
+        dotplot_bounds.subscribe(sync_dotplot_to_spectrum_range)
     
     solara.use_memo(_sync_setup)
     
@@ -837,7 +858,8 @@ def Page():
                                          x_label="Velocity (km/s)",
                                          y_label="Number",
                                          zorder=[5,1],
-                                         nbin=75
+                                         nbin=75,
+                                         x_bounds = dotplot_bounds,
                                          )
                 
                 
@@ -1068,6 +1090,7 @@ def Page():
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
                         add_marker_here=sync_wavelength_line,
+                        spectrum_bounds = spectrum_bounds
                     )
 
                     spectrum_tutorial_opened = Ref(

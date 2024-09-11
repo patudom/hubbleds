@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import plotly.express as px
 import reacton.ipyvuetify as rv
@@ -17,8 +17,9 @@ def SpectrumViewer(
     on_obs_wave_tool_clicked: Callable = lambda: None,
     on_zoom_tool_clicked: Callable = lambda: None,
     add_marker_here: solara.Reactive[float] = None,
+    spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
 ):
-
+# spectrum_bounds
     vertical_line_visible = solara.use_reactive(False)
     toggle_group_state = solara.use_reactive([])
     # add_marker_here = solara.use_reactive(add_marker_here)
@@ -30,6 +31,9 @@ def SpectrumViewer(
 
     x_bounds = solara.use_reactive([])
     y_bounds = solara.use_reactive([])
+    spectrum_bounds = solara.use_reactive(spectrum_bounds or [], 
+                                          on_change=lambda x: x_bounds.set(x))
+    
 
     async def _load_spectrum():
         if galaxy_data is None:
@@ -41,9 +45,19 @@ def SpectrumViewer(
         _load_spectrum,
         dependencies=[galaxy_data],
     )
+    
+    # def on_x_bounds_changed(new_bounds):
+    #     spectrum_bounds.set(new_bounds)
+    # def on_spectrum_bounds_changed(new_bounds):
+    #     x_bounds.set(new_bounds)
 
     def _obs_wave_tool_toggled():
         on_obs_wave_tool_clicked()
+    
+    # def _set_up_link():
+    #     x_bounds.subscribe(on_x_bounds_changed)
+    #     spectrum_bounds.subscribe(on_spectrum_bounds_changed)
+
 
     def _on_relayout(event):
         if event is None:
@@ -66,10 +80,24 @@ def SpectrumViewer(
         except:
             x_bounds.set([])
             y_bounds.set([])
+        
+        if "relayout_data" in event:
+            spectrum_bounds.set([
+                event["relayout_data"]["xaxis.range[0]"],
+                event["relayout_data"]["xaxis.range[1]"],
+            ])
 
     def _on_reset_button_clicked(*args, **kwargs):
         x_bounds.set([])
         y_bounds.set([])
+        try:
+            if spec_data_task.value is not None:
+                spectrum_bounds.set([
+                    spec_data_task.value["wave"].min(),
+                    spec_data_task.value["wave"].max(),
+                ])
+        except Exception as e:
+            print(e)
 
     def _spectrum_clicked(**kwargs):
         if spectrum_click_enabled:
@@ -131,7 +159,9 @@ def SpectrumViewer(
             return
 
         fig = px.line(spec_data_task.value, x="wave", y="flux")
-
+        
+        
+        
         fig.update_layout(
             margin=dict(l=0, r=10, t=10, b=0), 
             yaxis=dict(fixedrange=True),
@@ -225,6 +255,7 @@ def SpectrumViewer(
         )
 
         fig.update_layout(dragmode="zoom" if 0 in toggle_group_state.value else "pan")
+        
         
         dependencies = [
             obs_wave,

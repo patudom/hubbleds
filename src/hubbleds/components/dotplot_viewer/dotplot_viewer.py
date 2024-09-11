@@ -19,22 +19,25 @@ from typing import Callable, Iterable, List, cast, Union, Optional
 from solara.toestand import Reactive
 import numpy as np
 
+from glue_jupyter import JupyterApplication
+
 @solara.component
 def DotplotViewer(
-    gjapp, 
+    gjapp: JupyterApplication, 
     data=None, 
     component_id=None, 
     title = None, 
     height=300, 
     on_click_callback = None, 
-    line_marker_at: Optional[Reactive | int | float] = Reactive(None), 
+    line_marker_at: Optional[Reactive | int | float] = None, 
     line_marker_color = 'red', 
-    vertical_line_visible: Union[Reactive[bool], bool] = Reactive(True),
+    vertical_line_visible: Union[Reactive[bool], bool] = True,
     unit: Optional[str] = None,
     x_label: Optional[str] = None,
     y_label: Optional[str] = None,
     zorder: Optional[list[int]] = None,
     nbin: int = 75,
+    x_bounds: Optional[Reactive[list[float]]] = None,
     ):
     
     """
@@ -63,8 +66,9 @@ def DotplotViewer(
     
     """
     
-    line_marker_at = solara.Reactive(line_marker_at)
-    vertical_line_visible = solara.Reactive(vertical_line_visible)
+    line_marker_at = solara.use_reactive(line_marker_at)
+    vertical_line_visible = solara.use_reactive(vertical_line_visible)
+    x_bounds = solara.use_reactive(x_bounds) # type: ignore
     
     with rv.Card() as main:
         with rv.Toolbar(dense=True, class_="toolbar"):
@@ -116,7 +120,7 @@ def DotplotViewer(
                     viewer_data = data[0]
             
             dotplot_view: HubbleDotPlotViewer = gjapp.new_data_viewer(
-                HubbleDotPlotView, data=viewer_data, show=False)
+                HubbleDotPlotView, data=viewer_data, show=False) # type: ignore
 
             
             if component_id is not None:
@@ -128,6 +132,13 @@ def DotplotViewer(
                         dotplot_view.add_data(viewer_data)
             
             dotplot_view.state.hist_n_bin = nbin
+            if x_bounds.value is not None:
+                if len(x_bounds.value) == 2:
+                    dotplot_view.state.x_min = x_bounds.value[0]
+                    dotplot_view.state.x_max = x_bounds.value[1]
+            
+            
+            
             
             for layer in dotplot_view.layers:
                 for trace in layer.traces():
@@ -238,10 +249,39 @@ def DotplotViewer(
                         layer.state.zorder = zorder[i]
                         print(f"Layer {layer} zorder: {layer.state.zorder}")
             
+            # prevent_callback = False
+            
+            def _on_bounds_changed(*args):
+                print("Bounds changed")
+                new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
+                if (
+                    x_bounds.value is None or 
+                    len(x_bounds.value) != 2 or
+                    not np.isclose(x_bounds.value, new_range).all()
+                    ):
+                    x_bounds.set(new_range)
+                
+            # def _on_xmin_xmax_changed(*args):
+            #     nonlocal prevent_callback
+            #     if not prevent_callback:
+            #         x_bounds.set([dotplot_view.state.x_min, dotplot_view.state.x_min])
+            #         prevent_callback = True
+            #     else:
+            #         prevent_callback = False
+                
+                
+            
+            # dotplot_view.state.add_callback('x_min', _on_xmin_xmax_changed)
+            # dotplot_view.state.add_callback('x_max', _on_xmin_xmax_changed)
+                
+            
+            
             def extend_the_tools():  
                 print("Extending the tools")       
                 extend_tool(dotplot_view, 'plotly:home', activate_cb=apply_zorder)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=apply_zorder)
+                # extend_tool(dotplot_view, 'plotly:home', activate_cb=_on_bounds_changed)
+                extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_bounds_changed)
             extend_the_tools()
             tool = dotplot_view.toolbar.tools['plotly:home']
             if tool:
@@ -255,7 +295,13 @@ def DotplotViewer(
                 
             line_marker_at.subscribe(lambda new_val: _update_lines(value = new_val))
             vertical_line_visible.subscribe(lambda new_val: _update_lines())
-
+            def update_x_bounds(new_val):
+                if new_val is not None and len(new_val) == 2:
+                    dotplot_view.state.x_min = new_val[0]
+                    dotplot_view.state.x_max = new_val[1]
+            x_bounds.subscribe(update_x_bounds)
+            
+            
             def cleanup():
                 for cnt in (title_widget, toolbar_widget, viewer_widget):
                     cnt.children = ()

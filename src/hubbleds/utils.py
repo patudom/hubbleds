@@ -117,6 +117,11 @@ def format_measured_angle(angle):
 def velocity_from_wavelengths(lamb_meas, lamb_rest):
     return round((3 * (10**5) * (lamb_meas / lamb_rest - 1)), 0)
 
+def w2v(lambda_meas, lamb_rest):
+    return SPEED_OF_LIGHT * (lambda_meas / lamb_rest - 1)
+
+def v2w(velocity, lamb_rest):
+    return lamb_rest * (velocity / SPEED_OF_LIGHT + 1)
 
 def distance_from_angular_size(theta):
     return round(DISTANCE_CONSTANT / theta, 0)
