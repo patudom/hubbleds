@@ -8,7 +8,9 @@ from pydantic import BaseModel
 
 from glue.core import Data
 from numbers import Number
-from typing import List, Set, Tuple, TypeVar
+from typing import List, Set, Tuple, TypeVar, Optional, cast, Any
+from collections.abc import Callable
+from solara.toestand import Reactive
 
 from hubbleds.state import StudentMeasurement
 from glue.core import Data
@@ -215,3 +217,74 @@ def make_summary_data(measurement_data: Data,
         data_kwargs["label"] = label
 
     return Data(**data_kwargs)
+
+from typing import Generic
+A = TypeVar('A', Any, Any)
+B = TypeVar('B', Any, Any)
+def sync_reactives(a: Reactive[A], 
+                   b: Reactive[B], 
+                   forward: Callable[[A], B] = lambda x: x, 
+                   reverse: Callable[[B], A] = lambda x: x,
+                   after_a_synced: Optional[Callable[[Reactive[A]], None]] = None,
+                   after_b_synced: Optional[Callable[[Reactive[B]], None]] = None,
+                   prevent_sync: bool = True,
+                   prevent_sync_value = None
+                   ):
+    """
+    Sync two reactive variables, 
+    with an optional transformation function between them.
+    By default the transformation functions are the identity function. 
+    If you are syncing identical reactives, you may be doing something wrong.
+    
+    By default, the sync will not occur if the transformed value is None.
+    
+    a: Reactive
+        The first reactive variable to sync.
+    b: Reactive
+        The second reactive variable to sync.
+    
+    forward [lambda x: x]: Optional, `function(a) -> b`
+        A function that transforms from `a` to `b`. 
+        Default is the identity function.
+        
+    reverse [lambda x: x]: Optional, `function(b) -> a`
+        A function that transforms from `b` to `a`. 
+        Default is the identity function.
+        
+    after_a_synced [None]: Optional, function(a) -> None
+        Runs after `a` has been recieves a new value from `b`
+        
+    after_b_synced [None]: Optional, function(b) -> None
+        Runs after `b` has been recieves a new value from `a`
+        
+    prevent_sync [True]: Optional, bool
+        If True, the sync will not occur if the transformed value is `prevent_sync_value`
+    
+    prevent_sync_value [None]: Optional, Any.
+        The value that will prevent sync if `prevent_sync` is True.
+    """
+    _equalish = lambda x, y: (x == y) or (x is y) # np.nan requires 'is' -_-
+    
+    def on_a_changed(new: A):
+        val = forward(new)
+        if prevent_sync and _equalish(val, prevent_sync_value):
+            return
+
+        b.set(val)
+        if after_b_synced:
+            after_b_synced(b)
+
+    def on_b_changed(new: B):
+        val = reverse(new)
+        if prevent_sync and _equalish(val, prevent_sync_value):
+            return
+
+        a.set(val)
+        if after_a_synced:
+            after_a_synced(a)
+    
+    
+    a.subscribe(on_a_changed)
+    b.subscribe(on_b_changed)
+
+

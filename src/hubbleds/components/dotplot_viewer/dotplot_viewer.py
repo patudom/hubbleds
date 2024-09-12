@@ -238,7 +238,7 @@ def DotplotViewer(
                     value = points.xs[0]
                     _update_lines(value = value)
                     if on_click_callback is not None:
-                        on_click_callback(trace, points, selector)
+                        on_click_callback(points)
                 else:
                    print("No points selected")
 
@@ -248,10 +248,11 @@ def DotplotViewer(
             dotplot_view.selection_layer.on_click(on_click)
             unit_str = f" {unit}" if unit else ""
             dotplot_view.selection_layer.update(hovertemplate=f"%{{x:,.0f}}{unit_str}<extra></extra>")
-            dotplot_view.set_selection_active(True)
-            # special treatment for go.Heatmap from https://stackoverflow.com/questions/58630928/how-to-hide-the-colorbar-and-legend-in-plotly-express-bar-graph#comment131880779_68555667
-            dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0, coloraxis='coloraxis')
-            dotplot_view.figure.update_coloraxes(showscale=False)
+            def reset_selection():
+                dotplot_view.set_selection_active(True)
+                # special treatment for go.Heatmap from https://stackoverflow.com/questions/58630928/how-to-hide-the-colorbar-and-legend-in-plotly-express-bar-graph#comment131880779_68555667
+                dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0, coloraxis='coloraxis')
+                dotplot_view.figure.update_coloraxes(showscale=False)
             
 
             def apply_zorder():
@@ -283,12 +284,6 @@ def DotplotViewer(
                 extend_tool(dotplot_view, 'plotly:home', activate_cb=_on_bounds_changed, activate_before_tool=False)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_bounds_changed, )
             extend_the_tools()
-            tool = dotplot_view.toolbar.tools['plotly:home']
-            if tool:
-                tool.activate()
-            
-
-            
             
             if line_marker_at.value is not None:
                 _update_lines(value = line_marker_at.value)
@@ -299,7 +294,14 @@ def DotplotViewer(
                 if new_val is not None and len(new_val) == 2:
                     dotplot_view.state.x_min = new_val[0]
                     dotplot_view.state.x_max = new_val[1]
+                reset_selection()
             x_bounds.subscribe(update_x_bounds)
+            
+            tool = dotplot_view.toolbar.tools['plotly:home']
+            if tool:
+                tool.activate()
+            
+            reset_selection()
             
             
             def cleanup():

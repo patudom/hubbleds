@@ -35,7 +35,7 @@ from ...data_management import (
 )
 import numpy as np
 from glue.core import Data
-from hubbleds.utils import models_to_glue_data, velocity_from_wavelengths, v2w, w2v
+from hubbleds.utils import models_to_glue_data, velocity_from_wavelengths, v2w, w2v, sync_reactives
 
 logger = setup_logger("STAGE")
 
@@ -280,7 +280,7 @@ def Page():
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
             lambda_obs = v2w(velocity, lambda_rest)
             print('lambda_obs:', lambda_obs)
-            sync_wavelength_line.set(lambda_obs)
+            return lambda_obs
     
     def sync_example_wavelength_to_velocity(wavelength):
         print('====================', wavelength)
@@ -288,29 +288,17 @@ def Page():
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
             velocity = w2v(wavelength, lambda_rest)
             print('velocity:', velocity)
-            sync_velocity_line.set(velocity)
+            return velocity
     
     def sync_spectrum_to_dotplot_range(value):
         print('sync_spectrum_to_dotplot_range')
         lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-        new_val = [w2v(v, lambda_rest) for v in value]
-        if len(dotplot_bounds.value) != 2 or not np.isclose(dotplot_bounds.value, new_val).all():
-            print(f'\tincoming value', [f'{v:.2f}' for v in value])
-            print('\tset dotplot bounds to', [f'{v:.2f}' for v in new_val])
-            dotplot_bounds.set(new_val)
-        else:
-            print('\tdotplot_bounds already set')
+        return [w2v(v, lambda_rest) for v in value]
     
     def sync_dotplot_to_spectrum_range(value):
         print('sync_dotplot_to_spectrum_range')
         lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-        new_val = [v2w(v, lambda_rest) for v in value]
-        if len(spectrum_bounds.value) != 2 or not np.isclose(spectrum_bounds.value,new_val).all():
-            print(f'\tincoming value', [f'{v:.2f}' for v in value])
-            print('\tset spectrum bounds to', [f'{v:.2f}' for v in new_val])
-            spectrum_bounds.set(new_val)
-        else:
-            print('\tspectrum_bounds already set')
+        return [v2w(v, lambda_rest) for v in value]
             
     def _initialize_state(isloaded):
         if (not isloaded):
@@ -326,15 +314,22 @@ def Page():
         if (len(LOCAL_STATE.value.example_measurements) > 0):
             meas = LOCAL_STATE.value.example_measurements[0].rest_wave_value
             sync_wavelength_line.set(meas)
-            sync_example_wavelength_to_velocity(meas)
+            new_vel = sync_example_wavelength_to_velocity(meas)
+            if new_vel:
+                sync_velocity_line.set(new_vel)
     
     loaded_component_state.subscribe(_initialize_state)
     
     def _sync_setup():
-        sync_velocity_line.subscribe(sync_example_velocity_to_wavelength)
-        sync_wavelength_line.subscribe(sync_example_wavelength_to_velocity)
-        spectrum_bounds.subscribe(sync_spectrum_to_dotplot_range)
-        dotplot_bounds.subscribe(sync_dotplot_to_spectrum_range)
+        sync_reactives(
+            sync_wavelength_line, sync_velocity_line,
+            sync_example_wavelength_to_velocity, sync_example_velocity_to_wavelength
+        )
+
+        sync_reactives(
+            spectrum_bounds, dotplot_bounds,
+            sync_spectrum_to_dotplot_range, sync_dotplot_to_spectrum_range
+        )
     
     solara.use_memo(_sync_setup)
     
@@ -857,7 +852,7 @@ def Page():
                                          component_id=DB_VELOCITY_FIELD,
                                          vertical_line_visible=True, #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
                                          line_marker_at=sync_velocity_line,
-                                         on_click_callback=lambda _1, point, _2: sync_example_velocity_to_wavelength(point.xs[0]),
+                                         on_click_callback=lambda point: sync_velocity_line.set(point.xs[0]),
                                          unit="km / s",
                                          x_label="Velocity (km/s)",
                                          y_label="Number",
