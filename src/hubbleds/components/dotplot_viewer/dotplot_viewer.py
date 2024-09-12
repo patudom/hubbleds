@@ -21,6 +21,19 @@ import numpy as np
 
 from glue_jupyter import JupyterApplication
 
+def valid_two_element_array(arr: Union[None, list]):
+    return not (arr is None or len(arr) != 2)
+
+def different_value(arr, value, index):
+    if not valid_two_element_array(arr):
+        return True
+    return arr[index] != value
+
+def this_or_default(arr, default, index):
+    if not valid_two_element_array(arr):
+        return default
+    return arr[index]
+
 @solara.component
 def DotplotViewer(
     gjapp: JupyterApplication, 
@@ -255,33 +268,20 @@ def DotplotViewer(
                 print("Bounds changed")
                 new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
                 if (
-                    x_bounds.value is None or 
-                    len(x_bounds.value) != 2 or
+                    not valid_two_element_array(x_bounds.value) or
                     not np.isclose(x_bounds.value, new_range).all()
                     ):
+                    print('set x_bounds', new_range)
                     x_bounds.set(new_range)
-                
-            # def _on_xmin_xmax_changed(*args):
-            #     nonlocal prevent_callback
-            #     if not prevent_callback:
-            #         x_bounds.set([dotplot_view.state.x_min, dotplot_view.state.x_min])
-            #         prevent_callback = True
-            #     else:
-            #         prevent_callback = False
-                
-                
-            
-            # dotplot_view.state.add_callback('x_min', _on_xmin_xmax_changed)
-            # dotplot_view.state.add_callback('x_max', _on_xmin_xmax_changed)
-                
-            
+                else:
+                    print('Bounds already set')
             
             def extend_the_tools():  
                 print("Extending the tools")       
                 extend_tool(dotplot_view, 'plotly:home', activate_cb=apply_zorder)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=apply_zorder)
-                # extend_tool(dotplot_view, 'plotly:home', activate_cb=_on_bounds_changed)
-                extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_bounds_changed)
+                extend_tool(dotplot_view, 'plotly:home', activate_cb=_on_bounds_changed, activate_before_tool=False)
+                extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_bounds_changed, )
             extend_the_tools()
             tool = dotplot_view.toolbar.tools['plotly:home']
             if tool:

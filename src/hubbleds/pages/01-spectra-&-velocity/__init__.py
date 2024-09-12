@@ -291,22 +291,26 @@ def Page():
             sync_velocity_line.set(velocity)
     
     def sync_spectrum_to_dotplot_range(value):
-        print('sync_spectrum_to_dotplot_range', value)
+        print('sync_spectrum_to_dotplot_range')
         lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
         new_val = [w2v(v, lambda_rest) for v in value]
         if len(dotplot_bounds.value) != 2 or not np.isclose(dotplot_bounds.value, new_val).all():
+            print(f'\tincoming value', [f'{v:.2f}' for v in value])
+            print('\tset dotplot bounds to', [f'{v:.2f}' for v in new_val])
             dotplot_bounds.set(new_val)
         else:
-            print('dotplot_bounds already set')
+            print('\tdotplot_bounds already set')
     
     def sync_dotplot_to_spectrum_range(value):
-        print('sync_dotplot_to_spectrum_range', value)
+        print('sync_dotplot_to_spectrum_range')
         lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
         new_val = [v2w(v, lambda_rest) for v in value]
         if len(spectrum_bounds.value) != 2 or not np.isclose(spectrum_bounds.value,new_val).all():
+            print(f'\tincoming value', [f'{v:.2f}' for v in value])
+            print('\tset spectrum bounds to', [f'{v:.2f}' for v in new_val])
             spectrum_bounds.set(new_val)
         else:
-            print('spectrum_bounds already set')
+            print('\tspectrum_bounds already set')
             
     def _initialize_state(isloaded):
         if (not isloaded):
