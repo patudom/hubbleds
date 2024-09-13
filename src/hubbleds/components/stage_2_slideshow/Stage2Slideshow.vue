@@ -25,7 +25,7 @@
       <v-spacer></v-spacer>
       <speech-synthesizer
         ref="synth"
-        :root="$el"
+        :root="getRoot"
         :element-filter="(element) => {
           // There's some annoying behavior with when elements lose visibility when changing
           // window items. Rather than doing some crazy shenanigans to wait the right amount of time,
@@ -36,7 +36,7 @@
           return currentWindowItem?.contains(element) ?? false;
         }"
         :autospeak-on-change="step"
-        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text', 'h3', 'p']"
+        :selectors="['div.v-toolbar__title.text-h6', 'h3', 'p']"
         :options="speech"
       />
     </v-toolbar>
@@ -870,6 +870,9 @@
 <script>
 module.exports = {
   methods: {
+    getRoot() {
+      return this.$el;
+    },
     typesetMathJax(entries, _observer, intersecting) {
       if (intersecting) {
         MathJax.typesetPromise(entries.map(entry => entry.target));
