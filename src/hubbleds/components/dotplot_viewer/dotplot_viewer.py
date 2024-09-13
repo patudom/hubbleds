@@ -99,8 +99,6 @@ def DotplotViewer(
             
             viewer.figure.add_trace(line)
             
-        
-            
 
         def _add_viewer():
             if data is None:
@@ -240,8 +238,11 @@ def DotplotViewer(
             tool = dotplot_view.toolbar.tools['plotly:home']
             if tool:
                 tool.activate()
-            
 
+            zoom_tool = dotplot_view.toolbar.tools['hubble:wavezoom']
+            def on_zoom(bounds_old, bounds_new):
+                dotplot_view.state._update_bins()
+            zoom_tool.on_zoom = on_zoom
             
             
             if line_marker_at.value is not None:
