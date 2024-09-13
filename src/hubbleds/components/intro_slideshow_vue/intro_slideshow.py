@@ -16,5 +16,6 @@ def IntroSlideshowVue(
     exploration_tool1,
     exploration_tool2,
     event_go_to_location,
+    speech,
 ):
     pass

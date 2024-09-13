@@ -4,6 +4,7 @@
     @back="back_callback()"
     @next="next_callback()"
     :can-advance="can_advance"
+    :speech="speech"
   >
     <template #before-next>
       Click <span class="inline-guideline-button tutorial">DOT PLOT TUTORIAL</span> button.

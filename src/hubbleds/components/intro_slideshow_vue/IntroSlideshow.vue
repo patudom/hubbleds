@@ -15,7 +15,7 @@
         {{ titles[step] }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <!-- <speech-synthesizer
+      <speech-synthesizer
         ref="synth"
         :root="$el"
         :element-filter="(element) => {
@@ -28,8 +28,9 @@
           return currentWindowItem?.contains(element) ?? false;
         }"
         :autospeak-on-change="step"
-        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text.black--text', 'h3', 'p']"
-      /> -->
+        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text', 'h3', 'p']"
+        :options="speech"
+      />
     </v-toolbar>
 
     <v-window
@@ -226,6 +227,7 @@
                   </p>
                   <p>
                     You can explore this view and see what is in the night sky, as astronomers have been doing for centuries. <strong>Pan</strong> (click and drag) and <strong>zoom</strong> (scroll in and out) to see parts of the sky beyond this view.
+                  </p>
                 </div>
                 <div
                   class="mb-2 mx-4"
@@ -237,7 +239,7 @@
                     >
                       <v-row>
                         <v-col>
-                          <jupyter-widget :widget="exploration_tool">
+                          <jupyter-widget :widget="exploration_tool" />
                         </v-col>
                       </v-row>
                       <v-row>
@@ -355,7 +357,7 @@
                       cols="8"
                       offset-lg="1"
                     >
-                      <jupyter-widget :widget="exploration_tool1">
+                      <jupyter-widget :widget="exploration_tool1" />
                     </v-col>
                     <v-col
                       cols="4"
@@ -575,7 +577,7 @@
                       cols="8"
                       offset-lg="1"
                     >
-                      <jupyter-widget :widget="exploration_tool2">
+                      <jupyter-widget :widget="exploration_tool2" />
                     </v-col>
                     <v-col
                       cols="4"

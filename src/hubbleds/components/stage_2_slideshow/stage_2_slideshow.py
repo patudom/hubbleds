@@ -17,5 +17,6 @@ def Stage2Slideshow (
     event_mc_callback,
     state_view,
     event_slideshow_finished,
+    speech,
 ):
     pass

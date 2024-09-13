@@ -37,18 +37,19 @@ def Page():
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
         tool.go_to_coordinates(coordinates, fov=fov, instant=instant)
 
+    speech = Ref(GLOBAL_STATE.fields.speech)
     IntroSlideshowVue(
         step = 0,
         length = 8,
         titles = [
-        "Our Place in the Universe",
-        "Answering Questions with Data",
-        "Astronomy in the early 1900s",
-        "Explore the Cosmic Sky",
-        "What are the Fuzzy Things?",
-        "Spiral Nebulae and the Great Debate",
-        "Henrietta Leavitt's Discovery",
-        "Vesto Slipher and Spectral Data"
+            "Our Place in the Universe",
+            "Answering Questions with Data",
+            "Astronomy in the early 1900s",
+            "Explore the Cosmic Sky",
+            "What are the Fuzzy Things?",
+            "Spiral Nebulae and the Great Debate",
+            "Henrietta Leavitt's Discovery",
+            "Vesto Slipher and Spectral Data"
         ],
         image_location=f"{IMAGE_BASE_URL}/stage_intro",
         event_slideshow_finished=lambda _: router.push("01-spectra-&-velocity"),
@@ -57,4 +58,5 @@ def Page():
         exploration_tool1=exploration_tool1,
         exploration_tool2=exploration_tool2,
         event_go_to_location=go_to_location,
+        speech=speech.value.model_dump(),
     )
