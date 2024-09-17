@@ -304,9 +304,9 @@
                 </div>
               </v-col>
             </v-row>
-            <!-- <v-snackbar
-              v-model="timer_done[0]"
-              timeout="500000"
+            <v-snackbar
+              v-model="timerComplete[0]"
+              :timeout="500000"
               transition="fab-transition"
               top
               right
@@ -321,13 +321,13 @@
                 color="accent"
                 class="mx-4 black--text"
                 @click="{
-                  timer_done[0] = false;
+                  timerComplete[0] = false;
                   step++;
                 }"
               >
                 move on
               </v-btn>
-            </v-snackbar> -->
+            </v-snackbar>
           </v-container>                                      
         </v-card-text>
       </v-window-item>
@@ -524,9 +524,9 @@
                 </div>
               </v-col>
             </v-row>
-            <!-- <v-snackbar
-              v-model="timer_done[1]"
-              timeout="500000"
+            <v-snackbar
+              v-model="timerComplete[1]"
+              :timeout="500000"
               transition="fab-transition"
               top
               right
@@ -541,13 +541,13 @@
                 color="accent"
                 class="mx-4 black--text"
                 @click="{
-                  timer_done[1] = false;
+                  timerComplete[1] = false;
                   step++;
                 }"
               >
                 move on
               </v-btn>
-            </v-snackbar> -->
+            </v-snackbar>
           </v-container>
         </v-card-text>
       </v-window-item> 
@@ -702,9 +702,9 @@
                 </div>
               </v-col>
             </v-row>
-            <!-- <v-snackbar
-              v-model="timer_done[2]"
-              timeout="500000"
+            <v-snackbar
+              v-model="timerComplete[2]"
+              :timeout="500000"
               transition="fab-transition"
               top
               right
@@ -719,13 +719,13 @@
                 color="accent"
                 class="mx-4 black--text"
                 @click="{
-                  timer_done[0] = false;
+                  timerComplete[2] = false;
                   step++;
                 }"
               >
                 move on
               </v-btn>
-            </v-snackbar> -->
+            </v-snackbar>
           </v-container>   
         </v-card-text>
       </v-window-item>
@@ -987,26 +987,37 @@
 <script>
 module.exports = {
   props: ["continueText", "target"],
+  data() {
+    return {
+      target: '',
+      timerDuration: 120000,
+      timerStarted: [false, false, false],
+      timerComplete: [false, false, false],
+    };
+  },
   methods: {
     startTimer(number) {
       setTimeout(() => {
-        this.set_timer_finished(number);
-    }, this.timer_duration);
-      this.set_timer_started(number);
+        this.$set(this.timerComplete, number, true);
+      }, this.timerDuration);
+      this.$set(this.timerStarted, number, true);
     },
     startTimerIfNeeded(number) {
-      if (!this.timer_started[number]) {
+      if (!this.timerStarted[number]) {
         this.startTimer(number);
       }
     },
-    jupyter_startTimerIfNeeded(number) {
-      this.startTimerIfNeeded(number);
-    }
   },
 
   watch: {
     step(val) {
       this.target = '';
+      if (val >= 3 && val <= 5) {
+        const index = val - 3;
+        this.$set(this.timerStarted, index, false);
+        this.$set(this.timerComplete, index, false);
+        this.startTimerIfNeeded(index);
+      }
     }
   }
 };
