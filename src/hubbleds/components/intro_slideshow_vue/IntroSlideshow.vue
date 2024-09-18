@@ -990,7 +990,7 @@ module.exports = {
   data() {
     return {
       target: '',
-      timerDuration: 120000,
+      timerDuration: [300000, 180000, 180000],
       timerStarted: [false, false, false],
       timerComplete: [false, false, false],
     };
@@ -999,7 +999,7 @@ module.exports = {
     startTimer(number) {
       setTimeout(() => {
         this.$set(this.timerComplete, number, true);
-      }, this.timerDuration);
+      }, this.timerDuration[number]);
       this.$set(this.timerStarted, number, true);
     },
     startTimerIfNeeded(number) {
