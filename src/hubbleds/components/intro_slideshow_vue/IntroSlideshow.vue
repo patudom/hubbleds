@@ -17,7 +17,7 @@
       <v-spacer></v-spacer>
       <speech-synthesizer
         ref="synth"
-        :root="$el"
+        :root="getRoot"
         :element-filter="(element) => {
           // There's some annoying behavior with when elements lose visibility when changing
           // window items. Rather than doing some crazy shenanigans to wait the right amount of time,
@@ -28,7 +28,7 @@
           return currentWindowItem?.contains(element) ?? false;
         }"
         :autospeak-on-change="step"
-        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text', 'h3', 'p']"
+        :selectors="['div.v-toolbar__title.text-h6', 'h3', 'p']"
         :options="speech"
       />
     </v-toolbar>
@@ -988,6 +988,9 @@
 module.exports = {
   props: ["continueText", "target"],
   methods: {
+    getRoot() {
+      return this.$el;
+    },
     startTimer(number) {
       setTimeout(() => {
         this.set_timer_finished(number);
