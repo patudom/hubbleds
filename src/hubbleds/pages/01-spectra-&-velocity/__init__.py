@@ -332,6 +332,8 @@ def Page():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
         # with solara.Column():
         #     solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
+        with solara.column():
+            solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -382,8 +384,6 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal4),
                 speech=speech.value,
             )
-            # if COMPONENT_STATE.value.is_current_step(Marker.sel_gal3):
-            #     solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
 
         with rv.Col(cols=8):
             
