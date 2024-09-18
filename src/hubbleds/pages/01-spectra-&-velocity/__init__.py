@@ -217,7 +217,11 @@ def Page():
         measurements = []
         for measurement in dummy_measurements:
             measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   galaxy=measurement.galaxy))
+                                                   galaxy=measurement.galaxy,
+                                                   obs_wave_value=measurement.obs_wave_value,
+                                                   velocity_value=measurement.velocity_value,
+                                                   ang_size_value=measurement.ang_size_value,
+                                                   est_dist_value=measurement.est_dist_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
     def _fill_lambdas():
@@ -240,11 +244,18 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
         router.push("03-distance-measurements")
 
-
     def _select_random_galaxies():
-        pass
+        need = 5 - len(LOCAL_STATE.value.measurements)
+        if need <= 0:
+            return
+        galaxies = LOCAL_API.get_galaxies(LOCAL_STATE)
+        sample = np.random.choice(galaxies, size=need, replace=False)
+        new_measurements = [StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                               galaxy=galaxy)
+                             for galaxy in sample]
+        measurements = LOCAL_STATE.value.measurements + new_measurements
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
     
-
     def num_bad_velocities():
         measurements = Ref(LOCAL_STATE.fields.measurements)
         num = 0
@@ -330,8 +341,9 @@ def Page():
     with solara.Row():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
-        # with solara.Column():
-        #     solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
+        with solara.Column():
+            solara.Button(label="Fill default vel & dist measurements", on_click=_fill_galaxies)
+            solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -382,8 +394,6 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal4),
                 speech=speech.value,
             )
-            # if COMPONENT_STATE.value.is_current_step(Marker.sel_gal3):
-            #     solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
 
         with rv.Col(cols=8):
             
