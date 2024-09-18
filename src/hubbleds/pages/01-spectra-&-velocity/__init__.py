@@ -217,7 +217,11 @@ def Page():
         measurements = []
         for measurement in dummy_measurements:
             measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   galaxy=measurement.galaxy))
+                                                   galaxy=measurement.galaxy,
+                                                   obs_wave_value=measurement.obs_wave_value,
+                                                   velocity_value=measurement.velocity_value,
+                                                   ang_size_value=measurement.ang_size_value,
+                                                   est_dist_value=measurement.est_dist_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
     def _fill_lambdas():
@@ -338,9 +342,8 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
         with solara.Column():
-            solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
-        with solara.Column():
-            solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_select_random_galaxies)
+            solara.Button(label="Fill default vel & dist measurements", on_click=_fill_galaxies)
+            solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies)
 
     with rv.Row():
         with rv.Col(cols=4):
