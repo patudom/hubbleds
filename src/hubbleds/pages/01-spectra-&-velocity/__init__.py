@@ -273,6 +273,7 @@ def Page():
     sync_velocity_line = solara.use_reactive(8000.0)
     spectrum_bounds = solara.use_reactive([])
     dotplot_bounds = solara.use_reactive([])
+    max_spectrum_bounds = solara.use_reactive([])
     ## ----- Make sure we are initialized in the correct state ----- ##
     def sync_example_velocity_to_wavelength(velocity):
         print('====================', velocity)
@@ -332,6 +333,10 @@ def Page():
         )
     
     solara.use_memo(_sync_setup)
+    
+    @solara.lab.computed
+    def dotplot_reset_bounds():
+        return [sync_example_wavelength_to_velocity(w) for w in max_spectrum_bounds.value] #type: ignore
     
     def print_selected_galaxy(galaxy):
         print('selected galaxy is now:', galaxy)
@@ -881,6 +886,7 @@ def Page():
                                          zorder=[5,1],
                                          nbin=75,
                                          x_bounds = dotplot_bounds,
+                                         reset_bounds = dotplot_reset_bounds.value
                                          )
                 
                 
@@ -1118,7 +1124,8 @@ def Page():
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
                         add_marker_here=sync_wavelength_line,
-                        spectrum_bounds = spectrum_bounds
+                        spectrum_bounds = spectrum_bounds,
+                        max_spectrum_bounds=max_spectrum_bounds
                     )
 
                     spectrum_tutorial_opened = Ref(

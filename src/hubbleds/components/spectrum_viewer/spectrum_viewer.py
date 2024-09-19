@@ -18,6 +18,7 @@ def SpectrumViewer(
     on_zoom_tool_clicked: Callable = lambda: None,
     add_marker_here: solara.Reactive[float] = None,
     spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
+    max_spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
 ):
 # spectrum_bounds
     vertical_line_visible = solara.use_reactive(False)
@@ -31,13 +32,26 @@ def SpectrumViewer(
 
     x_bounds = solara.use_reactive([])
     y_bounds = solara.use_reactive([])
-    spectrum_bounds = solara.use_reactive(spectrum_bounds or [], 
-                                          on_change=lambda x: x_bounds.set(x))
+    if spectrum_bounds is not None:
+        spectrum_bounds = solara.use_reactive(spectrum_bounds, on_change=lambda x: x_bounds.set(x))
+    else:
+        spectrum_bounds = solara.use_reactive([], on_change=lambda x: x_bounds.set(x))
+    if max_spectrum_bounds is not None:
+        max_spectrum_bounds = solara.use_reactive(max_spectrum_bounds)
     
 
     async def _load_spectrum():
         if galaxy_data is None:
             return False
+        
+        try:
+            spec = galaxy_data.spectrum_as_data_frame
+            wavemin = spec["wave"].min()
+            wavemax = spec["wave"].max()
+            if max_spectrum_bounds is not None:
+                max_spectrum_bounds.set([wavemin, wavemax])
+        except Exception as e:
+            print(e)
 
         return galaxy_data.spectrum_as_data_frame
 
@@ -82,10 +96,11 @@ def SpectrumViewer(
             y_bounds.set([])
         
         if "relayout_data" in event:
-            spectrum_bounds.set([
-                event["relayout_data"]["xaxis.range[0]"],
-                event["relayout_data"]["xaxis.range[1]"],
-            ])
+            if "xaxis.range[0]" in event["relayout_data"] and "xaxis.range[1]" in event["relayout_data"]:
+                spectrum_bounds.set([
+                    event["relayout_data"]["xaxis.range[0]"],
+                    event["relayout_data"]["xaxis.range[1]"],
+                ])
 
     def _on_reset_button_clicked(*args, **kwargs):
         x_bounds.set([])

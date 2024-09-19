@@ -51,6 +51,7 @@ def DotplotViewer(
     zorder: Optional[list[int]] = None,
     nbin: int = 75,
     x_bounds: Optional[Reactive[list[float]]] = None,
+    reset_bounds: Reactive[list[float]] = Reactive([]),
     ):
     
     """
@@ -82,6 +83,7 @@ def DotplotViewer(
     line_marker_at = solara.use_reactive(line_marker_at)
     vertical_line_visible = solara.use_reactive(vertical_line_visible)
     x_bounds = solara.use_reactive(x_bounds) # type: ignore
+    reset_bounds = solara.use_reactive(reset_bounds)
     
     with rv.Card() as main:
         with rv.Toolbar(dense=True, class_="toolbar"):
@@ -265,7 +267,14 @@ def DotplotViewer(
             
             def _on_bounds_changed(*args):
                 print("Bounds changed")
-                new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
+                if None not in reset_bounds.value and len(reset_bounds.value) == 2:
+                    new_range = reset_bounds.value
+                    dotplot_view.state.x_min = new_range[0]
+                    dotplot_view.state.x_max = new_range[1]
+                else:
+                    new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
+                
+                # new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
                 if (
                     not valid_two_element_array(x_bounds.value) or
                     not np.isclose(x_bounds.value, new_range).all()
