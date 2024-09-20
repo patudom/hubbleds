@@ -265,7 +265,7 @@ def DotplotViewer(
             
             # prevent_callback = False
             
-            def _on_bounds_changed(*args):
+            def _on_reset_bounds(*args):
                 print("Bounds changed")
                 if None not in reset_bounds.value and len(reset_bounds.value) == 2:
                     new_range = reset_bounds.value
@@ -284,11 +284,23 @@ def DotplotViewer(
                 else:
                     print('Bounds already set')
             
+            def _on_bounds_changed(*args):
+                print("Bounds changed")
+                new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
+                if (
+                    not valid_two_element_array(x_bounds.value) or
+                    not np.isclose(x_bounds.value, new_range).all()
+                    ):
+                    print('set x_bounds', new_range)
+                    x_bounds.set(new_range)
+                else:
+                    print('Bounds already set')
+            
             def extend_the_tools():  
                 print("Extending the tools")       
                 extend_tool(dotplot_view, 'plotly:home', activate_cb=apply_zorder)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=apply_zorder)
-                extend_tool(dotplot_view, 'plotly:home', activate_cb=_on_bounds_changed, activate_before_tool=False)
+                extend_tool(dotplot_view, 'plotly:home', activate_cb=_on_reset_bounds, activate_before_tool=False)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_bounds_changed, )
             extend_the_tools()
             tool = dotplot_view.toolbar.tools['plotly:home']
