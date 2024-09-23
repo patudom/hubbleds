@@ -52,6 +52,7 @@ import astropy.units as u
 
 from pathlib import Path
 from typing import List, Tuple, cast
+from hubbleds.utils import sync_reactives
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
@@ -144,7 +145,7 @@ def Page():
         
         # Get the example seed data
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
-            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE)
+            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE, which = 'first')
             data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **{k: asarray([r[k] for r in example_seed_data]) for k in example_seed_data[0].keys()})
             gjapp.data_collection.append(data)
         
@@ -285,7 +286,23 @@ def Page():
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
     
+    ang_size_dotplot_range = solara.use_reactive([])
+    dist_dotplot_range = solara.use_reactive([])
     
+    @solara.lab.computed
+    def sync_dotplot_axes():
+        return COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.dot_seq4a)
+    
+    def setup_zoom_sync():
+        
+        sync_reactives(
+            ang_size_dotplot_range,
+            dist_dotplot_range,
+            lambda ang: ([(DISTANCE_CONSTANT / a) for a in ang][::-1] if sync_dotplot_axes.value else None), # angular size to distance
+            lambda dist: ([(DISTANCE_CONSTANT / d) for d in dist][::-1] if sync_dotplot_axes.value else None) # distance to angular size
+        )
+    
+    solara.use_memo(setup_zoom_sync)
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -728,7 +745,7 @@ def Page():
 
                 
                 
-                def set_angular_size_line(trace, points, selector):
+                def set_angular_size_line(points):
                     logger.info("Called set_angular_size_line")
                     angular_size_line = Ref(COMPONENT_STATE.fields.angular_size_line)
                     if len(points.xs) > 0:
@@ -737,7 +754,7 @@ def Page():
                         angular_size = DISTANCE_CONSTANT / distance
                         angular_size_line.set(angular_size)
                 
-                def set_distance_line(trace, points, selector):
+                def set_distance_line(points):
                     logger.info("Called set_distance_line")
                     distance_line = Ref(COMPONENT_STATE.fields.distance_line)
                     if len(points.xs) > 0:
@@ -770,6 +787,7 @@ def Page():
                                             x_label="Distance (Mpc)",
                                             y_label="Number",
                                             zorder=[5,1],
+                                            x_bounds=dist_dotplot_range
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
                             DotplotViewer(gjapp, 
@@ -785,6 +803,7 @@ def Page():
                                                 x_label="Angular Size (arcsec)",
                                                 y_label="Number",
                                                 zorder=[5,1],
+                                                x_bounds=ang_size_dotplot_range
                                                 )
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")
