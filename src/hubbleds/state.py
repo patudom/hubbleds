@@ -69,7 +69,7 @@ class StudentMeasurement(BaseModel):
     obs_wave_value: float | None = None
     obs_wave_unit: str = "angstrom"
     velocity_value: float | None = None
-    velocity_unit: str = "km/s"
+    velocity_unit: str = "km / s"
     ang_size_value: float | None = None
     ang_size_unit: str = "arcsecond"
     est_dist_value: float | None = None
@@ -97,11 +97,11 @@ class StudentMeasurement(BaseModel):
 
 
 class BaseSummary(BaseModel):
-    hubble_fit_value: float
-    hubble_fit_unit: str
+    hubble_fit_value: Optional[float] = None
+    hubble_fit_unit: str = "km / s"
     age_value: float
-    age_unit: str
-    last_data_update: datetime.datetime
+    age_unit: str = "Gyr"
+    last_data_update: Optional[datetime.datetime] = None
 
 
 class StudentSummary(BaseSummary):
