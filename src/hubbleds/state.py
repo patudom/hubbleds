@@ -139,6 +139,7 @@ class LocalState(BaseLocalState):
     snackbar_message: str = ""
     stage_4_class_data_students: list[int] = []
     stage_5_class_data_students: list[int] = []
+    last_route: str = ""
 
     @cached_property
     def galaxies(self) -> list[GalaxyData]:

@@ -19,6 +19,8 @@ def Layout(children=[]):
     student_id = Ref(GLOBAL_STATE.fields.student.id)
     loaded_states = solara.use_reactive(False)
 
+    router = solara.use_router()
+
     async def _load_global_local_states():
         if not GLOBAL_STATE.value.student.id:
             logger.warning("Failed to load measurements: no student was found.")
@@ -40,6 +42,7 @@ def Layout(children=[]):
         )
 
         logger.info("Finished loading state.")
+        router.push(LOCAL_STATE.value.last_route)
         loaded_states.set(True)
 
         Ref(LOCAL_STATE.fields.measurements_loaded).set(True)

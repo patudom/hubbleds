@@ -19,6 +19,7 @@ logger = setup_logger("STAGE INTRO")
 @solara.component
 def Page():
     router = solara.use_router()
+    Ref(LOCAL_STATE.fields.last_route).set(router.path)
 
     exploration_tool = ExplorationTool()
     exploration_tool1 = ExplorationTool()
