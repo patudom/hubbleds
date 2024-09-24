@@ -119,8 +119,6 @@ def Page():
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
 
-    Ref(LOCAL_STATE.fields.last_route).set(router.path)
-    
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
         logger.info("Finished loading component state")
