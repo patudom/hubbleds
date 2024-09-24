@@ -41,8 +41,6 @@ def Page():
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
 
-    Ref(LOCAL_STATE.fields.last_route).set(router.path)
-
     async def _load_component_state():
         # Load stored component state from database, measurement data is
         # considered higher-level and is loaded when the story starts

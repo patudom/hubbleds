@@ -22,6 +22,7 @@ def Layout(children=[]):
     loaded_states = solara.use_reactive(False)
 
     router = solara.use_router()
+    Ref(LOCAL_STATE.fields.last_route).set(router.path)
 
     async def _load_global_local_states():
         if not GLOBAL_STATE.value.student.id:
