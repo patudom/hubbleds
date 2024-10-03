@@ -133,10 +133,24 @@ class LocalAPI(BaseAPI):
                 global_state.value.student.id,
             )
             sample_gal_data = LOCAL_API.get_sample_galaxy(local_state)
+            for meas in ['first', 'second']:
+                sample_measurement_json["measurements"].append(
+                    StudentMeasurement(
+                        student_id=global_state.value.student.id,
+                        galaxy=sample_gal_data,
+                        measurement_number=meas
+                    ).dict()
+                )
+        elif len(sample_measurement_json["measurements"]) == 1:
+            logger.info(
+                "Example measurements only had the first. Creating missing second measurement"
+            )
+            sample_gal_data = LOCAL_API.get_sample_galaxy(local_state)
             sample_measurement_json["measurements"].append(
                 StudentMeasurement(
                     student_id=global_state.value.student.id,
                     galaxy=sample_gal_data,
+                    measurement_number='second'
                 ).dict()
             )
 
@@ -186,13 +200,14 @@ class LocalAPI(BaseAPI):
             return
         
         url = f"{self.API_URL}/{local_state.value.story_id}/sample-measurement/"
-
-        for measurement in local_state.value.example_measurements:
-            logger.info(
-                f"Adding example measurement for galaxy `%s` by student `%s`.",
-                measurement.galaxy_id,
-                global_state.value.student.id,
-            )
+    
+        for i, measurement in enumerate(local_state.value.example_measurements):
+            if i == 0:
+                logger.info(
+                    f"Adding example measurement for galaxy `%s` by student `%s`.",
+                    measurement.galaxy_id,
+                    global_state.value.student.id,
+                )
 
             r = self.request_session.put(url, json=measurement.dict(exclude={"galaxy"}))
 
@@ -203,10 +218,10 @@ class LocalAPI(BaseAPI):
                     global_state.value.student.id,
                 )
 
-        logger.info(
-            "Stored example measurements for student %s.",
-            global_state.value.student.id,
-        )
+            logger.info(
+                "Stored example measurements for student %s.",
+                global_state.value.student.id,
+            )
 
     def get_measurement(
         self,

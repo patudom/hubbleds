@@ -88,8 +88,8 @@
       :showContrast=false
       :reset="reset_style"
       @change-style="newStyle => this.wwtStyle = newStyle"
-      @change-brightness="(newBrightness) => $emit('brightness', newBrightness)"
-      @change-contrast="(newContrast) => $emit('contrast', newContrast)"
+      @change-brightness="(newBrightness) => set_brightness(newBrightness)"
+      @change-contrast="(newContrast) => set_contrast(newContrast)"
     />
         
         <!-- add inline style to control using inline css like inlineStyle="border: 1px solid white" -->

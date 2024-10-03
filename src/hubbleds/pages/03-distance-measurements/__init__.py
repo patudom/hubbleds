@@ -2,6 +2,7 @@ import solara
 
 
 from reacton import ipyvuetify as rv
+import solara.lab
 from solara.toestand import Ref
 
 from glue_jupyter.app import JupyterApplication
@@ -40,7 +41,9 @@ from hubbleds.utils import (
     DISTANCE_CONSTANT, 
     GALAXY_FOV,
     distance_from_angular_size,
-    measurement_list_to_glue_data
+    models_to_glue_data,
+    _add_or_update_data, _add_link,
+    subset_by_label
     )
 
 from hubbleds.widgets.distance_tool.distance_tool import DistanceTool
@@ -54,14 +57,34 @@ from pathlib import Path
 from typing import List, Tuple, cast
 from hubbleds.utils import sync_reactives
 
+from hubbleds.example_measurement_helpers import (
+    create_example_subsets,
+    link_example_seed_and_measurements,
+    _update_second_example_measurement
+)
+
+
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
 logger = setup_logger("STAGE3")
 
-
+def update_second_example_measurement():
+    example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
+    if len(example_measurements.value) < 2:
+        logger.info('No second example measurement to update')
+        return
+    
+    changed, updated = _update_second_example_measurement(example_measurements.value)
+    logger.info('Updating second example measurement')
+    
+    if changed != '':
+        logger.info(f'\t\t setting example_measurements: {changed}')
+        example_measurements.set([example_measurements.value[0], updated])
+    else:
+        logger.info('\t\t no changes for second measurement')
 
 @solara.component
-def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback, use_guard, bad_measurement_callback):
+def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback, use_guard, bad_measurement_callback, brightness_callback):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -107,6 +130,11 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
             ruler_count_callback(count)
 
         widget.observe(get_ruler_click_count, ["ruler_click_count"])
+        
+        def update_brightness(change):
+            brightness_callback(change["new"])
+            
+        widget.observe(update_brightness, ["brightness"])
 
     solara.use_effect(_define_callbacks, [])
     
@@ -154,7 +182,11 @@ def Page():
     
     gjapp = solara.use_memo(_glue_setup)
     
+    def add_or_update_data(data):
+        return _add_or_update_data(gjapp, data)
     
+    def add_link(from_dc_name, from_att, to_dc_name, to_att):
+        _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att)
     
     def _state_callback_setup():
         # We want to minimize duplicate state handling, but also keep the states
@@ -186,6 +218,38 @@ def Page():
         
     solara.use_memo(_state_callback_setup)
     
+    def _initialize_state():
+        if (not loaded_component_state.value) or (not LOCAL_STATE.value.measurements_loaded):
+            return
+
+        logger.info('Initializing state')
+        
+        if COMPONENT_STATE.value.current_step >= Marker.cho_row1:
+            logger.info('Setting selected example galaxy')
+            selected_example_galaxy = Ref(COMPONENT_STATE.fields.selected_example_galaxy)
+            if len(LOCAL_STATE.value.example_measurements) > 0:
+                logger.info('Setting selected example galaxy')
+                num = 1 if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq5) else 0
+                selected_example_galaxy.set(LOCAL_STATE.value.example_measurements[num].galaxy.model_dump(exclude={'spectrum'}))
+                logger.info(f'Selected example galaxy: {selected_example_galaxy.value}')
+        
+        angular_sizes_total = 0
+        for measurement in LOCAL_STATE.value.measurements:
+            if measurement.ang_size_value is not None:
+                angular_sizes_total += 1
+        if COMPONENT_STATE.value.angular_sizes_total != angular_sizes_total:
+            Ref(COMPONENT_STATE.fields.angular_sizes_total).set(angular_sizes_total)
+        
+        example_angular_sizes_total = 0
+        for measurement in LOCAL_STATE.value.example_measurements:
+            if measurement.ang_size_value is not None:
+                example_angular_sizes_total += 1
+        if COMPONENT_STATE.value.example_angular_sizes_total != example_angular_sizes_total:
+            Ref(COMPONENT_STATE.fields.example_angular_sizes_total).set(example_angular_sizes_total)
+    
+    solara.use_memo(_initialize_state, dependencies=[loaded_component_state, Ref(LOCAL_STATE.fields.measurements_loaded)])
+    # loaded_component_state.subscribe(_initialize_state)
+    
     def _fill_data_points():
         dummy_measurements = LOCAL_API.get_dummy_data()
         for measurement in dummy_measurements:
@@ -205,6 +269,27 @@ def Page():
                                                    galaxy=measurement.galaxy))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
+    
+    def add_example_measurements_to_glue():
+        logger.info('in add_example_measurements_to_glue')
+        if len(LOCAL_STATE.value.example_measurements) > 0:
+            logger.info(f'has {len(LOCAL_STATE.value.example_measurements)} example measurements')
+            example_measurements_glue = models_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
+            example_measurements_glue.style.color = "red"
+            create_example_subsets(gjapp, example_measurements_glue)
+            
+            use_this = add_or_update_data(example_measurements_glue)
+            use_this.style.color = "red"
+
+            link_example_seed_and_measurements(gjapp)
+        else:
+            logger.info('no example measurements yet')
+        
+    def _glue_data_setup():
+        add_example_measurements_to_glue()
+        update_second_example_measurement()
+    
+    solara.use_effect(_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
 
     with solara.Row():
         with solara.Column():
@@ -220,12 +305,13 @@ def Page():
         else:
             LOCAL_API.put_measurements(GLOBAL_STATE, LOCAL_STATE)
             
-    def _update_angular_size(update_example: bool, galaxy, angular_size, count):
+    def _update_angular_size(update_example: bool, galaxy, angular_size, count, meas_num = 'first'):
         # if bool(galaxy) and angular_size is not None:
         arcsec_value = int(angular_size.to(u.arcsec).value)
         if update_example:
-            index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"])
+            index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"], measurement_number=meas_num)
             if index is not None:
+                measurements = LOCAL_STATE.value.example_measurements
                 measurement = Ref(LOCAL_STATE.fields.example_measurements[index])
                 measurement.set(
                     measurement.value.model_copy(
@@ -234,11 +320,14 @@ def Page():
                             }
                         )
                 )
+                measurements[index] = measurement.value
+                Ref(LOCAL_STATE.fields.example_measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
         else:
             index = LOCAL_STATE.value.get_measurement_index(galaxy["id"])
             if index is not None:
+                measurements = LOCAL_STATE.value.measurements
                 measurement = Ref(LOCAL_STATE.fields.measurements[index])
                 measurement.set(
                     measurement.value.model_copy(
@@ -247,21 +336,25 @@ def Page():
                             }
                         )
                 )
+                measurements[index] = measurement.value
+                Ref(LOCAL_STATE.fields.example_measurements).set(measurements)
                 count.set(count.value + 1)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
    
         
+    @solara.lab.computed
+    def use_second_measurement():
+        return COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq5)
         
             
-    def _update_distance_measurement(update_example: bool, galaxy, theta):
+    def _update_distance_measurement(update_example: bool, galaxy, theta, measurement_number = 'first'):
         # if bool(galaxy) and theta is not None:
         distance = distance_from_angular_size(theta)
         if update_example:
-            print(galaxy)
-            index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"])
-            logger.info(f"Updating example galaxy {galaxy['id']} with distance {distance} with index {index}")
+            index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"], measurement_number=measurement_number)
             if index is not None:
+                measurements = LOCAL_STATE.value.example_measurements
                 measurement = Ref(LOCAL_STATE.fields.example_measurements[index])
                 measurement.set(
                     measurement.value.model_copy(
@@ -270,11 +363,14 @@ def Page():
                             }
                         )
                 )
+                measurements[index] = measurement.value
+                Ref(LOCAL_STATE.fields.example_measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
         else:
             index = LOCAL_STATE.value.get_measurement_index(galaxy["id"])
             if index is not None:
+                measurements = LOCAL_STATE.value.measurements
                 measurement = Ref(LOCAL_STATE.fields.measurements[index])
                 measurement.set(
                     measurement.value.model_copy(
@@ -283,6 +379,8 @@ def Page():
                             }
                         )
                 )
+                measurements[index] = measurement.value
+                Ref(LOCAL_STATE.fields.measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
     
@@ -302,7 +400,21 @@ def Page():
             lambda dist: ([(DISTANCE_CONSTANT / d) for d in dist][::-1] if sync_dotplot_axes.value else None) # distance to angular size
         )
     
-    solara.use_memo(setup_zoom_sync)
+    solara.use_effect(setup_zoom_sync, dependencies = [])
+    
+    def _on_marker_updated(marker_new, marker_old):
+        # logger.info(f"Marker updated from {marker_old} to {marker_new}")
+        if marker_old == Marker.est_dis3:
+            _distance_cb(COMPONENT_STATE.value.meas_theta)
+    
+    Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
+
+    @solara.lab.computed
+    def example_galaxy_measurement_number():
+        if use_second_measurement.value:
+            return 'second'
+        else:
+            return 'first'
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -365,38 +477,39 @@ def Page():
                 GUIDELINE_ROOT / "GuidelineDotplotSeq5.vue",
                 # event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                event_next_callback=lambda _: transition_to(COMPONENT_STATE, Marker.rep_rem1), #
+                event_next_callback=lambda _: transition_to(COMPONENT_STATE, Marker.dot_seq5b), #
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
+                event_force_transition=lambda _: transition_to(COMPONENT_STATE, Marker.rep_rem1),
             )
-            # Not doing the 2nd measurement
-            # ScaffoldAlert(
-            #     # TODO This will need to be wired up once measuring tool is implemented
-            #     GUIDELINE_ROOT / "GuidelineDotplotSeq5b.vue",
-            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
-            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5b),
-            # )
+            # the 2nd measurement
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotplotSeq5b.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5b),
+            )
 
         with rv.Col():
             def show_ruler_range(marker):
                 COMPONENT_STATE.value.show_ruler = Marker.is_between(marker, Marker.ang_siz3, Marker.est_dis4) or \
-                Marker.is_between(marker, Marker.rep_rem1, Marker.last())
+                Marker.is_between(marker, Marker.dot_seq5b, Marker.last())
             
             current_step = Ref(COMPONENT_STATE.fields.current_step)
             current_step.subscribe(show_ruler_range)
 
             @solara.lab.computed
             def on_example_galaxy_marker():
-                return COMPONENT_STATE.value.current_step < Marker.rep_rem1
+                return COMPONENT_STATE.value.current_step <= Marker.dot_seq5c
 
             @solara.lab.computed
             def current_galaxy():
                 galaxy = COMPONENT_STATE.value.selected_galaxy
                 example_galaxy = COMPONENT_STATE.value.selected_example_galaxy
-                logger.info(f"Current galaxy: {example_galaxy if on_example_galaxy_marker.value else galaxy}")
-                return example_galaxy if on_example_galaxy_marker.value else galaxy
+                gal = example_galaxy if on_example_galaxy_marker.value else galaxy
+                logger.info(f'current_galaxy: {gal}')
+                return gal
 
             @solara.lab.computed
             def current_data():
@@ -410,7 +523,7 @@ def Page():
                 """
                 data = current_data.value
                 count = Ref(COMPONENT_STATE.fields.example_angular_sizes_total) if on_example_galaxy_marker.value else Ref(COMPONENT_STATE.fields.angular_sizes_total)
-                _update_angular_size(on_example_galaxy_marker.value, current_galaxy.value, angle, count)
+                _update_angular_size(on_example_galaxy_marker.value, current_galaxy.value, angle, count, example_galaxy_measurement_number.value)
                 put_measurements(samples=on_example_galaxy_marker.value)
                 if on_example_galaxy_marker.value:
                     value = int(angle.to(u.arcsec).value)
@@ -421,6 +534,8 @@ def Page():
                 if COMPONENT_STATE.value.bad_measurement:
                     bad_measurement = Ref(COMPONENT_STATE.fields.bad_measurement)
                     bad_measurement.set(False)
+                if COMPONENT_STATE.value.current_step_at_or_after(Marker.est_dis4):
+                    _distance_cb(angle.to(u.arcsec).value)
             
             def _bad_measurement_cb():
                 bad_measurement = Ref(COMPONENT_STATE.fields.bad_measurement)
@@ -433,8 +548,8 @@ def Page():
                 updates the distance of the galaxy in the data model and
                 puts the measurements in the database.
                 """
-                _update_distance_measurement(on_example_galaxy_marker.value, current_galaxy.value, theta)
-                print('_distance_cb. example:', on_example_galaxy_marker.value)
+                logger.info(f'_distance_cb. example: {on_example_galaxy_marker.value}')
+                _update_distance_measurement(on_example_galaxy_marker.value, current_galaxy.value, theta, example_galaxy_measurement_number.value)
                 put_measurements(samples=on_example_galaxy_marker.value)
 
             def _get_ruler_clicks_cb(count):
@@ -447,7 +562,8 @@ def Page():
                 angular_size_callback=_ang_size_cb,
                 ruler_count_callback=_get_ruler_clicks_cb,
                 bad_measurement_callback=_bad_measurement_cb,
-                use_guard=True
+                use_guard=True,
+                brightness_callback=lambda b: logger.info(f'Update Brightness: {b}')
             )
             
             if COMPONENT_STATE.value.bad_measurement:
@@ -501,7 +617,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.est_dis3),
-                event_set_distance=_distance_cb,
+                # event_set_distance=_distance_cb,
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
                     "meas_theta": COMPONENT_STATE.value.meas_theta,
@@ -518,23 +634,23 @@ def Page():
                     "meas_theta": COMPONENT_STATE.value.meas_theta,
                 },
             )
-            # Not doing the 2nd measurement
-            # ScaffoldAlert(
-            #     # TODO This will need to be wired up once table is implemented
-            #     GUIDELINE_ROOT / "GuidelineDotplotSeq5a.vue",
-            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
-            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5a),
-            # )
-            # Not doing the 2nd measurement
-            # ScaffoldAlert(
-            #     GUIDELINE_ROOT / "GuidelineDotplotSeq5c.vue",
-            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
-            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5c),
-            # )
+            # the 2nd measurement
+            ScaffoldAlert(
+                # TODO This will need to be wired up once table is implemented
+                GUIDELINE_ROOT / "GuidelineDotplotSeq5a.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5a),
+            )
+            # the 2nd measurement
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotplotSeq5c.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5c),
+            )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRepeatRemainingGalaxies.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -572,14 +688,14 @@ def Page():
                     count = 0
                     has_ang_size = all(measurement.ang_size_value is not None for measurement in dataset)
                     if not has_ang_size:
-                        print("\n ======= Not all galaxies have angular sizes ======= \n")
+                        logger.info("\n ======= Not all galaxies have angular sizes ======= \n")
                     for measurement in dataset:
                         if measurement.galaxy is not None and measurement.ang_size_value is not None:
                             count += 1
                             _update_distance_measurement(False, measurement.galaxy.model_dump(), measurement.ang_size_value)
                         elif measurement.ang_size_value is None:
                             logger.info(f"Galaxy {measurement.galaxy_id} has no angular size")
-                    print(f"Filled {count} distances")
+                    logger.info(f"fill_galaxy_distances: Filled {count} distances")
                     put_measurements(samples=False)
                     distances_total.set(count)
 
@@ -596,32 +712,57 @@ def Page():
                     },
                     { "text": "&theta; (arcsec)", "value": "ang_size_value" },
                     { "text": "Distance (Mpc)", "value": "est_dist_value" },
+                    { "text": "Measurement Number", "value": "measurement_number" },
                 ]
 
-            if COMPONENT_STATE.value.current_step_at_or_before(Marker.dot_seq5):
+            if COMPONENT_STATE.value.current_step < Marker.rep_rem1:
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
                     value = galaxy["item"]["galaxy"] if flag else None
                     selected_example_galaxy = Ref(COMPONENT_STATE.fields.selected_example_galaxy)
+                    logger.info(f"selected_example_galaxy: {value}")
                     selected_example_galaxy.set(value)
                     if COMPONENT_STATE.value.is_current_step(Marker.cho_row1):
                         transition_to(COMPONENT_STATE, Marker.ang_siz2)
-
+                
                 @solara.lab.computed
-                def example_table_kwargs():
-                    ang_size_tot = COMPONENT_STATE.value.example_angular_sizes_total
-                    tab = [e.model_dump(exclude={'galaxy': {'spectrum'}}) for e in LOCAL_STATE.value.example_measurements]
-                    
-                    return {
-                        "title": "Example Galaxy",
-                        "headers": common_headers, # + [{ "text": "Measurement Number", "value": "measurement_number" }], # we will be skipping the 2nd measurement for now
-                        "items": tab,
-                        "highlighted": False,  # TODO: Set the markers for this,
-                        "event_on_row_selected": update_example_galaxy,
-                        "show_select": True,
-                    }
-
-                DataTable(**example_table_kwargs.value)
+                def selected_example_galaxy_index() -> list:
+                    # if use_second_measurement.value:
+                    #     return [0]
+                    if 'id' not in COMPONENT_STATE.value.selected_example_galaxy:
+                        return []
+                    # return [LOCAL_STATE.value.get_example_measurement_index(
+                    #     COMPONENT_STATE.value.selected_example_galaxy['id'],
+                    #     measurement_number=example_galaxy_measurement_number.value
+                    #     )]
+                    return [0]
+                
+                @solara.lab.computed
+                def example_galaxy_data():
+                    if use_second_measurement.value:
+                        return [
+                            x.dict() for x in LOCAL_STATE.value.example_measurements if x.measurement_number == 'second'
+                        ]
+                    else:
+                        return [
+                            x.dict() for x in LOCAL_STATE.value.example_measurements if x.measurement_number == 'first'
+                        ]
+                
+                with solara.Card('REMOVE', style={'background-color': 'var(--warning-dark)'} ):
+                    solara.Text(f"selected example galaxy {selected_example_galaxy_index.value}")
+                    solara.Text(f"selected example galaxy {COMPONENT_STATE.value.selected_example_galaxy}")
+                    DataTable(title="Example Measurements",
+                            headers=common_headers,
+                            items=[x.model_dump() for x in LOCAL_STATE.value.example_measurements])
+                
+                DataTable(
+                    title="Example Galaxy",
+                    headers=common_headers , 
+                    items=example_galaxy_data.value,
+                    show_select=True,
+                    selected_indices=selected_example_galaxy_index.value,
+                    event_on_row_selected=update_example_galaxy
+                )
 
             else:
                 def update_galaxy(galaxy):
@@ -711,38 +852,8 @@ def Page():
         with rv.Col():
             
             with rv.Card(class_="pa-0 ma-0", elevation=0):
+
                 
-                
-                def add_link(from_dc_name, from_att, to_dc_name, to_att):
-                    if isinstance(from_dc_name, Data):
-                        from_dc = from_dc_name
-                    else:
-                        from_dc = gjapp.data_collection[from_dc_name]
-                    
-                    if isinstance(to_dc_name, Data):
-                        to_dc = to_dc_name
-                    else:
-                        to_dc = gjapp.data_collection[to_dc_name]
-                    gjapp.add_link(from_dc, from_att, to_dc, to_att)
-
-
-                def add_example_measurements_to_glue():
-                    if len(LOCAL_STATE.value.example_measurements) > 0:
-                        example_measurements_glue = measurement_list_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
-                        example_measurements_glue.style.color = "red"
-                        if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                            existing = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-                            existing.update_values_from_data(example_measurements_glue)
-                            example_measurements_glue = existing
-                        else:
-                            gjapp.data_collection.append(example_measurements_glue)
-                            example_measurements_glue = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-
-                        egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                        add_link(egsd, DB_ANGSIZE_FIELD, example_measurements_glue,"ang_size_value")
-                        add_link(egsd, DB_DISTANCE_FIELD, example_measurements_glue,"est_dist_value")
-                
-
                 
                 
                 def set_angular_size_line(points):
@@ -772,13 +883,26 @@ def Page():
                     show_dotplot_lines.set(False)
                 
                 if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.ang_siz5a):
-                    add_example_measurements_to_glue()
+                    ignore = []
+                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                        ignore = [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
+                        if COMPONENT_STATE.value.current_step_at_or_before(Marker.dot_seq5):
+                            second = subset_by_label(ignore[0], 'second measurement')
+                            if second is not None:
+                                ignore.append(second)
+                        else:
+                            first = subset_by_label(ignore[0], 'first measurement')
+                            if first is not None:
+                                ignore.append(first)
+                    
+                    
                     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                         DotplotViewer(gjapp, 
                                         data = [
                                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
                                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
                                             ],
+                                            title="Distance",
                                             component_id="est_dist_value",
                                             vertical_line_visible=show_dotplot_lines,
                                             line_marker_at=Ref(COMPONENT_STATE.fields.distance_line),
@@ -787,7 +911,8 @@ def Page():
                                             x_label="Distance (Mpc)",
                                             y_label="Number",
                                             zorder=[5,1],
-                                            x_bounds=dist_dotplot_range
+                                            x_bounds=dist_dotplot_range,
+                                            hide_layers=ignore
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
                             DotplotViewer(gjapp, 
@@ -795,6 +920,7 @@ def Page():
                                                 gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
                                                 gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA] 
                                                 ],
+                                                title="Angular Size",
                                                 component_id="ang_size_value",
                                                 vertical_line_visible=show_dotplot_lines,
                                                 line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
@@ -803,7 +929,8 @@ def Page():
                                                 x_label="Angular Size (arcsec)",
                                                 y_label="Number",
                                                 zorder=[5,1],
-                                                x_bounds=ang_size_dotplot_range
+                                                x_bounds=ang_size_dotplot_range,
+                                                hide_layers=ignore
                                                 )
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")

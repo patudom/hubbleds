@@ -7,7 +7,7 @@
   >
     <div>
       <p>
-        If your velocity measurement does not <em>reasonably</em> aggree with the concensus, use the Spectrum Viewer to remeasure the spectral line for your galaxy.
+        If your velocity measurement does not <em>reasonably</em> agree with the concensus, use the Spectrum Viewer to remeasure the spectral line for your galaxy.
       </p>
       <p> The velocity in the table and the dot plot will automatically update to reflect your new measurement. </p>
       <!-- <p>
