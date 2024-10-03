@@ -114,7 +114,7 @@ def Page():
 
     gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
 
-    if not (load_class_data.value or load_class_data.pending):
+    if not (load_class_data.finished or load_class_data.pending):
         load_class_data()
 
     def _on_class_data_loaded(class_data_points: List[StudentMeasurement]):
@@ -144,7 +144,7 @@ def Page():
 
         class_plot_data.set(class_data_points)
 
-    if load_class_data.value:
+    if load_class_data.finished:
         _on_class_data_loaded(load_class_data.value)
 
     StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)

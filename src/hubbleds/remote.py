@@ -328,7 +328,7 @@ class LocalAPI(BaseAPI):
         self,
         local_state: Reactive[LocalState],
     ) -> tuple[list[StudentMeasurement], list[StudentSummary], list[ClassSummary]]:
-        url = f"{self.API_URL}/{local_state.value.story_id}/all-data"
+        url = f"{self.API_URL}/{local_state.value.story_id}/all-data?minimal=True"
         r = self.request_session.get(url)
         res_json = r.json()
 
