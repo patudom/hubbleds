@@ -10,39 +10,39 @@
       :can-advance="can_advance"
       :speech="speech"
   >
-<!--    <template #before-next>-->
-<!--      <div>-->
-<!--        <div-->
-<!--            v-if="state_view.total_galaxies < 5 && state_view.total_galaxies > 0"-->
-<!--            style="font-size: 16px;"-->
-<!--        >-->
-<!--          <b>Select</b> {{ 5 - state_view.total_galaxies }} <span-->
-<!--            v-if="state_view.total_galaxies > 0">more</span> <span-->
-<!--            v-if="state_view.total_galaxies < 4">galaxies</span><span-->
-<!--            v-if="state_view.total_galaxies == 4">galaxy</span>.-->
-<!--        </div>-->
-<!--        <div-->
-<!--            v-if="state_view.total_galaxies == 0 && !state_view.selected_galaxy"-->
-<!--            style="font-size: 16px;"-->
-<!--        >-->
-<!--          <b>Click</b> on any green dot.-->
-<!--        </div>-->
-<!--        <div-->
-<!--            v-if="state_view.total_galaxies == 0 && state_view.selected_galaxy"-->
-<!--            style="font-size: 16px;"-->
-<!--        >-->
-<!--          <b>Click</b>-->
-<!--          <v-btn icon dark x-small disabled class="mx-1 black&#45;&#45;text" elevation="2" style="background-color: var(--success-dark);">-->
-<!--            <v-icon style="color:black!important;">mdi-plus</v-icon>-->
-<!--          </v-btn>-->
-<!--          to add galaxy or-->
-<!--          <v-btn icon dark x-small disabled class="mx-1 black&#45;&#45;text" elevation="2" style="background-color: var(--success-dark);">-->
-<!--            <v-icon style="color:black!important;">mdi-cached</v-icon>-->
-<!--          </v-btn>-->
-<!--          to choose another-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </template>-->
+   <template #before-next>
+     <div>
+       <div
+           v-if="state_view.total_galaxies < 5 && state_view.total_galaxies > 0"
+           style="font-size: 16px;"
+       >
+         <b>Select</b> {{ 5 - state_view.total_galaxies }} <span
+           v-if="state_view.total_galaxies > 0">more</span> <span
+           v-if="state_view.total_galaxies < 4">galaxies</span><span
+           v-if="state_view.total_galaxies == 4">galaxy</span>.
+       </div>
+       <div
+           v-if="state_view.total_galaxies == 0 && !state_view.selected_galaxy"
+           style="font-size: 16px;"
+       >
+         <b>Click</b> on any green dot.
+       </div>
+       <div
+           v-if="state_view.total_galaxies == 0 && state_view.selected_galaxy"
+           style="font-size: 16px;"
+       >
+         <b>Click</b>
+         <v-btn icon dark x-small disabled class="mx-1 black&#45;&#45;text" elevation="2" style="background-color: var(--success-dark);">
+           <v-icon style="color:black!important;">mdi-plus</v-icon>
+         </v-btn>
+         to add galaxy or
+         <v-btn icon dark x-small disabled class="mx-1 black&#45;&#45;text" elevation="2" style="background-color: var(--success-dark);">
+           <v-icon style="color:black!important;">mdi-cached</v-icon>
+         </v-btn>
+         to choose another
+       </div>
+     </div>
+   </template>
 
     <div
         v-if="state_view.total_galaxies == 0 && !state_view.selected_galaxy"
