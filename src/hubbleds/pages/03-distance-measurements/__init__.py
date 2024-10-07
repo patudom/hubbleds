@@ -337,7 +337,7 @@ def Page():
                         )
                 )
                 measurements[index] = measurement.value
-                Ref(LOCAL_STATE.fields.example_measurements).set(measurements)
+                Ref(LOCAL_STATE.fields.measurements).set(measurements)
                 count.set(count.value + 1)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
