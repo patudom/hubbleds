@@ -14,7 +14,7 @@ class Marker(enum.Enum, BaseMarker):
     mee_gui1 = enum.auto()
     sel_gal1 = enum.auto()
     sel_gal2 = enum.auto()
-    not_gal_tab = enum.auto()
+    not_gal1 = enum.auto()
     sel_gal3 = enum.auto()
     sel_gal4 = enum.auto()
     cho_row1 = enum.auto()
@@ -129,7 +129,7 @@ class ComponentState(BaseComponentState, BaseState):
         )
 
     @property
-    def not_gal_tab_gate(self) -> bool:
+    def not_gal1_gate(self) -> bool:
         return self.total_galaxies >= 1
 
     @property
