@@ -386,6 +386,7 @@ def Page():
     
     ang_size_dotplot_range = solara.use_reactive([])
     dist_dotplot_range = solara.use_reactive([])
+    fill_galaxy_pressed = solara.use_reactive(COMPONENT_STATE.value.distances_total >= 5)
     
     @solara.lab.computed
     def sync_dotplot_axes():
@@ -534,7 +535,12 @@ def Page():
                 if COMPONENT_STATE.value.bad_measurement:
                     bad_measurement = Ref(COMPONENT_STATE.fields.bad_measurement)
                     bad_measurement.set(False)
-                if COMPONENT_STATE.value.current_step_at_or_after(Marker.est_dis4):
+                auto_fill_distance = (
+                    COMPONENT_STATE.value.current_step_between(Marker.est_dis4, Marker.dot_seq5c) 
+                    or COMPONENT_STATE.value.current_step >= Marker.fil_rem1
+                    or fill_galaxy_pressed.value
+                )
+                if auto_fill_distance:
                     _distance_cb(angle.to(u.arcsec).value)
             
             def _bad_measurement_cb():
@@ -698,6 +704,7 @@ def Page():
                     logger.info(f"fill_galaxy_distances: Filled {count} distances")
                     put_measurements(samples=False)
                     distances_total.set(count)
+                    fill_galaxy_pressed.set(True)
 
                 if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
                     solara.Button("Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances())
