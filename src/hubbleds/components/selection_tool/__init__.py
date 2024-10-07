@@ -17,6 +17,7 @@ def SelectionTool(
     show_galaxies: bool,
     galaxy_selected_callback: Callable,
     galaxy_added_callback: Callable,
+    deselect_galaxy_callback: Callable,
     selected_measurement: dict | None,
     dependencies: list = None,
 ):
@@ -55,6 +56,7 @@ def SelectionTool(
                 ),
                 ["current_galaxy"],
             )
+            selection_tool_widget.deselect_galaxy = deselect_galaxy_callback
 
         solara.use_effect(_setup_callbacks, dependencies=[])
 

@@ -432,16 +432,19 @@ def Page():
             def advance_on_total_galaxies(value):
                 if COMPONENT_STATE.value.current_step == Marker.sel_gal2:
                     if value == 1:
-                        transition_to(COMPONENT_STATE, Marker.sel_gal3)
+                        transition_to(COMPONENT_STATE, Marker.not_gal1)
             total_galaxies.subscribe(advance_on_total_galaxies)
 
             def _galaxy_selected_callback(galaxy_data: GalaxyData | None):
                 if galaxy_data is None:
                     return
-
                 selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
                 selected_galaxy.set(galaxy_data.id)
-            
+
+            def _deselect_galaxy_callback():
+                selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
+                selected_galaxy.set(0)  
+                print_selected_galaxy(selected_galaxy.value)              
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
             Marker.cho_row1, Marker.dop_cal5
@@ -453,7 +456,7 @@ def Page():
             
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
-                    [Marker.sel_gal2, Marker.not_gal_tab, Marker.sel_gal3]
+                    [Marker.sel_gal2, Marker.not_gal1, Marker.sel_gal3]
                 ),
                 galaxy_selected_callback=_galaxy_selected_callback,
                 galaxy_added_callback=_galaxy_added_callback,
@@ -462,6 +465,7 @@ def Page():
                     if selection_tool_galaxy.value is not None
                     else None
                 ),
+                deselect_galaxy_callback=_deselect_galaxy_callback,
             )
             
             if show_snackbar.value:
@@ -474,7 +478,7 @@ def Page():
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.not_gal_tab),
+                show=COMPONENT_STATE.value.is_current_step(Marker.not_gal1),
                 speech=speech.value,
             )
             ScaffoldAlert(
