@@ -712,7 +712,7 @@ def Page():
                     },
                     { "text": "&theta; (arcsec)", "value": "ang_size_value" },
                     { "text": "Distance (Mpc)", "value": "est_dist_value" },
-                    { "text": "Measurement Number", "value": "measurement_number" },
+                    
                 ]
 
             if COMPONENT_STATE.value.current_step < Marker.rep_rem1:
@@ -752,12 +752,12 @@ def Page():
                     solara.Text(f"selected example galaxy {selected_example_galaxy_index.value}")
                     solara.Text(f"selected example galaxy {COMPONENT_STATE.value.selected_example_galaxy}")
                     DataTable(title="Example Measurements",
-                            headers=common_headers,
+                            headers=common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }], 
                             items=[x.model_dump() for x in LOCAL_STATE.value.example_measurements])
                 
                 DataTable(
                     title="Example Galaxy",
-                    headers=common_headers , 
+                    headers=common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }], 
                     items=example_galaxy_data.value,
                     show_select=True,
                     selected_indices=selected_example_galaxy_index.value,
