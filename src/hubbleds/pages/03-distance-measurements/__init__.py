@@ -84,7 +84,7 @@ def update_second_example_measurement():
         logger.info('\t\t no changes for second measurement')
 
 @solara.component
-def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback, use_guard, bad_measurement_callback, brightness_callback):
+def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback, use_guard, bad_measurement_callback, brightness_callback, reset_canvas):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -111,6 +111,13 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
     
     solara.use_effect(turn_on_guard, [use_guard])
     
+    def reset_canvas():
+        logger.info('resetting canvas')
+        widget = cast(DistanceTool,solara.get_widget(tool))
+        widget.reset_canvas()
+    
+    
+    solara.use_effect(reset_canvas, [reset_canvas])
 
     def _define_callbacks():
         widget = cast(DistanceTool,solara.get_widget(tool))
@@ -403,10 +410,19 @@ def Page():
     
     solara.use_effect(setup_zoom_sync, dependencies = [])
     
+    reset_canvas = solara.use_reactive(1) # increment to reset canvas
     def _on_marker_updated(marker_new, marker_old):
         # logger.info(f"Marker updated from {marker_old} to {marker_new}")
         if marker_old == Marker.est_dis3:
             _distance_cb(COMPONENT_STATE.value.meas_theta)
+        
+        if marker_new == Marker.dot_seq5:
+            # clear the canvas before we get to the second measurement. 
+            COMPONENT_STATE.value.show_ruler = False
+            reset_canvas.set(reset_canvas.value + 1)
+            
+            
+        
     
     Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
 
@@ -577,7 +593,8 @@ def Page():
                 ruler_count_callback=_get_ruler_clicks_cb,
                 bad_measurement_callback=_bad_measurement_cb,
                 use_guard=True,
-                brightness_callback=lambda b: logger.info(f'Update Brightness: {b}')
+                brightness_callback=lambda b: logger.info(f'Update Brightness: {b}'),
+                reset_canvas=reset_canvas
             )
             
             if COMPONENT_STATE.value.bad_measurement:
