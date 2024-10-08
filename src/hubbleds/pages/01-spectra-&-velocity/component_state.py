@@ -32,14 +32,15 @@ class Marker(enum.Enum, BaseMarker):
     dot_seq1 = enum.auto()
     dot_seq2 = enum.auto()
     dot_seq3 = enum.auto() # a
-    dot_seq4 = enum.auto() # mark measurement on spectrum veiwer
+    dot_seq4 = enum.auto() # mark measurement on spectrum viewer
+    dot_seq4a = enum.auto() 
     dot_seq5 = enum.auto() # plots should be connected
-    # dot_seq6 = enum.auto() # enable zoom 
+    dot_seq6 = enum.auto() # enable zoom 
     dot_seq7 = enum.auto()
     dot_seq8 = enum.auto()
     dot_seq10 = enum.auto() # this talks about the trio of lines. interesting, but do we need to include this. 
     dot_seq11 = enum.auto() # this should just be part of dot_seq10. 
-    dot_seq9 = enum.auto() # need to be able to reameasure. should show old measurement in table still. 
+    rem_vel1 = enum.auto() # need to be able to reameasure. should show old measurement in table still. 
     dot_seq12 = enum.auto()
     # dot_seq13 = enum.auto() # 13/13a tell you to click 2nd row to make measurement. We'll handle this in the background.
     dot_seq13a = enum.auto()
@@ -178,7 +179,7 @@ class ComponentState(BaseComponentState, BaseState):
         return self.dotplot_tutorial_finished
     
     @property
-    def dot_seq9_gate(self) -> bool:
+    def dot_seq10_gate(self) -> bool:
         return LOCAL_STATE.value.question_completed("vel_meas_consensus")
 
     @property

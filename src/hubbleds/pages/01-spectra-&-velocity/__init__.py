@@ -139,7 +139,7 @@ def Page():
 
     @computed
     def use_second_measurement():
-        return COMPONENT_STATE.value.current_step >= Marker.dot_seq9
+        return COMPONENT_STATE.value.current_step >= Marker.rem_vel1
 
     @computed
     def selected_example_measurement():
@@ -398,7 +398,7 @@ def Page():
             zorder = None
 
         ignore = [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
-        if COMPONENT_STATE.value.current_step >= Marker.dot_seq9:
+        if COMPONENT_STATE.value.current_step >= Marker.rem_vel1:
             first = subset_by_label(viewer_data[0], "first measurement")
             if first is not None:
                 ignore.append(first)
@@ -407,6 +407,7 @@ def Page():
             if second is not None:
                 ignore.append(second)
         
+        # we'll need to use/modify this for syncing 2 dot plots or for syncing auto-zoomed in x-ranges.
         def _on_click_callback(point):
             sync_velocity_line.set(point.xs[0])
             wavelength = sync_example_velocity_to_wavelength(point.xs[0])
@@ -438,7 +439,7 @@ def Page():
     def _on_marker_updated(marker):
         if COMPONENT_STATE.value.is_current_step(Marker.dot_seq4):
             initialize_bounds(max_spectrum_bounds.value)
-        if COMPONENT_STATE.value.current_step >= Marker.dot_seq9:
+        if COMPONENT_STATE.value.current_step >= Marker.rem_vel1:
             update_second_example_measurement() # either set them to current or keep from DB
         pass
 
@@ -885,6 +886,14 @@ def Page():
                 speech=speech.value,
             )
             ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence04a.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4a),
+                speech=speech.value,
+            )
+            ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotSequence05.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -892,14 +901,14 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
                 speech=speech.value,
             )
-            # ScaffoldAlert(
-            #     GUIDELINE_ROOT / "GuidelineDotSequence06.vue",
-            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
-            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
-            #     speech=speech.value,
-            # )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDotSequence06.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
+                speech=speech.value,
+            )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotSequence07.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -921,14 +930,7 @@ def Page():
                 },
                 speech=speech.value,
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence09.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq9),
-                speech=speech.value,
-            )
+
 
         with rv.Col(cols=8):
             if COMPONENT_STATE.value.current_step_between(
@@ -1215,6 +1217,14 @@ def Page():
                 speech=speech.value,
             )
             ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineRemeasureVelocity.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.rem_vel1),
+                speech=speech.value,
+            )
+            ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotSequence13a.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -1301,7 +1311,7 @@ def Page():
                         meas = LOCAL_STATE.value.example_measurements
                         if LOCAL_STATE.value.measurements_loaded and len(meas) > 0:
                             step = COMPONENT_STATE.value.current_step
-                            if step >= Marker.dot_seq9 and meas[1].obs_wave_value is not None:
+                            if step >= Marker.rem_vel1 and meas[1].obs_wave_value is not None:
                                 return meas[1].obs_wave_value
                             elif step >= Marker.dot_seq1 and meas[0].velocity_value is not None:
                                 return meas[0].obs_wave_value
@@ -1319,7 +1329,7 @@ def Page():
                             COMPONENT_STATE.value.current_step_between(
                             Marker.obs_wav1, Marker.obs_wav2
                         )
-                        or COMPONENT_STATE.value.current_step > Marker.dot_seq9
+                        or COMPONENT_STATE.value.current_step > Marker.rem_vel1
                         ),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
                         on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(
