@@ -540,6 +540,14 @@ def Page():
                     or COMPONENT_STATE.value.current_step >= Marker.fil_rem1
                     or fill_galaxy_pressed.value
                 )
+                # the above, but if the student goes back, the distance should update if the distance is already set.
+                if on_example_galaxy_marker.value:
+                    index = LOCAL_STATE.value.get_example_measurement_index(current_galaxy.value["id"], measurement_number=example_galaxy_measurement_number.value)
+                    logger.info("============== auto_fill_distance ===============")
+                    logger.info(f'index: {index}')
+                    if index is not None and LOCAL_STATE.value.example_measurements[index].est_dist_value is not None:
+                        logger.info("autofill the distance")
+                        auto_fill_distance = True
                 if auto_fill_distance:
                     _distance_cb(angle.to(u.arcsec).value)
             
@@ -736,6 +744,8 @@ def Page():
                 def selected_example_galaxy_index() -> list:
                     # if use_second_measurement.value:
                     #     return [0]
+                    if COMPONENT_STATE.value.selected_example_galaxy is None:
+                        return []
                     if 'id' not in COMPONENT_STATE.value.selected_example_galaxy:
                         return []
                     # return [LOCAL_STATE.value.get_example_measurement_index(
