@@ -160,9 +160,12 @@ class LocalState(BaseLocalState):
     def get_measurement(self, galaxy_id: int) -> StudentMeasurement | None:
         return next((x for x in self.measurements if x.galaxy_id == galaxy_id), None)
 
-    def get_example_measurement(self, galaxy_id: int) -> StudentMeasurement | None:
+    def get_example_measurement(self, galaxy_id: int, measurement_number = 'first') -> StudentMeasurement | None:
+        def check_example_galaxy(x: StudentMeasurement):
+            return x.galaxy_id == galaxy_id and x.measurement_number == measurement_number
+        
         return next(
-            (x for x in self.example_measurements if x.galaxy_id == galaxy_id), None
+            (x for x in self.example_measurements if check_example_galaxy(x)), None
         )
 
     def get_measurement_index(self, galaxy_id: int) -> int | None:
@@ -171,12 +174,15 @@ class LocalState(BaseLocalState):
             None,
         )
 
-    def get_example_measurement_index(self, galaxy_id: int) -> int | None:
+    def get_example_measurement_index(self, galaxy_id: int, measurement_number = 'first') -> int | None:
+        def check_example_galaxy(x: StudentMeasurement):
+            return x.galaxy_id == galaxy_id and x.measurement_number == measurement_number
+        
         return next(
             (
                 i
                 for i, x in enumerate(self.example_measurements)
-                if x.galaxy_id == galaxy_id
+                if check_example_galaxy(x)
             ),
             None,
         )
@@ -219,7 +225,6 @@ def mc_callback(
     mc_scoring = local_state.value.mc_scoring
     piggybank_total = Ref(local_state.fields.piggybank_total)
     logger.info(f"MC Callback Event: {event[0]}")
-    logger.info(f"Current mc_scoring: {mc_scoring}")
 
     # mc-initialize-callback returns data which is a string
     if event[0] == "mc-initialize-response":
@@ -260,7 +265,6 @@ def fr_callback(
     free_responses = local_state.value.free_responses
     
     logger.info(f"Free Response Callback Event: {event[0]}")
-    logger.info(f"Current fr_response value: {free_responses}")
     if event[0] == "fr-initialize":
         if event[1]["tag"] not in free_responses:
             free_responses.add(event[1]["tag"])

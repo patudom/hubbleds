@@ -8,12 +8,12 @@
     <template #next-content>
     </template>
     <div>
-      <!-- <p>
+      <p>
         You can now remeasure the example galaxy using what you've learned and see how your answer changes.
       </p>
       <p>
         Or move on to measure the spectral lines for your 5 galaxies.
-      </p> -->
+      </p>
       <p>
         You can move on to measure the spectral lines for your 5 galaxies. 
       </p>
@@ -21,7 +21,7 @@
         Try to take as accurate measurements as possible.
       </p>
 
-      <!-- <v-btn
+      <v-btn
           block color="accent"
           class="black--text"
           elevation="2"
@@ -41,7 +41,7 @@
         }"
       >
         <strong>Move on to my galaxies</strong>
-      </v-btn> -->
+      </v-btn>
 
     </div>
   </scaffold-alert>

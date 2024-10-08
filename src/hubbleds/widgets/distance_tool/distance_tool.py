@@ -37,6 +37,8 @@ class DistanceTool(v.VueTemplate):
     _dec = Angle(0 * u.deg)
     wwtStyle = Dict().tag(sync=True)
     reset_style = Bool(False).tag(sync=True)
+    brightness = Float(1).tag(sync=True)
+    contrast = Float(0).tag(sync=True)
     
     # Guard
     guard = Bool(False).tag(sync=True)
@@ -149,6 +151,8 @@ class DistanceTool(v.VueTemplate):
     
     def reset_brightness_contrast(self):
         self.wwtStyle = {}
+        self.brightness = 100
+        self.contrast = 100
         # toggle reset style to trigger watch in vue
         self.reset_style = True
         self.reset_style = False
@@ -176,3 +180,11 @@ class DistanceTool(v.VueTemplate):
         c3 = (angular_size <= self.galaxy_max_size)
         self.bad_measurement = not (c1 and c2 and c3)
         return c1 and c2 and c3
+    
+    def vue_set_brightness(self, brightness, *_args):
+        print(f"Brightness: {brightness}")
+        self.brightness = brightness
+    
+    def vue_set_contrast(self, contrast, *_args):
+        print(f"Contrast: {contrast}")
+        self.contrast = contrast

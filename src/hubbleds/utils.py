@@ -7,6 +7,7 @@ from cosmicds.utils import component_type_for_field, mode, percent_around_center
 from pydantic import BaseModel
 
 from glue.core import Data
+from glue_jupyter.app import JupyterApplication
 from numbers import Number
 from typing import List, Set, Tuple, TypeVar, Optional, cast, Any
 from collections.abc import Callable
@@ -288,3 +289,27 @@ def sync_reactives(a: Reactive[A],
     b.subscribe(on_b_changed)
 
 
+def _add_or_update_data(gjapp: JupyterApplication, data: Data):
+    if data.label in gjapp.data_collection:
+        existing = gjapp.data_collection[data.label]
+        existing.update_values_from_data(data)
+        return existing
+    else:
+        gjapp.data_collection.append(data)
+        return data
+    
+def _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att):
+    if isinstance(from_dc_name, Data):
+        from_dc = from_dc_name
+    else:
+        from_dc = gjapp.data_collection[from_dc_name]
+
+    if isinstance(to_dc_name, Data):
+        to_dc = to_dc_name
+    else:
+        to_dc = gjapp.data_collection[to_dc_name]
+    gjapp.add_link(from_dc, from_att, to_dc, to_att)
+    
+def subset_by_label(data, label):
+        value = next((s for s in data.subsets if s.label == label), None)
+        return value

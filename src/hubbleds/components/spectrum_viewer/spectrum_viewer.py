@@ -6,6 +6,9 @@ import solara
 from hubbleds.state import GalaxyData
 from pandas import DataFrame
 from hubbleds.components.spectrum_viewer.plotly_figure import FigurePlotly
+from cosmicds.logger import setup_logger
+
+logger = setup_logger("SPECTRUM")
 
 
 @solara.component
@@ -13,64 +16,51 @@ def SpectrumViewer(
     galaxy_data: GalaxyData | None,
     obs_wave: float | None = None,
     spectrum_click_enabled: bool = False,
+    show_obs_wave_line: bool = True,
     on_obs_wave_measured: Callable = None,
     on_obs_wave_tool_clicked: Callable = lambda: None,
     on_zoom_tool_clicked: Callable = lambda: None,
-    add_marker_here: solara.Reactive[float] = None,
+    marker_position: Optional[solara.Reactive[float]] = None,
+    on_set_marker_position: Callable = lambda x: None,
     spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
+    on_spectrum_bounds_changed: Callable = lambda x: None,
     max_spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
 ):
-# spectrum_bounds
-    vertical_line_visible = solara.use_reactive(False)
-    toggle_group_state = solara.use_reactive([])
-    # add_marker_here = solara.use_reactive(add_marker_here)
-
     
-    def _on_change_marker_here():
-       print('add_marker_here', add_marker_here)
-    solara.use_effect(_on_change_marker_here, [add_marker_here])
+    logger.info("\n\n ==================== \n SpectrumViewer \n ==================== \n\n")
+    # spectrum_bounds
+    vertical_line_visible = solara.use_reactive(show_obs_wave_line)
+    toggle_group_state = solara.use_reactive([])
 
     x_bounds = solara.use_reactive([])
     y_bounds = solara.use_reactive([])
+    # spectrum_bounds = solara.use_reactive(spectrum_bounds or [], on_change=lambda x: x_bounds.set(x))
     if spectrum_bounds is not None:
-        spectrum_bounds = solara.use_reactive(spectrum_bounds, on_change=lambda x: x_bounds.set(x))
-    else:
-        spectrum_bounds = solara.use_reactive([], on_change=lambda x: x_bounds.set(x))
-    if max_spectrum_bounds is not None:
-        max_spectrum_bounds = solara.use_reactive(max_spectrum_bounds)
+        spectrum_bounds.subscribe(x_bounds.set)
     
 
     async def _load_spectrum():
         if galaxy_data is None:
             return False
-        
-        try:
-            spec = galaxy_data.spectrum_as_data_frame
-            wavemin = spec["wave"].min()
-            wavemax = spec["wave"].max()
-            if max_spectrum_bounds is not None:
-                max_spectrum_bounds.set([wavemin, wavemax])
-        except Exception as e:
-            print(e)
 
         return galaxy_data.spectrum_as_data_frame
 
-    spec_data_task = solara.lab.use_task(
+    spec_data_task = solara.lab.use_task(   # noqa: SH101 
         _load_spectrum,
         dependencies=[galaxy_data],
     )
     
-    # def on_x_bounds_changed(new_bounds):
-    #     spectrum_bounds.set(new_bounds)
-    # def on_spectrum_bounds_changed(new_bounds):
-    #     x_bounds.set(new_bounds)
+    if spec_data_task.finished and spec_data_task.value is not False:
+        spec = spec_data_task.value 
+        logger.info('spec_data_task is finished')
+        if (spec is not None) and (max_spectrum_bounds is not None):
+            logger.info(f"\tSetting max_spectrum_bounds to {spec['wave'].min()} and {spec['wave'].max()}")
+            max_spectrum_bounds.set([spec["wave"].min(), spec["wave"].max()])
+    
 
     def _obs_wave_tool_toggled():
         on_obs_wave_tool_clicked()
-    
-    # def _set_up_link():
-    #     x_bounds.subscribe(on_x_bounds_changed)
-    #     spectrum_bounds.subscribe(on_spectrum_bounds_changed)
+
 
 
     def _on_relayout(event):
@@ -97,16 +87,17 @@ def SpectrumViewer(
         
         if "relayout_data" in event:
             if "xaxis.range[0]" in event["relayout_data"] and "xaxis.range[1]" in event["relayout_data"]:
-                spectrum_bounds.set([
-                    event["relayout_data"]["xaxis.range[0]"],
-                    event["relayout_data"]["xaxis.range[1]"],
-                ])
+                if spectrum_bounds is not None:
+                    spectrum_bounds.set([
+                        event["relayout_data"]["xaxis.range[0]"],
+                        event["relayout_data"]["xaxis.range[1]"],
+                    ])
 
     def _on_reset_button_clicked(*args, **kwargs):
         x_bounds.set([])
         y_bounds.set([])
         try:
-            if spec_data_task.value is not None:
+            if spec_data_task.value is not None and spectrum_bounds is not None:
                 spectrum_bounds.set([
                     spec_data_task.value["wave"].min(),
                     spec_data_task.value["wave"].max(),
@@ -118,9 +109,11 @@ def SpectrumViewer(
         if spectrum_click_enabled:
             vertical_line_visible.set(True)
             on_obs_wave_measured(round(kwargs["points"]["xs"][0]))
-        elif add_marker_here is not None:
-            vertical_line_visible.set(False)
-            add_marker_here.set(round(kwargs["points"]["xs"][0]))
+        if marker_position is not None:
+            # vertical_line_visible.set(False)
+            value = kwargs["points"]["xs"][0]
+            marker_position.set(value)
+            on_set_marker_position(value)
             
 
     with rv.Card():
@@ -172,6 +165,10 @@ def SpectrumViewer(
                 solara.Text("Select a galaxy to view its spectrum")
 
             return
+        
+        if galaxy_data is None:
+            logger.info('galaxy_data is None')
+            return
 
         fig = px.line(spec_data_task.value, x="wave", y="flux")
         
@@ -194,10 +191,10 @@ def SpectrumViewer(
             visible=vertical_line_visible.value and obs_wave > 0.0,
         )
         
-        if (add_marker_here is not None) and (not spectrum_click_enabled):
+        if (marker_position is not None) and (not spectrum_click_enabled):
             fig.add_vline(
-                x = add_marker_here.value,
-                line_width = 1,
+                x = marker_position.value,
+                line_width = 2,
                 line_color = "green",
                 visible = True,
             )
@@ -282,8 +279,8 @@ def SpectrumViewer(
             
         ]
         
-        if add_marker_here is not None:
-            dependencies.append(add_marker_here.value)
+        if marker_position is not None:
+            dependencies.append(marker_position.value)
         
         FigurePlotly(
             fig,
