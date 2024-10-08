@@ -113,10 +113,13 @@ class SelectionToolWidget(v.VueTemplate):
                 self.sdss_layer = None
 
         if show and self.sdss_layer is None:
-            layer = self.widget.layers.add_table_layer(self.sdss_table)
-            layer.marker_type = "gaussian"
-            layer.size_scale = 100
-            layer.color = "#00FF00"
+            layer = self.widget.layers.add_table_layer(self.sdss_table, marker_type="gaussian", size_scale=100, color="#00FF00")
+                                                        
+            # self.widget.layers.add_table_layer(self.sdss_table)
+            # #try passing these as kwargs to add_table_layer.
+            # layer.marker_type = "gaussian"
+            # layer.size_scale = 100
+            # layer.color = "#00FF00"
             self.sdss_layer = layer
 
     @property
