@@ -37,18 +37,16 @@
 <!--          :speak-flag="dialog"-->
 <!--          :selectors="['div.v-toolbar__title', 'div.v-card__text.black&#45;&#45;text', 'h3', 'p']"-->
 <!--          />-->
-        <span
-          @click="
-            () => {
-              $emit('close');
+        <span>
+          <v-btn
+            icon
+            @click="() => {
               dialog = false;
-              if (step === 8) {
+              if (step === length-1) {
                 step = 0;
               }
-            }
-          "
-        >
-          <v-btn icon>
+            }"
+          >
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </span>
@@ -676,7 +674,7 @@
         </v-item-group>
         <v-spacer></v-spacer>
         <v-btn
-          v-if="step < 10"
+          v-if="step < length-1"
           class="black--text"
           color="accent"
           depressed
@@ -685,13 +683,11 @@
           next
         </v-btn>
         <v-btn
-          v-if="step >= 10"
+          v-if="step === length-1"
           color="accent"
           class="black--text"
           depressed
-          @click="
-            () => {
-              $emit('close');
+          @click="() => {
               dialog = false;
               step = 0;
             }

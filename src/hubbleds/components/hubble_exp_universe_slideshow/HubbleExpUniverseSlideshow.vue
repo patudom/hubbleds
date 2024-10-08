@@ -39,7 +39,14 @@
           /> -->
         <v-btn
           icon
-          @click="set_dialog(false);"
+          @click="() => { 
+            dialog = set_dialog(false);
+            if (step === length-1) 
+              { 
+                on_slideshow_finished()
+                set_step(0);  
+              }
+          }"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -240,7 +247,11 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); set_dialog(false); set_step(0); on_slideshow_finished(); }"
+          @click="() => { 
+            set_dialog(false); 
+            on_slideshow_finished(); 
+            set_step(0); 
+          }"
         >
           Done
         </v-btn>

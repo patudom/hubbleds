@@ -45,10 +45,18 @@
           :selectors="['label > div', 'div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'p']"
         >
         </speech-synthesizer> -->
-        <span
-          @click="() => set_dialog(false)"
-        >
-          <v-btn icon>
+        <span>
+          <v-btn
+            icon
+            @click="() => { 
+            dialog = set_dialog(false);
+            if (step === length-1) 
+              { 
+                on_reflection_complete();
+                set_step(0);  
+              }
+            }"
+          >
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </span>
@@ -390,7 +398,7 @@
         </v-item-group>
         <v-spacer></v-spacer>
         <v-btn
-          v-if="step < 7"
+          v-if="step < length-1"
           :disabled="require_responses && step > max_step_completed"
           class="black--text"
           color="accent"
@@ -400,11 +408,15 @@
           Next
         </v-btn>
         <v-btn
-          v-if="step >= 7"
+          v-if="step === length-1"
           color="accent"
           class="black--text"
           depressed
-          @click="() => { set_dialog(false); set_step(0); on_reflection_complete()}"
+          @click="() => { 
+            set_dialog(false);
+            on_reflection_complete();
+            set_step(0); 
+          }"
         >
           Done
         </v-btn>
