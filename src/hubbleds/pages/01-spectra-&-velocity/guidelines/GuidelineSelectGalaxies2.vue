@@ -22,13 +22,13 @@
            v-if="state_view.total_galaxies == 4">galaxy</span>.
        </div>
        <div
-           v-if="state_view.total_galaxies == 0 && !state_view.selected_galaxy"
+           v-if="!state_view.galaxy_is_selected"
            style="font-size: 16px;"
        >
          <b>Click</b> on any green dot.
        </div>
        <div
-           v-if="state_view.total_galaxies == 0 && state_view.selected_galaxy"
+           v-if="state_view.galaxy_is_selected"
            style="font-size: 16px;"
        >
          <b>Click</b>
@@ -45,7 +45,7 @@
    </template>
 
     <div
-        v-if="state_view.total_galaxies == 0 && !state_view.selected_galaxy"
+        v-if="!state_view.galaxy_is_selected"
         class="mb-4"
     >
       <p>
@@ -54,9 +54,12 @@
       <p>
         Pan around the sky and click on one of these dots to select that galaxy.
       </p>
+      <p style="font-weight: 300">
+        (If no green dots are visible, try clicking back and then next to refresh the view.)
+      </p>
     </div>
     <div
-        v-if="state_view.selected_galaxy"
+        v-if="state_view.galaxy_is_selected"
     >
       <p>
         If this galaxy looks good to you, click
@@ -74,7 +77,6 @@
       </p>
     </div>
     <div v-if="state_view.total_galaxies ==5">
-      <!-- we should never get here -->
       <p>
         You have already selected the maximum number of galaxies ({{ state_view.total_galaxies }} / 5). Click next to proceed to the next step.
       </p>

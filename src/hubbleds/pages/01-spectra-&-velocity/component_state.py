@@ -92,6 +92,7 @@ class ComponentState(BaseComponentState, BaseState):
     show_example_galaxy: bool = False
     selected_galaxy: int = 0
     selected_galaxies: list[int] = []
+    galaxy_is_selected: bool = False
     selected_example_galaxy: int = 0
     total_galaxies: int = 0
     spectrum_tutorial_opened: bool = False
