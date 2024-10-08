@@ -344,7 +344,8 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies1.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                # If at least 1 galaxy has already been selected, we want to go straight from here to sel_gal3.
+                event_next_callback=lambda _: transition_to(COMPONENT_STATE, Marker.sel_gal2 if COMPONENT_STATE.value.total_galaxies == 0 else Marker.sel_gal3, force=True),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal1),
@@ -352,25 +353,27 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies2.vue",
+                # I think we don't need this next callback because meeting the "next" criteria will autoadvance you to not_gal1 anyway, and then we skip over this guideline if we go backwards from sel_gal3. (But leave it just in case)
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal2),
                 state_view={
                     "total_galaxies": COMPONENT_STATE.value.total_galaxies,
-                    "selected_galaxy": bool(COMPONENT_STATE.value.selected_galaxy),
+                    "galaxy_is_selected": COMPONENT_STATE.value.galaxy_is_selected,
                 },
                 speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies3.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                # You can't get to this marker until at least 1 galaxy has been selected. Once a galaxy has been selected, sel_gal2 doesn't make sense, so jump back to sel_gal1.
+                event_back_callback=lambda _: transition_to(COMPONENT_STATE, Marker.sel_gal1, force=True),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal3),
                 state_view={
                     "total_galaxies": COMPONENT_STATE.value.total_galaxies,
-                    "selected_galaxy": bool(COMPONENT_STATE.value.selected_galaxy),
+                    "galaxy_is_selected": COMPONENT_STATE.value.galaxy_is_selected,
                 },
                 speech=speech.value,
             )
@@ -442,9 +445,9 @@ def Page():
                 selected_galaxy.set(galaxy_data.id)
 
             def _deselect_galaxy_callback():
-                selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
-                selected_galaxy.set(0)  
-                print_selected_galaxy(selected_galaxy.value)              
+                galaxy_is_selected = Ref(COMPONENT_STATE.fields.galaxy_is_selected)
+                galaxy_is_selected.set(False)  
+                print("is galaxy selected:", galaxy_is_selected.value)             
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
             Marker.cho_row1, Marker.dop_cal5
@@ -476,7 +479,8 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineNoticeGalaxyTable.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                # You can't get to this marker until at least 1 galaxy has been selected. Once a galaxy has been selected, sel_gal2 doesn't make sense, so jump back to sel_gal1.
+                event_back_callback=lambda _: transition_to(COMPONENT_STATE, Marker.sel_gal1, force=True),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.not_gal1),
                 speech=speech.value,
