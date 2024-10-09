@@ -20,7 +20,7 @@ logger = setup_logger("API")
 
 from .data_management import DB_VELOCITY_FIELD
 from numpy.random import Generator, PCG64, SeedSequence
-from numpy import arange, asarray
+from numpy import arange, asarray, ravel, column_stack
 from typing import Any
 
 ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
@@ -423,6 +423,7 @@ class LocalAPI(BaseAPI):
         indices = arange(len(good))
         indices = indices[1::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
         random_subset = gen.choice(indices[good[1::2][:85]], size=40, replace=False)
+        random_subset = ravel(column_stack((random_subset, random_subset+1)))
         # This is the subset
         # [121 122  13  14 159 160  23  24 161 162 137 138 111 112 155 156  69  70
         #     75  76  81  82  11  12 129 130  93  94  99 100  17  18  37  38 169 170
