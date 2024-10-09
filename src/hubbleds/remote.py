@@ -411,7 +411,7 @@ class LocalAPI(BaseAPI):
             ) -> list[dict[str, Any]]:
         url = f"{self.API_URL}/{local_state.value.story_id}/sample-measurements"
         r = self.request_session.get(url)
-        res_json = r.json()[5:]
+        res_json = r.json()
         
         
         # TODO: Note that though this is from the old code
