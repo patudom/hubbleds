@@ -389,21 +389,25 @@ def Page():
         show = COMPONENT_STATE.value.current_step >= Marker.int_dot1
         if show and (EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection):
             viewer_data = [
-                gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
+                (gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "scatter"),
                 gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
             ]
+            # If the student has made a measurement, that is the 0th layer.
+            layer0 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
             zorder = [5, 1]
         else:
             viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
+            # If the student has NOT made a measurement, the seed data is the 0th layer.
+            layer0 = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
             zorder = None
 
         ignore = [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
         if COMPONENT_STATE.value.current_step >= Marker.rem_vel1:
-            first = subset_by_label(viewer_data[0], "first measurement")
+            first = subset_by_label(layer0, "first measurement")
             if first is not None:
                 ignore.append(first)
         else:
-            second = subset_by_label(viewer_data[0], "second measurement")
+            second = subset_by_label(layer0, "second measurement")
             if second is not None:
                 ignore.append(second)
         

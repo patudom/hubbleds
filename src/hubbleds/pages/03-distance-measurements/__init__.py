@@ -84,7 +84,7 @@ def update_second_example_measurement():
         logger.info('\t\t no changes for second measurement')
 
 @solara.component
-def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback, use_guard, bad_measurement_callback, brightness_callback):
+def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback, use_guard, bad_measurement_callback, brightness_callback, reset_canvas):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -111,6 +111,13 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
     
     solara.use_effect(turn_on_guard, [use_guard])
     
+    def reset_canvas():
+        logger.info('resetting canvas')
+        widget = cast(DistanceTool,solara.get_widget(tool))
+        widget.reset_canvas()
+    
+    
+    solara.use_effect(reset_canvas, [reset_canvas])
 
     def _define_callbacks():
         widget = cast(DistanceTool,solara.get_widget(tool))
@@ -337,7 +344,7 @@ def Page():
                         )
                 )
                 measurements[index] = measurement.value
-                Ref(LOCAL_STATE.fields.example_measurements).set(measurements)
+                Ref(LOCAL_STATE.fields.measurements).set(measurements)
                 count.set(count.value + 1)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
@@ -386,6 +393,7 @@ def Page():
     
     ang_size_dotplot_range = solara.use_reactive([])
     dist_dotplot_range = solara.use_reactive([])
+    fill_galaxy_pressed = solara.use_reactive(COMPONENT_STATE.value.distances_total >= 5)
     
     @solara.lab.computed
     def sync_dotplot_axes():
@@ -402,10 +410,19 @@ def Page():
     
     solara.use_effect(setup_zoom_sync, dependencies = [])
     
+    reset_canvas = solara.use_reactive(1) # increment to reset canvas
     def _on_marker_updated(marker_new, marker_old):
         # logger.info(f"Marker updated from {marker_old} to {marker_new}")
         if marker_old == Marker.est_dis3:
             _distance_cb(COMPONENT_STATE.value.meas_theta)
+        
+        if marker_new == Marker.dot_seq5:
+            # clear the canvas before we get to the second measurement. 
+            COMPONENT_STATE.value.show_ruler = False
+            reset_canvas.set(reset_canvas.value + 1)
+            
+            
+        
     
     Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
 
@@ -534,7 +551,20 @@ def Page():
                 if COMPONENT_STATE.value.bad_measurement:
                     bad_measurement = Ref(COMPONENT_STATE.fields.bad_measurement)
                     bad_measurement.set(False)
-                if COMPONENT_STATE.value.current_step_at_or_after(Marker.est_dis4):
+                auto_fill_distance = (
+                    COMPONENT_STATE.value.current_step_between(Marker.est_dis4, Marker.dot_seq5c) 
+                    or COMPONENT_STATE.value.current_step >= Marker.fil_rem1
+                    or fill_galaxy_pressed.value
+                )
+                # the above, but if the student goes back, the distance should update if the distance is already set.
+                if on_example_galaxy_marker.value:
+                    index = LOCAL_STATE.value.get_example_measurement_index(current_galaxy.value["id"], measurement_number=example_galaxy_measurement_number.value)
+                    logger.info("============== auto_fill_distance ===============")
+                    logger.info(f'index: {index}')
+                    if index is not None and LOCAL_STATE.value.example_measurements[index].est_dist_value is not None:
+                        logger.info("autofill the distance")
+                        auto_fill_distance = True
+                if auto_fill_distance:
                     _distance_cb(angle.to(u.arcsec).value)
             
             def _bad_measurement_cb():
@@ -563,7 +593,8 @@ def Page():
                 ruler_count_callback=_get_ruler_clicks_cb,
                 bad_measurement_callback=_bad_measurement_cb,
                 use_guard=True,
-                brightness_callback=lambda b: logger.info(f'Update Brightness: {b}')
+                brightness_callback=lambda b: logger.info(f'Update Brightness: {b}'),
+                reset_canvas=reset_canvas
             )
             
             if COMPONENT_STATE.value.bad_measurement:
@@ -698,6 +729,7 @@ def Page():
                     logger.info(f"fill_galaxy_distances: Filled {count} distances")
                     put_measurements(samples=False)
                     distances_total.set(count)
+                    fill_galaxy_pressed.set(True)
 
                 if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
                     solara.Button("Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances())
@@ -712,7 +744,7 @@ def Page():
                     },
                     { "text": "&theta; (arcsec)", "value": "ang_size_value" },
                     { "text": "Distance (Mpc)", "value": "est_dist_value" },
-                    { "text": "Measurement Number", "value": "measurement_number" },
+                    
                 ]
 
             if COMPONENT_STATE.value.current_step < Marker.rep_rem1:
@@ -729,6 +761,8 @@ def Page():
                 def selected_example_galaxy_index() -> list:
                     # if use_second_measurement.value:
                     #     return [0]
+                    if COMPONENT_STATE.value.selected_example_galaxy is None:
+                        return []
                     if 'id' not in COMPONENT_STATE.value.selected_example_galaxy:
                         return []
                     # return [LOCAL_STATE.value.get_example_measurement_index(
@@ -752,12 +786,12 @@ def Page():
                     solara.Text(f"selected example galaxy {selected_example_galaxy_index.value}")
                     solara.Text(f"selected example galaxy {COMPONENT_STATE.value.selected_example_galaxy}")
                     DataTable(title="Example Measurements",
-                            headers=common_headers,
+                            headers=common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }], 
                             items=[x.model_dump() for x in LOCAL_STATE.value.example_measurements])
                 
                 DataTable(
                     title="Example Galaxy",
-                    headers=common_headers , 
+                    headers=common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }], 
                     items=example_galaxy_data.value,
                     show_select=True,
                     selected_indices=selected_example_galaxy_index.value,
