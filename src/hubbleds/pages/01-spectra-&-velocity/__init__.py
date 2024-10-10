@@ -983,7 +983,7 @@ def Page():
     # Dot Plot 1st measurement row
     if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
         with rv.Row(class_="no-y-padding"):
-            with rv.Col(cols=4, class_="no-y-padding"):
+            with rv.Col(cols=12, lg=4, class_="no-y-padding"):
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineIntroDotplot.vue",
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -1063,7 +1063,7 @@ def Page():
                 )
 
 
-            with rv.Col(cols=8, class_="no-y-padding"):
+            with rv.Col(cols=12, lg=8, class_="no-y-padding"):
                                         
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                     # add_example_measurements_to_glue() # make sure updated measurements are in glue
@@ -1074,7 +1074,7 @@ def Page():
     # Spectrum Viewer row
     if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.che_mea1) or COMPONENT_STATE.value.current_step_between(Marker.dot_seq4, Marker.dot_seq14) or COMPONENT_STATE.value.current_step_at_or_after(Marker.rem_gal1):
         with rv.Row():
-            with rv.Col(cols=4):
+            with rv.Col(cols=12, lg=4):
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineSpectrum.vue",
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -1192,7 +1192,7 @@ def Page():
                     speech=speech.value,
                 )
 
-            with rv.Col(cols=8):
+            with rv.Col(cols=12, lg=8):
                 show_example_spectrum = COMPONENT_STATE.value.current_step_between(
                     Marker.mee_spe1, Marker.che_mea1
                 ) or COMPONENT_STATE.value.current_step_between(
