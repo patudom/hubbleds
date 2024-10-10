@@ -261,7 +261,8 @@ def DotplotViewer(
                     spikedash="solid",
                     spikemode="across",
                     spikesnap="cursor",
-                    showspikes=True
+                    showspikes=True,
+                    tickformat=",.0f",
                 ),
             )
             

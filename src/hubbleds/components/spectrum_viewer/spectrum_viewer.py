@@ -8,6 +8,8 @@ from pandas import DataFrame
 from hubbleds.components.spectrum_viewer.plotly_figure import FigurePlotly
 from cosmicds.logger import setup_logger
 
+from glue_plotly.common import DEFAULT_FONT
+
 logger = setup_logger("SPECTRUM")
 
 
@@ -185,8 +187,9 @@ def SpectrumViewer(
         )
 
         
-        
         fig.update_layout(
+            font_family=DEFAULT_FONT,
+            title_font_family=DEFAULT_FONT,
             margin=dict(l=0, r=10, t=10, b=0), 
             yaxis=dict(
                 fixedrange=True,
@@ -195,6 +198,9 @@ def SpectrumViewer(
                 showline=True,
                 linewidth=1,
                 mirror=True,
+                title_font_family=DEFAULT_FONT, 
+                titlefont_size=20, 
+                tickfont_size=12
                 ),
             xaxis=dict(
                 title="Wavelength (Angstroms)",
@@ -202,6 +208,9 @@ def SpectrumViewer(
                 showline=True,
                 linewidth=1,
                 mirror=True,
+                title_font_family=DEFAULT_FONT, 
+                titlefont_size=20, 
+                tickfont_size=12
                 ),
         )
 
@@ -291,6 +300,7 @@ def SpectrumViewer(
         )
 
         fig.update_layout(dragmode="zoom" if 0 in toggle_group_state.value else False)
+        
         
         
         dependencies = [
