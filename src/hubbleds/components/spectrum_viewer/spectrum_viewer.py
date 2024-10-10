@@ -248,8 +248,22 @@ def SpectrumViewer(
             ]
         )
 
-        fig.update_layout(dragmode="zoom" if 0 in toggle_group_state.value else "pan")
-
+        fig.update_layout(dragmode="zoom" if 0 in toggle_group_state.value else False)
+        
+        
+        dependencies = [
+            obs_wave,
+            spectrum_click_enabled,
+            vertical_line_visible.value,
+            toggle_group_state.value,
+            x_bounds.value,
+            y_bounds.value,
+            
+        ]
+        
+        if marker_position is not None:
+            dependencies.append(marker_position.value)
+        
         FigurePlotly(
             fig,
             on_click=lambda kwargs: _spectrum_clicked(**kwargs),
