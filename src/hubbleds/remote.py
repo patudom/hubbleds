@@ -20,7 +20,7 @@ logger = setup_logger("API")
 
 from .data_management import DB_VELOCITY_FIELD
 from numpy.random import Generator, PCG64, SeedSequence
-from numpy import arange, asarray
+from numpy import arange, asarray, ravel, column_stack
 from typing import Any
 
 ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
@@ -426,7 +426,7 @@ class LocalAPI(BaseAPI):
             ) -> list[dict[str, Any]]:
         url = f"{self.API_URL}/{local_state.value.story_id}/sample-measurements"
         r = self.request_session.get(url)
-        res_json = r.json()[5:]
+        res_json = r.json()
         
         
         # TODO: Note that though this is from the old code
@@ -436,16 +436,18 @@ class LocalAPI(BaseAPI):
         seq = SeedSequence(42)
         gen = Generator(PCG64(seq))
         indices = arange(len(good))
-        init = 0 if which == "first" else 1
-        indices = indices[init::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
-        random_subset = gen.choice(indices[good[init::2][:85]], size=40, replace=False)
+        indices = indices[1::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
+        random_subset = gen.choice(indices[good[1::2][:85]], size=40, replace=False)
+        random_subset = ravel(column_stack((random_subset, random_subset+1)))
         # This is the subset
-        # [121, 11, 143, 21, 161, 127, 111, 15, 69, 105, 
-        # 81, 9, 129, 91, 99, 17, 35, 169, 67, 107, 119, 
-        # 123, 43, 141, 73, 137, 85, 59, 87, 25, 109, 49, 
-        # 47, 95, 157, 63, 89, 57, 149, 103]
+        # [121 122  13  14 159 160  23  24 161 162 137 138 111 112 155 156  69  70
+        #     75  76  81  82  11  12 129 130  93  94  99 100  17  18  37  38 169 170
+        #     67  68 107 108 119 120  65  66  45  46 141 142  73  74 165 166  85  86
+        #     59  60  87  88  27  28 109 110  51  52  47  48  97  98  89  90  63  64
+        #     91  92 143 144 149 150 103 104]
         measurements = []
-        for i in random_subset:
+        _filter_func = lambda x: res_json[x]['measurement_number'] == which
+        for i in filter(_filter_func, random_subset):
             measurements.append(res_json[i])
 
         return measurements

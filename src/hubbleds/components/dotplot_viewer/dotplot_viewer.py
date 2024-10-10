@@ -126,7 +126,13 @@ def DotplotViewer(
             line_id = str(uuid4())
             line_ids.append(line_id)
             viewer.figure.add_vline(x=value, line_color=color, line_width=2, name=line_id)
-            
+
+        
+        def _add_data(viewer: PlotlyBaseView, data: Union[Data, tuple]):
+            if isinstance(data, Data):
+                viewer.add_data(data)
+            else:
+                viewer.add_data(data[0], layer_type=data[1])
 
         def _add_viewer():
             logger.info(f"\n ====== ({title}) Dotplot _add_viewer() ====== \n")
@@ -136,12 +142,15 @@ def DotplotViewer(
             else: 
                 if isinstance(data, Data):
                     viewer_data = data
-                elif isinstance(data, list):
+                else:
                     viewer_data = data[0]
             
             dotplot_view: HubbleDotPlotViewer = gjapp.new_data_viewer(
-                HubbleDotPlotView, data=viewer_data, show=False) # type: ignore
+                HubbleDotPlotView, show=False) # type: ignore
 
+            _add_data(dotplot_view, viewer_data)
+            if isinstance(viewer_data, tuple):
+                viewer_data = viewer_data[0]
             
             if component_id is not None:
                 dotplot_view.state.x_att = viewer_data.id[component_id]
@@ -149,7 +158,7 @@ def DotplotViewer(
             if isinstance(data, list):
                 if len(data) > 1:
                     for viewer_data in data[1:]:
-                        dotplot_view.add_data(viewer_data)
+                        _add_data(dotplot_view, viewer_data)
 
             dotplot_view.state.hist_n_bin = nbin
             if x_bounds.value is not None:

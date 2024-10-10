@@ -18,11 +18,18 @@
           {{ titles[step] }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <span
-            @click="() => { set_dialog(false); if (step === length-1)  {set_step(0)}; }"
-        >
+        <span>
           <v-btn
               icon
+              @click="() => { 
+                set_dialog(false); 
+                if (step === length-1) 
+                  { 
+                    set_student_vel_calc(true);
+                    set_step(0);
+                    next_callback();
+                  }
+              }"
           >
             <v-icon>
               mdi-close
@@ -848,14 +855,14 @@
           calculate
         </v-btn>
         <v-btn
-            v-if="step === 5"
+            v-if="step === length-1"
             class="black--text"
             color="accent"
             depressed
             @click="() => {
               set_dialog(false);
-              set_step(0);
               set_student_vel_calc(true);
+              set_step(0);
               next_callback();
             }"
         >
