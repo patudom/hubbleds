@@ -38,6 +38,7 @@ def SpectrumViewer(
     if spectrum_bounds is not None:
         spectrum_bounds.subscribe(x_bounds.set)
     
+    use_dark_effective = solara.use_trait_observe(solara.lab.theme, "dark_effective")
 
     async def _load_spectrum():
         if galaxy_data is None:
@@ -170,15 +171,38 @@ def SpectrumViewer(
             logger.info('galaxy_data is None')
             return
 
-        fig = px.line(spec_data_task.value, x="wave", y="flux")
-        
+        fig = px.line(spec_data_task.value, x="wave", y="flux", 
+                    #   template = "plotly_dark" if use_dark_effective else "plotly_white",)
+                    template = "plotly_white",
+                    hover_data={"wave": True, "flux": False},
+                    # line_shape="hvh", # step line plot
+                    )
+        fig.update_traces(hovertemplate='Wavelength: %{x:0.1f} Å') #
+        fig.update_layout(
+            hoverlabel=dict(
+                font_size=16,
+            ),
+        )
+
         
         
         fig.update_layout(
             margin=dict(l=0, r=10, t=10, b=0), 
-            yaxis=dict(fixedrange=True),
-            xaxis_title="Wavelength (Angstroms)", 
-            yaxis_title="Brightness"
+            yaxis=dict(
+                fixedrange=True,
+                title="Brightness",
+                showgrid=False,
+                showline=True,
+                linewidth=1,
+                mirror=True,
+                ),
+            xaxis=dict(
+                title="Wavelength (Angstroms)",
+                showgrid=False,
+                showline=True,
+                linewidth=1,
+                mirror=True,
+                ),
         )
 
         fig.add_vline(
@@ -225,8 +249,8 @@ def SpectrumViewer(
             x0=galaxy_data.rest_wave_value,
             x1=galaxy_data.rest_wave_value,
             xref="x",
-            y0=0.5,
-            y1=0.75,
+            y0=0.0,
+            y1=1.0,
             line_color="black",
             ysizemode="scaled",
             yref="paper",
@@ -244,7 +268,7 @@ def SpectrumViewer(
             yaxis_zeroline=False,
             xaxis=dict(
                 showspikes=spectrum_click_enabled,
-                showline=spectrum_click_enabled,
+                # showline=spectrum_click_enabled,
                 spikecolor="black",
                 spikethickness=1,
                 spikedash="solid",
@@ -291,3 +315,5 @@ def SpectrumViewer(
                 "displayModeBar": False,
             },
         )
+
+
