@@ -96,7 +96,7 @@ def DotplotViewer(
     
     with rv.Card() as main:
         with rv.Toolbar(dense=True, class_="toolbar"):
-            with rv.ToolbarTitle():
+            with rv.ToolbarTitle(class_="toolbar toolbar-title"):
                 title_container = rv.Html(tag="div")
 
             rv.Spacer()

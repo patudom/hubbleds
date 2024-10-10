@@ -420,7 +420,7 @@ def Page():
         logger.info(f"\n {ignore} \n")
         return DotplotViewer(
             gjapp,
-            title="Ex Gal Dotplot",
+            title="Dotplot: Example Galaxy Velocities",
             data=viewer_data,
             component_id=DB_VELOCITY_FIELD,
             vertical_line_visible=show_synced_lines.value,  #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
@@ -431,7 +431,7 @@ def Page():
             x_label="Velocity (km/s)",
             y_label="Number",
             zorder=zorder,
-            nbin=75,
+            nbin=74,
             x_bounds=dotplot_bounds,
             reset_bounds=dotplot_reset_bounds,
             hide_layers=ignore,  # type: ignore
@@ -573,7 +573,7 @@ def Page():
                 print("is galaxy selected:", galaxy_is_selected.value)             
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-            Marker.cho_row1, Marker.dot_seq12
+            Marker.cho_row1, Marker.rem_gal1 #placeholder so it doesn't break - change to last new dot_seq marker.
             )
             if show_example_data_table:
                 selection_tool_galaxy = selected_example_measurement
@@ -656,16 +656,6 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.che_mea1),
                 speech=speech.value,
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence12.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq12),
-                speech=speech.value,
-                event_remeasure_example_galaxy=lambda _: transition_to(COMPONENT_STATE, Marker.dot_seq13a, force=True),
-                event_continue_to_galaxies=lambda _: transition_to(COMPONENT_STATE, Marker.rem_gal1, force=True),
-            )
             # Skip for now since we aren't offering 2nd measurement.
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineDotSequence13.vue",
@@ -728,7 +718,7 @@ def Page():
 
         with rv.Col(cols=8):
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-                Marker.cho_row1, Marker.dot_seq13a  # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
+                Marker.cho_row1, Marker.dot_seq14  # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
             )
 
             if show_example_data_table:
@@ -1008,7 +998,7 @@ def Page():
                     },
                 )
 
-            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq13a): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
                 dotplot_tutorial_finished = Ref(
                     COMPONENT_STATE.fields.dotplot_tutorial_finished
                 )
@@ -1228,14 +1218,14 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.rem_vel1),
                 speech=speech.value,
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence13a.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13a),
-                speech=speech.value,
-            )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotSequence13a.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13a),
+            #     speech=speech.value,
+            # )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineReflectOnData.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -1249,7 +1239,7 @@ def Page():
             show_example_spectrum = COMPONENT_STATE.value.current_step_between(
                 Marker.mee_spe1, Marker.che_mea1
             ) or COMPONENT_STATE.value.current_step_between(
-                Marker.dot_seq4, Marker.dot_seq13a  # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+                Marker.dot_seq4, Marker.dot_seq14  # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
             )
 
             show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(

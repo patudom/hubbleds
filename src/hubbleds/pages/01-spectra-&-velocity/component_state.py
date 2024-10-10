@@ -38,13 +38,11 @@ class Marker(enum.Enum, BaseMarker):
     dot_seq6 = enum.auto() # enable zoom 
     dot_seq7 = enum.auto()
     dot_seq8 = enum.auto()
-    dot_seq10 = enum.auto() # this talks about the trio of lines. interesting, but do we need to include this. 
-    dot_seq11 = enum.auto() # this should just be part of dot_seq10. 
+    dot_seq10 = enum.auto()  
+    dot_seq11 = enum.auto()  
     rem_vel1 = enum.auto() # need to be able to reameasure. should show old measurement in table still. 
-    dot_seq12 = enum.auto()
-    # dot_seq13 = enum.auto() # 13/13a tell you to click 2nd row to make measurement. We'll handle this in the background.
-    dot_seq13a = enum.auto()
-    # dot_seq14 = enum.auto()
+
+    dot_seq14 = enum.auto()
     rem_gal1 = enum.auto()
     ref_dat1 = enum.auto()
     dop_cal6 = enum.auto()
