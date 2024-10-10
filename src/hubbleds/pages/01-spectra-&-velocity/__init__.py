@@ -567,7 +567,9 @@ def Page():
                 if galaxy_data is None:
                     return
                 selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
-                selected_galaxy.set(galaxy_data.id) 
+                selected_galaxy.set(galaxy_data.id)
+                galaxy_is_selected = Ref(COMPONENT_STATE.fields.galaxy_is_selected)
+                galaxy_is_selected.set(True)  
 
             def _deselect_galaxy_callback():
                 galaxy_is_selected = Ref(COMPONENT_STATE.fields.galaxy_is_selected)
