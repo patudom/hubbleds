@@ -461,7 +461,7 @@ def Page():
     # WWT Selection Tool Row
 
     with rv.Row():
-        with rv.Col(cols=4):
+        with rv.Col(cols=12, lg=4):
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineIntro.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -513,7 +513,7 @@ def Page():
                 speech=speech.value,
             )
 
-        with rv.Col(cols=8):
+        with rv.Col(cols=12, lg=8):
             
             show_snackbar = Ref(LOCAL_STATE.fields.show_snackbar)
             async def snackbar_off(value = None):
@@ -604,7 +604,7 @@ def Page():
     # Measurement Table Row
 
     with rv.Row():
-        with rv.Col(cols=4):
+        with rv.Col(cols=12, lg=4):
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineNoticeGalaxyTable.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -794,7 +794,7 @@ def Page():
                 speech=speech.value,
             )
 
-        with rv.Col(cols=8):
+        with rv.Col(cols=12, lg=8):
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
                 Marker.cho_row1, Marker.dot_seq14  # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
             )
@@ -853,10 +853,10 @@ def Page():
                     common_headers.append(measnum_header)
 
                 
-                with solara.Card(title="Remove: for testing", style={'background-color': 'var(--warning-dark)'}):
-                    solara.Text(f"{COMPONENT_STATE.value.obs_wave}")
-                    DataTable(title="Example Measurements",
-                            items=[x.model_dump() for x in LOCAL_STATE.value.example_measurements])
+                # with solara.Card(title="Remove: for testing", style={'background-color': 'var(--warning-dark)'}):
+                #     solara.Text(f"{COMPONENT_STATE.value.obs_wave}")
+                #     DataTable(title="Example Measurements",
+                #             items=[x.model_dump() for x in LOCAL_STATE.value.example_measurements])
                 
 
                 DataTable(
@@ -924,36 +924,38 @@ def Page():
                 )
 
     # dot plot slideshow button row
+
     if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
-        with rv.Row():
-            with rv.Col(cols=12, lg=6):
+        with rv.Row(class_="no-padding"):
+            with rv.Col(cols=12, lg=4, class_="no-padding"):
                 pass
-            with rv.Col(cols=12, lg=4):
-                dotplot_tutorial_finished = Ref(
-                    COMPONENT_STATE.fields.dotplot_tutorial_finished
-                )
-                
-                tut_viewer_data = None
-                if EXAMPLE_GALAXY_SEED_DATA in gjapp.data_collection:
-                    tut_viewer_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                DotplotTutorialSlideshow(
-                    dialog=COMPONENT_STATE.value.show_dotplot_tutorial_dialog,
-                    step=COMPONENT_STATE.value.dotplot_tutorial_state.step,
-                    length=COMPONENT_STATE.value.dotplot_tutorial_state.length,
-                    max_step_completed=COMPONENT_STATE.value.dotplot_tutorial_state.max_step_completed,
-                    dotplot_viewer=DotplotViewer(gjapp,
-                                                data=tut_viewer_data,
-                                                component_id=DB_VELOCITY_FIELD,
-                                                vertical_line_visible=False,
-                                                unit="km / s",
-                                                x_label="Velocity (km/s)",
-                                                y_label="Number"
-                                                ),
-                                                
-                    event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
-                        True
-                    ),
-                )
+            with rv.Col(cols=12, lg=8, class_="no-padding"):
+                with rv.Col(cols=4, offset=4, class_="no-padding"):
+                    dotplot_tutorial_finished = Ref(
+                        COMPONENT_STATE.fields.dotplot_tutorial_finished
+                    )
+                    
+                    tut_viewer_data = None
+                    if EXAMPLE_GALAXY_SEED_DATA in gjapp.data_collection:
+                        tut_viewer_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                    DotplotTutorialSlideshow(
+                        dialog=COMPONENT_STATE.value.show_dotplot_tutorial_dialog,
+                        step=COMPONENT_STATE.value.dotplot_tutorial_state.step,
+                        length=COMPONENT_STATE.value.dotplot_tutorial_state.length,
+                        max_step_completed=COMPONENT_STATE.value.dotplot_tutorial_state.max_step_completed,
+                        dotplot_viewer=DotplotViewer(gjapp,
+                                                    data=tut_viewer_data,
+                                                    component_id=DB_VELOCITY_FIELD,
+                                                    vertical_line_visible=False,
+                                                    unit="km / s",
+                                                    x_label="Velocity (km/s)",
+                                                    y_label="Number"
+                                                    ),
+                                                    
+                        event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
+                            True
+                        ),
+                    )
                     
                 # def create_dotplot_viewer():
                 #     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
@@ -979,230 +981,229 @@ def Page():
                 #                          )
                 
     # Dot Plot 1st measurement row
+    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+        with rv.Row(class_="no-y-padding"):
+            with rv.Col(cols=4, class_="no-y-padding"):
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineIntroDotplot.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.int_dot1),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence01.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq1),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence02.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq2),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence03.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq3),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence04a.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4a),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence05.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence06.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence07.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq7),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence08.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq8),
+                    state_view={
+                        "mc_score": get_multiple_choice(LOCAL_STATE, "vel_meas_consensus"),
+                        "score_tag": "vel_meas_consensus",
+                    },
+                    speech=speech.value,
+                )
 
-    with rv.Row():
-        with rv.Col(cols=4):
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineIntroDotplot.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.int_dot1),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence01.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq1),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence02.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq2),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence03.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq3),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence04a.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4a),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence05.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence06.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence07.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq7),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence08.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq8),
-                state_view={
-                    "mc_score": get_multiple_choice(LOCAL_STATE, "vel_meas_consensus"),
-                    "score_tag": "vel_meas_consensus",
-                },
-                speech=speech.value,
-            )
 
-
-        with rv.Col(cols=8):                            
-            if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                # add_example_measurements_to_glue() # make sure updated measurements are in glue
-                create_dotplot_viewer()
+            with rv.Col(cols=8, class_="no-y-padding"):
+                                        
+                if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                    # add_example_measurements_to_glue() # make sure updated measurements are in glue
+                    create_dotplot_viewer()
 
     # Dot Plot 2nd measurement row
 
     # Spectrum Viewer row
+    if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.che_mea1) or COMPONENT_STATE.value.current_step_between(Marker.dot_seq4, Marker.dot_seq14) or COMPONENT_STATE.value.current_step_at_or_after(Marker.rem_gal1):
+        with rv.Row():
+            with rv.Col(cols=4):
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineSpectrum.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.mee_spe1),
+                    state_view={
+                        "spectrum_tutorial_opened": COMPONENT_STATE.value.spectrum_tutorial_opened
+                    },
+                    speech=speech.value,
+                )
 
-    with rv.Row():
-        with rv.Col(cols=4):
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineSpectrum.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.mee_spe1),
-                state_view={
-                    "spectrum_tutorial_opened": COMPONENT_STATE.value.spectrum_tutorial_opened
-                },
-                speech=speech.value,
-            )
+                selected_example_galaxy_data = (
+                    selected_example_measurement.value.galaxy.dict()
+                    if selected_example_measurement.value is not None
+                    else None
+                )
 
-            selected_example_galaxy_data = (
-                selected_example_measurement.value.galaxy.dict()
-                if selected_example_measurement.value is not None
-                else None
-            )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineRestwave.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.res_wav1),
+                    state_view={
+                        "selected_example_galaxy": selected_example_galaxy_data,
+                        "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
+                        "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
+                    },
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineObswave1.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav1),
+                    state_view={"selected_example_galaxy": selected_example_galaxy_data},
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineObswave2.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav2),
+                    state_view={
+                        "selected_example_galaxy": selected_example_galaxy_data,
+                        "zoom_tool_activate": COMPONENT_STATE.value.zoom_tool_activated,
+                    },
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDopplerCalc0.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal0),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDopplerCalc2.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal2),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence04.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence10.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq10),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence11.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq11),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineRemeasureVelocity.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.rem_vel1),
+                    speech=speech.value,
+                )
+                # ScaffoldAlert(
+                #     GUIDELINE_ROOT / "GuidelineDotSequence13a.vue",
+                #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13a),
+                #     speech=speech.value,
+                # )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineReflectOnData.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.ref_dat1),
+                    speech=speech.value,
+                )
 
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineRestwave.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.res_wav1),
-                state_view={
-                    "selected_example_galaxy": selected_example_galaxy_data,
-                    "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
-                    "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
-                },
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineObswave1.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav1),
-                state_view={"selected_example_galaxy": selected_example_galaxy_data},
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineObswave2.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav2),
-                state_view={
-                    "selected_example_galaxy": selected_example_galaxy_data,
-                    "zoom_tool_activate": COMPONENT_STATE.value.zoom_tool_activated,
-                },
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDopplerCalc0.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal0),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDopplerCalc2.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal2),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence04.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence10.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq10),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence11.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq11),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineRemeasureVelocity.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.rem_vel1),
-                speech=speech.value,
-            )
-            # ScaffoldAlert(
-            #     GUIDELINE_ROOT / "GuidelineDotSequence13a.vue",
-            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
-            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13a),
-            #     speech=speech.value,
-            # )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineReflectOnData.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.ref_dat1),
-                speech=speech.value,
-            )
+            with rv.Col(cols=8):
+                show_example_spectrum = COMPONENT_STATE.value.current_step_between(
+                    Marker.mee_spe1, Marker.che_mea1
+                ) or COMPONENT_STATE.value.current_step_between(
+                    Marker.dot_seq4, Marker.dot_seq14  # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+                )
 
-        with rv.Col(cols=8):
-            show_example_spectrum = COMPONENT_STATE.value.current_step_between(
-                Marker.mee_spe1, Marker.che_mea1
-            ) or COMPONENT_STATE.value.current_step_between(
-                Marker.dot_seq4, Marker.dot_seq14  # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
-            )
+                show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(
+                    Marker.rem_gal1
+                )
 
-            show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(
-                Marker.rem_gal1
-            )
-
-            if show_example_spectrum:
-                with solara.Column():
-
+                if show_example_spectrum:
                     def _example_wavelength_measured_callback(value):
                         example_measurement_index = (
                             LOCAL_STATE.value.get_example_measurement_index(
@@ -1291,9 +1292,7 @@ def Page():
                         on_set_marker_position=_on_set_marker_location,
                     )
 
-            elif show_galaxy_spectrum:
-                with solara.Column():
-
+                elif show_galaxy_spectrum:
                     def _wavelength_measured_callback(value):
                         measurement_index = LOCAL_STATE.value.get_measurement_index(
                             COMPONENT_STATE.value.selected_galaxy
@@ -1343,75 +1342,78 @@ def Page():
                         ),
                         on_obs_wave_measured=_wavelength_measured_callback,
                     )
-            
-            with rv.Row():
-                with rv.Col(cols=4, offset=2):
-                    spectrum_tutorial_opened = Ref(
-                        COMPONENT_STATE.fields.spectrum_tutorial_opened
-                    )
+                if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.rem_gal1): # center single button
+                    with rv.Row():
+                        with rv.Col(cols=4, offset=4):
+                            spectrum_tutorial_opened = Ref(
+                                COMPONENT_STATE.fields.spectrum_tutorial_opened
+                            )
+                            SpectrumSlideshow(
+                                event_dialog_opened_callback=lambda _: spectrum_tutorial_opened.set(
+                                    True
+                                )
+                            )
+                
+                if COMPONENT_STATE.value.current_step_at_or_after(Marker.ref_dat1): # space 2 buttons nicely
+                    with rv.Row():
+                        with rv.Col(cols=4, offset=2):
+                            SpectrumSlideshow()
+                        with rv.Col(cols=4):
+                            show_reflection_dialog = Ref(
+                                COMPONENT_STATE.fields.show_reflection_dialog
+                            )
+                            reflect_step = Ref(
+                                COMPONENT_STATE.fields.velocity_reflection_state.step
+                            )
+                            reflect_max_step_completed = Ref(
+                                COMPONENT_STATE.fields.velocity_reflection_state.max_step_completed
+                            )
+                            reflection_complete = Ref(COMPONENT_STATE.fields.reflection_complete)
 
-                    SpectrumSlideshow(
-                        event_dialog_opened_callback=lambda _: spectrum_tutorial_opened.set(
-                            True
-                        )
-                    )
-                with rv.Col(cols=4):
-                    if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
-                        show_reflection_dialog = Ref(
-                            COMPONENT_STATE.fields.show_reflection_dialog
-                        )
-                        reflect_step = Ref(
-                            COMPONENT_STATE.fields.velocity_reflection_state.step
-                        )
-                        reflect_max_step_completed = Ref(
-                            COMPONENT_STATE.fields.velocity_reflection_state.max_step_completed
-                        )
-                        reflection_complete = Ref(COMPONENT_STATE.fields.reflection_complete)
-
-                        ReflectVelocitySlideshow(
-                            length=8,
-                            titles=[
-                                "Reflect on your data",
-                                "What would a 1920's scientist wonder?",
-                                "Observed vs. rest wavelengths",
-                                "How galaxies move",
-                                "Do your data agree with 1920's thinking?",
-                                "Do your data agree with 1920's thinking?",
-                                "Did your peers find what you found?",
-                                "Reflection complete",
-                            ],
-                            interact_steps=[2, 3, 4, 5, 6],
-                            require_responses=True,
-                            dialog=COMPONENT_STATE.value.show_reflection_dialog,
-                            step=COMPONENT_STATE.value.velocity_reflection_state.step,
-                            max_step_completed=COMPONENT_STATE.value.velocity_reflection_state.max_step_completed,
-                            reflection_complete=COMPONENT_STATE.value.reflection_complete,
-                            state_view={
-                                "mc_score_2": get_multiple_choice(
-                                    LOCAL_STATE, "wavelength-comparison"
+                            ReflectVelocitySlideshow(
+                                length=8,
+                                titles=[
+                                    "Reflect on your data",
+                                    "What would a 1920's scientist wonder?",
+                                    "Observed vs. rest wavelengths",
+                                    "How galaxies move",
+                                    "Do your data agree with 1920's thinking?",
+                                    "Do your data agree with 1920's thinking?",
+                                    "Did your peers find what you found?",
+                                    "Reflection complete",
+                                ],
+                                interact_steps=[2, 3, 4, 5, 6],
+                                require_responses=True,
+                                dialog=COMPONENT_STATE.value.show_reflection_dialog,
+                                step=COMPONENT_STATE.value.velocity_reflection_state.step,
+                                max_step_completed=COMPONENT_STATE.value.velocity_reflection_state.max_step_completed,
+                                reflection_complete=COMPONENT_STATE.value.reflection_complete,
+                                state_view={
+                                    "mc_score_2": get_multiple_choice(
+                                        LOCAL_STATE, "wavelength-comparison"
+                                    ),
+                                    "score_tag_2": "wavelength-comparison",
+                                    "mc_score_3": get_multiple_choice(LOCAL_STATE, "galaxy-motion"),
+                                    "score_tag_3": "galaxy-motion",
+                                    "mc_score_4": get_multiple_choice(
+                                        LOCAL_STATE, "steady-state-consistent"
+                                    ),
+                                    "score_tag_4": "steady-state-consistent",
+                                    "mc_score_5": get_multiple_choice(
+                                        LOCAL_STATE, "moving-randomly-consistent"
+                                    ),
+                                    "score_tag_5": "moving-randomly-consistent",
+                                    "mc_score_6": get_multiple_choice(
+                                        LOCAL_STATE, "peers-data-agree"
+                                    ),
+                                    "score_tag_6": "peers-data-agree",
+                                },
+                                event_set_dialog=show_reflection_dialog.set,
+                                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                                # These are numbered based on window-item value
+                                event_set_step=reflect_step.set,
+                                event_set_max_step_completed=reflect_max_step_completed.set,
+                                event_on_reflection_complete=lambda _: reflection_complete.set(
+                                    True
                                 ),
-                                "score_tag_2": "wavelength-comparison",
-                                "mc_score_3": get_multiple_choice(LOCAL_STATE, "galaxy-motion"),
-                                "score_tag_3": "galaxy-motion",
-                                "mc_score_4": get_multiple_choice(
-                                    LOCAL_STATE, "steady-state-consistent"
-                                ),
-                                "score_tag_4": "steady-state-consistent",
-                                "mc_score_5": get_multiple_choice(
-                                    LOCAL_STATE, "moving-randomly-consistent"
-                                ),
-                                "score_tag_5": "moving-randomly-consistent",
-                                "mc_score_6": get_multiple_choice(
-                                    LOCAL_STATE, "peers-data-agree"
-                                ),
-                                "score_tag_6": "peers-data-agree",
-                            },
-                            event_set_dialog=show_reflection_dialog.set,
-                            event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
-                            # These are numbered based on window-item value
-                            event_set_step=reflect_step.set,
-                            event_set_max_step_completed=reflect_max_step_completed.set,
-                            event_on_reflection_complete=lambda _: reflection_complete.set(
-                                True
-                            ),
-                        )
+                            )
