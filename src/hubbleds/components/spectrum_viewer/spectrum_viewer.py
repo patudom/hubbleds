@@ -107,6 +107,8 @@ def SpectrumViewer(
                 ])
         except Exception as e:
             print(e)
+    
+    solara.use_effect(_on_reset_button_clicked, dependencies=[galaxy_data])
 
     def _spectrum_clicked(**kwargs):
         if spectrum_click_enabled:
