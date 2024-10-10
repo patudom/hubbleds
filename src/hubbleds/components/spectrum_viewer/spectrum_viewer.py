@@ -221,7 +221,27 @@ def SpectrumViewer(
             # annotation_text="1BASE",
             # annotation_font_size=12,
             # annotation_position="top right",
-            visible=vertical_line_visible.value and obs_wave > 0.0,
+            visible=vertical_line_visible.value and obs_wave > 0.0 and spectrum_click_enabled,
+        )
+        fig.add_shape(
+            type='line',
+            x0=obs_wave,
+            x1=obs_wave,
+            y0=0.0,
+            y1=0.2,
+            xref="x",
+            yref="paper",
+            line_color="red",
+            line_width=2,
+            fillcolor="red",
+            label={
+                "text": f"Your measurement",
+                "textposition": "top center",
+                "yanchor": "bottom",
+                "textangle": 0,
+                "padding": 35,
+            },
+            visible=vertical_line_visible.value and obs_wave > 0.0  and not spectrum_click_enabled,
         )
         
         if (marker_position is not None) and (not spectrum_click_enabled):
