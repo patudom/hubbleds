@@ -150,7 +150,7 @@ def SpectrumViewer(
             solara.IconButton(
                 flat=True,
                 tile=True,
-                icon_name="mdi-refresh",
+                icon_name="mdi-cached",
                 on_click=_on_reset_button_clicked,
             )
 
