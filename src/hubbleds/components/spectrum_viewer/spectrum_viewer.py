@@ -290,7 +290,7 @@ def SpectrumViewer(
             ]
         )
 
-        fig.update_layout(dragmode="zoom" if 0 in toggle_group_state.value else "pan")
+        fig.update_layout(dragmode="zoom" if 0 in toggle_group_state.value else False)
         
         
         dependencies = [
