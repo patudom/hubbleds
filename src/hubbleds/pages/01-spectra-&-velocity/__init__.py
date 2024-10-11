@@ -1071,8 +1071,24 @@ def Page():
 
     # Dot Plot 2nd measurement row
 
+    if COMPONENT_STATE.value.current_step_between(Marker.dot_seq14, Marker.dot_seq14):
+        with rv.Row():
+            with rv.Col(cols=12, lg=4):
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence14.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq14),
+                    speech=speech.value,
+                )
+            with rv.Col(cols=12, lg=8):
+                print("Creating 2nd dotplot viewer")
+                create_dotplot_viewer(first_meas=False)
+
+
     # Spectrum Viewer row
-    if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.che_mea1) or COMPONENT_STATE.value.current_step_between(Marker.dot_seq4, Marker.dot_seq14) or COMPONENT_STATE.value.current_step_at_or_after(Marker.rem_gal1):
+    if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.che_mea1) or COMPONENT_STATE.value.current_step_between(Marker.dot_seq4, Marker.rem_vel1) or COMPONENT_STATE.value.current_step_at_or_after(Marker.rem_gal1):
         with rv.Row():
             with rv.Col(cols=12, lg=4):
                 ScaffoldAlert(
