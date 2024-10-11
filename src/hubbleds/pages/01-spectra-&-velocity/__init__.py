@@ -139,7 +139,7 @@ def Page():
 
     @computed
     def use_second_measurement():
-        return COMPONENT_STATE.value.current_step >= Marker.dot_seq9
+        return COMPONENT_STATE.value.current_step >= Marker.rem_vel1
 
     @computed
     def selected_example_measurement():
@@ -384,7 +384,7 @@ def Page():
 
     
 
-    def create_dotplot_viewer():
+    def create_dotplot_viewer(first_meas=True):
         print("\n\n ======== \ncreate_dotplot_viewer\n\n")
         show = COMPONENT_STATE.value.current_step >= Marker.int_dot1
         if show and (EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection):
@@ -402,7 +402,7 @@ def Page():
             zorder = None
 
         ignore = [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
-        if COMPONENT_STATE.value.current_step >= Marker.dot_seq9:
+        if first_meas:
             first = subset_by_label(layer0, "first measurement")
             if first is not None:
                 ignore.append(first)
@@ -411,6 +411,7 @@ def Page():
             if second is not None:
                 ignore.append(second)
         
+        # we'll need to use/modify this for syncing 2 dot plots or for syncing auto-zoomed in x-ranges.
         def _on_click_callback(point):
             sync_velocity_line.set(point.xs[0])
             wavelength = sync_example_velocity_to_wavelength(point.xs[0])
@@ -419,7 +420,7 @@ def Page():
         logger.info(f"\n {ignore} \n")
         return DotplotViewer(
             gjapp,
-            title="Ex Gal Dotplot",
+            title="Dotplot: Example Galaxy Velocities" if first_meas else "Dotplot: Example Galaxy Velocities (2nd Measurement)",
             data=viewer_data,
             component_id=DB_VELOCITY_FIELD,
             vertical_line_visible=show_synced_lines.value,  #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
@@ -430,7 +431,7 @@ def Page():
             x_label="Velocity (km/s)",
             y_label="Number",
             zorder=zorder,
-            nbin=75,
+            nbin=74,
             x_bounds=dotplot_bounds,
             reset_bounds=dotplot_reset_bounds,
             hide_layers=ignore,  # type: ignore
@@ -442,7 +443,7 @@ def Page():
     def _on_marker_updated(marker):
         if COMPONENT_STATE.value.is_current_step(Marker.dot_seq4):
             initialize_bounds(max_spectrum_bounds.value)
-        if COMPONENT_STATE.value.current_step >= Marker.dot_seq9:
+        if COMPONENT_STATE.value.current_step >= Marker.rem_vel1:
             update_second_example_measurement() # either set them to current or keep from DB
         pass
 
@@ -457,8 +458,10 @@ def Page():
             solara.Button(label="Fill default vel & dist measurements", on_click=_fill_galaxies)
             solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies)
 
+    # WWT Selection Tool Row
+
     with rv.Row():
-        with rv.Col(cols=4):
+        with rv.Col(cols=12, lg=4):
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineIntro.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -468,7 +471,8 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies1.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                # If at least 1 galaxy has already been selected, we want to go straight from here to sel_gal3.
+                event_next_callback=lambda _: transition_to(COMPONENT_STATE, Marker.sel_gal2 if COMPONENT_STATE.value.total_galaxies == 0 else Marker.sel_gal3, force=True),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal1),
@@ -476,25 +480,27 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies2.vue",
+                # I think we don't need this next callback because meeting the "next" criteria will autoadvance you to not_gal1 anyway, and then we skip over this guideline if we go backwards from sel_gal3. (But leave it just in case)
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal2),
                 state_view={
                     "total_galaxies": COMPONENT_STATE.value.total_galaxies,
-                    "selected_galaxy": bool(COMPONENT_STATE.value.selected_galaxy),
+                    "galaxy_is_selected": COMPONENT_STATE.value.galaxy_is_selected,
                 },
                 speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies3.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                # You can't get to this marker until at least 1 galaxy has been selected. Once a galaxy has been selected, sel_gal2 doesn't make sense, so jump back to sel_gal1.
+                event_back_callback=lambda _: transition_to(COMPONENT_STATE, Marker.sel_gal1, force=True),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal3),
                 state_view={
                     "total_galaxies": COMPONENT_STATE.value.total_galaxies,
-                    "selected_galaxy": bool(COMPONENT_STATE.value.selected_galaxy),
+                    "galaxy_is_selected": COMPONENT_STATE.value.galaxy_is_selected,
                 },
                 speech=speech.value,
             )
@@ -507,7 +513,7 @@ def Page():
                 speech=speech.value,
             )
 
-        with rv.Col(cols=8):
+        with rv.Col(cols=12, lg=8):
             
             show_snackbar = Ref(LOCAL_STATE.fields.show_snackbar)
             async def snackbar_off(value = None):
@@ -554,19 +560,24 @@ def Page():
             def advance_on_total_galaxies(value):
                 if COMPONENT_STATE.value.current_step == Marker.sel_gal2:
                     if value == 1:
-                        transition_to(COMPONENT_STATE, Marker.sel_gal3)
+                        transition_to(COMPONENT_STATE, Marker.not_gal1)
             total_galaxies.subscribe(advance_on_total_galaxies)
 
             def _galaxy_selected_callback(galaxy_data: GalaxyData | None):
                 if galaxy_data is None:
                     return
-
                 selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
                 selected_galaxy.set(galaxy_data.id)
-            
+                galaxy_is_selected = Ref(COMPONENT_STATE.fields.galaxy_is_selected)
+                galaxy_is_selected.set(True)  
+
+            def _deselect_galaxy_callback():
+                galaxy_is_selected = Ref(COMPONENT_STATE.fields.galaxy_is_selected)
+                galaxy_is_selected.set(False)  
+                print("is galaxy selected:", galaxy_is_selected.value)             
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-            Marker.cho_row1, Marker.dot_seq12
+            Marker.cho_row1, Marker.rem_gal1 #placeholder so it doesn't break - change to last new dot_seq marker.
             )
             if show_example_data_table:
                 selection_tool_galaxy = selected_example_measurement
@@ -575,7 +586,7 @@ def Page():
             
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
-                    [Marker.sel_gal2, Marker.not_gal_tab, Marker.sel_gal3]
+                    [Marker.sel_gal2, Marker.not_gal1, Marker.sel_gal3]
                 ),
                 galaxy_selected_callback=_galaxy_selected_callback,
                 galaxy_added_callback=_galaxy_added_callback,
@@ -584,19 +595,23 @@ def Page():
                     if selection_tool_galaxy.value is not None
                     else None
                 ),
+                deselect_galaxy_callback=_deselect_galaxy_callback,
             )
             
             if show_snackbar.value:
                 solara.Info(label=LOCAL_STATE.value.snackbar_message)        
 
+    # Measurement Table Row
+
     with rv.Row():
-        with rv.Col(cols=4):
+        with rv.Col(cols=12, lg=4):
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineNoticeGalaxyTable.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                # You can't get to this marker until at least 1 galaxy has been selected. Once a galaxy has been selected, sel_gal2 doesn't make sense, so jump back to sel_gal1.
+                event_back_callback=lambda _: transition_to(COMPONENT_STATE, Marker.sel_gal1, force=True),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.not_gal_tab),
+                show=COMPONENT_STATE.value.is_current_step(Marker.not_gal1),
                 speech=speech.value,
             )
             ScaffoldAlert(
@@ -639,296 +654,10 @@ def Page():
                 event_on_validated_transition=_on_validated_transition,
                 speech=speech.value,
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.che_mea1),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence12.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq12),
-                speech=speech.value,
-                event_remeasure_example_galaxy=lambda _: transition_to(COMPONENT_STATE, Marker.dot_seq13a, force=True),
-                event_continue_to_galaxies=lambda _: transition_to(COMPONENT_STATE, Marker.rem_gal1, force=True),
-            )
-            # Skip for now since we aren't offering 2nd measurement.
-            # ScaffoldAlert(
-            #     GUIDELINE_ROOT / "GuidelineDotSequence13.vue",
-            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
-            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13),
-            # )
-            set_obs_wave_total()
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineRemainingGals.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.rem_gal1),
-                state_view={
-                    "obswaves_total": COMPONENT_STATE.value.obs_wave_total,
-                    "has_bad_velocities": COMPONENT_STATE.value.has_bad_velocities,
-                    "has_multiple_bad_velocities": COMPONENT_STATE.value.has_multiple_bad_velocities,
-                    "selected_galaxy": (
-                        selected_measurement.value.dict()
-                        if selected_measurement.value is not None
-                        else None
-                    ),
-                },
-                speech=speech.value,
-            )
-            # if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
-            #     solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal6),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineReflectVelValues.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
-                show=COMPONENT_STATE.value.is_current_step(Marker.ref_vel1),
-                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, "reflect_vel_value"), 'score_tag': 'reflect_vel_value'},
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: router.push("02-distance-introduction"),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),
-                state_view={
-                    "has_bad_velocities": COMPONENT_STATE.value.has_bad_velocities,
-                    "has_multiple_bad_velocities": COMPONENT_STATE.value.has_multiple_bad_velocities,
-                },
-                speech=speech.value,
-            )
 
-        with rv.Col(cols=8):
-            show_example_data_table = COMPONENT_STATE.value.current_step_between(
-                Marker.cho_row1, Marker.dot_seq13a  # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
-            )
-
-            if show_example_data_table:
-                selected_example_galaxy = Ref(
-                    COMPONENT_STATE.fields.selected_example_galaxy
-                )
-                
-                @computed
-                def example_galaxy_data():
-                    if use_second_measurement.value:
-                        return [
-                            x.dict() for x in LOCAL_STATE.value.example_measurements if x.measurement_number == 'second'
-                        ]
-                    else:
-                        return [
-                            x.dict() for x in LOCAL_STATE.value.example_measurements if x.measurement_number == 'first'
-                        ]
-
-                @computed
-                def selected_example_galaxy_index():
-                    index = LOCAL_STATE.value.get_example_measurement_index(
-                        selected_example_galaxy.value,
-                        measurement_number='second' if use_second_measurement.value else 'first')
-                    if index is None:
-                        return []
-                    else:
-                        return [0]
-
-                def update_example_galaxy(galaxy):
-                    flag = galaxy.get("value", True)
-                    value = galaxy["item"]["galaxy_id"] if flag else None
-                    selected_example_galaxy = Ref(COMPONENT_STATE.fields.selected_example_galaxy)
-                    if value is not None:
-                        galaxy = LOCAL_STATE.value.get_example_measurement(value, measurement_number='second' if use_second_measurement.value else 'first')
-                        if galaxy is not None:
-                            value = galaxy.galaxy_id
-                        else:
-                            value = None
-                        
-                    selected_example_galaxy.set(value)
-                
-                
-                common_headers = [
-                                    {"text": "Galaxy Name", "align": "start","sortable": False,"value": "name",},
-                                    {"text": "Element", "value": "element"},
-                                    {"text": "&lambda;<sub>rest</sub> (&Aring;)",
-                                     "value": "rest_wave_value"},
-                                    {"text": "&lambda;<sub>obs</sub> (&Aring;)",
-                                     "value": "obs_wave_value"},
-                                    {"text": "Velocity (km/s)", "value": "velocity_value"},
-                                ]
-                if use_second_measurement.value:
-                    measnum_header = {"text": "Measurement Number", "value": "measurement_number"}
-                    common_headers.append(measnum_header)
-
-                
-                with solara.Card(title="Remove: for testing", style={'background-color': 'var(--warning-dark)'}):
-                    solara.Text(f"{COMPONENT_STATE.value.obs_wave}")
-                    DataTable(title="Example Measurements",
-                            items=[x.model_dump() for x in LOCAL_STATE.value.example_measurements])
-                
-
-                DataTable(
-                    title="Example Galaxy",
-                    headers=common_headers,
-                    items=example_galaxy_data.value,
-                    selected_indices=selected_example_galaxy_index.value,
-                    show_select=COMPONENT_STATE.value.current_step_at_or_after(Marker.cho_row1),
-                    event_on_row_selected=update_example_galaxy,
-                )
-            else:
-                selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
-
-                def _on_table_row_selected(row):
-                    galaxy_measurement = LOCAL_STATE.value.get_measurement(
-                        row["item"]["galaxy_id"]
-                    )
-                    if galaxy_measurement is not None:
-                        selected_galaxy.set(galaxy_measurement.galaxy_id)
-
-                    obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
-                    obs_wave.set(0)
-
-                def _on_calculate_velocity():
-                    for i in range(len(LOCAL_STATE.value.measurements)):
-                        measurement = Ref(LOCAL_STATE.fields.measurements[i])
-                        velocity = round(
-                            3e5
-                            * (
-                                measurement.value.obs_wave_value
-                                / measurement.value.rest_wave_value
-                                - 1
-                            )
-                        )
-                        measurement.set(
-                            measurement.value.model_copy(
-                                update={"velocity_value": velocity}
-                            )
-                        )
-
-                        velocities_total = Ref(COMPONENT_STATE.fields.velocities_total)
-                        velocities_total.set(velocities_total.value + 1)
-
-                @computed
-                def selected_galaxy_index():
-                    index = LOCAL_STATE.value.get_measurement_index(selected_galaxy.value)
-                    if index is None:
-                        return []
-                    else:
-                        return [index]
-
-                DataTable(
-                    title="My Galaxies",
-                    items=[x.dict() for x in LOCAL_STATE.value.measurements],
-                    selected_indices=selected_galaxy_index.value,
-                    show_select=COMPONENT_STATE.value.current_step_at_or_after(
-                        Marker.cho_row1
-                    ),
-                    button_icon="mdi-run-fast",
-                    show_button=COMPONENT_STATE.value.is_current_step(
-                        Marker.dop_cal6
-                    ),
-                    event_on_row_selected=_on_table_row_selected,
-                    event_on_button_pressed=lambda _: _on_calculate_velocity(),
-                )
-
-    with rv.Row():
-        with rv.Col(cols=4):
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineIntroDotplot.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.int_dot1),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence01.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq1),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence02.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq2),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence03.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq3),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence05.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
-                speech=speech.value,
-            )
-            # ScaffoldAlert(
-            #     GUIDELINE_ROOT / "GuidelineDotSequence06.vue",
-            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
-            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
-            #     speech=speech.value,
-            # )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence07.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq7),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence08.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq8),
-                state_view={
-                    "mc_score": get_multiple_choice(LOCAL_STATE, "vel_meas_consensus"),
-                    "score_tag": "vel_meas_consensus",
-                },
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence09.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq9),
-                speech=speech.value,
-            )
-
-        with rv.Col(cols=8):
+            # This whole slideshow is basically dop_cal5
             if COMPONENT_STATE.value.current_step_between(
-                Marker.mee_spe1, Marker.che_mea1
+                Marker.dop_cal4, Marker.che_mea1
             ):
                 show_doppler_dialog = Ref(COMPONENT_STATE.fields.show_doppler_dialog)
                 step = Ref(COMPONENT_STATE.fields.doppler_state.step)
@@ -997,37 +726,237 @@ def Page():
                         "score_tag": "interpret-velocity",
                     },
                 )
-
-            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq13a): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
-                dotplot_tutorial_finished = Ref(
-                    COMPONENT_STATE.fields.dotplot_tutorial_finished
-                )
-                
-                tut_viewer_data = None
-                if EXAMPLE_GALAXY_SEED_DATA in gjapp.data_collection:
-                    tut_viewer_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-                DotplotTutorialSlideshow(
-                    dialog=COMPONENT_STATE.value.show_dotplot_tutorial_dialog,
-                    step=COMPONENT_STATE.value.dotplot_tutorial_state.step,
-                    length=COMPONENT_STATE.value.dotplot_tutorial_state.length,
-                    max_step_completed=COMPONENT_STATE.value.dotplot_tutorial_state.max_step_completed,
-                    dotplot_viewer=DotplotViewer(gjapp,
-                                                 data=tut_viewer_data,
-                                                 component_id=DB_VELOCITY_FIELD,
-                                                 vertical_line_visible=False,
-                                                 unit="km / s",
-                                                 x_label="Velocity (km/s)",
-                                                 y_label="Number"
-                                                 ),
-                                                 
-                    event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
-                        True
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.che_mea1),
+                speech=speech.value,
+            )
+            # Skip for now since we aren't offering 2nd measurement.
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineDotSequence13.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13),
+            # )
+            set_obs_wave_total()
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineRemainingGals.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.rem_gal1),
+                state_view={
+                    "obswaves_total": COMPONENT_STATE.value.obs_wave_total,
+                    "has_bad_velocities": COMPONENT_STATE.value.has_bad_velocities,
+                    "has_multiple_bad_velocities": COMPONENT_STATE.value.has_multiple_bad_velocities,
+                    "selected_galaxy": (
+                        selected_measurement.value.dict()
+                        if selected_measurement.value is not None
+                        else None
                     ),
+                },
+                speech=speech.value,
+            )
+            # if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
+            #     solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal6),
+                speech=speech.value,
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineReflectVelValues.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                show=COMPONENT_STATE.value.is_current_step(Marker.ref_vel1),
+                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, "reflect_vel_value"), 'score_tag': 'reflect_vel_value'},
+                speech=speech.value,
+            )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineEndStage1.vue",
+                event_next_callback=lambda _: router.push("02-distance-introduction"),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),
+                state_view={
+                    "has_bad_velocities": COMPONENT_STATE.value.has_bad_velocities,
+                    "has_multiple_bad_velocities": COMPONENT_STATE.value.has_multiple_bad_velocities,
+                },
+                speech=speech.value,
+            )
+
+        with rv.Col(cols=12, lg=8):
+            show_example_data_table = COMPONENT_STATE.value.current_step_between(
+                Marker.cho_row1, Marker.dot_seq14  # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
+            )
+
+            if show_example_data_table:
+                selected_example_galaxy = Ref(
+                    COMPONENT_STATE.fields.selected_example_galaxy
                 )
                 
+                @computed
+                def example_galaxy_data():
+                    if use_second_measurement.value:
+                        return [
+                            x.dict() for x in LOCAL_STATE.value.example_measurements if x.measurement_number == 'second'
+                        ]
+                    else:
+                        return [
+                            x.dict() for x in LOCAL_STATE.value.example_measurements if x.measurement_number == 'first'
+                        ]
+
+                @computed
+                def selected_example_galaxy_index():
+                    index = LOCAL_STATE.value.get_example_measurement_index(
+                        selected_example_galaxy.value,
+                        measurement_number='second' if use_second_measurement.value else 'first')
+                    if index is None:
+                        return []
+                    else:
+                        return [0]
+
+                def update_example_galaxy(galaxy):
+                    flag = galaxy.get("value", True)
+                    value = galaxy["item"]["galaxy_id"] if flag else None
+                    selected_example_galaxy = Ref(COMPONENT_STATE.fields.selected_example_galaxy)
+                    if value is not None:
+                        galaxy = LOCAL_STATE.value.get_example_measurement(value, measurement_number='second' if use_second_measurement.value else 'first')
+                        if galaxy is not None:
+                            value = galaxy.galaxy_id
+                        else:
+                            value = None
+                        
+                    selected_example_galaxy.set(value)
                 
                 
-                       
+                common_headers = [
+                                    {"text": "Galaxy Name", "align": "start","sortable": False,"value": "name",},
+                                    {"text": "Element", "value": "element"},
+                                    {"text": "&lambda;<sub>rest</sub> (&Aring;)",
+                                     "value": "rest_wave_value"},
+                                    {"text": "&lambda;<sub>obs</sub> (&Aring;)",
+                                     "value": "obs_wave_value"},
+                                    {"text": "Velocity (km/s)", "value": "velocity_value"},
+                                ]
+                if use_second_measurement.value:
+                    measnum_header = {"text": "Measurement Number", "value": "measurement_number"}
+                    common_headers.append(measnum_header)
+
+                
+                # with solara.Card(title="Remove: for testing", style={'background-color': 'var(--warning-dark)'}):
+                #     solara.Text(f"{COMPONENT_STATE.value.obs_wave}")
+                #     DataTable(title="Example Measurements",
+                #             items=[x.model_dump() for x in LOCAL_STATE.value.example_measurements])
+                
+
+                DataTable(
+                    title="Example Galaxy",
+                    headers=common_headers,
+                    items=example_galaxy_data.value,
+                    selected_indices=selected_example_galaxy_index.value,
+                    show_select=COMPONENT_STATE.value.current_step_at_or_after(Marker.cho_row1),
+                    event_on_row_selected=update_example_galaxy,
+                )
+            else:
+                selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
+
+                def _on_table_row_selected(row):
+                    galaxy_measurement = LOCAL_STATE.value.get_measurement(
+                        row["item"]["galaxy_id"]
+                    )
+                    if galaxy_measurement is not None:
+                        selected_galaxy.set(galaxy_measurement.galaxy_id)
+
+                    obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                    obs_wave.set(0)
+
+                def _on_calculate_velocity():
+                    for i in range(len(LOCAL_STATE.value.measurements)):
+                        measurement = Ref(LOCAL_STATE.fields.measurements[i])
+                        velocity = round(
+                            3e5
+                            * (
+                                measurement.value.obs_wave_value
+                                / measurement.value.rest_wave_value
+                                - 1
+                            )
+                        )
+                        measurement.set(
+                            measurement.value.model_copy(
+                                update={"velocity_value": velocity}
+                            )
+                        )
+
+                        velocities_total = Ref(COMPONENT_STATE.fields.velocities_total)
+                        velocities_total.set(velocities_total.value + 1)
+
+                @computed
+                def selected_galaxy_index():
+                    index = LOCAL_STATE.value.get_measurement_index(selected_galaxy.value)
+                    if index is None:
+                        return []
+                    else:
+                        return [index]
+
+                DataTable(
+                    title="My Galaxies",
+                    items=[x.dict() for x in LOCAL_STATE.value.measurements],
+                    selected_indices=selected_galaxy_index.value,
+                    show_select=COMPONENT_STATE.value.current_step_at_or_after(
+                        Marker.cho_row1
+                    ),
+                    button_icon="mdi-run-fast",
+                    show_button=COMPONENT_STATE.value.is_current_step(
+                        Marker.dop_cal6
+                    ),
+                    event_on_row_selected=_on_table_row_selected,
+                    event_on_button_pressed=lambda _: _on_calculate_velocity(),
+                )
+
+    # dot plot slideshow button row
+
+    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+        with rv.Row(class_="no-padding"):
+            with rv.Col(cols=12, lg=4, class_="no-padding"):
+                pass
+            with rv.Col(cols=12, lg=8, class_="no-padding"):
+                with rv.Col(cols=4, offset=4, class_="no-padding"):
+                    dotplot_tutorial_finished = Ref(
+                        COMPONENT_STATE.fields.dotplot_tutorial_finished
+                    )
+                    
+                    tut_viewer_data = None
+                    if EXAMPLE_GALAXY_SEED_DATA in gjapp.data_collection:
+                        tut_viewer_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                    DotplotTutorialSlideshow(
+                        dialog=COMPONENT_STATE.value.show_dotplot_tutorial_dialog,
+                        step=COMPONENT_STATE.value.dotplot_tutorial_state.step,
+                        length=COMPONENT_STATE.value.dotplot_tutorial_state.length,
+                        max_step_completed=COMPONENT_STATE.value.dotplot_tutorial_state.max_step_completed,
+                        dotplot_viewer=DotplotViewer(gjapp,
+                                                    data=tut_viewer_data,
+                                                    component_id=DB_VELOCITY_FIELD,
+                                                    vertical_line_visible=False,
+                                                    unit="km / s",
+                                                    x_label="Velocity (km/s)",
+                                                    y_label="Number"
+                                                    ),
+                                                    
+                        event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
+                            True
+                        ),
+                    )
+                    
                 # def create_dotplot_viewer():
                 #     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                 #         viewer_data = [
@@ -1051,196 +980,246 @@ def Page():
                 #                          reset_bounds = dotplot_reset_bounds.value
                 #                          )
                 
-                
+    # Dot Plot 1st measurement row
+    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+        with rv.Row(class_="no-y-padding"):
+            with rv.Col(cols=12, lg=4, class_="no-y-padding"):
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineIntroDotplot.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.int_dot1),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence01.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq1),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence02.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq2),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence03.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq3),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence04a.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4a),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence05.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence06.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence07.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq7),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence08.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq8),
+                    state_view={
+                        "mc_score": get_multiple_choice(LOCAL_STATE, "vel_meas_consensus"),
+                        "score_tag": "vel_meas_consensus",
+                    },
+                    speech=speech.value,
+                )
+
+
+            with rv.Col(cols=12, lg=8, class_="no-y-padding"):
+                                        
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                     # add_example_measurements_to_glue() # make sure updated measurements are in glue
                     create_dotplot_viewer()
 
-            if COMPONENT_STATE.value.is_current_step(Marker.ref_dat1):
-                show_reflection_dialog = Ref(
-                    COMPONENT_STATE.fields.show_reflection_dialog
-                )
-                reflect_step = Ref(
-                    COMPONENT_STATE.fields.velocity_reflection_state.step
-                )
-                reflect_max_step_completed = Ref(
-                    COMPONENT_STATE.fields.velocity_reflection_state.max_step_completed
-                )
-                reflection_complete = Ref(COMPONENT_STATE.fields.reflection_complete)
+    # Dot Plot 2nd measurement row
 
-                ReflectVelocitySlideshow(
-                    length=8,
-                    titles=[
-                        "Reflect on your data",
-                        "What would a 1920's scientist wonder?",
-                        "Observed vs. rest wavelengths",
-                        "How galaxies move",
-                        "Do your data agree with 1920's thinking?",
-                        "Do your data agree with 1920's thinking?",
-                        "Did your peers find what you found?",
-                        "Reflection complete",
-                    ],
-                    interact_steps=[2, 3, 4, 5, 6],
-                    require_responses=True,
-                    dialog=COMPONENT_STATE.value.show_reflection_dialog,
-                    step=COMPONENT_STATE.value.velocity_reflection_state.step,
-                    max_step_completed=COMPONENT_STATE.value.velocity_reflection_state.max_step_completed,
-                    reflection_complete=COMPONENT_STATE.value.reflection_complete,
+    if COMPONENT_STATE.value.current_step_between(Marker.dot_seq14, Marker.dot_seq14):
+        with rv.Row():
+            with rv.Col(cols=12, lg=4):
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence14.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq14),
+                    speech=speech.value,
+                )
+            with rv.Col(cols=12, lg=8):
+                print("Creating 2nd dotplot viewer")
+                create_dotplot_viewer(first_meas=False)
+
+
+    # Spectrum Viewer row
+    if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.che_mea1) or COMPONENT_STATE.value.current_step_between(Marker.dot_seq4, Marker.rem_vel1) or COMPONENT_STATE.value.current_step_at_or_after(Marker.rem_gal1):
+        with rv.Row():
+            with rv.Col(cols=12, lg=4):
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineSpectrum.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.mee_spe1),
                     state_view={
-                        "mc_score_2": get_multiple_choice(
-                            LOCAL_STATE, "wavelength-comparison"
-                        ),
-                        "score_tag_2": "wavelength-comparison",
-                        "mc_score_3": get_multiple_choice(LOCAL_STATE, "galaxy-motion"),
-                        "score_tag_3": "galaxy-motion",
-                        "mc_score_4": get_multiple_choice(
-                            LOCAL_STATE, "steady-state-consistent"
-                        ),
-                        "score_tag_4": "steady-state-consistent",
-                        "mc_score_5": get_multiple_choice(
-                            LOCAL_STATE, "moving-randomly-consistent"
-                        ),
-                        "score_tag_5": "moving-randomly-consistent",
-                        "mc_score_6": get_multiple_choice(
-                            LOCAL_STATE, "peers-data-agree"
-                        ),
-                        "score_tag_6": "peers-data-agree",
+                        "spectrum_tutorial_opened": COMPONENT_STATE.value.spectrum_tutorial_opened
                     },
-                    event_set_dialog=show_reflection_dialog.set,
-                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
-                    # These are numbered based on window-item value
-                    event_set_step=reflect_step.set,
-                    event_set_max_step_completed=reflect_max_step_completed.set,
-                    event_on_reflection_complete=lambda _: reflection_complete.set(
-                        True
-                    ),
+                    speech=speech.value,
                 )
 
-    with rv.Row():
-        with rv.Col(cols=4):
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineSpectrum.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.mee_spe1),
-                state_view={
-                    "spectrum_tutorial_opened": COMPONENT_STATE.value.spectrum_tutorial_opened
-                },
-                speech=speech.value,
-            )
+                selected_example_galaxy_data = (
+                    selected_example_measurement.value.galaxy.dict()
+                    if selected_example_measurement.value is not None
+                    else None
+                )
 
-            selected_example_galaxy_data = (
-                selected_example_measurement.value.galaxy.dict()
-                if selected_example_measurement.value is not None
-                else None
-            )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineRestwave.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.res_wav1),
+                    state_view={
+                        "selected_example_galaxy": selected_example_galaxy_data,
+                        "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
+                        "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
+                    },
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineObswave1.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav1),
+                    state_view={"selected_example_galaxy": selected_example_galaxy_data},
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineObswave2.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav2),
+                    state_view={
+                        "selected_example_galaxy": selected_example_galaxy_data,
+                        "zoom_tool_activate": COMPONENT_STATE.value.zoom_tool_activated,
+                    },
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDopplerCalc0.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal0),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDopplerCalc2.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal2),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence04.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence10.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq10),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineDotSequence11.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq11),
+                    speech=speech.value,
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineRemeasureVelocity.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.rem_vel1),
+                    speech=speech.value,
+                )
+                # ScaffoldAlert(
+                #     GUIDELINE_ROOT / "GuidelineDotSequence13a.vue",
+                #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13a),
+                #     speech=speech.value,
+                # )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineReflectOnData.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.ref_dat1),
+                    speech=speech.value,
+                )
 
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineRestwave.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.res_wav1),
-                state_view={
-                    "selected_example_galaxy": selected_example_galaxy_data,
-                    "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
-                    "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
-                },
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineObswave1.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav1),
-                state_view={"selected_example_galaxy": selected_example_galaxy_data},
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineObswave2.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav2),
-                state_view={
-                    "selected_example_galaxy": selected_example_galaxy_data,
-                    "zoom_tool_activate": COMPONENT_STATE.value.zoom_tool_activated,
-                },
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDopplerCalc0.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal0),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDopplerCalc2.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal2),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence04.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence10.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq10),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence11.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq11),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineDotSequence13a.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq13a),
-                speech=speech.value,
-            )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineReflectOnData.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.ref_dat1),
-                speech=speech.value,
-            )
+            with rv.Col(cols=12, lg=8):
+                show_example_spectrum = COMPONENT_STATE.value.current_step_between(
+                    Marker.mee_spe1, Marker.che_mea1
+                ) or COMPONENT_STATE.value.current_step_between(
+                    Marker.dot_seq4, Marker.dot_seq14  # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+                )
 
-        with rv.Col(cols=8):
-            show_example_spectrum = COMPONENT_STATE.value.current_step_between(
-                Marker.mee_spe1, Marker.che_mea1
-            ) or COMPONENT_STATE.value.current_step_between(
-                Marker.dot_seq4, Marker.dot_seq13a  # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
-            )
+                show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(
+                    Marker.rem_gal1
+                )
 
-            show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(
-                Marker.rem_gal1
-            )
-
-            if show_example_spectrum:
-                with solara.Column():
-
+                if show_example_spectrum:
                     def _example_wavelength_measured_callback(value):
                         example_measurement_index = (
                             LOCAL_STATE.value.get_example_measurement_index(
@@ -1297,7 +1276,7 @@ def Page():
                         meas = LOCAL_STATE.value.example_measurements
                         if LOCAL_STATE.value.measurements_loaded and len(meas) > 0:
                             step = COMPONENT_STATE.value.current_step
-                            if step >= Marker.dot_seq9 and meas[1].obs_wave_value is not None:
+                            if step >= Marker.rem_vel1 and meas[1].obs_wave_value is not None:
                                 return meas[1].obs_wave_value
                             elif step >= Marker.dot_seq1 and meas[0].velocity_value is not None:
                                 return meas[0].obs_wave_value
@@ -1315,7 +1294,7 @@ def Page():
                             COMPONENT_STATE.value.current_step_between(
                             Marker.obs_wav1, Marker.obs_wav2
                         )
-                        or COMPONENT_STATE.value.current_step > Marker.dot_seq9
+                        or COMPONENT_STATE.value.current_step >= Marker.rem_vel1
                         ),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
                         on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(
@@ -1329,18 +1308,7 @@ def Page():
                         on_set_marker_position=_on_set_marker_location,
                     )
 
-                    spectrum_tutorial_opened = Ref(
-                        COMPONENT_STATE.fields.spectrum_tutorial_opened
-                    )
-
-                    SpectrumSlideshow(
-                        event_dialog_opened_callback=lambda _: spectrum_tutorial_opened.set(
-                            True
-                        )
-                    )
-            elif show_galaxy_spectrum:
-                with solara.Column():
-
+                elif show_galaxy_spectrum:
                     def _wavelength_measured_callback(value):
                         measurement_index = LOCAL_STATE.value.get_measurement_index(
                             COMPONENT_STATE.value.selected_galaxy
@@ -1390,13 +1358,78 @@ def Page():
                         ),
                         on_obs_wave_measured=_wavelength_measured_callback,
                     )
+                if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.rem_gal1): # center single button
+                    with rv.Row():
+                        with rv.Col(cols=4, offset=4):
+                            spectrum_tutorial_opened = Ref(
+                                COMPONENT_STATE.fields.spectrum_tutorial_opened
+                            )
+                            SpectrumSlideshow(
+                                event_dialog_opened_callback=lambda _: spectrum_tutorial_opened.set(
+                                    True
+                                )
+                            )
+                
+                if COMPONENT_STATE.value.current_step_at_or_after(Marker.ref_dat1): # space 2 buttons nicely
+                    with rv.Row():
+                        with rv.Col(cols=4, offset=2):
+                            SpectrumSlideshow()
+                        with rv.Col(cols=4):
+                            show_reflection_dialog = Ref(
+                                COMPONENT_STATE.fields.show_reflection_dialog
+                            )
+                            reflect_step = Ref(
+                                COMPONENT_STATE.fields.velocity_reflection_state.step
+                            )
+                            reflect_max_step_completed = Ref(
+                                COMPONENT_STATE.fields.velocity_reflection_state.max_step_completed
+                            )
+                            reflection_complete = Ref(COMPONENT_STATE.fields.reflection_complete)
 
-                    spectrum_tutorial_opened = Ref(
-                        COMPONENT_STATE.fields.spectrum_tutorial_opened
-                    )
-
-                    SpectrumSlideshow(
-                        event_dialog_opened_callback=lambda _: spectrum_tutorial_opened.set(
-                            True
-                        )
-                    )
+                            ReflectVelocitySlideshow(
+                                length=8,
+                                titles=[
+                                    "Reflect on your data",
+                                    "What would a 1920's scientist wonder?",
+                                    "Observed vs. rest wavelengths",
+                                    "How galaxies move",
+                                    "Do your data agree with 1920's thinking?",
+                                    "Do your data agree with 1920's thinking?",
+                                    "Did your peers find what you found?",
+                                    "Reflection complete",
+                                ],
+                                interact_steps=[2, 3, 4, 5, 6],
+                                require_responses=True,
+                                dialog=COMPONENT_STATE.value.show_reflection_dialog,
+                                step=COMPONENT_STATE.value.velocity_reflection_state.step,
+                                max_step_completed=COMPONENT_STATE.value.velocity_reflection_state.max_step_completed,
+                                reflection_complete=COMPONENT_STATE.value.reflection_complete,
+                                state_view={
+                                    "mc_score_2": get_multiple_choice(
+                                        LOCAL_STATE, "wavelength-comparison"
+                                    ),
+                                    "score_tag_2": "wavelength-comparison",
+                                    "mc_score_3": get_multiple_choice(LOCAL_STATE, "galaxy-motion"),
+                                    "score_tag_3": "galaxy-motion",
+                                    "mc_score_4": get_multiple_choice(
+                                        LOCAL_STATE, "steady-state-consistent"
+                                    ),
+                                    "score_tag_4": "steady-state-consistent",
+                                    "mc_score_5": get_multiple_choice(
+                                        LOCAL_STATE, "moving-randomly-consistent"
+                                    ),
+                                    "score_tag_5": "moving-randomly-consistent",
+                                    "mc_score_6": get_multiple_choice(
+                                        LOCAL_STATE, "peers-data-agree"
+                                    ),
+                                    "score_tag_6": "peers-data-agree",
+                                },
+                                event_set_dialog=show_reflection_dialog.set,
+                                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                                # These are numbered based on window-item value
+                                event_set_step=reflect_step.set,
+                                event_set_max_step_completed=reflect_max_step_completed.set,
+                                event_on_reflection_complete=lambda _: reflection_complete.set(
+                                    True
+                                ),
+                            )
