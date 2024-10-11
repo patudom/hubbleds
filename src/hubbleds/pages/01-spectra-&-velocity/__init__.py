@@ -1294,7 +1294,7 @@ def Page():
                             COMPONENT_STATE.value.current_step_between(
                             Marker.obs_wav1, Marker.obs_wav2
                         )
-                        or COMPONENT_STATE.value.current_step > Marker.rem_vel1
+                        or COMPONENT_STATE.value.current_step >= Marker.rem_vel1
                         ),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
                         on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(
