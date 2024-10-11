@@ -236,7 +236,7 @@ def Page():
             selected_example_galaxy = Ref(COMPONENT_STATE.fields.selected_example_galaxy)
             if len(LOCAL_STATE.value.example_measurements) > 0:
                 logger.info('Setting selected example galaxy')
-                if COMPONENT_STATE.value.current_step_at_or_after(Marker.cho_row1):
+                if COMPONENT_STATE.value.current_step_at_or_after(Marker.ang_siz2):
                     num = 1 if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq5) else 0
                     selected_example_galaxy.set(LOCAL_STATE.value.example_measurements[num].galaxy.model_dump(exclude={'spectrum'}))
                     logger.info(f'Selected example galaxy on init: {selected_example_galaxy.value}')
