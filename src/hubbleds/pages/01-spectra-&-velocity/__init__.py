@@ -48,6 +48,7 @@ from hubbleds.example_measurement_helpers import (
     create_example_subsets,
     create_measurement_subsets,
     link_example_seed_and_measurements,
+    link_seed_data,
     _update_second_example_measurement
 )
 
@@ -109,6 +110,7 @@ def Page():
 
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
             example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE, which='both')
+            
             data = Data(
                 label=EXAMPLE_GALAXY_SEED_DATA,
                 **{
@@ -118,7 +120,22 @@ def Page():
             )
             gjapp.data_collection.append(data)
             # create 'first measurement' and 'second measurement' datasets
-            create_measurement_subsets(gjapp, data)
+            # create_measurement_subsets(gjapp, data)
+            first = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_first', 
+                         **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
+                            for k in example_seed_data[0].keys()}
+                            )
+            first.style.color = "#C94456"
+            gjapp.data_collection.append(first)
+            second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
+                         **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
+                            for k in example_seed_data[0].keys()}
+                            )
+            second.style.color = "#4449C9"
+            gjapp.data_collection.append(second)
+            
+            link_seed_data(gjapp)
+        
         return gjapp
 
     gjapp = solara.use_memo(_glue_setup)
@@ -389,10 +406,19 @@ def Page():
         print("\n\n ======== \ncreate_dotplot_viewer\n\n")
         show_meas = COMPONENT_STATE.value.current_step >= Marker.int_dot1        
         ignore = []
+        
         if show_meas and (EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection):
+            
+            if show_which_seed == 'first':
+                seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first']
+            elif show_which_seed == 'second':
+                seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_second']
+            else:
+                seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+            
             viewer_data = [
                 (gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "scatter"),
-                gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
+                seed
             ]
             # If the student has made a measurement, that is the 0th layer.
             layer0 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
@@ -413,17 +439,17 @@ def Page():
             layer0 = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
             zorder = None
         
-        seed_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-        if ignore_full_seed_data:
-            ignore.append(gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA])
-        if show_which_seed == 'second': # ignore the first
-            first = subset_by_label(seed_data, "first measurement")
-            if first is not None:
-                ignore.append(first)
-        elif show_which_seed == 'first': # ignore the second
-            second = subset_by_label(seed_data, "second measurement")
-            if second is not None:
-                ignore.append(second)
+        # seed_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+        # if ignore_full_seed_data:
+        #     ignore.append(gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA])
+        # if show_which_seed == 'second': # ignore the first
+        #     first = subset_by_label(seed_data, "first measurement")
+        #     if first is not None:
+        #         ignore.append(first)
+        # elif show_which_seed == 'first': # ignore the second
+        #     second = subset_by_label(seed_data, "second measurement")
+        #     if second is not None:
+        #         ignore.append(second)
 
         
         
@@ -713,7 +739,8 @@ def Page():
                         )
                     )
                     
-                    # add_example_measurements_to_glue()
+                    if COMPONENT_STATE.value.current_step == Marker.rem_vel1:
+                        add_example_measurements_to_glue()
 
                 DopplerSlideshow(
                     dialog=COMPONENT_STATE.value.show_doppler_dialog,
@@ -1321,7 +1348,7 @@ def Page():
                             COMPONENT_STATE.value.current_step_between(
                             Marker.obs_wav1, Marker.obs_wav2
                         )
-                        or COMPONENT_STATE.value.current_step >= Marker.rem_vel1
+                        or COMPONENT_STATE.value.current_step == Marker.rem_vel1
                         ),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
                         on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(

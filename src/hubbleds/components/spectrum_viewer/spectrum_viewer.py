@@ -29,7 +29,7 @@ def SpectrumViewer(
     max_spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
 ):
     
-    logger.info("\n\n ==================== \n SpectrumViewer \n ==================== \n\n")
+    logger.info("Creating SpectrumViewer")
     # spectrum_bounds
     vertical_line_visible = solara.use_reactive(show_obs_wave_line)
     toggle_group_state = solara.use_reactive([])
