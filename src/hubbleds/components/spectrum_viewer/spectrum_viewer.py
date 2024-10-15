@@ -178,7 +178,7 @@ def SpectrumViewer(
         fig = px.line(spec_data_task.value, x="wave", y="flux", 
                     #   template = "plotly_dark" if use_dark_effective else "plotly_white",)
                     template = "plotly_white",
-                    hover_data={"wave": True, "flux": False},
+                    # hover_data={"wave": False, "flux": False},
                     # line_shape="hvh", # step line plot
                     )
         fig.update_traces(hovertemplate='Wavelength: %{x:0.1f} Å') #
@@ -212,8 +212,11 @@ def SpectrumViewer(
                 mirror=True,
                 title_font_family=DEFAULT_FONT, 
                 titlefont_size=20, 
-                tickfont_size=12
+                tickfont_size=12,
+                hoverformat=".1f",
+                ticksuffix=" Å",
                 ),
+            showlegend=False,
         )
 
         fig.add_vline(
