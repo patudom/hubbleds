@@ -868,6 +868,21 @@
         >
           Done
         </v-btn>
+        <v-btn
+            class="black--text"
+            color="error"
+            depressed
+            @click="() => {
+              set_dialog(false);
+              set_student_c(300000);
+              storeStudentVel(300000, [lambda_obs, lambda_rest]);
+              set_student_vel_calc(true);
+              set_step(0);
+              next_callback();
+            }"
+        >
+          shortcut: calc & close
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
