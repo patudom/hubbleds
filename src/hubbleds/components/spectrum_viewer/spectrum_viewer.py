@@ -301,7 +301,7 @@ def SpectrumViewer(
             xaxis_zeroline=False,
             yaxis_zeroline=False,
             xaxis=dict(
-                showspikes=spectrum_click_enabled,
+                showspikes=True,
                 # showline=spectrum_click_enabled,
                 spikecolor="black",
                 spikethickness=1,
