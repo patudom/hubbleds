@@ -1145,11 +1145,21 @@ def Page():
                             measurement = Ref(
                                 LOCAL_STATE.fields.measurements[measurement_index]
                             )
-                            measurement.set(
-                                measurement.value.model_copy(
-                                    update={"obs_wave_value": value}
+                            
+                            if measurement.value.velocity_value is None:
+                                measurement.set(
+                                    measurement.value.model_copy(
+                                        update={"obs_wave_value": value}
+                                    )
                                 )
-                            )
+                                
+                            else:
+                                velocity = velocity_from_wavelengths(value, measurement.value.rest_wave_value)
+                                measurement.set(
+                                    measurement.value.model_copy(
+                                        update={"obs_wave_value": value, "velocity_value": velocity}
+                                    )
+                                )
 
                             obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
                             obs_wave.set(value)
