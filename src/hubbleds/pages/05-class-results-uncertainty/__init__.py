@@ -22,7 +22,8 @@ from hubbleds.components import UncertaintySlideshow, IdSlider
 from hubbleds.tools import *  # noqa
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_free_response, get_multiple_choice, mc_callback, fr_callback
 from hubbleds.utils import make_summary_data, models_to_glue_data
-from hubbleds.viewers.hubble_scatter_viewer import HubbleHistogramView, HubbleScatterView
+from hubbleds.viewers.hubble_histogram_viewer import HubbleHistogramView
+from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 
@@ -115,7 +116,7 @@ def Page():
             "class_hist": class_hist_viewer
         }
 
-        hist_viewers = (all_student_hist_viewer, class_hist_viewer)
+        two_hist_viewers = (all_student_hist_viewer, class_hist_viewer)
         for att in ('x_min', 'x_max'):
             link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
 
@@ -244,8 +245,11 @@ def Page():
         # So we force the home tool of the class viewer to limit-resetting based on the students viewer
         class_hist_viewer.toolbar.tools["plotly:home"].activate = all_student_hist_viewer.toolbar.tools["plotly:home"].activate
 
+        for viewer in (student_hist_viewer, all_student_hist_viewer, class_hist_viewer):
+            viewer.figure.update_layout(hovermode="closest")
+
         gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
-                                            handler=partial(_update_bins, hist_viewers),
+                                            handler=partial(_update_bins, two_hist_viewers),
                                             filter=lambda msg: msg.data.label == "Student Summaries")
 
         gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
@@ -637,6 +641,7 @@ def Page():
 
             with rv.Col():
                 ViewerLayout(viewer=viewers["student_hist"])
+
 
     ScaffoldAlert(
         GUIDELINE_ROOT / "GuidelineMostLikelyValueReflect4.vue",
