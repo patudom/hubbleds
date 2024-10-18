@@ -1,6 +1,7 @@
 from echo import delay_callback
 from cosmicds.viewers import CDSHistogramViewerState, PlotlyHistogramView
 from cosmicds.viewers import cds_viewer
+from glue_plotly.viewers.histogram import PlotlyHistogramLayerArtist
 
 
 __all__ = [
@@ -27,3 +28,14 @@ HubbleHistogramView = cds_viewer(
     label="Histogram",
     state_cls=HubbleHistogramViewerState
 )
+
+
+class HubbleHistogramLayerArtist(PlotlyHistogramLayerArtist):
+
+    def _update_data(self):
+        super()._update_data()
+        for bar in self.traces():
+            bar.update(hovertemplate="<b>Age</b>: %{x:,.0f} Gyr<extra></extra>")
+
+HubbleHistogramView._data_artist_cls = HubbleHistogramLayerArtist
+HubbleHistogramView._subset_artist_cls = HubbleHistogramLayerArtist
