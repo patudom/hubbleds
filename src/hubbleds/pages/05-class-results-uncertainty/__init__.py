@@ -22,7 +22,8 @@ from hubbleds.components import UncertaintySlideshow, IdSlider
 from hubbleds.tools import *  # noqa
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_free_response, get_multiple_choice, mc_callback, fr_callback
 from hubbleds.utils import make_summary_data, models_to_glue_data
-from hubbleds.viewers.hubble_scatter_viewer import HubbleHistogramView, HubbleScatterView
+from hubbleds.viewers.hubble_histogram_viewer import HubbleHistogramView
+from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 
@@ -243,6 +244,9 @@ def Page():
         # The idea here is that the all students viewer will always have a wider range than the all classes viewer
         # So we force the home tool of the class viewer to limit-resetting based on the students viewer
         class_hist_viewer.toolbar.tools["plotly:home"].activate = all_student_hist_viewer.toolbar.tools["plotly:home"].activate
+
+        for viewer in hist_viewers:
+            viewer.figure.update_layout(hovermode="closest")
 
         gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
                                             handler=partial(_update_bins, hist_viewers),
@@ -637,6 +641,7 @@ def Page():
 
             with rv.Col():
                 ViewerLayout(viewer=viewers["student_hist"])
+
 
     ScaffoldAlert(
         GUIDELINE_ROOT / "GuidelineMostLikelyValueReflect4.vue",
