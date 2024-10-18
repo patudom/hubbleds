@@ -1116,7 +1116,7 @@ def Page():
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                     # add_example_measurements_to_glue() # make sure updated measurements are in glue
                     create_dotplot_viewer(
-                        show_which_meas='first',
+                        show_which_meas='first' if COMPONENT_STATE.value.current_step != Marker.rem_vel1 else 'second',
                         show_which_seed='first'
                     )
 
