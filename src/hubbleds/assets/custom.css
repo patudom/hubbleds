@@ -273,7 +273,7 @@ header.cosmicds-appbar > div.v-toolbar__content > h3::after {
     border-radius: 10px;
     margin-left: 25px;  
     
-    line-height: 1;
+    line-height: 1.2;
 }
 
 /***** 
