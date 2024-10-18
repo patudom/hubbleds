@@ -248,7 +248,7 @@ footer .v-card__text {
     DEMO VERSION TAG
     ================================
 *****/
-.app-title {
+header.cosmicds-appbar > div.v-toolbar__content > h3 {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -272,6 +272,8 @@ header.cosmicds-appbar > div.v-toolbar__content > h3::after {
     padding-block: 5px;
     border-radius: 10px;
     margin-left: 25px;  
+    
+    line-height: 1;
 }
 
 /***** 
