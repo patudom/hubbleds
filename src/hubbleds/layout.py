@@ -21,6 +21,8 @@ def Layout(children=[]):
 
     router = solara.use_router()
     Ref(LOCAL_STATE.fields.last_route).set(router.path)
+    route_index = next((i for i, r in enumerate(router.routes) if r.path == router.path.strip('/')), None)
+    Ref(LOCAL_STATE.fields.max_route_index).set(max(route_index or 0, LOCAL_STATE.value.max_route_index or 0))
 
     async def _load_global_local_states():
         if not GLOBAL_STATE.value.student.id:
@@ -43,7 +45,8 @@ def Layout(children=[]):
         )
 
         logger.info("Finished loading state.")
-        router.push(LOCAL_STATE.value.last_route)
+        if LOCAL_STATE.value.last_route is not None:
+            router.push(LOCAL_STATE.value.last_route)
         loaded_states.set(True)
 
         Ref(LOCAL_STATE.fields.measurements_loaded).set(True)
