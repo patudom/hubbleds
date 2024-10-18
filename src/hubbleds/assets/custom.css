@@ -248,9 +248,18 @@ footer .v-card__text {
     DEMO VERSION TAG
     ================================
 *****/
+.app-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 header.cosmicds-appbar > div.v-toolbar__content > h3::after {
-    content: "DEMO Version: Progress and measurements are not saved";
-    font-size: 20px;
+    content: "Shortened DEMO Version:\AProgress and measurements are NOT saved";
+    white-space: pre-wrap;
+    display: block;
+    text-align: center;
+    font-size: 0.8em;
     font-weight: bold;
     color: white;
     background-color: red;
@@ -259,10 +268,10 @@ header.cosmicds-appbar > div.v-toolbar__content > h3::after {
     top: 100%;
     left: 0%; */
   
-    padding-inline: 20px;
-    padding-block: 10px;
-    border-radius: 40px;
-    margin-left: 20px;  
+    padding-inline: 15px;
+    padding-block: 5px;
+    border-radius: 10px;
+    margin-left: 25px;  
 }
 
 /***** 
