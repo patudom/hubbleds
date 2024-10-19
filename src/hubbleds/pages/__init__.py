@@ -18,6 +18,7 @@ logger = setup_logger("STAGE INTRO")
 
 @solara.component
 def Page():
+    solara.Title("HubbleDS")
     router = solara.use_router()
 
     exploration_tool = ExplorationTool()

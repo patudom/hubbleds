@@ -65,6 +65,7 @@ def basic_viewer_setup(viewer_class, glue_session, data_collection, name, x_att,
 # create the Page for the current stage
 @solara.component
 def Page():
+    solara.Title("HubbleDS")
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
     
