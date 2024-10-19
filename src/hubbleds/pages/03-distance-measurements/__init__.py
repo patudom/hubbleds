@@ -113,6 +113,7 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
 
 @solara.component
 def Page():
+    solara.Title("HubbleDS")
     
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
