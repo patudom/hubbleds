@@ -30,8 +30,8 @@ def SpectrumViewer(
     x_bounds = solara.use_reactive([])
     y_bounds = solara.use_reactive([])
     # spectrum_bounds = solara.use_reactive(spectrum_bounds or [], on_change=lambda x: x_bounds.set(x))
-    if spectrum_bounds is not None:
-        spectrum_bounds.subscribe(x_bounds.set)
+    # if spectrum_bounds is not None:
+    #     spectrum_bounds.subscribe(x_bounds.set)
     
     use_dark_effective = solara.use_trait_observe(solara.lab.theme, "dark_effective")
 
@@ -261,8 +261,8 @@ def SpectrumViewer(
             
         ]
         
-        if marker_position is not None:
-            dependencies.append(marker_position.value)
+        # if marker_position is not None:
+        #     dependencies.append(marker_position.value)
         
         FigurePlotly(
             fig,
