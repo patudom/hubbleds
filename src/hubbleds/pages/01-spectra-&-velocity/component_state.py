@@ -62,6 +62,7 @@ class DopplerCalculation(BaseModel):
     student_c: float = 0
     velocity_calculated: bool = False
     completed: bool = False
+    show_values: bool = False
 
     @cached_property
     def titles(self) -> list[str]:
