@@ -62,7 +62,6 @@ class DopplerCalculation(BaseModel):
     student_c: float = 0
     velocity_calculated: bool = False
     completed: bool = False
-    show_values: bool = False
 
     @cached_property
     def titles(self) -> list[str]:
@@ -114,6 +113,7 @@ class ComponentState(BaseComponentState, BaseState):
     show_reflection_dialog: bool = False
     velocity_reflection_state: VelocityReflection = VelocityReflection()
     reflection_complete: bool = False
+    show_dop_cal4_values: bool = False
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:
