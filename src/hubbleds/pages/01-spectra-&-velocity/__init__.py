@@ -502,9 +502,12 @@ def Page():
                 COMPONENT_STATE.fields.doppler_state.validation_4_failed
             )
             
+            show_values = Ref(COMPONENT_STATE.fields.doppler_state.show_values)
+            
             def _on_validate_transition(validated):
                 logger.info("Validated transition to dop_cal4: %s", validated)
                 validation_4_failed.set(not validated)
+                show_values.set(validated)
                 if not validated:
                     return
                 
@@ -532,7 +535,7 @@ def Page():
                         else None
                     ),
                     "failed_validation_4": validation_4_failed.value,
-                    "fill_values": not validation_4_failed.value,
+                    "fill_values": show_values.value,
                 },
                 # event_failed_validation_4_callback=_on_validated_transition,
                 event_on_validate_transition=_on_validate_transition,
