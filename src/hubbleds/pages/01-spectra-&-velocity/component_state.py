@@ -79,7 +79,6 @@ class DopplerCalculation(BaseModel):
     student_c: float = 0
     velocity_calculated: bool = False
     completed: bool = False
-    show_values: bool = False
 
     @cached_property
     def titles(self) -> list[str]:
@@ -133,6 +132,7 @@ class ComponentState(BaseComponentState, BaseState):
     reflection_complete: bool = False
     sync_wavelength_line: float = Field(6565, exclude = True) # won't be saved to the database
     sync_velocity_line: float = Field(0.0, exclude = True) # won't be saved to the database
+    show_dop_cal4_values: bool = False
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:

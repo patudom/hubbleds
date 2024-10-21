@@ -502,7 +502,7 @@ def Page():
                 COMPONENT_STATE.fields.doppler_state.validation_4_failed
             )
             
-            show_values = Ref(COMPONENT_STATE.fields.doppler_state.show_values)
+            show_values = Ref(COMPONENT_STATE.fields.show_dop_cal4_values)
             
             def _on_validate_transition(validated):
                 logger.info("Validated transition to dop_cal4: %s", validated)
