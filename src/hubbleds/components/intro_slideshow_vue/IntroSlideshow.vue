@@ -320,7 +320,7 @@
               <v-btn
                 color="accent"
                 class="mx-4 black--text"
-                @click="{
+                @click="() => {
                   timerComplete[0] = false;
                   step++;
                 }"
@@ -540,7 +540,7 @@
               <v-btn
                 color="accent"
                 class="mx-4 black--text"
-                @click="{
+                @click="() => {
                   timerComplete[1] = false;
                   step++;
                 }"
@@ -718,7 +718,7 @@
               <v-btn
                 color="accent"
                 class="mx-4 black--text"
-                @click="{
+                @click="() => {
                   timerComplete[2] = false;
                   step++;
                 }"
