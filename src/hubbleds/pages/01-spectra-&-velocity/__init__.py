@@ -1136,6 +1136,7 @@ def Page():
             with rv.Col(cols=12, lg=8):
                 print("Creating 2nd dotplot viewer")
                 create_dotplot_viewer(
+                    first_dotplot=False,
                     show_which_meas='second',
                     show_which_seed='second'
                 )
