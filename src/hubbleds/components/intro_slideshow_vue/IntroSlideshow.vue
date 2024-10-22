@@ -989,7 +989,7 @@ module.exports = {
   props: ["continueText"],
   data() {
     return {
-      target: null,
+      target: '',
       timerDuration: [300000, 180000, 180000],
       timerStarted: [false, false, false],
       timerComplete: [false, false, false],
@@ -1015,6 +1015,12 @@ module.exports = {
   watch: {
     step(val) {
       this.target = '';
+      if (val >= 3 && val <= 5) {
+        const index = val - 3;
+        this.$set(this.timerStarted, index, false);
+        this.$set(this.timerComplete, index, false);
+        this.startTimerIfNeeded(index);
+      }
     }
   }
 };
