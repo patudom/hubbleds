@@ -14,6 +14,7 @@ logger = setup_logger("STAGE 2")
 
 @solara.component
 def Page():
+    solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
 
@@ -47,6 +48,7 @@ def Page():
         COMPONENT_STATE.fields.distance_slideshow_state.max_step_completed
     )
 
+    speech = Ref(GLOBAL_STATE.fields.speech)
     Stage2Slideshow(
         step = COMPONENT_STATE.value.distance_slideshow_state.step,
         max_step_completed = COMPONENT_STATE.value.distance_slideshow_state.max_step_completed,
@@ -84,4 +86,5 @@ def Page():
         },
         event_slideshow_finished=lambda _: router.push("03-distance-measurements"),
         debug = LOCAL_STATE.value.debug_mode,
+        speech=speech.value.model_dump(),
     )

@@ -37,6 +37,7 @@ GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
 @solara.component
 def Page():
+    solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
 

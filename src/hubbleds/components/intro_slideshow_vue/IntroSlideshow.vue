@@ -15,7 +15,7 @@
         {{ titles[step] }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <!-- <speech-synthesizer
+      <speech-synthesizer
         ref="synth"
         :root="$el"
         :element-filter="(element) => {
@@ -28,8 +28,9 @@
           return currentWindowItem?.contains(element) ?? false;
         }"
         :autospeak-on-change="step"
-        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text.black--text', 'h3', 'p']"
-      /> -->
+        :selectors="['div.v-toolbar__title.text-h6', 'div.v-card__text', 'h3', 'p']"
+        :options="speech"
+      />
     </v-toolbar>
 
     <v-window
@@ -208,7 +209,7 @@
         </v-card-text>
       </v-window-item>
 
-      <!-- <v-window-item :value="3" 
+      <v-window-item :value="3" 
         class="no-transition"
       >
         <v-card-text>
@@ -226,6 +227,7 @@
                   </p>
                   <p>
                     You can explore this view and see what is in the night sky, as astronomers have been doing for centuries. <strong>Pan</strong> (click and drag) and <strong>zoom</strong> (scroll in and out) to see parts of the sky beyond this view.
+                  </p>
                 </div>
                 <div
                   class="mb-2 mx-4"
@@ -237,7 +239,7 @@
                     >
                       <v-row>
                         <v-col>
-                          <c-exploration-tool id="exploration-tool">
+                          <jupyter-widget :widget="exploration_tool" />
                         </v-col>
                       </v-row>
                       <v-row>
@@ -302,7 +304,7 @@
                 </div>
               </v-col>
             </v-row>
-            <v-snackbar
+            <!-- <v-snackbar
               v-model="timer_done[0]"
               timeout="500000"
               transition="fab-transition"
@@ -325,7 +327,7 @@
               >
                 move on
               </v-btn>
-            </v-snackbar>
+            </v-snackbar> -->
           </v-container>                                      
         </v-card-text>
       </v-window-item>
@@ -354,8 +356,8 @@
                     <v-col
                       cols="8"
                       offset-lg="1"
-                    >   
-                      <c-exploration-tool1 id="exploration-tool1">
+                    >
+                      <jupyter-widget :widget="exploration_tool1" />
                     </v-col>
                     <v-col
                       cols="4"
@@ -370,12 +372,13 @@
                         >
                           <v-btn 
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 83.63,
                                 dec: 22.014,
                                 fov: 350, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M1' // name of object
+                                target: 'M1', // name of object
                               });
                               startTimerIfNeeded(1);
                             }"
@@ -393,12 +396,13 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 250.4,
                                 dec: 36.46,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M13' // name of object
+                                target: 'M13', // name of object
                               });
                               startTimerIfNeeded(1);
                             }"
@@ -416,7 +420,8 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
@@ -439,7 +444,8 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 83.82,
                                 dec: -5.39,
                                 fov:7500, // optional, in arcseconds, default is 90
@@ -462,7 +468,8 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
@@ -485,7 +492,8 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool1({
+                              go_to_location({
+                                index: 1,
                                 ra: 148.97,
                                 dec: 69.68,
                                 fov: 400, // optional, in arcseconds, default is 90
@@ -516,7 +524,7 @@
                 </div>
               </v-col>
             </v-row>
-            <v-snackbar
+            <!-- <v-snackbar
               v-model="timer_done[1]"
               timeout="500000"
               transition="fab-transition"
@@ -539,7 +547,7 @@
               >
                 move on
               </v-btn>
-            </v-snackbar>
+            </v-snackbar> -->
           </v-container>
         </v-card-text>
       </v-window-item> 
@@ -569,7 +577,7 @@
                       cols="8"
                       offset-lg="1"
                     >
-                      <c-exploration-tool2 id="exploration-tool2">
+                      <jupyter-widget :widget="exploration_tool2" />
                     </v-col>
                     <v-col
                       cols="4"
@@ -612,7 +620,8 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool2({
+                              go_to_location({
+                                index: 2,
                                 ra: 10.63,
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
@@ -648,12 +657,13 @@
                         >
                           <v-btn
                             @click="() => {
-                              go_to_location_tool2({
+                              go_to_location({
+                                index: 2,
                                 ra: 202.47,
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M51' // name of object
+                                target: 'M51', // name of object
                               });
                               startTimerIfNeeded(2);
                             }"
@@ -692,7 +702,7 @@
                 </div>
               </v-col>
             </v-row>
-            <v-snackbar
+            <!-- <v-snackbar
               v-model="timer_done[2]"
               timeout="500000"
               transition="fab-transition"
@@ -715,12 +725,12 @@
               >
                 move on
               </v-btn>
-            </v-snackbar>
+            </v-snackbar> -->
           </v-container>   
         </v-card-text>
-      </v-window-item> -->
+      </v-window-item>
 
-      <v-window-item :value="3" 
+      <v-window-item :value="6" 
         class="no-transition"
       >
         <v-card-text>
@@ -787,7 +797,7 @@
         </v-card-text>
       </v-window-item>
 
-      <v-window-item :value="4" 
+      <v-window-item :value="7" 
         class="no-transition"
         
       >
@@ -838,20 +848,27 @@
         depressed
         @click="() => {
           step--;
-          // if(step==4) go_to_location_tool1({ // reset viewer to MW
-          //                       ra: 266.64, // default MW coords
-          //                       dec: -28.39,
-          //                       fov: 216000, // 60 degrees
-          //                       instant: true, // also optional, false by default
-          //                     })
-          // if(step==5) go_to_location_tool2({ // Set to M31 with button pressed
-          //                       ra: 10.63,
-          //                       dec: 41.27,
-          //                       fov: 6000, // optional, in arcseconds, default is 90
-          //                       instant: true, // also optional, false by default
-          //                       target: 'M31' // name of object
-          //                     })
-          }"
+          let options = null;
+          if (step === 4) {
+            options = {
+              index: 1,
+              ra: 266.64, // default MW coords
+              dec: -28.39,
+              fov: 216000, // 60 degrees
+              instant: true, // also optional, false by default
+            };
+          } else {
+            options = {
+              index: 2,
+              ra: 10.63,
+              dec: 41.27,
+              fov: 6000, // optional, in arcseconds, default is 90
+              instant: true, // also optional, false by default
+              target: 'M31' // name of object
+            };
+          }
+          go_to_location(options)
+        }"
       >
         back
       </v-btn>
@@ -890,20 +907,27 @@
         depressed
         @click="() => {
           step++;
-          // if(step==4) go_to_location_tool1({ // reset viewer to MW
-          //                       ra: 266.64, // default MW coords
-          //                       dec: -28.39,
-          //                       fov: 216000, // 60 degrees
-          //                       instant: true, // also optional, false by default
-          //                     })
-          // if(step==5) go_to_location_tool2({ // Go to M31 with button pressed
-          //                       ra: 10.63,
-          //                       dec: 41.27,
-          //                       fov: 6000, // optional, in arcseconds, default is 90
-          //                       instant: true, // also optional, false by default
-          //                       target: 'M31' // name of object
-          //                     })
-          }"
+          let options = null;
+          if (step === 4) {
+            options = {
+              index: 1,
+              ra: 266.64, // default MW coords
+              dec: -28.39,
+              fov: 216000, // 60 degrees
+              instant: true, // also optional, false by default
+            };
+          } else {
+            options = {
+              index: 2,
+              ra: 10.63,
+              dec: 41.27,
+              fov: 6000, // optional, in arcseconds, default is 90
+              instant: true, // also optional, false by default
+              target: 'M31' // name of object
+            };
+          }
+          go_to_location(options)
+        }"
       >
         next
       </v-btn>
@@ -962,7 +986,7 @@
 
 <script>
 module.exports = {
-  props: ["continueText","target"],
+  props: ["continueText", "target"],
   methods: {
     startTimer(number) {
       setTimeout(() => {

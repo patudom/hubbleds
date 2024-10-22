@@ -44,6 +44,7 @@ async def load_class_data():
 
 @solara.component
 def Page():
+    solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
 

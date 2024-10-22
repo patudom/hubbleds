@@ -13,6 +13,7 @@
         const isValidated = !!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers);
         on_validated_transition(isValidated);
       }"
+      :speech="speech"
   >
     <div
         v-intersect="typesetMathJax"

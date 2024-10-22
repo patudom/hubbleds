@@ -60,6 +60,8 @@ def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
 
 @solara.component
 def Page():
+    solara.Title("HubbleDS")
+    logger.info("Rendering Stage 1: Spectra & Velocity")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
 
@@ -325,7 +327,8 @@ def Page():
         print('selected example galaxy is now:', galaxy)
     Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
     
-
+    speech = Ref(GLOBAL_STATE.fields.speech)
+    
     with solara.Row():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
@@ -339,35 +342,42 @@ def Page():
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.mee_gui1),
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies1.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                # If at least 1 galaxy has already been selected, we want to go straight from here to sel_gal3.
+                event_next_callback=lambda _: transition_to(COMPONENT_STATE, Marker.sel_gal2 if COMPONENT_STATE.value.total_galaxies == 0 else Marker.sel_gal3, force=True),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal1),
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies2.vue",
+                # I think we don't need this next callback because meeting the "next" criteria will autoadvance you to not_gal1 anyway, and then we skip over this guideline if we go backwards from sel_gal3. (But leave it just in case)
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal2),
                 state_view={
                     "total_galaxies": COMPONENT_STATE.value.total_galaxies,
-                    "selected_galaxy": bool(COMPONENT_STATE.value.selected_galaxy),
+                    "galaxy_is_selected": COMPONENT_STATE.value.galaxy_is_selected,
                 },
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies3.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                # You can't get to this marker until at least 1 galaxy has been selected. Once a galaxy has been selected, sel_gal2 doesn't make sense, so jump back to sel_gal1.
+                event_back_callback=lambda _: transition_to(COMPONENT_STATE, Marker.sel_gal1, force=True),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal3),
                 state_view={
                     "total_galaxies": COMPONENT_STATE.value.total_galaxies,
-                    "selected_galaxy": bool(COMPONENT_STATE.value.selected_galaxy),
+                    "galaxy_is_selected": COMPONENT_STATE.value.galaxy_is_selected,
                 },
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies4.vue",
@@ -375,6 +385,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sel_gal4),
+                speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.sel_gal3):
                 solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
@@ -426,16 +437,21 @@ def Page():
             def advance_on_total_galaxies(value):
                 if COMPONENT_STATE.value.current_step == Marker.sel_gal2:
                     if value == 1:
-                        transition_to(COMPONENT_STATE, Marker.sel_gal3)
+                        transition_to(COMPONENT_STATE, Marker.not_gal1)
             total_galaxies.subscribe(advance_on_total_galaxies)
 
             def _galaxy_selected_callback(galaxy_data: GalaxyData | None):
                 if galaxy_data is None:
                     return
-
                 selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
                 selected_galaxy.set(galaxy_data.id)
-            
+                galaxy_is_selected = Ref(COMPONENT_STATE.fields.galaxy_is_selected)
+                galaxy_is_selected.set(True)  
+
+            def _deselect_galaxy_callback():
+                galaxy_is_selected = Ref(COMPONENT_STATE.fields.galaxy_is_selected)
+                galaxy_is_selected.set(False)  
+                print("is galaxy selected:", galaxy_is_selected.value)             
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
             Marker.cho_row1, Marker.dop_cal5
@@ -447,7 +463,7 @@ def Page():
             
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
-                    [Marker.sel_gal2, Marker.not_gal_tab, Marker.sel_gal3]
+                    [Marker.sel_gal2, Marker.not_gal1, Marker.sel_gal3]
                 ),
                 galaxy_selected_callback=_galaxy_selected_callback,
                 galaxy_added_callback=_galaxy_added_callback,
@@ -456,6 +472,7 @@ def Page():
                     if selection_tool_galaxy.value is not None
                     else None
                 ),
+                deselect_galaxy_callback=_deselect_galaxy_callback,
             )
             
             if show_snackbar.value:
@@ -466,9 +483,11 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineNoticeGalaxyTable.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                # You can't get to this marker until at least 1 galaxy has been selected. Once a galaxy has been selected, sel_gal2 doesn't make sense, so jump back to sel_gal1.
+                event_back_callback=lambda _: transition_to(COMPONENT_STATE, Marker.sel_gal1, force=True),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.not_gal_tab),
+                show=COMPONENT_STATE.value.is_current_step(Marker.not_gal1),
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineChooseRow.vue",
@@ -476,6 +495,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.cho_row1),
+                speech=speech.value,
             )
 
             def _on_validated_transition(validated):
@@ -507,6 +527,7 @@ def Page():
                 },
                 event_failed_validation_4_callback=validation_4_failed.set,
                 event_on_validated_transition=_on_validated_transition,
+                speech=speech.value,
             )
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
@@ -553,6 +574,7 @@ def Page():
                         else None
                     ),
                 },
+                speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
                 solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
@@ -562,6 +584,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal6),
+                speech=speech.value,
             )
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineReflectVelValues.vue",
@@ -582,6 +605,7 @@ def Page():
                     "has_bad_velocities": COMPONENT_STATE.value.has_bad_velocities,
                     "has_multiple_bad_velocities": COMPONENT_STATE.value.has_multiple_bad_velocities,
                 },
+                speech=speech.value,
             )
 
         with rv.Col(cols=8):
@@ -920,6 +944,7 @@ def Page():
                 state_view={
                     "spectrum_tutorial_opened": COMPONENT_STATE.value.spectrum_tutorial_opened
                 },
+                speech=speech.value,
             )
 
             selected_example_galaxy_data = (
@@ -939,6 +964,7 @@ def Page():
                     "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
                     "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
                 },
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineObswave1.vue",
@@ -947,6 +973,7 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav1),
                 state_view={"selected_example_galaxy": selected_example_galaxy_data},
+                speech=speech.value,
             )
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineObswave2.vue",
@@ -965,6 +992,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal0),
+                speech=speech.value,
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc2.vue",
@@ -972,6 +1000,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dop_cal2),
+                speech=speech.value,
             )
             # ScaffoldAlert(
             #     GUIDELINE_ROOT / "GuidelineDotSequence04.vue",
