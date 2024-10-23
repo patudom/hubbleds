@@ -9,6 +9,10 @@
       :can-advance="can_advance"
       @next="() =>
       {
+        if (state_view.fill_values) {
+          next_callback();
+          return;
+        }
         const expectedAnswers = [state_view.lambda_obs, state_view.lambda_rest];
         const isValidated = !!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers);
         on_validate_transition(isValidated);
