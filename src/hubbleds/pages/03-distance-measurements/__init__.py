@@ -489,6 +489,7 @@ def Page():
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
                     "meas_theta": COMPONENT_STATE.value.meas_theta,
+                    "fill_values": COMPONENT_STATE.value.fill_est_dist_values
                 },
             )
             ScaffoldAlert(
