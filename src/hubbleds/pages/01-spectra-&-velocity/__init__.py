@@ -463,25 +463,28 @@ def Page():
                 sync_wavelength_line.set(wavelength)
         logger.info(f"\n IGNORED LAYERS: {ignore} \n")
         with solara.Div() as main:
-            solara.Text("Dotplot: Example Galaxy Velocities" if first_dotplot else "Dotplot: Example Galaxy Velocities (2nd Measurement)")
+            title = "Dotplot: Example Galaxy Velocities"
+            if not first_dotplot:
+                title += " (2nd Measurement)"
+            solara.Text(title)
             solara.Text(f"Ignored layers: {ignore}")
             DotplotViewer(
-            gjapp,
-            title="Dotplot: Example Galaxy Velocities" if first_dotplot else "Dotplot: Example Galaxy Velocities (2nd Measurement)",
-            data=viewer_data,
-            component_id=DB_VELOCITY_FIELD,
-            vertical_line_visible=show_synced_lines.value,  #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
-            line_marker_at=sync_velocity_line,
-            line_marker_color='green' if show_synced_lines.value else 'green',
-            on_click_callback=_on_click_callback,
-            unit="km / s",
-            x_label="Velocity (km/s)",
-            y_label="Number",
-            zorder=zorder,
-            nbin=74,
-            x_bounds=dotplot_bounds,
-            reset_bounds=dotplot_reset_bounds,
-            hide_layers=ignore,  # type: ignore
+                gjapp,
+                title=title,
+                data=viewer_data,
+                component_id=DB_VELOCITY_FIELD,
+                vertical_line_visible=show_synced_lines.value,  #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
+                line_marker_at=sync_velocity_line,
+                line_marker_color='green' if show_synced_lines.value else 'green',
+                on_click_callback=_on_click_callback,
+                unit="km / s",
+                x_label="Velocity (km/s)",
+                y_label="Number",
+                zorder=zorder,
+                nbin=74,
+                x_bounds=dotplot_bounds,
+                reset_bounds=dotplot_reset_bounds,
+                hide_layers=ignore,  # type: ignore
             )
         return main
     
