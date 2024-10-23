@@ -17,7 +17,7 @@
       <v-spacer></v-spacer>
       <speech-synthesizer
         ref="synth"
-        :root="$el"
+        :root="getRoot"
         :element-filter="(element) => {
           // There's some annoying behavior with when elements lose visibility when changing
           // window items. Rather than doing some crazy shenanigans to wait the right amount of time,
@@ -378,8 +378,8 @@
                                 dec: 22.014,
                                 fov: 350, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M1', // name of object
                               });
+                              target = 'M1';
                               startTimerIfNeeded(1);
                             }"
                             color="warning"
@@ -402,8 +402,8 @@
                                 dec: 36.46,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M13', // name of object
                               });
+                              target = 'M13';
                               startTimerIfNeeded(1);
                             }"
                             color="warning"
@@ -426,8 +426,8 @@
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M31' // name of object
                               });
+                              target = 'M31';
                               startTimerIfNeeded(1);
                             }"
                             color="warning"
@@ -450,8 +450,8 @@
                                 dec: -5.39,
                                 fov:7500, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M42' // name of object
                               });
+                              this.target = 'M42';
                               startTimerIfNeeded(1);  
                             }"
                             color="warning"
@@ -474,8 +474,8 @@
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M51' // name of object
                               });
+                              target = 'M51';
                               startTimerIfNeeded(1);
                             }"
                             color="warning"
@@ -498,8 +498,8 @@
                                 dec: 69.68,
                                 fov: 400, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M82' // name of object
                               });
+                              target = 'M82';
                               startTimerIfNeeded(1);
                             }"
                             color="warning"
@@ -626,8 +626,8 @@
                                 dec: 41.27,
                                 fov: 6000, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M31' // name of object
                               });
+                              target = 'M31';
                               startTimerIfNeeded(2);
                             }"
                             color="warning"
@@ -663,8 +663,8 @@
                                 dec: 47.195,
                                 fov: 700, // optional, in arcseconds, default is 90
                                 instant: false, // also optional, false by default
-                                target: 'M51', // name of object
                               });
+                              target = 'M51';
                               startTimerIfNeeded(2);
                             }"
                             color="warning"
@@ -864,8 +864,8 @@
               dec: 41.27,
               fov: 6000, // optional, in arcseconds, default is 90
               instant: true, // also optional, false by default
-              target: 'M31' // name of object
             };
+            target = 'M31';
           }
           go_to_location(options)
         }"
@@ -923,8 +923,8 @@
               dec: 41.27,
               fov: 6000, // optional, in arcseconds, default is 90
               instant: true, // also optional, false by default
-              target: 'M31' // name of object
             };
+            target = 'M31';
           }
           go_to_location(options)
         }"
@@ -986,27 +986,41 @@
 
 <script>
 module.exports = {
-  props: ["continueText", "target"],
+  props: ["continueText"],
+  data() {
+    return {
+      target: '',
+      timerDuration: [300000, 180000, 180000],
+      timerStarted: [false, false, false],
+      timerComplete: [false, false, false],
+    };
+  },
   methods: {
+    getRoot() {
+      return this.$el;
+    },
     startTimer(number) {
       setTimeout(() => {
-        this.set_timer_finished(number);
-    }, this.timer_duration);
-      this.set_timer_started(number);
+        this.$set(this.timerComplete, number, true);
+      }, this.timerDuration[number]);
+      this.$set(this.timerStarted, number, true);
     },
     startTimerIfNeeded(number) {
-      if (!this.timer_started[number]) {
+      if (!this.timerStarted[number]) {
         this.startTimer(number);
       }
     },
-    jupyter_startTimerIfNeeded(number) {
-      this.startTimerIfNeeded(number);
-    }
   },
 
   watch: {
     step(val) {
       this.target = '';
+      if (val >= 3 && val <= 5) {
+        const index = val - 3;
+        this.$set(this.timerStarted, index, false);
+        this.$set(this.timerComplete, index, false);
+        this.startTimerIfNeeded(index);
+      }
     }
   }
 };
