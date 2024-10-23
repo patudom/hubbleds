@@ -647,7 +647,7 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc4.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                # event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.current_step_in(
                     [Marker.dop_cal4, Marker.dop_cal5]
