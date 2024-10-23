@@ -14,6 +14,7 @@ logger = setup_logger("STAGE 2")
 
 @solara.component
 def Page():
+    solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
 

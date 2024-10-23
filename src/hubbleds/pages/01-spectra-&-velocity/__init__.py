@@ -66,6 +66,7 @@ def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
 
 @solara.component
 def Page():
+    solara.Title("HubbleDS")
     logger.info("Rendering Stage 1: Spectra & Velocity")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
