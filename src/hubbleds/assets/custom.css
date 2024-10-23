@@ -185,6 +185,9 @@ h4 {
 .no-padding {
     padding: 0;
 }
+.no-y-padding {
+    padding-block: 0;
+}
 
 footer .col {
     padding-block: 0;
@@ -253,3 +256,15 @@ footer .v-card__text {
 .theme--light.toolbar .v-btn.v-btn .v-icon {
     color: #fff !important;
 }
+
+/* Hides the wavelength marker on the x-axis */
+div.plotly .hoverlayer g.axistext {
+    display: none;
+}
+
+/* Hides the wavelength marker tracking the trace */
+/* div.plotly .hoverlayer g.hovertext {
+    display: none;
+} */
+ 
+

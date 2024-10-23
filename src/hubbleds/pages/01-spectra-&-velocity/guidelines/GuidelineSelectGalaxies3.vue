@@ -16,7 +16,7 @@
   </template>
 
     <div
-      v-if="state_view.total_galaxies == 0 && !state_view.selected_galaxy"
+      v-if="state_view.total_galaxies == 0 && !state_view.galaxy_is_selected"
       class="mb-4"
     >
       <p>
@@ -27,7 +27,7 @@
       </p>
     </div>
     <div
-      v-if="state_view.total_galaxies < 5 && state_view.selected_galaxy"
+      v-if="state_view.total_galaxies < 5 && state_view.galaxy_is_selected"
     >
       <p>
         If this galaxy looks good to you, click <v-btn icon dark x-small disabled class="mx-1 black--text" elevation="2" style="background-color: var(--success-dark);"><v-icon style="color:black!important;">mdi-plus</v-icon></v-btn> to add it to your data set.
@@ -37,7 +37,7 @@
       </p>
     </div>
     <div
-      v-if="state_view.total_galaxies == 1 && !state_view.selected_galaxy"
+      v-if="state_view.total_galaxies == 1 && !state_view.galaxy_is_selected"
       class="mb-4"
     >
       <p>
@@ -45,7 +45,7 @@
       </p>
     </div>
     <div
-      v-if="state_view.total_galaxies > 1 && state_view.total_galaxies < 5 && !state_view.selected_galaxy"
+      v-if="state_view.total_galaxies > 1 && state_view.total_galaxies < 5 && !state_view.galaxy_is_selected"
       class="mb-4"
     >
       <p>

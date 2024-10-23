@@ -1,7 +1,7 @@
 from random import randint
 
 import solara
-from glue.core import Data
+from glue.core import Data, Subset
 from reacton import ipyvuetify as rv
 
 from hubbleds.viewers.hubble_dotplot import HubbleDotPlotView, HubbleDotPlotViewer
@@ -18,6 +18,11 @@ from numbers import Number
 from typing import Callable, Iterable, List, cast, Union, Optional
 from solara.toestand import Reactive
 import numpy as np
+
+from cosmicds.components import LayerToggle
+
+from cosmicds.logger import setup_logger
+logger = setup_logger("DOTPLOT")
 
 from glue_jupyter import JupyterApplication
 
@@ -51,7 +56,8 @@ def DotplotViewer(
     zorder: Optional[list[int]] = None,
     nbin: int = 75,
     x_bounds: Optional[Reactive[list[float]]] = None,
-    reset_bounds: Reactive[list[float]] = Reactive([]),
+    reset_bounds: Reactive[list] = Reactive([]),
+    hide_layers: Reactive[List[Data | Subset]] | list[Data | Subset] = [],
     ):
     
     """
@@ -80,14 +86,17 @@ def DotplotViewer(
     
     """
     
+    logger.info(f"\n\n ==================== \n DotplotViewer: {title} \n ==================== \n\n")
+    
     line_marker_at = solara.use_reactive(line_marker_at)
     vertical_line_visible = solara.use_reactive(vertical_line_visible)
     x_bounds = solara.use_reactive(x_bounds) # type: ignore
     reset_bounds = solara.use_reactive(reset_bounds)
+    hide_layers = solara.use_reactive(hide_layers)
     
     with rv.Card() as main:
         with rv.Toolbar(dense=True, class_="toolbar"):
-            with rv.ToolbarTitle():
+            with rv.ToolbarTitle(class_="toolbar toolbar-title"):
                 title_container = rv.Html(tag="div")
 
             rv.Spacer()
@@ -108,33 +117,40 @@ def DotplotViewer(
             if not line_ids:
                 return
             for (viewer, viewer_line_ids) in zip(viewers, line_ids):
-                lines = list(viewer.figure.select_traces(lambda t: t.meta in viewer_line_ids))
-                viewer.figure.data = list(reversed([t for t in viewer.figure.data if t not in lines]))
-        
+                shapes = viewer.figure.layout.shapes
+                shapes = tuple(s for s in shapes if s.name not in viewer_line_ids)
+                viewer.figure.layout.shapes = shapes
+
         
         def _add_vertical_line(viewer: PlotlyBaseView, value: Number, color: str, label: str = None, line_ids: list[str] = []):
-            print("adding line")
-            line = vertical_line_mark(viewer.layers[0], value, color, label = label)
             line_id = str(uuid4())
-            line["meta"] = line_id
             line_ids.append(line_id)
-            
-            viewer.figure.add_trace(line)
-            
+            viewer.figure.add_vline(x=value, line_color=color, line_width=2, name=line_id)
+
+        
+        def _add_data(viewer: PlotlyBaseView, data: Union[Data, tuple]):
+            if isinstance(data, Data):
+                viewer.add_data(data)
+            else:
+                viewer.add_data(data[0], layer_type=data[1])
 
         def _add_viewer():
+            logger.info(f"\n ====== ({title}) Dotplot _add_viewer() ====== \n")
             if data is None:
                 viewer_data = Data(label = "Test Data", x=[randint(1, 10) for _ in range(30)])
                 gjapp.data_collection.append(viewer_data)
             else: 
                 if isinstance(data, Data):
                     viewer_data = data
-                elif isinstance(data, list):
+                else:
                     viewer_data = data[0]
             
             dotplot_view: HubbleDotPlotViewer = gjapp.new_data_viewer(
-                HubbleDotPlotView, data=viewer_data, show=False) # type: ignore
+                HubbleDotPlotView, show=False) # type: ignore
 
+            _add_data(dotplot_view, viewer_data)
+            if isinstance(viewer_data, tuple):
+                viewer_data = viewer_data[0]
             
             if component_id is not None:
                 dotplot_view.state.x_att = viewer_data.id[component_id]
@@ -142,8 +158,8 @@ def DotplotViewer(
             if isinstance(data, list):
                 if len(data) > 1:
                     for viewer_data in data[1:]:
-                        dotplot_view.add_data(viewer_data)
-            
+                        _add_data(dotplot_view, viewer_data)
+
             dotplot_view.state.hist_n_bin = nbin
             if x_bounds.value is not None:
                 if len(x_bounds.value) == 2:
@@ -165,7 +181,31 @@ def DotplotViewer(
                         for trace in layer.traces():
                             trace.update(hoverinfo="skip", hovertemplate=None)
                 layer._update_data = no_hover_update
+                
+            def get_layer(layer_name):
+                layer_artist = dotplot_view.layer_artist_for_data(layer_name) # type: ignore
+                if layer_artist is None:
+                    logger.warning(f"Layer not found: {layer_name}")
+                return layer_artist
             
+            def hide_ignored_layers(*args):
+                logger.info("\n Hiding ignored layers")
+                layers = dotplot_view.layers
+                hidden_layers = [get_layer(l) for l in hide_layers.value] # type: ignore
+                # visible_layers = [l for l in layers if l not in hidden_layers]
+                for layer in hidden_layers:
+                    if layer is not None:
+                        logger.info(f"\n\t({title}) Hiding layer: {layer.layer.label}")
+                        layer.visible = False
+                for layer in layers:
+                    if (layer is not None) and not layer in hidden_layers:
+                        logger.info(f"\n\t({title}) Showing layer: {layer.layer.label}")
+                        layer.visible = True
+                layer_status = ''.join([f"\n\t{l.layer.label}: {'visible' if l.visible else 'not visible'}" for l in dotplot_view.layers])
+                logger.info(f"\n\n ======= \n hide_ignored_layers updated: {layer_status}\n ======= \n\n")
+            
+            hide_ignored_layers()
+            hide_layers.subscribe(hide_ignored_layers)
 
             # override the default selection layer
             def new_update_selection(self=dotplot_view):
@@ -228,19 +268,19 @@ def DotplotViewer(
                     spikedash="solid",
                     spikemode="across",
                     spikesnap="cursor",
-                    showspikes=True
+                    showspikes=True,
+                    tickformat=",.0f",
                 ),
             )
             
             def on_click(trace, points, selector):
-                print('Dotplot clicked')
                 if len(points.xs) > 0:
                     value = points.xs[0]
                     _update_lines(value = value)
                     if on_click_callback is not None:
                         on_click_callback(points)
                 else:
-                   print("No points selected")
+                   logger.info(f"({title}) No points selected")
 
                 
                 
@@ -256,17 +296,19 @@ def DotplotViewer(
             
 
             def apply_zorder():
-                #enumerate dotplot_view.layers
+                logger.info(f"({title}) Applying zorder")
                 if zorder:
-                    print("Applying zorder")
+                    logger.info(f"({title}) zorder: {zorder}")
+                    logger.info(f"({title}) layers: {dotplot_view.layers}")
                     for i, layer in enumerate(dotplot_view.layers):
-                        layer.state.zorder = zorder[i]
-                        print(f"Layer {layer} zorder: {layer.state.zorder}")
+                        try:
+                            layer.state.zorder = zorder[i]
+                        except IndexError:
+                            layer.state.zorder = max(zorder) + 1
             
             # prevent_callback = False
             
             def _on_reset_bounds(*args):
-                print("Bounds changed")
                 if None not in reset_bounds.value and len(reset_bounds.value) == 2:
                     new_range = reset_bounds.value
                     dotplot_view.state.x_min = new_range[0]
@@ -279,25 +321,24 @@ def DotplotViewer(
                     not valid_two_element_array(x_bounds.value) or
                     not np.isclose(x_bounds.value, new_range).all()
                     ):
-                    print('set x_bounds', new_range)
+                    logger.info(f'({title}) reset x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
                     x_bounds.set(new_range)
                 else:
-                    print('Bounds already set')
+                    logger.info(f'({title}) Bounds already set')
             
             def _on_bounds_changed(*args):
-                print("Bounds changed")
+                logger.info("Bounds changed")
                 new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
                 if (
                     not valid_two_element_array(x_bounds.value) or
                     not np.isclose(x_bounds.value, new_range).all()
                     ):
-                    print('set x_bounds', new_range)
+                    logger.info(f'({title}) set x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
                     x_bounds.set(new_range)
                 else:
-                    print('Bounds already set')
+                    logger.info(f'({title}) Bounds already set')
             
             def extend_the_tools():  
-                print("Extending the tools")       
                 extend_tool(dotplot_view, 'plotly:home', activate_cb=apply_zorder)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=apply_zorder)
                 extend_tool(dotplot_view, 'plotly:home', activate_cb=_on_reset_bounds, activate_before_tool=False)
@@ -330,6 +371,9 @@ def DotplotViewer(
                 tool.activate()
             
             reset_selection()
+            
+            viewer_data_log = ''.join([f"\n\t{l.layer.label}: {'visible' if l.visible else 'not visible'}" for l in dotplot_view.layers])
+            logger.info(f"\n\n ======= \n DotplotViewer ({dotplot_view.state.title}) created with data: {viewer_data_log}\n ======= \n\n")
             
             
             def cleanup():

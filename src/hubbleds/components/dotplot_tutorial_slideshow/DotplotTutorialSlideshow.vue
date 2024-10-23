@@ -6,7 +6,6 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-btn
-        class="my-2"
         block
         color="secondary"
         elevation="2"
@@ -40,7 +39,14 @@
           />
         <v-btn
           icon
-          @click="closeDialog()"
+          @click="() => { 
+            dialog = false; 
+            if (step === length-1) 
+              { 
+                tutorial_finished(); 
+                set_step(0);  
+              }
+          }"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -178,7 +184,11 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { $emit('close'); dialog = false, tutorial_finished() }"
+          @click="() => { 
+            dialog = false; 
+            tutorial_finished();
+            set_step(0); 
+          }"
         >
           Done
         </v-btn>

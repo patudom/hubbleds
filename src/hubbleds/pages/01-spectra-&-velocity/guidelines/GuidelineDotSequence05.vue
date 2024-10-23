@@ -8,14 +8,14 @@
   >
     <div>
       <p>
-        Move your mouse left and right in the velocity dot plot. 
+        You can click on any velocity in the dot plot to display the corresponding wavelength in the spectrum viewer, and vice versa.
       </p>
       <p>
-        Notice that the marker in the spectrum viewer moves to the corresponding wavelengths.
+        If you zoom in on either plot, the other will zoom in to the corresponding range.
       </p>
       <p>
         See if you can identify features in the spectrum viewer that correspond to outliers and other velocity measurements.
-      </p>
+      </p>      
     </div>
   </scaffold-alert>
 </template>

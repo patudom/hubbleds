@@ -52,6 +52,20 @@ or
 - From the command line:
    `$ cosmicds hubble`
 
+# Development environment
+
+In order to keep consistency with development, this repository contains an environment file that specifies dependency versions.
+You can create a conda environment using this file via
+
+```bash
+conda env create --name <env-name> --file environment.yml
+```
+
+To re-create the environment file using the packages in your current environment, you can run the `make_environment.py` script. Note that this file
+will make sure that we install the `ipywwt` package from its git repository. It also removes any references to `cosmicds` and `hubbleds`, as this is supposed
+to generate a development environment for the `hubbleds` package. This script only retains information about Python packages installed via pip; other conda
+dependencies may differ between machines and aren't important for our purposes.
+
 
 ## Note
 This project has been set up using PyScaffold 4.5. For details and usage

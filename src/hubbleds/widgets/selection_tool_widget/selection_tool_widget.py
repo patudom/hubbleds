@@ -65,6 +65,7 @@ class SelectionToolWidget(v.VueTemplate):
         self.current_galaxy = {}
         self.candidate_galaxy = {}
         self._on_galaxy_selected = None
+        self._deselect_galaxy = None
 
         def wwt_cb(wwt, updated):
             if (
@@ -112,10 +113,13 @@ class SelectionToolWidget(v.VueTemplate):
                 self.sdss_layer = None
 
         if show and self.sdss_layer is None:
-            layer = self.widget.layers.add_table_layer(self.sdss_table)
-            layer.marker_type = "gaussian"
-            layer.size_scale = 100
-            layer.color = "#00FF00"
+            layer = self.widget.layers.add_table_layer(self.sdss_table, marker_type="gaussian", size_scale=100, color="#00FF00", marker_scale="screen")
+                                                        
+            # self.widget.layers.add_table_layer(self.sdss_table)
+            # #try passing these as kwargs to add_table_layer.
+            # layer.marker_type = "gaussian"
+            # layer.size_scale = 100
+            # layer.color = "#00FF00"
             self.sdss_layer = layer
 
     @property
@@ -133,7 +137,28 @@ class SelectionToolWidget(v.VueTemplate):
         self._create_selected_layer()
         if self._on_galaxy_selected is not None:
             self._on_galaxy_selected(galaxy)
+        if self._deselect_galaxy is not None:
+            self._deselect_galaxy()
         self.selected = False
+
+    @property
+    def deselect_galaxy(self):
+        return self._deselect_galaxy
+    
+    @deselect_galaxy.setter
+    def deselect_galaxy(self, cb):
+        self._deselect_galaxy = cb
+
+    def reset_view(self):
+        print("in reset_view within selection_tool_widget.py")
+        self.widget.center_on_coordinates(
+            self.START_COORDINATES, fov=FULL_FOV, instant=True
+        )
+        self.current_galaxy = {}
+        self.candidate_galaxy = {}
+        self.selected = False
+        if self._deselect_galaxy is not None:
+            self._deselect_galaxy()
 
     def _create_selected_layer(self):
         self.table = Table.from_pandas(self.selected_data)
@@ -151,12 +176,7 @@ class SelectionToolWidget(v.VueTemplate):
         self.candidate_galaxy = {}
 
     def vue_reset(self, _args=None):
-        self.widget.center_on_coordinates(
-            self.START_COORDINATES, fov=FULL_FOV, instant=True
-        )
-        self.current_galaxy = {}
-        self.candidate_galaxy = {}
-        self.selected = False
+        self.reset_view()
 
     def go_to_location(self, ra, dec, fov=GALAXY_FOV):
         coordinates = SkyCoord(ra * u.deg, dec * u.deg, frame="icrs")

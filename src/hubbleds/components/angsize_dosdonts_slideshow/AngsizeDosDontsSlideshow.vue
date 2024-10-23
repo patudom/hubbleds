@@ -36,18 +36,14 @@
           :speak-flag="dialog"
           :selectors="['div.v-toolbar__title', 'div.v-card__text.black--text', 'h3', 'h4', 'p']"
           /> -->
-        <span
-          @click="
-            () => {
-              $emit('close');
+        <span>
+          <v-btn
+            icon
+            @click="() => {
               dialog = false;
-              if (step == 8) {
-                step = 0;
-              }
-            }
-          "
-        >
-          <v-btn icon>
+              step === (length-1) ? step = 0 : null;
+            }"
+          >
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </span>
@@ -607,7 +603,6 @@
           depressed
           @click="
             () => {
-              $emit('close');
               dialog = false;
               step = 0;
             }
