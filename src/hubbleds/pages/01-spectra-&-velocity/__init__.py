@@ -158,7 +158,7 @@ def Page():
 
     @computed
     def use_second_measurement():
-        return COMPONENT_STATE.value.current_step >= Marker.rem_vel1
+        return COMPONENT_STATE.value.current_step.value >= Marker.rem_vel1.value
 
     @computed
     def selected_example_measurement():
