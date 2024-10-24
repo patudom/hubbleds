@@ -587,9 +587,6 @@ def Page():
                 ruler_click_count = Ref(COMPONENT_STATE.fields.ruler_click_count)
                 ruler_click_count.set(count)
                 
-            solara.Button("Reset Canvas", on_click=lambda: reset_canvas.set(reset_canvas.value + 1))
-            solara.Text(f"Reset counter: {reset_canvas.value}")
-            solara.Button("Toggle show_ruler", on_click=lambda: Ref(COMPONENT_STATE.fields.show_ruler).set(not COMPONENT_STATE.value.show_ruler))
             DistanceToolComponent(
                 galaxy=current_galaxy.value,
                 show_ruler=COMPONENT_STATE.value.show_ruler,
