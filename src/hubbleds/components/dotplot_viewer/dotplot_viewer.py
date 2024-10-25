@@ -181,7 +181,7 @@ def DotplotViewer(
             def no_hover_update(self: DotplotScatterLayerArtist):
                 with dotplot_view.figure.batch_update():
                     _original_update_data(self)
-                    for trace in layer.traces():
+                    for trace in self.traces():
                         trace.update(hoverinfo="skip", hovertemplate=None)
             DotplotScatterLayerArtist._update_data = no_hover_update
                 
