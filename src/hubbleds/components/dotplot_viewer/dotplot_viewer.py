@@ -1,4 +1,5 @@
 from random import randint
+from cosmicds.viewers.dotplot.viewer import DotplotScatterLayerArtist
 
 import solara
 from glue.core import Data, Subset
@@ -26,6 +27,7 @@ logger = setup_logger("DOTPLOT")
 
 from glue_jupyter import JupyterApplication
 
+
 def valid_two_element_array(arr: Union[None, list]):
     return not (arr is None or len(arr) != 2)
 
@@ -38,6 +40,9 @@ def this_or_default(arr, default, index):
     if not valid_two_element_array(arr):
         return default
     return arr[index]
+
+
+_original_update_data = DotplotScatterLayerArtist._update_data
 
 @solara.component
 def DotplotViewer(
@@ -86,7 +91,7 @@ def DotplotViewer(
     
     """
     
-    logger.info(f"\n\n ==================== \n DotplotViewer: {title} \n ==================== \n\n")
+    logger.info(f"creating DotplotViewer: {title}")
     
     line_marker_at = solara.use_reactive(line_marker_at)
     vertical_line_visible = solara.use_reactive(vertical_line_visible)
@@ -135,7 +140,7 @@ def DotplotViewer(
                 viewer.add_data(data[0], layer_type=data[1])
 
         def _add_viewer():
-            logger.info(f"\n ====== ({title}) Dotplot _add_viewer() ====== \n")
+            logger.info(f"Dotplot _add_viewer()")
             if data is None:
                 viewer_data = Data(label = "Test Data", x=[randint(1, 10) for _ in range(30)])
                 gjapp.data_collection.append(viewer_data)
@@ -173,14 +178,12 @@ def DotplotViewer(
                 for trace in layer.traces():
                     trace.update(hoverinfo="skip", hovertemplate=None)
 
-            for layer in dotplot_view.layers:
-                original_update_data = layer._update_data
-                def no_hover_update():
-                    with dotplot_view.figure.batch_update():
-                        original_update_data()
-                        for trace in layer.traces():
-                            trace.update(hoverinfo="skip", hovertemplate=None)
-                layer._update_data = no_hover_update
+            def no_hover_update(self: DotplotScatterLayerArtist):
+                with dotplot_view.figure.batch_update():
+                    _original_update_data(self)
+                    for trace in self.traces():
+                        trace.update(hoverinfo="skip", hovertemplate=None)
+            DotplotScatterLayerArtist._update_data = no_hover_update
                 
             def get_layer(layer_name):
                 layer_artist = dotplot_view.layer_artist_for_data(layer_name) # type: ignore
@@ -189,20 +192,19 @@ def DotplotViewer(
                 return layer_artist
             
             def hide_ignored_layers(*args):
-                logger.info("\n Hiding ignored layers")
+                logger.info("Hiding ignored layers")
                 layers = dotplot_view.layers
                 hidden_layers = [get_layer(l) for l in hide_layers.value] # type: ignore
                 # visible_layers = [l for l in layers if l not in hidden_layers]
                 for layer in hidden_layers:
                     if layer is not None:
-                        logger.info(f"\n\t({title}) Hiding layer: {layer.layer.label}")
+                        # logger.info(f"\n\t({title}) Hiding layer: {layer.layer.label}")
                         layer.visible = False
                 for layer in layers:
                     if (layer is not None) and not layer in hidden_layers:
-                        logger.info(f"\n\t({title}) Showing layer: {layer.layer.label}")
+                        # logger.info(f"\n\t({title}) Showing layer: {layer.layer.label}")
                         layer.visible = True
                 layer_status = ''.join([f"\n\t{l.layer.label}: {'visible' if l.visible else 'not visible'}" for l in dotplot_view.layers])
-                logger.info(f"\n\n ======= \n hide_ignored_layers updated: {layer_status}\n ======= \n\n")
             
             hide_ignored_layers()
             hide_layers.subscribe(hide_ignored_layers)
@@ -372,9 +374,7 @@ def DotplotViewer(
             
             reset_selection()
             
-            viewer_data_log = ''.join([f"\n\t{l.layer.label}: {'visible' if l.visible else 'not visible'}" for l in dotplot_view.layers])
-            logger.info(f"\n\n ======= \n DotplotViewer ({dotplot_view.state.title}) created with data: {viewer_data_log}\n ======= \n\n")
-            
+            viewer_data_log = ''.join([f"\n\t{l.layer.label}: {'visible' if l.visible else 'not visible'}" for l in dotplot_view.layers])            
             
             def cleanup():
                 for cnt in (title_widget, toolbar_widget, viewer_widget):
