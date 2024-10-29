@@ -286,7 +286,13 @@ def Page():
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
     
-    
+    def _on_marker_updated(marker_new, marker_old):
+        # logger.info(f"Marker updated from {marker_old} to {marker_new}")
+        if marker_old == Marker.est_dis3:
+            _distance_cb(COMPONENT_STATE.value.meas_theta)
+            Ref(COMPONENT_STATE.fields.fill_est_dist_values).set(True)
+            
+    Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
