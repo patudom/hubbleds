@@ -415,7 +415,7 @@ def Page():
     def _on_marker_updated(marker_new, marker_old):
         # logger.info(f"Marker updated from {marker_old} to {marker_new}")
         if marker_old == Marker.est_dis3:
-        #     _distance_cb(COMPONENT_STATE.value.meas_theta)
+            _distance_cb(COMPONENT_STATE.value.meas_theta)
             Ref(COMPONENT_STATE.fields.fill_est_dist_values).set(True)
         
         if marker_new == Marker.dot_seq5:
