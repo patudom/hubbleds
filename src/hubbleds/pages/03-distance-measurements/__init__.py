@@ -821,6 +821,13 @@ def Page():
                     value = galaxy["item"]["galaxy"] if flag else None
                     selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
                     selected_galaxy.set(value)
+                
+                @solara.lab.computed
+                def selected_galaxy_index():
+                    try:
+                        return [LOCAL_STATE.value.get_measurement_index(COMPONENT_STATE.value.selected_galaxy["id"])]
+                    except:
+                        return []
 
                 @solara.lab.computed
                 def table_kwargs():
@@ -832,6 +839,7 @@ def Page():
                         "items": table_data,
                         "highlighted": False,  # TODO: Set the markers for this,
                         "event_on_row_selected": update_galaxy,
+                        "selected_indices": selected_galaxy_index.value,
                         "show_select": True,
                         "button_icon": "mdi-tape-measure",
                         "show_button": COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1),
