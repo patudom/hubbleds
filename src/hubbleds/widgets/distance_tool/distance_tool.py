@@ -102,6 +102,9 @@ class DistanceTool(v.VueTemplate):
 
     @observe('measuredDistance')
     def _on_measured_distance_changed(self, change):
+        if self.resetting:
+            self.resetting = False
+            return
         fov = self.widget.get_fov()
         widget_height = self._height_from_pixel_str(self.widget.layout.height)
         ang_size = Angle(((change["new"] / widget_height) * fov))
@@ -174,8 +177,6 @@ class DistanceTool(v.VueTemplate):
     def validate_angular_size(self, angular_size, check = True):
         if not self.guard:
             return True
-        if self.resetting:
-            return self.bad_measurement
         if not check:
             return self.bad_measurement
         max_wwt_size = Angle("60 deg")
