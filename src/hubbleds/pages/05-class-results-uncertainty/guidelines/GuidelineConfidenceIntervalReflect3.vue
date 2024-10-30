@@ -77,10 +77,10 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-row>
         <v-col
-          cols="11"
-          lg="3">
+          cols="5"
+          lg="3"
+        >
           <free-response
             outlined
             rows="1"
@@ -94,14 +94,15 @@
         </v-col>
         <v-col
           class="fr-unit-custom"
-          cols="1"
-          lg="2">
+          cols="3"
+          lg="2"
+        >
           Gyr<p>&nbsp;</p>
         </v-col>
-        </v-row>
-              <v-col
-          cols="11"
-          lg="3">
+        <v-col
+        cols="5"
+        lg="3"
+        >
           <free-response
             outlined
             rows="1"
@@ -115,8 +116,9 @@
         </v-col>
         <v-col
           class="fr-unit-custom"
-          cols="1"
-          lg="2">
+          cols="3"
+          lg="2"
+        >
           Gyr<p>&nbsp;</p>
         </v-col>
       </v-row>
