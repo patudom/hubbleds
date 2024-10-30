@@ -544,11 +544,10 @@ def Page():
 
             @solara.lab.computed
             def current_galaxy():
-                galaxy = COMPONENT_STATE.value.selected_galaxy
-                example_galaxy = COMPONENT_STATE.value.selected_example_galaxy
-                gal = example_galaxy if on_example_galaxy_marker.value else galaxy
-                logger.info(f'current_galaxy: {gal}')
-                return gal
+                if on_example_galaxy_marker.value:
+                    return COMPONENT_STATE.value.selected_example_galaxy
+                else:
+                    return COMPONENT_STATE.value.selected_galaxy
 
             @solara.lab.computed
             def current_data():
@@ -607,7 +606,8 @@ def Page():
             def _get_ruler_clicks_cb(count):
                 ruler_click_count = Ref(COMPONENT_STATE.fields.ruler_click_count)
                 ruler_click_count.set(count)
-                
+            
+            # solara.Button("Reset Canvas", on_click=lambda: reset_canvas.set(reset_canvas.value + 1))
             DistanceToolComponent(
                 galaxy=current_galaxy.value,
                 show_ruler=COMPONENT_STATE.value.show_ruler,
