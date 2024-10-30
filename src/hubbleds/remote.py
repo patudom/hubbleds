@@ -173,7 +173,7 @@ class LocalAPI(BaseAPI):
         
         if not GLOBAL_STATE.value.update_db: 
             logger.info('Skipping DB write')
-            return
+            return False
         
         url = f"{self.API_URL}/{local_state.value.story_id}/submit-measurement/"
 
@@ -191,13 +191,14 @@ class LocalAPI(BaseAPI):
             "Stored measurements for student `%s`.",
             global_state.value.student.id,
         )
+        return True
 
     def put_sample_measurements(
         self, global_state: Reactive[GlobalState], local_state: Reactive[LocalState]
     ):
         if not GLOBAL_STATE.value.update_db: 
             logger.info('Skipping DB write')
-            return
+            return False
         
         url = f"{self.API_URL}/{local_state.value.story_id}/sample-measurement/"
     
@@ -222,6 +223,7 @@ class LocalAPI(BaseAPI):
                 "Stored example measurements for student %s.",
                 global_state.value.student.id,
             )
+        return True
 
     def get_measurement(
         self,
@@ -370,7 +372,7 @@ class LocalAPI(BaseAPI):
     ):
         if not GLOBAL_STATE.value.update_db: 
             logger.info('Skipping DB write')
-            return
+            return False
         
         logger.info("Serializing stage state into DB.")
 
@@ -390,6 +392,9 @@ class LocalAPI(BaseAPI):
         if r.status_code != 200:
             logger.error("Failed to write story state to database.")
             logger.error(r.text)
+            return False
+        
+        return True
 
     def put_story_state(
         self,
@@ -398,7 +403,7 @@ class LocalAPI(BaseAPI):
     ):
         if not GLOBAL_STATE.value.update_db: 
             logger.info('Skipping DB write')
-            return
+            return False
         
         logger.info("Serializing state into DB.")
 
@@ -417,12 +422,15 @@ class LocalAPI(BaseAPI):
         if r.status_code != 200:
             logger.error("Failed to write story state to database.")
             logger.error(r.text)
+            return False
+        
+        return True
 
 
     def get_example_seed_measurement(
             self, 
             local_state: Reactive[LocalState],
-            which="second"
+            which="both"
             ) -> list[dict[str, Any]]:
         url = f"{self.API_URL}/{local_state.value.story_id}/sample-measurements"
         r = self.request_session.get(url)
@@ -446,8 +454,10 @@ class LocalAPI(BaseAPI):
         #     59  60  87  88  27  28 109 110  51  52  47  48  97  98  89  90  63  64
         #     91  92 143 144 149 150 103 104]
         measurements = []
+
         _filter_func = lambda x: res_json[x]['measurement_number'] == which
-        for i in filter(_filter_func, random_subset):
+        filtered = filter(_filter_func, random_subset) if which != 'both' else random_subset
+        for i in filtered:
             measurements.append(res_json[i])
 
         return measurements

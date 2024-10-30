@@ -60,7 +60,8 @@ from hubbleds.utils import sync_reactives
 from hubbleds.example_measurement_helpers import (
     create_example_subsets,
     link_example_seed_and_measurements,
-    _update_second_example_measurement
+    _update_second_example_measurement,
+    link_seed_data
 )
 
 
@@ -154,7 +155,7 @@ def Page():
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
-    
+
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
         logger.info("Finished loading component state")
@@ -167,9 +168,11 @@ def Page():
             return
 
         # Listen for changes in the states and write them to the database
-        LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
-
-        logger.info("Wrote component state to database.")
+        res = LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+        if res:
+            logger.info("Wrote component state for stage 3 to database.")
+        else:
+            logger.info("Did not write component state for stage 3 to database.")
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
@@ -181,9 +184,26 @@ def Page():
         
         # Get the example seed data
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
-            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE, which = 'first')
+            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE, which = 'both')
             data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **{k: asarray([r[k] for r in example_seed_data]) for k in example_seed_data[0].keys()})
             gjapp.data_collection.append(data)
+            
+            # create 'first measurement' and 'second measurement' datasets
+            # create_measurement_subsets(gjapp, data)
+            first = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_first', 
+                         **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
+                            for k in example_seed_data[0].keys()}
+                            )
+            first.style.color = "#C94456"
+            gjapp.data_collection.append(first)
+            second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
+                         **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
+                            for k in example_seed_data[0].keys()}
+                            )
+            second.style.color = "#4449C9"
+            gjapp.data_collection.append(second)
+            
+            link_seed_data(gjapp)
         
         return gjapp
     
@@ -417,6 +437,7 @@ def Page():
         # logger.info(f"Marker updated from {marker_old} to {marker_new}")
         if marker_old == Marker.est_dis3:
             _distance_cb(COMPONENT_STATE.value.meas_theta)
+            Ref(COMPONENT_STATE.fields.fill_est_dist_values).set(True)
         
         if marker_new == Marker.dot_seq5:
             # clear the canvas before we get to the second measurement. 
@@ -649,10 +670,11 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.est_dis3),
-                # event_set_distance=_distance_cb,
+                event_set_distance=_distance_cb,
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
                     "meas_theta": COMPONENT_STATE.value.meas_theta,
+                    "fill_values": COMPONENT_STATE.value.fill_est_dist_values
                 },
             )
             ScaffoldAlert(
@@ -929,7 +951,7 @@ def Page():
                         DotplotViewer(gjapp, 
                                         data = [
                                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first']
                                             ],
                                             title="Distance",
                                             component_id="est_dist_value",
@@ -947,7 +969,7 @@ def Page():
                             DotplotViewer(gjapp, 
                                             data = [
                                                 gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                                                gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA] 
+                                                gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'] 
                                                 ],
                                                 title="Angular Size",
                                                 component_id="ang_size_value",
