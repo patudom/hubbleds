@@ -68,7 +68,7 @@ def Page():
     solara.Title("HubbleDS")
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
-    
+
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
         logger.info("Finished loading component state")
@@ -81,9 +81,11 @@ def Page():
             return
 
         # Listen for changes in the states and write them to the database
-        LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
-
-        logger.info("Wrote component state to database.")
+        res = LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+        if res:
+            logger.info("Wrote stage 6 component state to database.")
+        else:
+            logger.info("Did not write stage 6 component state to database.")
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     

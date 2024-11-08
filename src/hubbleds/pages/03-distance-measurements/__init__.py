@@ -118,7 +118,7 @@ def Page():
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
-    
+
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
         logger.info("Finished loading component state")
@@ -131,9 +131,11 @@ def Page():
             return
 
         # Listen for changes in the states and write them to the database
-        LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
-
-        logger.info("Wrote component state to database.")
+        res = LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+        if res:
+            logger.info("Wrote component state for stage 3 to database.")
+        else:
+            logger.info("Did not write component state for stage 3 to database.")
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
@@ -286,7 +288,13 @@ def Page():
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
     
-    
+    def _on_marker_updated(marker_new, marker_old):
+        # logger.info(f"Marker updated from {marker_old} to {marker_new}")
+        if marker_old == Marker.est_dis3:
+            _distance_cb(COMPONENT_STATE.value.meas_theta)
+            Ref(COMPONENT_STATE.fields.fill_est_dist_values).set(True)
+            
+    Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -489,6 +497,7 @@ def Page():
                 state_view={
                     "distance_const": DISTANCE_CONSTANT,
                     "meas_theta": COMPONENT_STATE.value.meas_theta,
+                    "fill_values": COMPONENT_STATE.value.fill_est_dist_values
                 },
             )
             ScaffoldAlert(
