@@ -140,7 +140,7 @@ def Page():
         all_measurements, student_summaries, class_summaries = LOCAL_API.get_all_data(GLOBAL_STATE, LOCAL_STATE)
         if GLOBAL_STATE.value.classroom.class_info is not None:
             class_distances = [distance for m in class_measurements if ((distance := m.est_dist_value) is not None and m.velocity_value is not None)]
-            class_velocities = [velocity for m in class_measurements if (m.est_dist_value is not None and (velocity := m.velocity_value is not None))]
+            class_velocities = [velocity for m in class_measurements if (m.est_dist_value is not None and (velocity := m.velocity_value) is not None)]
             my_class_h0, my_class_age = create_single_summary(distances=class_distances, velocities=class_velocities)
             class_summaries.append(ClassSummary(class_id=GLOBAL_STATE.value.classroom.class_info["id"], hubble_fit_value=my_class_h0, age_value=my_class_age))
             all_measurements.extend(class_measurements)
