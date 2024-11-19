@@ -143,6 +143,8 @@ def Page():
             class_velocities = [velocity for m in class_measurements if (m.est_dist_value is not None and (velocity := m.velocity_value is not None))]
             my_class_h0, my_class_age = create_single_summary(distances=class_distances, velocities=class_velocities)
             class_summaries.append(ClassSummary(class_id=GLOBAL_STATE.value.classroom.class_info["id"], hubble_fit_value=my_class_h0, age_value=my_class_age))
+            all_measurements.extend(class_measurements)
+
         all_meas = Ref(LOCAL_STATE.fields.all_measurements)
         all_stu_summaries = Ref(LOCAL_STATE.fields.student_summaries)
         all_cls_summaries = Ref(LOCAL_STATE.fields.class_summaries)
