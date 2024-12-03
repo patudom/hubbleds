@@ -185,17 +185,14 @@ def SpectrumViewer(
 
         fig.add_shape(
             editable=False,
-            type="line",
-            x0=galaxy_data.redshift_rest_wave_value,
-            x1=galaxy_data.redshift_rest_wave_value,
+            x0=galaxy_data.redshift_rest_wave_value - 1.5,
+            x1=galaxy_data.redshift_rest_wave_value + 1.5,
             y0=0.82,
             y1=0.99,
             yref="paper",
             # xref="x",
-            line=dict(
-                color="red",
-                width=4
-            ),
+            line_color="red",
+            fillcolor="red",
             ysizemode="scaled",
         )
 
