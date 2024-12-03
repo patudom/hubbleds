@@ -185,20 +185,23 @@ def SpectrumViewer(
 
         fig.add_shape(
             editable=False,
-            x0=galaxy_data.redshift_rest_wave_value - 1.5,
-            x1=galaxy_data.redshift_rest_wave_value + 1.5,
+            type="line",
+            x0=galaxy_data.redshift_rest_wave_value,
+            x1=galaxy_data.redshift_rest_wave_value,
             y0=0.82,
-            y1=0.95,
-            # xref="x",
-            line_color="red",
-            fillcolor="red",
-            ysizemode="scaled",
+            y1=0.99,
             yref="paper",
+            # xref="x",
+            line=dict(
+                color="red",
+                width=4
+            ),
+            ysizemode="scaled",
         )
 
         fig.add_annotation(
-            x=galaxy_data.redshift_rest_wave_value + 8,
-            y= 0.95,
+            x=galaxy_data.redshift_rest_wave_value + 7,
+            y= 0.99,
             yref="paper",
             text=f"{galaxy_data.element} (observed)",
             showarrow=False,
@@ -223,13 +226,16 @@ def SpectrumViewer(
             line_color="black",
             ysizemode="scaled",
             yref="paper",
-            line=dict(dash="dot"),
+            line=dict(
+                dash="dot",
+                width=4
+            ),
             visible=1 in toggle_group_state.value,
         )
 
         fig.add_annotation(
-            x=galaxy_data.rest_wave_value - 8,
-            y= 0.95,
+            x=galaxy_data.rest_wave_value - 7,
+            y= 0.99,
             yref="paper",
             text=f"{galaxy_data.element} (rest)",
             showarrow=False,
