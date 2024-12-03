@@ -136,10 +136,11 @@ def SpectrumViewer(
                     hover_data={"wave": True, "flux": False},
                     # line_shape="hvh", # step line plot
                     )
-        fig.update_traces(hovertemplate='Wavelength: %{x:0.1f} Å') #
+        fig.update_traces(hovertemplate='Wavelength: %{x:0.0f} Å') #
         fig.update_layout(
             hoverlabel=dict(
                 font_size=16,
+                bgcolor="white"
             ),
         )
 
