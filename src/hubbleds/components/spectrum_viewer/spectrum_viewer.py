@@ -260,21 +260,31 @@ def SpectrumViewer(
 
         fig.add_shape(
             editable=False,
-            x0=galaxy_data.redshift_rest_wave_value - 5,
-            x1=galaxy_data.redshift_rest_wave_value + 5,
-            y0=0.85,
-            y1=0.9,
-            xref="x",
+            x0=galaxy_data.redshift_rest_wave_value - 1.5,
+            x1=galaxy_data.redshift_rest_wave_value + 1.5,
+            y0=0.82,
+            y1=0.95,
+            # xref="x",
             line_color="red",
             fillcolor="red",
             ysizemode="scaled",
             yref="paper",
-            label={
-                "text": f"{galaxy_data.element} (observed)",
-                "textposition": "top center",
-                "yanchor": "bottom",
-            },
-            # visible=
+        )
+
+        fig.add_annotation(
+            x=galaxy_data.redshift_rest_wave_value + 8,
+            y= 0.95,
+            yref="paper",
+            text=f"{galaxy_data.element} (observed)",
+            showarrow=False,
+            font=dict(
+                family="Arial, sans-serif",
+                size=14,
+                color="red",
+                weight="bold"
+            ),
+            xanchor="left",
+            yanchor="top",
         )
 
         fig.add_shape(
@@ -289,11 +299,23 @@ def SpectrumViewer(
             ysizemode="scaled",
             yref="paper",
             line=dict(dash="dot"),
-            label={
-                "text": f"{galaxy_data.element} (rest)",
-                "textposition": "top center",
-                "yanchor": "bottom",
-            },
+            visible=1 in toggle_group_state.value,
+        )
+
+        fig.add_annotation(
+            x=galaxy_data.rest_wave_value - 8,
+            y= 0.95,
+            yref="paper",
+            text=f"{galaxy_data.element} (rest)",
+            showarrow=False,
+            font=dict(
+                family="Arial, sans-serif",
+                size=14,
+                color="black",
+                weight="bold"
+            ),
+            xanchor="right",
+            yanchor="top",
             visible=1 in toggle_group_state.value,
         )
 
