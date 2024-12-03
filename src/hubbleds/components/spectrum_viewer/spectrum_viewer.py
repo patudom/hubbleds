@@ -78,7 +78,7 @@ def SpectrumViewer(
     def _spectrum_clicked(**kwargs):
         if spectrum_click_enabled:
             vertical_line_visible.set(True)
-            on_obs_wave_measured(round(kwargs["points"]["xs"][0]))
+            on_obs_wave_measured(kwargs["points"]["xs"][0])
 
     with rv.Card():
         with rv.Toolbar(class_="toolbar", dense=True):
