@@ -508,7 +508,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
         with solara.Column():
-            solara.Button(label="Fill default vel & dist measurements", on_click=_fill_galaxies)
+            solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
             solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies)
 
     # WWT Selection Tool Row
@@ -827,8 +827,8 @@ def Page():
                 },
                 speech=speech.value,
             )
-            # if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
-            #     solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
+            if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
+                solara.Button(label="Demo Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
