@@ -530,7 +530,7 @@ def Page():
                     [Marker.dop_cal4, Marker.dop_cal5]
                 ),
                 state_view={
-                    "lambda_obs": COMPONENT_STATE.value.obs_wave,
+                    "lambda_obs": round(COMPONENT_STATE.value.obs_wave),
                     "lambda_rest": (
                         selected_example_measurement.value.rest_wave_value
                         if selected_example_measurement.value is not None
@@ -804,7 +804,7 @@ def Page():
                     titles=COMPONENT_STATE.value.doppler_state.titles,
                     step=COMPONENT_STATE.value.doppler_state.step,
                     length=COMPONENT_STATE.value.doppler_state.length,
-                    lambda_obs=COMPONENT_STATE.value.obs_wave,
+                    lambda_obs=round(COMPONENT_STATE.value.obs_wave),
                     lambda_rest=(
                         selected_example_measurement.value.rest_wave_value
                         if selected_example_measurement.value is not None
