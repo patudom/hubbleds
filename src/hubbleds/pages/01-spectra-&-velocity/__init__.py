@@ -335,7 +335,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
-            solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
+            solara.Button(label="Demo Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -390,7 +390,7 @@ def Page():
                 speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.sel_gal3):
-                solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
+                solara.Button(label="Demo Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
 
         with rv.Col(cols=8):
             
@@ -591,7 +591,7 @@ def Page():
                 speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
-                solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
+                solara.Button(label="Demo Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
