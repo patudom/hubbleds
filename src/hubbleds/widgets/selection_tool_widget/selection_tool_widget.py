@@ -35,8 +35,8 @@ class SelectionToolWidget(v.VueTemplate):
     def __init__(self, table_layer_data: dict, *args, **kwargs):
         # self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self.widget = WWTWidget()
-        self.widget.background = "SDSS: Sloan Digital Sky Survey (Optical)"
-        self.widget.foreground = "SDSS: Sloan Digital Sky Survey (Optical)"
+        self.widget.background = "SDSS 12"
+        self.widget.foreground = "SDSS 12"
         self.widget.center_on_coordinates(
             self.START_COORDINATES,
             fov=6 * u.arcmin,  # start in close enough to see galaxies
