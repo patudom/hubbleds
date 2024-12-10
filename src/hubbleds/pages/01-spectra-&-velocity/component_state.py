@@ -56,6 +56,7 @@ class Marker(enum.Enum, BaseMarker):
     # dot_seq13 = enum.auto()
     # dot_seq13a = enum.auto()
     # dot_seq14 = enum.auto()
+    exp_ski1 = enum.auto()
     rem_gal1 = enum.auto()
 
     # skip for short demo

@@ -456,7 +456,7 @@ def Page():
                 print("is galaxy selected:", galaxy_is_selected.value)             
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-            Marker.cho_row1, Marker.dop_cal5
+            Marker.cho_row1, Marker.exp_ski1
             )
             if show_example_data_table:
                 selection_tool_galaxy = selected_example_measurement
@@ -573,6 +573,14 @@ def Page():
             # )
             set_obs_wave_total()
             ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineExplainSkip.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.exp_ski1),
+                speech=speech.value,
+            )
+            ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRemainingGals.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -624,7 +632,7 @@ def Page():
 
         with rv.Col(cols=8):
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-                Marker.cho_row1, Marker.dop_cal5 # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
+                Marker.cho_row1, Marker.exp_ski1 # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
             )
 
             if show_example_data_table:
@@ -1047,7 +1055,7 @@ def Page():
 
         with rv.Col(cols=8):
             show_example_spectrum = COMPONENT_STATE.value.current_step_between(
-                Marker.mee_spe1, Marker.dop_cal5
+                Marker.mee_spe1, Marker.exp_ski1
             )
 
             show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(
