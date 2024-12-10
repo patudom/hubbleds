@@ -62,6 +62,9 @@ def SelectionTool(
 
         def _update_selection():
             selection_tool_widget = solara.get_widget(tool_container).children[0]
+            selection_tool_widget.widget.foreground = "Black Sky Background"
+            selection_tool_widget.widget.background = "Black Sky Background"
+            selection_tool_widget.widget.background = "SDSS 12"
 
             # Update selection tool
             selection_tool_widget.show_galaxies(show_galaxies)
