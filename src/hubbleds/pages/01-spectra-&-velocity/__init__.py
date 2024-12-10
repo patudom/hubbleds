@@ -258,7 +258,7 @@ def Page():
                                                    galaxy=measurement.galaxy))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
-    def _fill_stage1_go_stage3():
+    def _fill_stage1_go_stage2():
         dummy_measurements = LOCAL_API.get_dummy_data()
         measurements = []
         for measurement in dummy_measurements:
@@ -267,7 +267,7 @@ def Page():
                                                    galaxy=measurement.galaxy,
                                                    velocity_value=measurement.velocity_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        router.push("03-distance-measurements")
+        router.push("02-distance-introduction")
 
     def _select_random_galaxies():
         need = 5 - len(LOCAL_STATE.value.measurements)
@@ -508,10 +508,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
         with solara.Column():
-            solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
-            solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies)
-
-    # WWT Selection Tool Row
+            solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 2", on_click=_fill_stage1_go_stage2)
 
     with rv.Row():
         with rv.Col(cols=12, lg=4):

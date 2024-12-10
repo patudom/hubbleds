@@ -841,7 +841,7 @@
           //this.$refs.synth.stopSpeaking();
         }"
       >
-        get started
+        Jump to Stage 3
       </v-btn>
       
       <v-btn
@@ -856,7 +856,7 @@
           //this.$refs.synth.stopSpeaking();
         }"
       >
-        get started
+        Stage 3
       </v-btn>
     </v-card-actions>
   </v-card>
