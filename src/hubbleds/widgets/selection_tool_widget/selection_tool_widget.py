@@ -1,3 +1,4 @@
+from threading import Timer
 import astropy.units as u
 import ipyvue as v
 from astropy.coordinates import SkyCoord
@@ -35,8 +36,14 @@ class SelectionToolWidget(v.VueTemplate):
     def __init__(self, table_layer_data: dict, *args, **kwargs):
         # self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self.widget = WWTWidget()
-        # self.widget.background = "SDSS 12"
-        # self.widget.foreground = "SDSS 12"
+        
+        def _initialize_imagesets():
+            self.widget.background = "SDSS 12"
+            self.widget.foreground = "SDSS 12"
+
+        timer = Timer(3.0, _initialize_imagesets)
+        timer.start()
+
         self.widget.center_on_coordinates(
             self.START_COORDINATES,
             fov=6 * u.arcmin,  # start in close enough to see galaxies
