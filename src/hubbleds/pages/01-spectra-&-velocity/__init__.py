@@ -233,7 +233,7 @@ def Page():
                                                    galaxy=measurement.galaxy))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
-    def _fill_stage1_go_stage3():
+    def _fill_stage1_go_stage2():
         dummy_measurements = LOCAL_API.get_dummy_data()
         measurements = []
         for measurement in dummy_measurements:
@@ -242,7 +242,7 @@ def Page():
                                                    galaxy=measurement.galaxy,
                                                    velocity_value=measurement.velocity_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        router.push("03-distance-measurements")
+        router.push("02-distance-introduction")
 
 
     def _select_random_galaxies():
@@ -335,7 +335,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
-            solara.Button(label="Demo Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
+            solara.Button(label="Demo Shortcut: Fill in galaxy/velocity data & Go to Stage 2", on_click=_fill_stage1_go_stage2)
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -619,7 +619,7 @@ def Page():
             # )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: router.push("03-distance-measurements"),
+                event_next_callback=lambda _: router.push("02-distance-introduction"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),
