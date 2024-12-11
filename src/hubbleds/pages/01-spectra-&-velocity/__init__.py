@@ -335,7 +335,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
-            solara.Button(label="Demo Shortcut: Fill in galaxy/velocity data & Go to Stage 2", on_click=_fill_stage1_go_stage2)
+            solara.Button(label="Demo Shortcut: Fill in galaxy/velocity data & Go to Stage 2", on_click=_fill_stage1_go_stage2, classes=["demo-button"])
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -599,7 +599,7 @@ def Page():
                 speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
-                solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none")
+                solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none;", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),

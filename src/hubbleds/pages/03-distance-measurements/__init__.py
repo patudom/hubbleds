@@ -212,7 +212,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
-            solara.Button(label="Demo Shortcut: Fill in distance data & Go to Stage 4", on_click=_fill_data_points)
+            solara.Button(label="Demo Shortcut: Fill in distance data & Go to Stage 4", on_click=_fill_data_points, classes=["demo-button"])
     # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
@@ -550,7 +550,7 @@ def Page():
                 }
             )
             if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
-                solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none")
+                solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
                 event_next_callback=lambda _: router.push("04-explore-data"),
@@ -584,7 +584,7 @@ def Page():
                     distances_total.set(count)
 
                 if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
-                    solara.Button("Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances())
+                    solara.Button("Demo Shortcut: Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances() , classes=["demo-button"])
 
 
                 common_headers = [

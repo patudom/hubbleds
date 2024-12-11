@@ -307,3 +307,13 @@ div.plotly .hoverlayer g.axistext {
     font-weight: bold;
     padding-left: 0;
 }
+
+.theme--dark.demo-button {
+    background-color: var(--success) !important;
+    color: black !important;
+}
+
+.theme--light .demo-button {
+    background-color: var(--success) !important;
+    color: white !important;
+}
