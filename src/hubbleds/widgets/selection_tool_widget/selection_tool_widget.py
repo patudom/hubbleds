@@ -37,18 +37,17 @@ class SelectionToolWidget(v.VueTemplate):
         # self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self.widget = WWTWidget()
         
-        def _initialize_imagesets():
+        def _setup():
             self.widget.background = "SDSS 12"
             self.widget.foreground = "SDSS 12"
+            self.widget.center_on_coordinates(
+                self.START_COORDINATES,
+                fov=6 * u.arcmin,  # start in close enough to see galaxies
+                instant=False,
+            )
 
-        timer = Timer(3.0, _initialize_imagesets)
+        timer = Timer(3.0, _setup)
         timer.start()
-
-        self.widget.center_on_coordinates(
-            self.START_COORDINATES,
-            fov=6 * u.arcmin,  # start in close enough to see galaxies
-            instant=False,
-        )
 
         # df = data.to_dataframe()
         self.sdss_table = Table(table_layer_data)
