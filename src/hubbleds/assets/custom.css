@@ -276,3 +276,19 @@ div.plotly .hoverlayer g.hovertext {
     font-weight: bold;
     padding-left: 0;
 }
+
+.theme--dark.demo-button {
+    background-color: var(--success) !important;
+    color: black !important;
+}
+
+.theme--light .demo-button {
+    background-color: var(--success) !important;
+    color: white !important;
+}
+
+/* Sidebar navigation active item */
+.v-list-item-group .v-list-item--active {
+    color: white;
+    background-color: var(--primary);
+}
