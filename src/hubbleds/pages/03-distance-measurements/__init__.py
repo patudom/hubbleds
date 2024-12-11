@@ -324,7 +324,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
         with solara.Column():
-            solara.Button(label="Shortcut: Fill in distance data & Go to Stage 4", on_click=_fill_data_points, classes=["demo-button"])
+            solara.Button(label="Shortcut: Fill in distance data & Jump to Stage 4", on_click=_fill_data_points, classes=["demo-button"])
     # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
