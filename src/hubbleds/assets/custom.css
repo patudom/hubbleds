@@ -317,3 +317,9 @@ div.plotly .hoverlayer g.axistext {
     background-color: var(--success) !important;
     color: white !important;
 }
+
+/* Sidebar navigation active item */
+.v-list-item-group .v-list-item--active {
+    color: white;
+    background-color: var(--primary);
+}
