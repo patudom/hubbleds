@@ -43,6 +43,7 @@ class Marker(enum.Enum, BaseMarker):
     # dot_seq6  = enum.auto()	# MC ang_meas_consensus_2
     # dot_seq7 = enum.auto()
 
+    exp_ski1 = enum.auto()
     rep_rem1 = enum.auto()
     fil_rem1 = enum.auto()
     end_sta3 = enum.auto() #This guideline doesn't actually exist - just including it to allow an exit gate on the previous guideline.

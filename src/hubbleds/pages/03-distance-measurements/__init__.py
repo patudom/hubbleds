@@ -511,6 +511,13 @@ def Page():
                     "meas_theta": COMPONENT_STATE.value.meas_theta,
                 },
             )
+            ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineExplainSkip.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.exp_ski1),
+            )
             # Not doing the 2nd measurement
             # ScaffoldAlert(
             #     # TODO This will need to be wired up once table is implemented
@@ -591,7 +598,7 @@ def Page():
                     { "text": "Distance (Mpc)", "value": "est_dist_value" },
                 ]
 
-            if COMPONENT_STATE.value.current_step_at_or_before(Marker.est_dis4):
+            if COMPONENT_STATE.value.current_step_at_or_before(Marker.exp_ski1):
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
                     value = galaxy["item"]["galaxy"] if flag else None
