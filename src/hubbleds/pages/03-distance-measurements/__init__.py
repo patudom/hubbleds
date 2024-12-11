@@ -550,7 +550,7 @@ def Page():
                 }
             )
             if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
-                solara.Button(label="Demo Shortcut: Fill Angular Size Measurements", on_click=_fill_thetas)
+                solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none")
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
                 event_next_callback=lambda _: router.push("04-explore-data"),

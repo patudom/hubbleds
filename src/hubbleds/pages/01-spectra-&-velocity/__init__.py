@@ -599,7 +599,7 @@ def Page():
                 speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
-                solara.Button(label="Demo Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
+                solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none")
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
