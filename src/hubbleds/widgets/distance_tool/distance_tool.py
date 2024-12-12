@@ -1,4 +1,5 @@
 from datetime import datetime
+from threading import Timer
 
 import astropy.units as u
 import ipyvue as v
@@ -49,7 +50,8 @@ class DistanceTool(v.VueTemplate):
 
     def __init__(self, *args, **kwargs):
         self.widget = WWTWidget()
-        self._setup_widget()
+        timer = Timer(3.0, self._setup_widget)
+        timer.start()
         self.measuring = kwargs.get('measuring', False)
         self.guard = kwargs.get('guard', False)
         self.angular_size = Angle(0, u.deg)
@@ -68,8 +70,8 @@ class DistanceTool(v.VueTemplate):
 
     def _setup_widget(self):
         # Temp update to set background to SDSS. Once we remove galaxies without SDSS WWT tiles from the catalog, make background DSS again, and set wwt.foreground_opacity = 0, per Peter Williams.
-        self.widget.background = 'SDSS: Sloan Digital Sky Survey (Optical)'
-        self.widget.foreground = 'SDSS: Sloan Digital Sky Survey (Optical)'
+        self.widget.background = 'SDSS 12'
+        self.widget.foreground = 'SDSS 12'
         self.widget.center_on_coordinates(self.START_COORDINATES, fov= 42 * u.arcmin, #start in close enough to see galaxies
                                           instant=True)
 
@@ -176,3 +178,11 @@ class DistanceTool(v.VueTemplate):
         c3 = (angular_size <= self.galaxy_max_size)
         self.bad_measurement = not (c1 and c2 and c3)
         return c1 and c2 and c3
+    
+    def vue_set_brightness(self, brightness, *_args):
+        print(f"Brightness: {brightness}")
+        self.brightness = brightness
+    
+    def vue_set_contrast(self, contrast, *_args):
+        print(f"Contrast: {contrast}")
+        self.contrast = contrast
