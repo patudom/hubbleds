@@ -152,6 +152,8 @@ def Page():
 
         class_ids = LOCAL_STATE.value.stage_5_class_data_students
         class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
+        if GLOBAL_STATE.value.student.id not in student_ids.value:
+            class_data_points.extend(m for m in LOCAL_STATE.value.measurements)
         class_data = models_to_glue_data(class_data_points, label="Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
 
