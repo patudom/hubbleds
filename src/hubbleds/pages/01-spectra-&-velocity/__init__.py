@@ -233,7 +233,7 @@ def Page():
                                                    galaxy=measurement.galaxy))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
-    def _fill_stage1_go_stage3():
+    def _fill_stage1_go_stage2():
         dummy_measurements = LOCAL_API.get_dummy_data()
         measurements = []
         for measurement in dummy_measurements:
@@ -242,7 +242,7 @@ def Page():
                                                    galaxy=measurement.galaxy,
                                                    velocity_value=measurement.velocity_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        router.push("03-distance-measurements")
+        router.push("02-distance-introduction")
 
 
     def _select_random_galaxies():
@@ -335,7 +335,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
-            solara.Button(label="Shortcut: Fill in galaxy/velocity data & Go to Stage 3", on_click=_fill_stage1_go_stage3)
+            solara.Button(label="Demo Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_stage1_go_stage2, classes=["demo-button"])
 
     with rv.Row():
         with rv.Col(cols=4):
@@ -390,7 +390,7 @@ def Page():
                 speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.sel_gal3):
-                solara.Button(label="Shortcut: Use 5 random galaxies", on_click=_fill_galaxies)
+                solara.Button(label="Demo Shortcut: Use 5 random galaxies", on_click=_fill_galaxies, classes=["demo-button"])
 
         with rv.Col(cols=8):
             
@@ -456,7 +456,7 @@ def Page():
                 print("is galaxy selected:", galaxy_is_selected.value)             
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-            Marker.cho_row1, Marker.dop_cal5
+            Marker.cho_row1, Marker.exp_ski1
             )
             if show_example_data_table:
                 selection_tool_galaxy = selected_example_measurement
@@ -573,6 +573,14 @@ def Page():
             # )
             set_obs_wave_total()
             ScaffoldAlert(
+                GUIDELINE_ROOT / "GuidelineExplainSkip.vue",
+                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                show=COMPONENT_STATE.value.is_current_step(Marker.exp_ski1),
+                speech=speech.value,
+            )
+            ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineRemainingGals.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -591,7 +599,7 @@ def Page():
                 speech=speech.value,
             )
             if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
-                solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
+                solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none;", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -611,7 +619,7 @@ def Page():
             # )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: router.push("03-distance-measurements"),
+                event_next_callback=lambda _: router.push("02-distance-introduction"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),
@@ -624,7 +632,7 @@ def Page():
 
         with rv.Col(cols=8):
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-                Marker.cho_row1, Marker.dop_cal5 # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
+                Marker.cho_row1, Marker.exp_ski1 # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
             )
 
             if show_example_data_table:
@@ -1047,7 +1055,7 @@ def Page():
 
         with rv.Col(cols=8):
             show_example_spectrum = COMPONENT_STATE.value.current_step_between(
-                Marker.mee_spe1, Marker.dop_cal5
+                Marker.mee_spe1, Marker.exp_ski1
             )
 
             show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(

@@ -686,8 +686,7 @@
         </v-btn>
         <v-btn
           v-if="step < length-1"
-          color="success"
-          class="black--text"
+          class="demo-button"
           depressed
           @click="() => {
             $emit('close');
