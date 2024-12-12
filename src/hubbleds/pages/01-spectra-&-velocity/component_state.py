@@ -213,16 +213,16 @@ class ComponentState(BaseComponentState, BaseState):
     
     # change gate to account for above and below being skipped
     @property
-    def dop_cal6_gate(self) -> bool:
+    def exp_ski2_gate(self) -> bool:
         return self.obs_wave_total >= 5
 
     # @property
     # def dop_cal6_gate(self) -> bool:
     #     return self.reflection_complete
 
-    # @property
-    # def ref_vel1_gate(self) -> bool:
-    #     return self.velocities_total >= 5
+    @property
+    def end_sta1_gate(self) -> bool:
+        return self.velocities_total >= 5
 
     @property
     def nxt_stg_gate(self) -> bool:
