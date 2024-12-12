@@ -288,7 +288,11 @@ div.plotly .hoverlayer g.hovertext {
 }
 
 /* Sidebar navigation active item */
-.v-list-item-group .v-list-item--active {
+.v-list-item-group .v-list-item--active:not(.layer_toggle .v-list-item--active) {
     color: white;
     background-color: var(--primary);
+}
+
+.v-application .layer_toggle {
+    border-color: black !important;
 }
