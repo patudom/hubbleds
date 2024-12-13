@@ -22,6 +22,7 @@ def SpectrumViewer(
     on_obs_wave_measured: Callable = None,
     on_rest_wave_tool_clicked: Callable = lambda: None,
     on_zoom_tool_clicked: Callable = lambda: None,
+    on_zoom_tool_toggled: Callable = lambda: None,
     marker_position: Optional[solara.Reactive[float]] = None,
     on_set_marker_position: Callable = lambda x: None,
     spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
@@ -119,7 +120,10 @@ def SpectrumViewer(
             value = kwargs["points"]["xs"][0]
             marker_position.set(value)
             on_set_marker_position(value)
-            
+
+    def _zoom_button_clicked():
+        on_zoom_tool_clicked()
+        on_zoom_tool_toggled()  
 
     with rv.Card():
         with rv.Toolbar(class_="toolbar", dense=True):
@@ -146,7 +150,7 @@ def SpectrumViewer(
 
                 solara.IconButton(
                     icon_name="mdi-select-search",
-                    on_click=on_zoom_tool_clicked,
+                    on_click=_zoom_button_clicked,
                 )
 
                 solara.IconButton(

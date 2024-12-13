@@ -1211,7 +1211,8 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav2),
                     state_view={
                         "selected_example_galaxy": selected_example_galaxy_data,
-                        "zoom_tool_activate": COMPONENT_STATE.value.zoom_tool_activated,
+                        "zoom_tool_activated": COMPONENT_STATE.value.zoom_tool_activated,
+                        "zoom_tool_active": COMPONENT_STATE.value.zoom_tool_active,
                     },
                     speech=speech.value,
                 )
@@ -1345,6 +1346,9 @@ def Page():
                     zoom_tool_activated = Ref(
                         COMPONENT_STATE.fields.zoom_tool_activated
                     )
+                    zoom_tool_active = Ref(
+                        COMPONENT_STATE.fields.zoom_tool_active
+                    )
                     
                     @computed
                     def obs_wav_marker_value():
@@ -1376,6 +1380,7 @@ def Page():
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
+                        on_zoom_tool_toggled=lambda: zoom_tool_active.set(not COMPONENT_STATE.value.zoom_tool_active),
                         marker_position=sync_wavelength_line if show_synced_lines.value else None,
                         spectrum_bounds = spectrum_bounds, # type: ignore
                         max_spectrum_bounds=max_spectrum_bounds,
