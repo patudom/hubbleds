@@ -328,7 +328,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
-            solara.Button(label="Demo Shortcut: Jump to Stage 6", on_click=_jump_stage_6, classes=["demo-button"])
+            solara.Button(label="Shortcut: Jump to Stage 6", on_click=_jump_stage_6, classes=["demo-button"])
 
     def _on_component_state_loaded(value: bool):
         if not value:

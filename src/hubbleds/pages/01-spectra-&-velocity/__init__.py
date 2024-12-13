@@ -509,6 +509,7 @@ def Page():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
         with solara.Column():
             solara.Button(label="Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_stage1_go_stage2, classes=["demo-button"])
+            solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies, classes=["demo-button"])
 
     with rv.Row():
         with rv.Col(cols=12, lg=4):

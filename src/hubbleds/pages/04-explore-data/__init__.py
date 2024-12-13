@@ -118,7 +118,7 @@ def Page():
 
     gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
 
-    if not (load_class_data.value or load_class_data.pending):
+    if not (load_class_data.finished or load_class_data.pending):
         load_class_data()
 
     def _on_class_data_loaded(class_data_points: List[StudentMeasurement]):
@@ -148,7 +148,7 @@ def Page():
 
         class_plot_data.set(class_data_points)
 
-    if load_class_data.value:
+    if load_class_data.finished:
         _on_class_data_loaded(load_class_data.value)
 
     def _jump_stage_5():
@@ -158,7 +158,7 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
-            solara.Button(label="Demo Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
+            solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
