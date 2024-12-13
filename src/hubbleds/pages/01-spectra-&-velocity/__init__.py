@@ -1190,8 +1190,7 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.res_wav1),
                     state_view={
                         "selected_example_galaxy": selected_example_galaxy_data,
-                        "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
-                        "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
+                        "lambda_on": COMPONENT_STATE.value.rest_wave_tool_activated,
                     },
                     speech=speech.value,
                 )
@@ -1340,8 +1339,8 @@ def Page():
                             sync_velocity_line.set(velocity)
 
                     obs_wave_tool_used = Ref(COMPONENT_STATE.fields.obs_wave_tool_used)
-                    obs_wave_tool_activated = Ref(
-                        COMPONENT_STATE.fields.obs_wave_tool_activated
+                    rest_wave_tool_activated = Ref(
+                        COMPONENT_STATE.fields.rest_wave_tool_activated
                     )
                     zoom_tool_activated = Ref(
                         COMPONENT_STATE.fields.zoom_tool_activated
@@ -1373,7 +1372,7 @@ def Page():
                         or COMPONENT_STATE.value.current_step == Marker.rem_vel1
                         ),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
-                        on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(
+                        on_rest_wave_tool_clicked=lambda: rest_wave_tool_activated.set(
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),

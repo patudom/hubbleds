@@ -20,7 +20,7 @@ def SpectrumViewer(
     spectrum_click_enabled: bool = False,
     show_obs_wave_line: bool = True,
     on_obs_wave_measured: Callable = None,
-    on_obs_wave_tool_clicked: Callable = lambda: None,
+    on_rest_wave_tool_clicked: Callable = lambda: None,
     on_zoom_tool_clicked: Callable = lambda: None,
     marker_position: Optional[solara.Reactive[float]] = None,
     on_set_marker_position: Callable = lambda x: None,
@@ -61,8 +61,8 @@ def SpectrumViewer(
             max_spectrum_bounds.set([spec["wave"].min(), spec["wave"].max()])
     
 
-    def _obs_wave_tool_toggled():
-        on_obs_wave_tool_clicked()
+    def _rest_wave_tool_toggled():
+        on_rest_wave_tool_clicked()
 
 
 
@@ -144,7 +144,7 @@ def SpectrumViewer(
 
                 solara.IconButton(
                     icon_name="mdi-lambda",
-                    on_click=_obs_wave_tool_toggled,
+                    on_click=_rest_wave_tool_toggled,
                 )
 
             rv.Divider(vertical=True)
