@@ -372,6 +372,7 @@ def SpectrumViewer(
             dependencies=dependencies,
             config={
                 "displayModeBar": False,
+                "showTips": False 
             },
         )
 
