@@ -302,6 +302,7 @@ def SpectrumViewer(
             ],
             config={
                 "displayModeBar": False,
+                "showTips": False 
             },
         )
 
