@@ -1099,8 +1099,8 @@ def Page():
                         obs_wave_tool_used.set(True)
 
                     obs_wave_tool_used = Ref(COMPONENT_STATE.fields.obs_wave_tool_used)
-                    obs_wave_tool_activated = Ref(
-                        COMPONENT_STATE.fields.obs_wave_tool_activated
+                    rest_wave_tool_activated = Ref(
+                        COMPONENT_STATE.fields.rest_wave_tool_activated
                     )
                     zoom_tool_activated = Ref(
                         COMPONENT_STATE.fields.zoom_tool_activated
@@ -1116,7 +1116,7 @@ def Page():
                         spectrum_click_enabled=COMPONENT_STATE.value.current_step_at_or_after(
                             Marker.obs_wav1),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
-                        on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(
+                        on_rest_wave_tool_clicked=lambda: rest_wave_tool_activated.set(
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),

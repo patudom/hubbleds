@@ -14,7 +14,7 @@ def SpectrumViewer(
     obs_wave: float | None = None,
     spectrum_click_enabled: bool = False,
     on_obs_wave_measured: Callable = None,
-    on_obs_wave_tool_clicked: Callable = lambda: None,
+    on_rest_wave_tool_clicked: Callable = lambda: None,
     on_zoom_tool_clicked: Callable = lambda: None,
     add_marker_here: float | None = None,
 ):
@@ -46,8 +46,8 @@ def SpectrumViewer(
         dependencies=[galaxy_data],
     )
 
-    def _obs_wave_tool_toggled():
-        on_obs_wave_tool_clicked()
+    def _rest_wave_tool_toggled():
+        on_rest_wave_tool_clicked()
 
     def _on_relayout(event):
         if event is None:
@@ -103,7 +103,7 @@ def SpectrumViewer(
 
                 solara.IconButton(
                     icon_name="mdi-lambda",
-                    on_click=_obs_wave_tool_toggled,
+                    on_click=_rest_wave_tool_toggled,
                 )
 
             rv.Divider(vertical=True)
