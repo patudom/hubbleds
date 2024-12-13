@@ -249,7 +249,7 @@ export default {
         const xAvg = sumX / n;
         const yAvg = sumY / n;
         const a = (n * sumXY - (sumX * sumY)) / (n * sumXsq - (sumX * sumX));
-        const b = yAvg - b * xAvg;
+        const b = yAvg - a * xAvg;
         return [a, b];
       }
     },
