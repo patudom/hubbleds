@@ -1105,6 +1105,9 @@ def Page():
                     zoom_tool_activated = Ref(
                         COMPONENT_STATE.fields.zoom_tool_activated
                     )
+                    zoom_tool_active = Ref(
+                        COMPONENT_STATE.fields.zoom_tool_active
+                    )
 
                     SpectrumViewer(
                         galaxy_data=(
@@ -1120,6 +1123,12 @@ def Page():
                             True
                         ),
                         on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
+                        on_zoom_tool_toggled=lambda: zoom_tool_active.set(not COMPONENT_STATE.value.zoom_tool_active),
+                        marker_position=sync_wavelength_line if show_synced_lines.value else None,
+                        spectrum_bounds = spectrum_bounds, # type: ignore
+                        max_spectrum_bounds=max_spectrum_bounds,
+                        show_obs_wave_line=COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4),
+                        on_set_marker_position=_on_set_marker_location,
                     )
 
                     spectrum_tutorial_opened = Ref(

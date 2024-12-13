@@ -116,7 +116,8 @@ class ComponentState(BaseComponentState, BaseState):
     rest_wave_tool_activated: bool = False
     obs_wave_tool_used: bool = False
     spectrum_clicked: bool = False
-    zoom_tool_activated: bool = False
+    zoom_tool_activated: bool = False # has it ever been used?
+    zoom_tool_active: bool = False # is it currently on?
     doppler_calc_reached: bool = False
     obs_wave: float = 0
     show_doppler_dialog: bool = False
