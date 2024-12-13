@@ -128,6 +128,13 @@ def SpectrumViewer(
 
             rv.Spacer()
 
+            solara.IconButton(
+                flat=True,
+                tile=True,
+                icon_name="mdi-cached",
+                on_click=_on_reset_button_clicked,
+            )
+
             with rv.BtnToggle(
                 v_model=toggle_group_state.value,
                 on_v_model=toggle_group_state.set,
@@ -146,15 +153,6 @@ def SpectrumViewer(
                     icon_name="mdi-lambda",
                     on_click=_rest_wave_tool_toggled,
                 )
-
-            rv.Divider(vertical=True)
-
-            solara.IconButton(
-                flat=True,
-                tile=True,
-                icon_name="mdi-cached",
-                on_click=_on_reset_button_clicked,
-            )
 
         if spec_data_task.value is None:
             with rv.Sheet(
