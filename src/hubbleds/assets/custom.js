@@ -5,7 +5,6 @@
 function makeDialogsDraggable() {
   const d = {};
   document.addEventListener("mousedown", e => {
-    console.log(e.target);
     const classList = e.target.classList;
     if (!(classList.contains("v-toolbar__content") || classList.contains("v-toolbar__title"))) return;
     const closestDialog = e.target.closest(".v-dialog.v-dialog--active");
