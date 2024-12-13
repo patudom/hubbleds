@@ -17,6 +17,8 @@ def SpectrumViewer(
     on_rest_wave_tool_clicked: Callable = lambda: None,
     on_zoom_tool_clicked: Callable = lambda: None,
     on_zoom_tool_toggled: Callable = lambda: None,
+    on_zoom: Callable = lambda: None,
+    on_reset_tool_clicked: Callable = lambda: None,
     marker_position: Optional[solara.Reactive[float]] = None,
     on_set_marker_position: Callable = lambda x: None,
     spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
@@ -76,9 +78,30 @@ def SpectrumViewer(
             x_bounds.set([])
             y_bounds.set([])
 
+        if "relayout_data" in event:
+            if "xaxis.range[0]" in event["relayout_data"] and "xaxis.range[1]" in event["relayout_data"]:
+                if spectrum_bounds is not None:
+                    spectrum_bounds.set([
+                        event["relayout_data"]["xaxis.range[0]"],
+                        event["relayout_data"]["xaxis.range[1]"],
+                    ])
+                on_zoom()
+
     def _on_reset_button_clicked(*args, **kwargs):
         x_bounds.set([])
         y_bounds.set([])
+        try:
+            if spec_data_task.value is not None and spectrum_bounds is not None:
+                spectrum_bounds.set([
+                    spec_data_task.value["wave"].min(),
+                    spec_data_task.value["wave"].max(),
+                ])
+        except Exception as e:
+            print(e)
+
+        on_reset_tool_clicked()
+    
+    solara.use_effect(_on_reset_button_clicked, dependencies=[galaxy_data])
 
     def _spectrum_clicked(**kwargs):
         if spectrum_click_enabled:

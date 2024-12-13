@@ -1109,6 +1109,14 @@ def Page():
                         COMPONENT_STATE.fields.zoom_tool_active
                     )
 
+
+                    def _on_zoom():
+                        zoom_tool_activated.set(True)
+                        zoom_tool_active.set(True)
+
+                    def _on_reset():
+                        zoom_tool_active.set(False)
+                    
                     SpectrumViewer(
                         galaxy_data=(
                             selected_example_measurement.value.galaxy
@@ -1122,8 +1130,8 @@ def Page():
                         on_rest_wave_tool_clicked=lambda: rest_wave_tool_activated.set(
                             True
                         ),
-                        on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
-                        on_zoom_tool_toggled=lambda: zoom_tool_active.set(not COMPONENT_STATE.value.zoom_tool_active),
+                        on_zoom=_on_zoom,
+                        on_reset_tool_clicked=_on_reset,
                         marker_position=sync_wavelength_line if show_synced_lines.value else None,
                         spectrum_bounds = spectrum_bounds, # type: ignore
                         max_spectrum_bounds=max_spectrum_bounds,
