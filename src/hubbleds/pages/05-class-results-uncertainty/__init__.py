@@ -254,6 +254,9 @@ def Page():
         for viewer in (student_hist_viewer, all_student_hist_viewer, class_hist_viewer):
             viewer.figure.update_layout(hovermode="closest")
 
+        for viewer in viewers.values():
+            viewer.state.reset_limits(visible_only=True)
+
         gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
                                             handler=partial(_update_bins, two_hist_viewers),
                                             filter=lambda msg: msg.data.label == "Student Summaries")
