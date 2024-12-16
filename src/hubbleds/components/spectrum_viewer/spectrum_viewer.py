@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import plotly.express as px
 import reacton.ipyvuetify as rv
@@ -19,11 +19,8 @@ def SpectrumViewer(
     on_zoom_tool_toggled: Callable = lambda: None,
     on_zoom: Callable = lambda: None,
     on_reset_tool_clicked: Callable = lambda: None,
-    marker_position: Optional[solara.Reactive[float]] = None,
-    on_set_marker_position: Callable = lambda x: None,
     spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
-    on_spectrum_bounds_changed: Callable = lambda x: None,
-    max_spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
+    add_marker_here: float | None = None,
 ):
 
     vertical_line_visible = solara.use_reactive(False)
@@ -36,9 +33,8 @@ def SpectrumViewer(
 
     x_bounds = solara.use_reactive([])
     y_bounds = solara.use_reactive([])
-    # spectrum_bounds = solara.use_reactive(spectrum_bounds or [], on_change=lambda x: x_bounds.set(x))
-    # if spectrum_bounds is not None:
-    #     spectrum_bounds.subscribe(x_bounds.set)
+    if spectrum_bounds is not None:
+        spectrum_bounds.subscribe(x_bounds.set)
     
     use_dark_effective = solara.use_trait_observe(solara.lab.theme, "dark_effective")
 
@@ -107,11 +103,6 @@ def SpectrumViewer(
         if spectrum_click_enabled:
             vertical_line_visible.set(True)
             on_obs_wave_measured(kwargs["points"]["xs"][0])
-        if marker_position is not None:
-            # vertical_line_visible.set(False)
-            value = kwargs["points"]["xs"][0]
-            marker_position.set(value)
-            on_set_marker_position(value)
 
     def _zoom_button_clicked():
         on_zoom_tool_clicked()

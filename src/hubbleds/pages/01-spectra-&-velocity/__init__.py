@@ -311,6 +311,7 @@ def Page():
             sync_example_wavelength_to_velocity(meas)
     
     loaded_component_state.subscribe(_initialize_state)
+    spectrum_bounds = solara.use_reactive([])
     
     def _sync_setup():
         sync_velocity_line = Ref(COMPONENT_STATE.fields.sync_velocity_line)
@@ -983,8 +984,7 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.res_wav1),
                 state_view={
                     "selected_example_galaxy": selected_example_galaxy_data,
-                    "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
-                    "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
+                    "lambda_on": COMPONENT_STATE.value.rest_wave_tool_activated,
                 },
                 speech=speech.value,
             )
@@ -1132,11 +1132,7 @@ def Page():
                         ),
                         on_zoom=_on_zoom,
                         on_reset_tool_clicked=_on_reset,
-                        marker_position=sync_wavelength_line if show_synced_lines.value else None,
                         spectrum_bounds = spectrum_bounds, # type: ignore
-                        max_spectrum_bounds=max_spectrum_bounds,
-                        show_obs_wave_line=COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4),
-                        on_set_marker_position=_on_set_marker_location,
                     )
 
                     spectrum_tutorial_opened = Ref(
