@@ -321,7 +321,14 @@ def Page():
     line_fit_tool = viewers["layer"].toolbar.tools['hubble:linefit']
     add_callback(line_fit_tool, 'active',  _on_best_fit_line_shown)
 
-    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+    def _jump_stage_6():
+        router.push("06-prodata")
+
+    with solara.Row():
+        with solara.Column():
+            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
+        with solara.Column():
+            solara.Button(label="Shortcut: Jump to Stage 6", on_click=_jump_stage_6, classes=["demo-button"])
 
     def _on_component_state_loaded(value: bool):
         if not value:
