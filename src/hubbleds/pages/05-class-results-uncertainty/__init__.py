@@ -39,6 +39,8 @@ GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 def Page():
     solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
+    student_slider_setup, set_student_slider_setup = solara.use_state(False)
+    class_slider_setup, set_class_slider_setup = solara.use_state(False)
     router = solara.use_router()
 
     async def _load_component_state():
@@ -263,6 +265,9 @@ def Page():
 
         for viewer in (student_hist_viewer, all_student_hist_viewer, class_hist_viewer):
             viewer.figure.update_layout(hovermode="closest")
+
+        for viewer in viewers.values():
+            viewer.state.reset_limits(visible_only=True)
 
         gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
                                             handler=partial(_update_bins, two_hist_viewers),
@@ -515,6 +520,9 @@ def Page():
                 color = student_highlight_color if highlighted else student_default_color
                 student_slider_subset.style.color = color
                 student_slider_subset.style.markersize = 12
+                if not student_slider_setup:
+                    viewers["student_slider"].state.reset_limits(visible_only=False)
+                    set_student_slider_setup(True)
 
             with rv.Col(class_="no-padding"):
                 ViewerLayout(viewer=viewers["student_slider"])
@@ -576,6 +584,9 @@ def Page():
                 class_slider_subset.subset_state = RangeSubsetState(id, id, all_data.id['class_id'])
                 color = class_highlight_color if highlighted else class_default_color
                 class_slider_subset.style.color = color
+                if not class_slider_setup:
+                    viewers["class_slider"].state.reset_limits(visible_only=False)
+                    set_class_slider_setup(True)
 
             with rv.Col():
                 ViewerLayout(viewer=viewers["class_slider"])
