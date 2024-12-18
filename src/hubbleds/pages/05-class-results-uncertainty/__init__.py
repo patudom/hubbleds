@@ -204,7 +204,6 @@ def Page():
         student_slider_viewer.state.title = "My Class Data"
         student_slider_viewer.add_subset(student_slider_subset)
         student_slider_viewer.layers[0].state.visible = False
-        student_slider_viewer.toolbar.tools["hubble:linefit"].activate()
         show_layer_traces_in_legend(student_slider_viewer)
         show_legend(student_slider_viewer, show=True)
 
@@ -242,7 +241,6 @@ def Page():
         class_slider_viewer.state.title = "All Classes Data"
         class_slider_viewer.layers[0].state.visible = False
         class_slider_viewer.add_subset(class_slider_subset)
-        class_slider_viewer.toolbar.tools["hubble:linefit"].activate()
         show_layer_traces_in_legend(class_slider_viewer)
         show_legend(class_slider_viewer, show=True)        
 
@@ -521,7 +519,9 @@ def Page():
                 student_slider_subset.style.color = color
                 student_slider_subset.style.markersize = 12
                 if not student_slider_setup:
-                    viewers["student_slider"].state.reset_limits(visible_only=False)
+                    viewer = viewers["student_slider"]
+                    viewer.state.reset_limits(visible_only=False)
+                    viewer.toolbar.tools["hubble:linefit"].activate()
                     set_student_slider_setup(True)
 
             with rv.Col(class_="no-padding"):
@@ -585,7 +585,9 @@ def Page():
                 color = class_highlight_color if highlighted else class_default_color
                 class_slider_subset.style.color = color
                 if not class_slider_setup:
-                    viewers["class_slider"].state.reset_limits(visible_only=False)
+                    viewer = viewers["class_slider"]
+                    viewer.state.reset_limits(visible_only=False)
+                    viewer.toolbar.tools["hubble:linefit"].activate()
                     set_class_slider_setup(True)
 
             with rv.Col():
