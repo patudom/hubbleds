@@ -611,11 +611,15 @@ def Page():
                 )
 
     #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------
+    class_summary_data = gjapp.data_collection["Class Summaries"]
+    def _on_percentage_selected_changed(_option, value):
+        my_summ_subset = class_summary_data.subsets[0]
+        my_summ_subset.style.alpha = 1 - bool(value)
+
     if COMPONENT_STATE.value.current_step_between(Marker.age_dis1, Marker.con_int3):
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
                 with rv.Row():
-                    class_summary_data = gjapp.data_collection["Class Summaries"]
                     with rv.Col():
                         if COMPONENT_STATE.value.current_step.value == Marker.age_dis1.value:
                             LayerToggle(viewer=viewers["student_hist"])
@@ -635,6 +639,7 @@ def Page():
                                 viewers=[viewers["student_hist"]],
                                 glue_data=[class_summary_data],
                                 units=["Gyr"],
+                                on_selected_changed=_on_percentage_selected_changed
                             )
 
                 ScaffoldAlert(
