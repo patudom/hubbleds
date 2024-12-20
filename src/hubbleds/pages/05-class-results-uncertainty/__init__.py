@@ -14,14 +14,14 @@ from pathlib import Path
 import reacton.ipyvuetify as rv
 from typing import Dict, Iterable, Optional, Tuple
 
-from cosmicds.components import PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
+from cosmicds.components import LayerToggle, PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
 from cosmicds.utils import empty_data_from_model_class, show_legend, show_layer_traces_in_legend
 from cosmicds.viewers import CDSHistogramView
 from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
 from hubbleds.tools import *  # noqa
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, ClassSummary, StudentMeasurement, StudentSummary, get_free_response, get_multiple_choice, mc_callback, fr_callback
-from hubbleds.utils import age_in_gyr_simple, create_single_summary, make_summary_data, models_to_glue_data
+from hubbleds.utils import create_single_summary, make_summary_data, models_to_glue_data
 from hubbleds.viewers.hubble_histogram_viewer import HubbleHistogramView
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
@@ -213,8 +213,14 @@ def Page():
                                                output_id_field="id",
                                                label="Class Summaries")
         class_summary_data = GLOBAL_STATE.value.add_or_update_data(class_summary_data)
-        my_summ_subset_state = RangeSubsetState(student_id, student_id, class_summary_data.id["id"])
-        my_summ_subset = class_summary_data.new_subset(subset=my_summ_subset_state, color="#FB5607", alpha=1)
+        if len(class_summary_data.subsets) == 0:
+            my_summ_subset_state = RangeSubsetState(student_id, student_id, class_summary_data.id["id"])
+            my_summ_subset = class_summary_data.new_subset(subset=my_summ_subset_state,
+                                                           color="#FB5607",
+                                                           alpha=1,
+                                                           label="My Summary")
+        else:
+            my_summ_subset = class_summary_data.subsets[0]
 
         my_measurements = LOCAL_STATE.value.measurements
         my_distances = [distance for m in my_measurements if ((distance := m.est_dist_value) is not None and m.velocity_value is not None)]
@@ -631,6 +637,10 @@ def Page():
             with rv.Col():
                 with rv.Row():
                     class_summary_data = gjapp.data_collection["Class Summaries"]
+                    with rv.Col():
+                        if COMPONENT_STATE.value.current_step.value == Marker.age_dis1.value:
+                            LayerToggle(viewer=viewers["student_hist"])
+
                     with rv.Col():
                         if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
                             StatisticsSelector(
