@@ -614,7 +614,7 @@ def Page():
     class_summary_data = gjapp.data_collection["Class Summaries"]
     def _on_percentage_selected_changed(_option, value):
         my_summ_subset = class_summary_data.subsets[0]
-        my_summ_subset.style.alpha = 1 - bool(value)
+        my_summ_subset.style.alpha = 1 - int(value)
 
     if COMPONENT_STATE.value.current_step_between(Marker.age_dis1, Marker.con_int3):
         with solara.ColumnsResponsive(12, large=[5,7]):
