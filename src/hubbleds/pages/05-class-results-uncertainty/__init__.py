@@ -326,6 +326,17 @@ def Page():
         if not class_best_fit_clicked.value:
             class_best_fit_clicked.set(active)
 
+    def show_class_hide_my_age_subset(value):
+        viewer=viewers["student_hist"]
+        viewer.layers[0].state.visible = True # in case student turned class off
+        viewer.layers[1].state.visible = not value
+
+    def _on_marker_updated(marker):
+        if Marker.is_at_or_before(marker, Marker.sho_mya1) or Marker.is_at_or_after(marker, Marker.con_int2):
+            show_class_hide_my_age_subset(True)
+
+    Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
+
     line_fit_tool = viewers["layer"].toolbar.tools['hubble:linefit']
     add_callback(line_fit_tool, 'active',  _on_best_fit_line_shown)
 
@@ -646,6 +657,13 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.age_dis1),
                 )
                 ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineShowMyAgeDistribution.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.sho_mya1),
+                )
+                ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineMostLikelyValue2.vue",
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
@@ -675,10 +693,11 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.con_int2),
                 )
 
-            if COMPONENT_STATE.value.current_step.value == Marker.age_dis1.value:
+            if COMPONENT_STATE.value.current_step_between(Marker.sho_mya1, Marker.con_int1):
                 with rv.Row(class_="no-padding"):
                     with rv.Col():
                         LayerToggle(viewer=viewers["student_hist"],
+                                    layers=["Class Summaries", "My Summary"],
                                     names={"Class Summaries": "Class Ages",
                                            "My Summary": "My Age"})
                     with rv.Col():
