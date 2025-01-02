@@ -678,7 +678,9 @@ def Page():
             if COMPONENT_STATE.value.current_step.value == Marker.age_dis1.value:
                 with rv.Row(class_="no-padding"):
                     with rv.Col():
-                        LayerToggle(viewer=viewers["student_hist"])
+                        LayerToggle(viewer=viewers["student_hist"],
+                                    names={"Class Summaries": "Class Ages",
+                                           "My Summary": "My Age"})
                     with rv.Col():
                         ViewerLayout(viewer=viewers["student_hist"])
             else:
