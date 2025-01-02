@@ -846,10 +846,10 @@
             color="accent"
             elevation="2"
             @click="() => {
-              validateLightSpeed(['speed_light']) ? set_step(step + 1) : null;
               if (validateLightSpeed(['speed_light'])) {
                 set_student_c(parseAnswer(['speed_light']));
                 storeStudentVel(parseAnswer(['speed_light']), [lambda_obs, lambda_rest]);
+                set_step(step + 1);
               }
           }"
         >
@@ -937,14 +937,13 @@ export default {
     },
 
     removeMathJax(containers) {
-      // containers.forEach(container => container.querySelectorAll("mjx-container").forEach(el => container.remove(el)));
+      containers.forEach(container => container.querySelectorAll("mjx-container").forEach(el => container.remove(el)));
       MathJax.typesetClear(containers);
     },
 
     refreshMathJax(containers) {
       const containersToReset = containers.filter(this.containsMathJax);
       this.removeMathJax(containersToReset);
-      this.$forceUpdate();
       this.$nextTick(() => MathJax.typesetPromise(containersToReset));
     },
 
@@ -984,12 +983,6 @@ export default {
       const isInteractStep = this.interact_steps_5.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
       this.set_max_step_completed_5(Math.max(this.max_step_completed_5, newCompleted));
-      console.log(newStep, oldStep);
-      if (newStep === 5) {
-        console.log(this.refreshMathJax);
-        console.log(this.$refs.last_step);
-        setTimeout(() => this.refreshMathJax([this.$refs.last_step.$el]), 200);
-      }
     }
   }
 };
