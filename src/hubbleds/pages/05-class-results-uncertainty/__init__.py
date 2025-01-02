@@ -640,13 +640,9 @@ def Page():
     if COMPONENT_STATE.value.current_step_between(Marker.age_dis1, Marker.con_int3):
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
-                with rv.Row():
-                    with rv.Col():
-                        if COMPONENT_STATE.value.current_step.value == Marker.age_dis1.value:
-                            LayerToggle(viewer=viewers["student_hist"])
-
-                    with rv.Col():
-                        if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
+                if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
+                    with rv.Row():
+                        with rv.Col():
                             StatisticsSelector(
                                 viewers=[viewers["student_hist"]],
                                 glue_data=[class_summary_data],
@@ -654,14 +650,14 @@ def Page():
                                 transform=round,
                             )
 
-                    with rv.Col():
-                        if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
-                            PercentageSelector(
-                                viewers=[viewers["student_hist"]],
-                                glue_data=[class_summary_data],
-                                units=["Gyr"],
-                                on_selected_changed=_on_percentage_selected_changed
-                            )
+                        with rv.Col():
+                            if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
+                                PercentageSelector(
+                                    viewers=[viewers["student_hist"]],
+                                    glue_data=[class_summary_data],
+                                    units=["Gyr"],
+                                    on_selected_changed=_on_percentage_selected_changed
+                                )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
@@ -700,8 +696,16 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.con_int2),
                 )
 
-            with rv.Col():
-                ViewerLayout(viewer=viewers["student_hist"])
+            if COMPONENT_STATE.value.current_step.value == Marker.age_dis1.value:
+                with rv.Row(class_="no-padding"):
+                    with rv.Col():
+                        LayerToggle(viewer=viewers["student_hist"])
+                    with rv.Col():
+                        ViewerLayout(viewer=viewers["student_hist"])
+            else:
+                with rv.Col():
+                    ViewerLayout(viewer=viewers["student_hist"])
+                
 
 
     ScaffoldAlert(
