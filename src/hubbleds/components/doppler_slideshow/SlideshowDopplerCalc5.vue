@@ -50,8 +50,9 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
+            >
               <p>
                 Great! Now we'll continue the velocity calculation process in the sequence of this pop-up window to give
                 ourselves some more space to work.
@@ -161,7 +162,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <v-card
@@ -276,7 +277,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <v-card
@@ -394,7 +395,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <v-card
@@ -521,7 +522,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <p>
@@ -655,11 +656,12 @@
 
         <v-window-item :value="5"
                        class="no-transition"
+                       ref="last_step"
         >
           <v-lazy>
             <v-card-text
                 class="pt-8"
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
             >
               <v-card
                   class="past_block pa-3"
@@ -931,19 +933,19 @@ export default {
         this.$nextTick(() => {
           this.refreshMathJax(entries.map(entry => entry.target));
         });
-        this.refreshMathJax(entries.map(entry => entry.target));
       }
     },
 
     removeMathJax(containers) {
-      containers.forEach(container => container.querySelectorAll("mjx-container").forEach(el => container.remove(el)));
+      // containers.forEach(container => container.querySelectorAll("mjx-container").forEach(el => container.remove(el)));
       MathJax.typesetClear(containers);
     },
 
     refreshMathJax(containers) {
       const containersToReset = containers.filter(this.containsMathJax);
       this.removeMathJax(containersToReset);
-      MathJax.typesetPromise(containersToReset);
+      this.$forceUpdate();
+      this.$nextTick(() => MathJax.typesetPromise(containersToReset));
     },
 
     containsMathJax(container) {
@@ -982,6 +984,12 @@ export default {
       const isInteractStep = this.interact_steps_5.includes(newStep);
       const newCompleted = isInteractStep ? newStep - 1 : newStep;
       this.set_max_step_completed_5(Math.max(this.max_step_completed_5, newCompleted));
+      console.log(newStep, oldStep);
+      if (newStep === 5) {
+        console.log(this.refreshMathJax);
+        console.log(this.$refs.last_step);
+        setTimeout(() => this.refreshMathJax([this.$refs.last_step.$el]), 200);
+      }
     }
   }
 };
