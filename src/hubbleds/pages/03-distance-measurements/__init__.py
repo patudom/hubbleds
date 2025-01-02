@@ -323,8 +323,8 @@ def Page():
     with solara.Row():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
-        # with solara.Column():
-        #     solara.Button(label="Shortcut: Fill in distance data & Go to Stage 4", on_click=_fill_data_points)
+        with solara.Column():
+            solara.Button(label="Shortcut: Fill in distance data & Jump to Stage 4", on_click=_fill_data_points, classes=["demo-button"])
     # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
@@ -334,7 +334,7 @@ def Page():
         else:
             LOCAL_API.put_measurements(GLOBAL_STATE, LOCAL_STATE)
             
-    def _update_angular_size(update_example: bool, galaxy, angular_size, count, meas_num = 'first'):
+    def _update_angular_size(update_example: bool, galaxy, angular_size, count, meas_num = 'first', brightness = 1.0):
         # if bool(galaxy) and angular_size is not None:
         arcsec_value = int(angular_size.to(u.arcsec).value)
         if update_example:
@@ -345,7 +345,8 @@ def Page():
                 measurement.set(
                     measurement.value.model_copy(
                         update={
-                            "ang_size_value": arcsec_value
+                            "ang_size_value": arcsec_value,
+                            "brightness": brightness
                             }
                         )
                 )
@@ -361,7 +362,8 @@ def Page():
                 measurement.set(
                     measurement.value.model_copy(
                         update={
-                            "ang_size_value": arcsec_value
+                            "ang_size_value": arcsec_value,
+                            "brightness": brightness
                             }
                         )
                 )
@@ -416,6 +418,7 @@ def Page():
     ang_size_dotplot_range = solara.use_reactive([])
     dist_dotplot_range = solara.use_reactive([])
     fill_galaxy_pressed = solara.use_reactive(COMPONENT_STATE.value.distances_total >= 5)
+    current_brightness = solara.use_reactive(1.0)
     
     @solara.lab.computed
     def sync_dotplot_axes():
@@ -563,7 +566,7 @@ def Page():
                 """
                 data = current_data.value
                 count = Ref(COMPONENT_STATE.fields.example_angular_sizes_total) if on_example_galaxy_marker.value else Ref(COMPONENT_STATE.fields.angular_sizes_total)
-                _update_angular_size(on_example_galaxy_marker.value, current_galaxy.value, angle, count, example_galaxy_measurement_number.value)
+                _update_angular_size(on_example_galaxy_marker.value, current_galaxy.value, angle, count, example_galaxy_measurement_number.value, brightness = current_brightness.value)
                 put_measurements(samples=on_example_galaxy_marker.value)
                 if on_example_galaxy_marker.value:
                     value = int(angle.to(u.arcsec).value)
@@ -608,6 +611,11 @@ def Page():
             def _get_ruler_clicks_cb(count):
                 ruler_click_count = Ref(COMPONENT_STATE.fields.ruler_click_count)
                 ruler_click_count.set(count)
+            
+            def brightness_callback(brightness):
+                logger.info(f'Brightness: {brightness}')
+                current_brightness.set(brightness / 100)
+                
 
             DistanceToolComponent(
                 galaxy=current_galaxy.value,
@@ -616,7 +624,7 @@ def Page():
                 ruler_count_callback=_get_ruler_clicks_cb,
                 bad_measurement_callback=_bad_measurement_cb,
                 use_guard=True,
-                brightness_callback=lambda b: logger.info(f'Update Brightness: {b}'),
+                brightness_callback=brightness_callback,
                 reset_canvas=reset_canvas
             )
             
@@ -720,8 +728,8 @@ def Page():
                     "bad_angsize": False
                 }
             )
-            # if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
-            #     solara.Button(label="Shortcut: Fill Angular Size Measurements", on_click=_fill_thetas)
+            if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
+                solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
                 event_next_callback=lambda _: router.push("04-explore-data"),
@@ -756,7 +764,7 @@ def Page():
                     fill_galaxy_pressed.set(True)
 
                 if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
-                    solara.Button("Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances())
+                    solara.Button("Demo Shortcut: Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances() , classes=["demo-button"])
 
 
                 common_headers = [
@@ -764,7 +772,7 @@ def Page():
                         "text": "Galaxy Name",
                         "align": "start",
                         "sortable": False,
-                        "value": "galaxy_id"
+                        "value": "name"
                     },
                     { "text": "&theta; (arcsec)", "value": "ang_size_value" },
                     { "text": "Distance (Mpc)", "value": "est_dist_value" },

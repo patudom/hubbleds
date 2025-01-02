@@ -20,8 +20,11 @@ def SpectrumViewer(
     spectrum_click_enabled: bool = False,
     show_obs_wave_line: bool = True,
     on_obs_wave_measured: Callable = None,
-    on_obs_wave_tool_clicked: Callable = lambda: None,
+    on_rest_wave_tool_clicked: Callable = lambda: None,
     on_zoom_tool_clicked: Callable = lambda: None,
+    on_zoom_tool_toggled: Callable = lambda: None,
+    on_zoom: Callable = lambda: None,
+    on_reset_tool_clicked: Callable = lambda: None,
     marker_position: Optional[solara.Reactive[float]] = None,
     on_set_marker_position: Callable = lambda x: None,
     spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
@@ -61,8 +64,8 @@ def SpectrumViewer(
             max_spectrum_bounds.set([spec["wave"].min(), spec["wave"].max()])
     
 
-    def _obs_wave_tool_toggled():
-        on_obs_wave_tool_clicked()
+    def _rest_wave_tool_toggled():
+        on_rest_wave_tool_clicked()
 
 
 
@@ -87,7 +90,7 @@ def SpectrumViewer(
         except:
             x_bounds.set([])
             y_bounds.set([])
-        
+
         if "relayout_data" in event:
             if "xaxis.range[0]" in event["relayout_data"] and "xaxis.range[1]" in event["relayout_data"]:
                 if spectrum_bounds is not None:
@@ -95,6 +98,7 @@ def SpectrumViewer(
                         event["relayout_data"]["xaxis.range[0]"],
                         event["relayout_data"]["xaxis.range[1]"],
                     ])
+                on_zoom()
 
     def _on_reset_button_clicked(*args, **kwargs):
         x_bounds.set([])
@@ -107,19 +111,24 @@ def SpectrumViewer(
                 ])
         except Exception as e:
             print(e)
+
+        on_reset_tool_clicked()
     
     solara.use_effect(_on_reset_button_clicked, dependencies=[galaxy_data])
 
     def _spectrum_clicked(**kwargs):
         if spectrum_click_enabled:
             vertical_line_visible.set(True)
-            on_obs_wave_measured(round(kwargs["points"]["xs"][0]))
+            on_obs_wave_measured(kwargs["points"]["xs"][0])
         if marker_position is not None:
             # vertical_line_visible.set(False)
             value = kwargs["points"]["xs"][0]
             marker_position.set(value)
             on_set_marker_position(value)
-            
+
+    def _zoom_button_clicked():
+        on_zoom_tool_clicked()
+        on_zoom_tool_toggled()  
 
     with rv.Card():
         with rv.Toolbar(class_="toolbar", dense=True):
@@ -127,6 +136,13 @@ def SpectrumViewer(
                 solara.Text("SPECTRUM VIEWER")
 
             rv.Spacer()
+
+            solara.IconButton(
+                flat=True,
+                tile=True,
+                icon_name="mdi-cached",
+                on_click=_on_reset_button_clicked,
+            )
 
             with rv.BtnToggle(
                 v_model=toggle_group_state.value,
@@ -139,22 +155,13 @@ def SpectrumViewer(
 
                 solara.IconButton(
                     icon_name="mdi-select-search",
-                    on_click=on_zoom_tool_clicked,
+                    on_click=_zoom_button_clicked,
                 )
 
                 solara.IconButton(
                     icon_name="mdi-lambda",
-                    on_click=_obs_wave_tool_toggled,
+                    on_click=_rest_wave_tool_toggled,
                 )
-
-            rv.Divider(vertical=True)
-
-            solara.IconButton(
-                flat=True,
-                tile=True,
-                icon_name="mdi-cached",
-                on_click=_on_reset_button_clicked,
-            )
 
         if spec_data_task.value is None:
             with rv.Sheet(
@@ -181,10 +188,11 @@ def SpectrumViewer(
                     # hover_data={"wave": False, "flux": False},
                     # line_shape="hvh", # step line plot
                     )
-        fig.update_traces(hovertemplate='Wavelength: %{x:0.1f} Å') #
+        fig.update_traces(hovertemplate='Wavelength: %{x:0.0f} Å') #
         fig.update_layout(
             hoverlabel=dict(
                 font_size=16,
+                bgcolor="white"
             ),
         )
 
@@ -260,21 +268,31 @@ def SpectrumViewer(
 
         fig.add_shape(
             editable=False,
-            x0=galaxy_data.redshift_rest_wave_value - 5,
-            x1=galaxy_data.redshift_rest_wave_value + 5,
-            y0=0.85,
-            y1=0.9,
-            xref="x",
+            x0=galaxy_data.redshift_rest_wave_value - 1.5,
+            x1=galaxy_data.redshift_rest_wave_value + 1.5,
+            y0=0.82,
+            y1=0.99,
+            yref="paper",
+            # xref="x",
             line_color="red",
             fillcolor="red",
             ysizemode="scaled",
+        )
+
+        fig.add_annotation(
+            x=galaxy_data.redshift_rest_wave_value + 7,
+            y= 0.99,
             yref="paper",
-            label={
-                "text": f"{galaxy_data.element} (observed)",
-                "textposition": "top center",
-                "yanchor": "bottom",
-            },
-            # visible=
+            text=f"{galaxy_data.element} (observed)",
+            showarrow=False,
+            font=dict(
+                family="Arial, sans-serif",
+                size=14,
+                color="red",
+                weight="bold"
+            ),
+            xanchor="left",
+            yanchor="top",
         )
 
         fig.add_shape(
@@ -288,12 +306,27 @@ def SpectrumViewer(
             line_color="black",
             ysizemode="scaled",
             yref="paper",
-            line=dict(dash="dot"),
-            label={
-                "text": f"{galaxy_data.element} (rest)",
-                "textposition": "top center",
-                "yanchor": "bottom",
-            },
+            line=dict(
+                dash="dot",
+                width=4
+            ),
+            visible=1 in toggle_group_state.value,
+        )
+
+        fig.add_annotation(
+            x=galaxy_data.rest_wave_value - 7,
+            y= 0.99,
+            yref="paper",
+            text=f"{galaxy_data.element} (rest)",
+            showarrow=False,
+            font=dict(
+                family="Arial, sans-serif",
+                size=14,
+                color="black",
+                weight="bold"
+            ),
+            xanchor="right",
+            yanchor="top",
             visible=1 in toggle_group_state.value,
         )
 
@@ -348,6 +381,7 @@ def SpectrumViewer(
             dependencies=dependencies,
             config={
                 "displayModeBar": False,
+                "showTips": False 
             },
         )
 

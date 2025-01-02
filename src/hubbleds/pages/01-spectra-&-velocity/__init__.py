@@ -258,7 +258,7 @@ def Page():
                                                    galaxy=measurement.galaxy))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
-    def _fill_stage1_go_stage3():
+    def _fill_stage1_go_stage2():
         dummy_measurements = LOCAL_API.get_dummy_data()
         measurements = []
         for measurement in dummy_measurements:
@@ -267,7 +267,7 @@ def Page():
                                                    galaxy=measurement.galaxy,
                                                    velocity_value=measurement.velocity_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        router.push("03-distance-measurements")
+        router.push("02-distance-introduction")
 
     def _select_random_galaxies():
         need = 5 - len(LOCAL_STATE.value.measurements)
@@ -508,10 +508,8 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
         with solara.Column():
-            solara.Button(label="Fill default vel & dist measurements", on_click=_fill_galaxies)
-            solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies)
-
-    # WWT Selection Tool Row
+            solara.Button(label="Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_stage1_go_stage2, classes=["demo-button"])
+            solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies, classes=["demo-button"])
 
     with rv.Row():
         with rv.Col(cols=12, lg=4):
@@ -706,7 +704,7 @@ def Page():
                     [Marker.dop_cal4, Marker.dop_cal5]
                 ),
                 state_view={
-                    "lambda_obs": COMPONENT_STATE.value.obs_wave,
+                    "lambda_obs": round(COMPONENT_STATE.value.obs_wave),
                     "lambda_rest": (
                         selected_example_measurement.value.rest_wave_value
                         if selected_example_measurement.value is not None
@@ -772,7 +770,7 @@ def Page():
                     titles=COMPONENT_STATE.value.doppler_state.titles,
                     step=COMPONENT_STATE.value.doppler_state.step,
                     length=COMPONENT_STATE.value.doppler_state.length,
-                    lambda_obs=COMPONENT_STATE.value.obs_wave,
+                    lambda_obs=round(COMPONENT_STATE.value.obs_wave),
                     lambda_rest=(
                         selected_example_measurement.value.rest_wave_value
                         if selected_example_measurement.value is not None
@@ -834,8 +832,8 @@ def Page():
                 },
                 speech=speech.value,
             )
-            # if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
-            #     solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
+            if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
+                solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none;", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -1197,8 +1195,7 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.res_wav1),
                     state_view={
                         "selected_example_galaxy": selected_example_galaxy_data,
-                        "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
-                        "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
+                        "lambda_on": COMPONENT_STATE.value.rest_wave_tool_activated,
                     },
                     speech=speech.value,
                 )
@@ -1219,7 +1216,8 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav2),
                     state_view={
                         "selected_example_galaxy": selected_example_galaxy_data,
-                        "zoom_tool_activate": COMPONENT_STATE.value.zoom_tool_activated,
+                        "zoom_tool_activated": COMPONENT_STATE.value.zoom_tool_activated,
+                        "zoom_tool_active": COMPONENT_STATE.value.zoom_tool_active,
                     },
                     speech=speech.value,
                 )
@@ -1316,18 +1314,21 @@ def Page():
                                 example_measurement_index
                             ]
                         )
+
+                        obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                        obs_wave.set(value)
                         
                         if example_measurement.value.velocity_value is None:
                             example_measurement.set(
                                 example_measurement.value.model_copy(
-                                    update={"obs_wave_value": value}
+                                    update={"obs_wave_value": round(value)}
                                 )
                             )
                         else:
                             velocity = velocity_from_wavelengths(value, example_measurement.value.rest_wave_value)
                             example_measurement.set(
                                 example_measurement.value.model_copy(
-                                    update={"obs_wave_value": value, "velocity_value": velocity}
+                                    update={"obs_wave_value": round(value), "velocity_value": velocity}
                                 )
                             )
                         example_measurements[example_measurement_index] = example_measurement.value
@@ -1344,11 +1345,14 @@ def Page():
                             sync_velocity_line.set(velocity)
 
                     obs_wave_tool_used = Ref(COMPONENT_STATE.fields.obs_wave_tool_used)
-                    obs_wave_tool_activated = Ref(
-                        COMPONENT_STATE.fields.obs_wave_tool_activated
+                    rest_wave_tool_activated = Ref(
+                        COMPONENT_STATE.fields.rest_wave_tool_activated
                     )
                     zoom_tool_activated = Ref(
                         COMPONENT_STATE.fields.zoom_tool_activated
+                    )
+                    zoom_tool_active = Ref(
+                        COMPONENT_STATE.fields.zoom_tool_active
                     )
                     
                     @computed
@@ -1362,6 +1366,13 @@ def Page():
                                 return meas[0].obs_wave_value
                         return COMPONENT_STATE.value.obs_wave
 
+
+                    def _on_zoom():
+                        zoom_tool_activated.set(True)
+                        zoom_tool_active.set(True)
+
+                    def _on_reset():
+                        zoom_tool_active.set(False)
                     
                     SpectrumViewer(
                         galaxy_data=(
@@ -1377,10 +1388,11 @@ def Page():
                         or COMPONENT_STATE.value.current_step == Marker.rem_vel1
                         ),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
-                        on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(
+                        on_rest_wave_tool_clicked=lambda: rest_wave_tool_activated.set(
                             True
                         ),
-                        on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
+                        on_zoom=_on_zoom,
+                        on_reset_tool_clicked=_on_reset,
                         marker_position=sync_wavelength_line if show_synced_lines.value else None,
                         spectrum_bounds = spectrum_bounds, # type: ignore
                         max_spectrum_bounds=max_spectrum_bounds,
@@ -1408,6 +1420,10 @@ def Page():
                         num_bad_velocities()
 
                         if not is_bad:
+
+                            obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                            obs_wave.set(value)
+
                             measurement = Ref(
                                 LOCAL_STATE.fields.measurements[measurement_index]
                             )
@@ -1415,7 +1431,7 @@ def Page():
                             if measurement.value.velocity_value is None:
                                 measurement.set(
                                     measurement.value.model_copy(
-                                        update={"obs_wave_value": value}
+                                        update={"obs_wave_value": round(value)}
                                     )
                                 )
                                 
@@ -1423,12 +1439,9 @@ def Page():
                                 velocity = velocity_from_wavelengths(value, measurement.value.rest_wave_value)
                                 measurement.set(
                                     measurement.value.model_copy(
-                                        update={"obs_wave_value": value, "velocity_value": velocity}
+                                        update={"obs_wave_value": round(value), "velocity_value": velocity}
                                     )
                                 )
-
-                            obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
-                            obs_wave.set(value)
                             
                             set_obs_wave_total()
                             
