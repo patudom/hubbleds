@@ -9,10 +9,13 @@
       :can-advance="can_advance"
       @next="() =>
       {
-        if (state_view.fill_values) {
-          next_callback();
+        // If answers have already been entered, bypass the validator
+        if (state_view.fill_values) { 
+          on_validate_transition(true); // This automatically advances marker to dop_cal5 and opens the dialog
           return;
         }
+
+        // For first time through, don't allow advancing until answer has been validated
         const expectedAnswers = [state_view.lambda_obs, state_view.lambda_rest];
         const isValidated = !!validateAnswersJS(['lam_obs', 'lam_rest'], expectedAnswers);
         on_validate_transition(isValidated);
@@ -197,7 +200,6 @@ export default {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
         console.log(id, index, value, expectedAnswers[index], value && value === expectedAnswers[index]);
-        // this.failed_validation_4_callback((!(value && value === expectedAnswers[index])));
         return value && value === expectedAnswers[index];
       });
     }

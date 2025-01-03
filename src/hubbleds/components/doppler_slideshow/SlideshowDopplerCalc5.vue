@@ -3,19 +3,6 @@
       v-model="dialog"
       max-width="800px"
   >
-    <template v-slot:activator="{ on, attrs }">
-      <v-btn
-        v-if="show_button"
-        v-bind="attrs"
-        v-on="on"
-        block
-        color="secondary"
-        elevation="2"
-        @click.stop="() => { opened = true; dialog_opened_callback() }"
-      >
-        View Doppler Calculation
-      </v-btn>
-    </template>
     <v-card
         class="mx-auto"
     >
@@ -35,11 +22,14 @@
           <v-btn
               icon
               @click="() => { 
-                set_dialog(false); 
+                set_dialog(false);
+                if (step < length-1) 
+                  { 
+                    back_callback(); // if user closes dialog, this is equivalent to going back to dop_cal4
+                  }
                 if (step === length-1) 
                   { 
                     set_student_vel_calc(true);
-                    set_step(0);
                     next_callback();
                   }
               }"
@@ -810,10 +800,19 @@
 
       <v-card-actions>
         <v-btn
-            :disabled="step === 0"
             class="black--text"
             color="accent"
-            @click="set_step(step - 1)"
+            @click="() => { 
+                if (step === 0) 
+                  { 
+                    set_dialog(false);
+                    back_callback(); // If on first step, send back to dop_cal4
+                  }
+                else 
+                  { 
+                    set_step(step - 1)
+                  }
+              }"
         >
           Back
         </v-btn>
@@ -834,7 +833,7 @@
                 :disabled="n > max_step_completed_5 + 2"
                 :input-value="active"
                 icon
-                @click="toggle"
+                @click="toggle; set_step(n-1)"
             >
               <v-icon>mdi-record</v-icon>
             </v-btn>
@@ -875,14 +874,13 @@
             @click="() => {
               set_dialog(false);
               set_student_vel_calc(true);
-              set_step(0);
               next_callback();
             }"
         >
           Done
         </v-btn>
         <v-btn
-            class="black--text"
+            class="demo-button"
             color="error"
             depressed
             @click="() => {
@@ -890,7 +888,6 @@
               set_student_c(300000);
               storeStudentVel(300000, [lambda_obs, lambda_rest]);
               set_student_vel_calc(true);
-              set_step(0);
               next_callback();
             }"
         >
