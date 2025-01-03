@@ -22,11 +22,14 @@
           <v-btn
               icon
               @click="() => { 
-                set_dialog(false); 
+                set_dialog(false);
+                if (step < length-1) 
+                  { 
+                    back_callback(); // if user closes dialog, this is equivalent to going back to dop_cal4
+                  }
                 if (step === length-1) 
                   { 
                     set_student_vel_calc(true);
-                    set_step(0);
                     next_callback();
                   }
               }"
@@ -529,8 +532,9 @@
                 Now enter the <b>speed of light</b> in <b>km/s</b> in the empty box below.
               </p>
               <v-card
-                  class="JaxEquation pa-3"
-                  color="info"
+                v-if="student_c==0"
+                class="JaxEquation pa-3"
+                color="info"
               >
                 $$ v = c \times \textcolor{black}{\colorbox{#FFAB91}{
                 {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
@@ -553,6 +557,23 @@
                   zeroes. The speed of light is highlighted in yellow below.
                 </v-alert>
               </v-card>
+              <v-card
+                v-else
+                class="JaxEquation pa-3"
+                color="info"
+              >
+                $$ v = c \times \textcolor{black}{\colorbox{#FFAB91}{
+                {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
+                $$ v = \textcolor{black}{\colorbox{#FFAB91}{ {{ student_c.toLocaleString() }} }}\text{ km/s} \times \textcolor{black}{\colorbox{#FFAB91}{
+                {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
+                <v-divider role="presentation"></v-divider>
+                <div
+                    class="font-weight-medium mt-3"
+                >
+                  Click <b>CALCULATE</b> to multiply through and obtain the speed of this galaxy.
+                </div>              
+              </v-card>
+
               <v-divider role="presentation"></v-divider>
               <v-card
                   class="legend mt-8"
@@ -798,10 +819,19 @@
 
       <v-card-actions>
         <v-btn
-            :disabled="step === 0"
             class="black--text"
             color="accent"
-            @click="set_step(step - 1)"
+            @click="() => { 
+                if (step === 0) 
+                  { 
+                    set_dialog(false);
+                    back_callback(); // If on first step, send back to dop_cal4
+                  }
+                else 
+                  { 
+                    set_step(step - 1)
+                  }
+              }"
         >
           Back
         </v-btn>
@@ -822,7 +852,7 @@
                 :disabled="n > max_step_completed_5 + 2"
                 :input-value="active"
                 icon
-                @click="toggle"
+                @click="toggle; set_step(n-1)"
             >
               <v-icon>mdi-record</v-icon>
             </v-btn>
@@ -863,14 +893,13 @@
             @click="() => {
               set_dialog(false);
               set_student_vel_calc(true);
-              set_step(0);
               next_callback();
             }"
         >
           Done
         </v-btn>
         <v-btn
-            class="black--text"
+            class="demo-button"
             color="error"
             depressed
             @click="() => {
@@ -878,7 +907,6 @@
               set_student_c(300000);
               storeStudentVel(300000, [lambda_obs, lambda_rest]);
               set_student_vel_calc(true);
-              set_step(0);
               next_callback();
             }"
         >
