@@ -420,7 +420,7 @@ def Page():
                 seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
             
             viewer_data = [
-                (gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "scatter"),
+                gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
                 seed
             ]
             # If the student has made a measurement, that is the 0th layer.
