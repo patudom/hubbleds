@@ -716,8 +716,8 @@ def Page():
                 )
 
             if COMPONENT_STATE.value.current_step_between(Marker.sho_mya1, Marker.con_int1):
-                with rv.Row(class_="no-padding"):
-                    with rv.Col():
+                with rv.Col():
+                    with rv.Row():
                         def _toggle_ignore(layer):
                             return layer.layer.label not in ("My Summary", "Class Summaries")
 
@@ -727,7 +727,7 @@ def Page():
                                            "My Summary": "My Age"},
                                     ignore_conditions=[_toggle_ignore])
 
-                    with rv.Col():
+                    with rv.Row():
                         ViewerLayout(viewer=viewers["student_hist"])
             else:
                 with rv.Col():
