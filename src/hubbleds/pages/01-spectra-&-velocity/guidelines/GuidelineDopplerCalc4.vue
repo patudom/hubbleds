@@ -200,7 +200,7 @@ export default {
       return inputIDs.every((id, index) => {
         const value = this.parseAnswer(id);
         console.log(id, index, value, expectedAnswers[index], value && value === expectedAnswers[index]);
-        return value && value === expectedAnswers[index];
+        return value != null && value === expectedAnswers[index];
       });
     }
   },

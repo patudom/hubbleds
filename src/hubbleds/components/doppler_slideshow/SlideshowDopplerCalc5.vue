@@ -53,7 +53,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <p>
@@ -165,7 +165,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <v-card
@@ -280,7 +280,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <v-card
@@ -398,7 +398,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <v-card
@@ -525,7 +525,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <p>
@@ -659,11 +659,12 @@
 
         <v-window-item :value="5"
                        class="no-transition"
+                       ref="last_step"
         >
           <v-lazy>
             <v-card-text
                 class="pt-8"
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
             >
               <v-card
                   class="past_block pa-3"
@@ -857,10 +858,10 @@
             color="accent"
             elevation="2"
             @click="() => {
-              validateLightSpeed(['speed_light']) ? set_step(step + 1) : null;
               if (validateLightSpeed(['speed_light'])) {
                 set_student_c(parseAnswer(['speed_light']));
                 storeStudentVel(parseAnswer(['speed_light']), [lambda_obs, lambda_rest]);
+                set_step(step + 1);
               }
           }"
         >
@@ -937,12 +938,28 @@ mjx-mpadded {
 <script>
 export default {
   methods: {
-    typesetMathJax(entries, _observer, intersecting) {
+    mathJaxObserver(entries, _observer, intersecting) {
       if (intersecting) {
         this.$nextTick(() => {
-          MathJax.typesetPromise(entries.map(entry => entry.target));
+          this.refreshMathJax(entries.map(entry => entry.target));
         });
       }
+    },
+
+    removeMathJax(containers) {
+      containers.forEach(container => container.querySelectorAll("mjx-container").forEach(el => container.remove(el)));
+      MathJax.typesetClear(containers);
+    },
+
+    refreshMathJax(containers) {
+      const containersToReset = containers.filter(this.containsMathJax);
+      this.removeMathJax(containersToReset);
+      this.$nextTick(() => MathJax.typesetPromise(containersToReset));
+    },
+
+    containsMathJax(container) {
+      const mathJaxOpeningDelimiters = [ "$$", "\\(", "\\[" ];
+      return mathJaxOpeningDelimiters.some(delim => container.innerHTML.includes(delim));
     },
 
     getValue(inputID) {
