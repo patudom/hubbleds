@@ -532,8 +532,9 @@
                 Now enter the <b>speed of light</b> in <b>km/s</b> in the empty box below.
               </p>
               <v-card
-                  class="JaxEquation pa-3"
-                  color="info"
+                v-if="student_c==0"
+                class="JaxEquation pa-3"
+                color="info"
               >
                 $$ v = c \times \textcolor{black}{\colorbox{#FFAB91}{
                 {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
@@ -556,6 +557,23 @@
                   zeroes. The speed of light is highlighted in yellow below.
                 </v-alert>
               </v-card>
+              <v-card
+                v-else
+                class="JaxEquation pa-3"
+                color="info"
+              >
+                $$ v = c \times \textcolor{black}{\colorbox{#FFAB91}{
+                {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
+                $$ v = \textcolor{black}{\colorbox{#FFAB91}{ {{ student_c.toLocaleString() }} }}\text{ km/s} \times \textcolor{black}{\colorbox{#FFAB91}{
+                {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
+                <v-divider role="presentation"></v-divider>
+                <div
+                    class="font-weight-medium mt-3"
+                >
+                  Click <b>CALCULATE</b> to multiply through and obtain the speed of this galaxy.
+                </div>              
+              </v-card>
+
               <v-divider role="presentation"></v-divider>
               <v-card
                   class="legend mt-8"
