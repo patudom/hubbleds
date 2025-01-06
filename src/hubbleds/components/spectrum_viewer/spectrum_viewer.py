@@ -1,12 +1,14 @@
 from typing import Callable, Optional
 
-import plotly.express as px
+import plotly.graph_objects as go
 import reacton.ipyvuetify as rv
 import solara
 from hubbleds.state import GalaxyData
 from pandas import DataFrame
 from hubbleds.components.spectrum_viewer.plotly_figure import FigurePlotly
 from cosmicds.logger import setup_logger
+from hubbleds.viewer_marker_colors import GENERIC_COLOR, H_ALPHA_COLOR, MY_DATA_COLOR, LIGHT_GENERIC_COLOR
+from hubbleds.utils import PLOTLY_MARGINS
 
 from glue_plotly.common import DEFAULT_FONT
 
@@ -30,6 +32,7 @@ def SpectrumViewer(
     spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
     on_spectrum_bounds_changed: Callable = lambda x: None,
     max_spectrum_bounds: Optional[solara.Reactive[list[float]]] = None,
+    spectrum_color: str = GENERIC_COLOR,
 ):
     
     logger.info("Creating SpectrumViewer")
@@ -182,26 +185,24 @@ def SpectrumViewer(
             logger.info('galaxy_data is None')
             return
 
-        fig = px.line(spec_data_task.value, x="wave", y="flux", 
-                    #   template = "plotly_dark" if use_dark_effective else "plotly_white",)
-                    template = "plotly_white",
-                    # hover_data={"wave": False, "flux": False},
-                    # line_shape="hvh", # step line plot
-                    )
-        fig.update_traces(hovertemplate='Wavelength: %{x:0.0f} Å') #
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+                        x= spec_data_task.value["wave"], 
+                        y= spec_data_task.value["flux"],
+                        line=dict(
+                            color=spectrum_color,
+                            width=2,
+                        ),
+                      mode='lines', 
+                    ))
+         
         fig.update_layout(
-            hoverlabel=dict(
-                font_size=16,
-                bgcolor="white"
-            ),
-        )
-
-        
-        fig.update_layout(
+            plot_bgcolor="white",
             font_family=DEFAULT_FONT,
             title_font_family=DEFAULT_FONT,
-            margin=dict(l=0, r=10, t=10, b=0), 
+            margin=PLOTLY_MARGINS,
             yaxis=dict(
+                linecolor="black",
                 fixedrange=True,
                 title="Brightness",
                 showgrid=False,
@@ -209,33 +210,46 @@ def SpectrumViewer(
                 linewidth=1,
                 mirror=True,
                 title_font_family=DEFAULT_FONT, 
-                titlefont_size=20, 
-                tickfont_size=12
+                titlefont_size=16, 
+                tickfont_size=12,
+                ticks="outside",
+                ticklen=5,
+                tickwidth=1,
+                tickcolor="black",
                 ),
             xaxis=dict(
+                linecolor="black",
                 title="Wavelength (Angstroms)",
                 showgrid=False,
                 showline=True,
                 linewidth=1,
                 mirror=True,
                 title_font_family=DEFAULT_FONT, 
-                titlefont_size=20, 
+                titlefont_size=16, 
                 tickfont_size=12,
-                hoverformat=".1f",
+                hoverformat=".0f",
+                ticks="outside",
+                ticklen=5,
+                tickwidth=1,
+                tickcolor="black",
                 ticksuffix=" Å",
                 ),
             showlegend=False,
+            hoverlabel=dict(
+                font_size=16,
+                bgcolor="white",
+            ),
         )
 
+        # This is the line that appears when user first makes observed wavelength measurement
         fig.add_vline(
             x=obs_wave,
-            line_width=1,
-            line_color="red",
-            # annotation_text="1BASE",
-            # annotation_font_size=12,
-            # annotation_position="top right",
+            line_width=2,
+            line_color= MY_DATA_COLOR,
             visible=vertical_line_visible.value and obs_wave > 0.0 and spectrum_click_enabled,
         )
+
+        # Orange "Your Measurement" Marker Line & Label
         fig.add_shape(
             type='line',
             x0=obs_wave,
@@ -244,28 +258,36 @@ def SpectrumViewer(
             y1=0.2,
             xref="x",
             yref="paper",
-            line_color="red",
+            line_color= MY_DATA_COLOR,
             line_width=2,
-            fillcolor="red",
+            fillcolor= MY_DATA_COLOR,
             label={
                 "text": f"Your measurement",
-                "textposition": "top center",
-                "yanchor": "bottom",
+                "font": {
+                    "color": MY_DATA_COLOR,
+                    "family": "Arial, sans-serif",
+                    "size": 14, 
+                    "weight":"bold"
+                },
+                "textposition": "bottom right",
+                "xanchor": "left",
+                "yanchor": "top",
                 "textangle": 0,
-                "padding": 35,
             },
             visible=vertical_line_visible.value and obs_wave > 0.0  and not spectrum_click_enabled,
         )
         
+        # Light gray measurement line
         if (marker_position is not None) and (not spectrum_click_enabled):
             fig.add_vline(
                 x = marker_position.value,
                 line_width = 2,
-                line_color = "green",
+                line_color = LIGHT_GENERIC_COLOR,
                 visible = True,
             )
         
 
+        # Red Observed H-alpha Marker Line
         fig.add_shape(
             editable=False,
             x0=galaxy_data.redshift_rest_wave_value - 1.5,
@@ -274,11 +296,12 @@ def SpectrumViewer(
             y1=0.99,
             yref="paper",
             # xref="x",
-            line_color="red",
-            fillcolor="red",
+            line_color=H_ALPHA_COLOR,
+            fillcolor=H_ALPHA_COLOR,
             ysizemode="scaled",
         )
 
+        # Red Observed H-alpha Marker Label
         fig.add_annotation(
             x=galaxy_data.redshift_rest_wave_value + 7,
             y= 0.99,
@@ -288,13 +311,14 @@ def SpectrumViewer(
             font=dict(
                 family="Arial, sans-serif",
                 size=14,
-                color="red",
+                color=H_ALPHA_COLOR,
                 weight="bold"
             ),
             xanchor="left",
             yanchor="top",
         )
 
+        # Black Rest H-alpha Marker Line            
         fig.add_shape(
             editable=False,
             type="line",
@@ -313,6 +337,7 @@ def SpectrumViewer(
             visible=1 in toggle_group_state.value,
         )
 
+        # Black Rest H-alpha Marker Label
         fig.add_annotation(
             x=galaxy_data.rest_wave_value - 7,
             y= 0.99,
