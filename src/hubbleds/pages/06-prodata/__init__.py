@@ -27,6 +27,11 @@ from hubbleds.state import (
     get_free_response, 
     get_multiple_choice
 )
+from hubbleds.viewer_marker_colors import (
+    MY_CLASS_COLOR,
+    HUBBLE_1929_COLOR,
+    HST_KEY_COLOR
+)
 
 from ...utils import HST_KEY_AGE, models_to_glue_data, AGE_CONSTANT
 
@@ -155,7 +160,7 @@ def Page():
         if data not in viewer.state.layers_data:
             print('adding class data')
             data.style.markersize = 10
-            data.style.color = '#FF6D00'
+            data.style.color = MY_CLASS_COLOR
             viewer.add_data(data)
             viewer.state.x_att = data.id['est_dist_value']
             viewer.state.y_att = data.id['velocity_value']
@@ -168,7 +173,7 @@ def Page():
         if data not in viewer.state.layers_data:
             print('adding Hubble 1929')
             data.style.markersize = 10
-            data.style.color = '#D500F9'
+            data.style.color = HUBBLE_1929_COLOR
             viewer.add_data(data)
             viewer.state.x_att = data.id['Distance (Mpc)']
             viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
@@ -181,7 +186,7 @@ def Page():
         if data not in viewer.state.layers_data:
             print('adding HST key')
             data.style.markersize = 10
-            data.style.color = '#AEEA00'
+            data.style.color = HST_KEY_COLOR
             viewer.add_data(data)
             viewer.state.x_att = data.id['Distance (Mpc)']
             viewer.state.y_att = data.id['Velocity (km/s)']  

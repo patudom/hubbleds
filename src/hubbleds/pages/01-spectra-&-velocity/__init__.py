@@ -24,6 +24,7 @@ from hubbleds.components import (
     DotplotTutorialSlideshow,
 )
 from hubbleds.state import GalaxyData, StudentMeasurement
+from hubbleds.viewer_marker_colors import MY_DATA_COLOR, LIGHT_GENERIC_COLOR, MY_CLASS_COLOR
 
 # from solara.lab import Ref
 from solara.toestand import Ref
@@ -128,13 +129,13 @@ def Page():
                          **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
                             for k in example_seed_data[0].keys()}
                             )
-            first.style.color = "#C94456"
+            first.style.color = MY_CLASS_COLOR
             gjapp.data_collection.append(first)
             second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
                          **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
                             for k in example_seed_data[0].keys()}
                             )
-            second.style.color = "#4449C9"
+            second.style.color = MY_CLASS_COLOR
             gjapp.data_collection.append(second)
             
             link_seed_data(gjapp)
@@ -204,11 +205,11 @@ def Page():
                 LOCAL_STATE.value.example_measurements,
                 label=EXAMPLE_GALAXY_MEASUREMENTS,
             )
-            example_measurements_glue.style.color = "red"
+            example_measurements_glue.style.color = MY_DATA_COLOR
             create_example_subsets(gjapp, example_measurements_glue)
 
             use_this = add_or_update_data(example_measurements_glue)
-            use_this.style.color = "red"
+            use_this.style.color = MY_DATA_COLOR
 
             link_example_seed_and_measurements(gjapp)
         else:
@@ -425,7 +426,7 @@ def Page():
             ]
             # If the student has made a measurement, that is the 0th layer.
             layer0 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-            zorder = [5, 1]
+            zorder = [1,5]
             if ignore_full_meas_data:
                 ignore.append(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS])
             if show_which_meas == 'second': # ignore the first
@@ -477,12 +478,12 @@ def Page():
                 component_id=DB_VELOCITY_FIELD,
                 vertical_line_visible=show_synced_lines.value,  #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
                 line_marker_at=sync_velocity_line,
-                line_marker_color='green' if show_synced_lines.value else 'green',
+                line_marker_color=LIGHT_GENERIC_COLOR,
                 on_click_callback=_on_click_callback,
                 unit="km / s",
                 x_label="Velocity (km/s)",
-                y_label="Number",
-                zorder=zorder,
+                y_label="Count",
+                zorder=[1,5],
                 nbin=74,
                 x_bounds=dotplot_bounds,
                 reset_bounds=dotplot_reset_bounds,
@@ -1008,38 +1009,16 @@ def Page():
                                                     data=tut_viewer_data,
                                                     component_id=DB_VELOCITY_FIELD,
                                                     vertical_line_visible=False,
+                                                    line_marker_color=LIGHT_GENERIC_COLOR,
                                                     unit="km / s",
                                                     x_label="Velocity (km/s)",
-                                                    y_label="Number"
+                                                    y_label="Count"
                                                     ),
                                                     
                         event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
                             True
                         ),
                     )
-                    
-                # def create_dotplot_viewer():
-                #     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                #         viewer_data = [
-                #             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                #             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
-                #         ]
-                #     else:
-                #         viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
-                #     return DotplotViewer(gjapp,
-                #                          data=viewer_data,
-                #                          component_id=DB_VELOCITY_FIELD,
-                #                          vertical_line_visible=True, #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
-                #                          line_marker_at=sync_velocity_line,
-                #                          on_click_callback=lambda point: sync_velocity_line.set(point.xs[0]),
-                #                          unit="km / s",
-                #                          x_label="Velocity (km/s)",
-                #                          y_label="Number",
-                #                          zorder=[5,1],
-                #                          nbin=75,
-                #                          x_bounds = dotplot_bounds,
-                #                          reset_bounds = dotplot_reset_bounds.value
-                #                          )
                 
     # Dot Plot 1st measurement row
     if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement

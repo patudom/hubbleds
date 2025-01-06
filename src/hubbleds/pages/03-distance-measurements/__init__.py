@@ -15,7 +15,11 @@ from cosmicds.components import (
     )
 from cosmicds.logger import setup_logger
 from cosmicds.state import BaseState, BaseLocalState
-
+from hubbleds.viewer_marker_colors import (
+    MY_DATA_COLOR,
+    MY_CLASS_COLOR,
+    LIGHT_GENERIC_COLOR
+)
 
 from hubbleds.base_component_state import (
     transition_next,
@@ -194,13 +198,13 @@ def Page():
                          **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
                             for k in example_seed_data[0].keys()}
                             )
-            first.style.color = "#C94456"
+            first.style.color = MY_CLASS_COLOR
             gjapp.data_collection.append(first)
             second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
                          **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
                             for k in example_seed_data[0].keys()}
                             )
-            second.style.color = "#4449C9"
+            second.style.color = MY_CLASS_COLOR
             gjapp.data_collection.append(second)
             
             link_seed_data(gjapp)
@@ -304,11 +308,11 @@ def Page():
         if len(LOCAL_STATE.value.example_measurements) > 0:
             logger.info(f'has {len(LOCAL_STATE.value.example_measurements)} example measurements')
             example_measurements_glue = models_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
-            example_measurements_glue.style.color = "red"
+            example_measurements_glue.style.color = MY_DATA_COLOR
             create_example_subsets(gjapp, example_measurements_glue)
             
             use_this = add_or_update_data(example_measurements_glue)
-            use_this.style.color = "red"
+            use_this.style.color = MY_DATA_COLOR
 
             link_example_seed_and_measurements(gjapp)
         else:
@@ -966,10 +970,11 @@ def Page():
                                             component_id="est_dist_value",
                                             vertical_line_visible=show_dotplot_lines,
                                             line_marker_at=Ref(COMPONENT_STATE.fields.distance_line),
+                                            line_marker_color=LIGHT_GENERIC_COLOR,
                                             on_click_callback=set_angular_size_line,
                                             unit="Mpc",
                                             x_label="Distance (Mpc)",
-                                            y_label="Number",
+                                            y_label="Count",
                                             zorder=[5,1],
                                             x_bounds=dist_dotplot_range,
                                             hide_layers=ignore
@@ -984,10 +989,11 @@ def Page():
                                                 component_id="ang_size_value",
                                                 vertical_line_visible=show_dotplot_lines,
                                                 line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
+                                                line_marker_color=LIGHT_GENERIC_COLOR,
                                                 on_click_callback=set_distance_line,
                                                 unit="arcsec",
                                                 x_label="Angular Size (arcsec)",
-                                                y_label="Number",
+                                                y_label="Count",
                                                 zorder=[5,1],
                                                 x_bounds=ang_size_dotplot_range,
                                                 hide_layers=ignore
