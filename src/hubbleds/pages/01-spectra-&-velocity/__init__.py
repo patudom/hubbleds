@@ -24,7 +24,7 @@ from hubbleds.components import (
     DotplotTutorialSlideshow,
 )
 from hubbleds.state import GalaxyData, StudentMeasurement
-from hubbleds.viewer_marker_colors import MY_DATA_COLOR, LIGHT_GENERIC_COLOR, MY_CLASS_COLOR
+from hubbleds.viewer_marker_colors import MY_DATA_COLOR, MY_DATA_COLOR_NAME, LIGHT_GENERIC_COLOR, GENERIC_COLOR
 
 # from solara.lab import Ref
 from solara.toestand import Ref
@@ -129,13 +129,13 @@ def Page():
                          **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
                             for k in example_seed_data[0].keys()}
                             )
-            first.style.color = MY_CLASS_COLOR
+            first.style.color = GENERIC_COLOR
             gjapp.data_collection.append(first)
             second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
                          **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
                             for k in example_seed_data[0].keys()}
                             )
-            second.style.color = MY_CLASS_COLOR
+            second.style.color = GENERIC_COLOR
             gjapp.data_collection.append(second)
             
             link_seed_data(gjapp)
@@ -1031,6 +1031,9 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.int_dot1),
                     speech=speech.value,
+                    state_view={
+                        "color": MY_DATA_COLOR_NAME
+                    }
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineDotSequence01.vue",
@@ -1213,6 +1216,9 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
                     speech=speech.value,
+                    state_view={
+                        "color": MY_DATA_COLOR_NAME,
+                    },
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineDotSequence10.vue",

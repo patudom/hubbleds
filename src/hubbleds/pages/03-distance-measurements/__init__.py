@@ -17,7 +17,8 @@ from cosmicds.logger import setup_logger
 from cosmicds.state import BaseState, BaseLocalState
 from hubbleds.viewer_marker_colors import (
     MY_DATA_COLOR,
-    MY_CLASS_COLOR,
+    MY_DATA_COLOR_NAME,
+    GENERIC_COLOR,
     LIGHT_GENERIC_COLOR
 )
 
@@ -198,13 +199,13 @@ def Page():
                          **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
                             for k in example_seed_data[0].keys()}
                             )
-            first.style.color = MY_CLASS_COLOR
+            first.style.color = GENERIC_COLOR
             gjapp.data_collection.append(first)
             second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
                          **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
                             for k in example_seed_data[0].keys()}
                             )
-            second.style.color = MY_CLASS_COLOR
+            second.style.color = GENERIC_COLOR
             gjapp.data_collection.append(second)
             
             link_seed_data(gjapp)
@@ -861,6 +862,9 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq1),
+                state_view={
+                    "color": MY_DATA_COLOR_NAME,
+                },                
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq2.vue",
@@ -902,7 +906,7 @@ def Page():
             #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
             #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
             #     event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
-            #     state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_consensus_2'), 'score_tag': 'ang_meas_consensus_2'}
+            #     state_view={'color': MY_DATA_COLOR_NAME, 'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_consensus_2'), 'score_tag': 'ang_meas_consensus_2'}
             # )
             # Not doing the 2nd measurement #dot_seq7 is transition to doing all galaxies. This is not dot_seq5
             # ScaffoldAlert(

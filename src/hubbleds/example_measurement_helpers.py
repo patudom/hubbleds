@@ -11,7 +11,7 @@ from .data_management import (
 )
 from .viewer_marker_colors import (
     MY_DATA_COLOR,
-    MY_CLASS_COLOR,
+    GENERIC_COLOR,
 )
 
 from .utils import _add_link
@@ -24,11 +24,11 @@ def create_measurement_subsets(gjapp: JupyterApplication, data: Data):
         current_subsets = data.subsets
         if 'first measurement' not in (s.label for s in current_subsets):
             first = data.new_subset(data.id['measurement_number'] == 'first', label='first measurement')
-            first.style.color = MY_CLASS_COLOR
+            first.style.color = GENERIC_COLOR
             first.style.alpha = 1.0
         if 'second measurement' not in (s.label for s in current_subsets):
             second = data.new_subset(data.id['measurement_number'] == 'second', label='second measurement')
-            second.style.color = MY_CLASS_COLOR
+            second.style.color = GENERIC_COLOR
             second.style.alpha = 1.0
 
 
