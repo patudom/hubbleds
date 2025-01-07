@@ -8,7 +8,7 @@
   >
     <div>
       <p>
-        Your measured wavelength is marked in orange-red on the spectrum viewer.
+        Your measured wavelength is marked in {{ state_view.color }} on the spectrum viewer.
       </p>
     </div>
   </scaffold-alert>

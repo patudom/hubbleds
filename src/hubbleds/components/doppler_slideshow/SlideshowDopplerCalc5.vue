@@ -900,7 +900,6 @@
         </v-btn>
         <v-btn
             class="demo-button"
-            color="error"
             depressed
             @click="() => {
               set_dialog(false);

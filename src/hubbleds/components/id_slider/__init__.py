@@ -4,6 +4,8 @@ from numpy import where
 import solara
 from solara.alias import rv
 
+from hubbleds.viewer_marker_colors import MY_DATA_COLOR, MY_CLASS_COLOR
+
 # NB: I didn't use any of the built-in Solara sliders since none of them really fit our
 # use case. Since we often have duplicate values, the only slider that would really work
 # is SliderValue, but that doesn't allow all of the customization options that we need.
@@ -18,8 +20,8 @@ def IdSlider(gjapp,
              id_component,
              value_component,
              on_id,
-             default_color="#3A86FF",
-             highlight_color="#FB5607",
+             default_color=MY_CLASS_COLOR,
+             highlight_color=MY_DATA_COLOR,
              highlight_ids=None,
 ):
 

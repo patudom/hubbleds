@@ -8,8 +8,7 @@
   >
     <div>
       <p>
-        Notice that the Dot Plot has be set to show the velocity range 
-          that corresponds to the Spectrum Viewer's wavelength range.
+        Notice that the Dot Plot has been set to show the velocity range that corresponds to the Spectrum Viewer's wavelength range.
       </p>
       <p>
         As seen in the Dot Plot Tutorial, because we are looking 
