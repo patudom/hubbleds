@@ -23,7 +23,7 @@
         This dot plot shows the distribution of distances measured.
       </p> 
       <p>
-        The red-orange dot shows your measurement. 
+        The {{ state_view.color }} dot shows your measurement. 
       </p>
     </div>
   </scaffold-alert>

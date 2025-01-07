@@ -26,7 +26,16 @@ from hubbleds.viewers.hubble_histogram_viewer import HubbleHistogramView
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.viewer_marker_colors import MY_CLASS_COLOR, MY_DATA_COLOR, OTHER_CLASSES_COLOR, OTHER_STUDENTS_COLOR, GENERIC_COLOR
+from hubbleds.viewer_marker_colors import (
+    MY_DATA_COLOR,
+    MY_DATA_COLOR_NAME,
+    MY_CLASS_COLOR,
+    MY_CLASS_COLOR_NAME,
+    OTHER_CLASSES_COLOR,
+    OTHER_CLASSES_COLOR_NAME,
+    OTHER_STUDENTS_COLOR,
+    GENERIC_COLOR
+)
 
 from cosmicds.logger import setup_logger
 
@@ -435,7 +444,9 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_res1),
                     state_view={
-                        "class_data_size": COMPONENT_STATE.value.class_data_size
+                        "class_data_size": COMPONENT_STATE.value.class_data_size,
+                        "my_color": MY_DATA_COLOR_NAME,
+                        "my_class_color": MY_CLASS_COLOR_NAME,
                     }
                 )
                 ScaffoldAlert(
@@ -566,6 +577,10 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_res1c),
+                    state_view={
+                        "my_class_color": MY_CLASS_COLOR_NAME,
+                        "other_class_color": OTHER_CLASSES_COLOR_NAME,
+                    }
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeRangec.vue",
