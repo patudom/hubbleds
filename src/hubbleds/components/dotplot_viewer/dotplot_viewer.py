@@ -10,6 +10,8 @@ from cosmicds.viewers.dotplot.state import DotPlotViewerState
 from glue.viewers.common.viewer import Viewer
 from glue_plotly.viewers.common import PlotlyBaseView
 from cosmicds.utils import vertical_line_mark, extend_tool
+from hubbleds.utils import PLOTLY_MARGINS
+from hubbleds.viewer_marker_colors import LIGHT_GENERIC_COLOR
 from itertools import chain
 from uuid import uuid4
 from plotly.graph_objects import Scatter
@@ -27,9 +29,9 @@ def DotplotViewer(
     title = None, 
     height=300, 
     on_click_callback = None, 
-    line_marker_at: Optional[Reactive | int | float] = Reactive(None), 
-    line_marker_color = 'red', 
-    vertical_line_visible: Union[Reactive[bool], bool] = Reactive(True),
+    line_marker_at: Optional[Reactive | int | float] = None, 
+    line_marker_color = LIGHT_GENERIC_COLOR, 
+    vertical_line_visible: Union[Reactive[bool], bool] = True,
     unit: Optional[str] = None,
     x_label: Optional[str] = None,
     y_label: Optional[str] = None,
@@ -189,6 +191,7 @@ def DotplotViewer(
             dotplot_view.figure_widget.update_layout(height=None, width=None)
             dotplot_view.figure_widget.update_layout(autosize=True, height=height)
             dotplot_view.figure_widget.update_layout(
+                margin=PLOTLY_MARGINS,
                 showlegend=False,
                 hovermode="x",
                 spikedistance=-1,
@@ -198,7 +201,13 @@ def DotplotViewer(
                     spikedash="solid",
                     spikemode="across",
                     spikesnap="cursor",
-                    showspikes=True
+                    showspikes=True,
+                    tickformat=",.0f",
+                    titlefont_size=16,
+                ),
+                yaxis=dict(
+                    tickmode="auto",
+                    titlefont_size=16,
                 ),
             )
             

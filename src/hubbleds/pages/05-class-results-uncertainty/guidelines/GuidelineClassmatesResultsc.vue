@@ -12,7 +12,7 @@
         Now let’s look at age estimates of the universe from other classes who have already completed this data story.
       </p>
       <p>
-        Your class's graph is highlighted in blue.
+        Your class's graph is highlighted in {{ state_view.my_class_color }}. Other classes are shown in {{ state_view.other_class_color }}.
       </p>
       <p>
         Use the slider to scan through the age estimates that each participating class measured. 

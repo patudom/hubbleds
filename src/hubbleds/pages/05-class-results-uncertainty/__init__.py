@@ -26,6 +26,16 @@ from hubbleds.viewers.hubble_histogram_viewer import HubbleHistogramView
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
+from hubbleds.viewer_marker_colors import (
+    MY_DATA_COLOR,
+    MY_DATA_COLOR_NAME,
+    MY_CLASS_COLOR,
+    MY_CLASS_COLOR_NAME,
+    OTHER_CLASSES_COLOR,
+    OTHER_CLASSES_COLOR_NAME,
+    OTHER_STUDENTS_COLOR,
+    GENERIC_COLOR
+)
 
 from cosmicds.logger import setup_logger
 
@@ -68,11 +78,11 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
-    student_default_color = "#3A86FF"
-    student_highlight_color = "#FF5A00"
+    student_default_color = MY_CLASS_COLOR
+    student_highlight_color = MY_DATA_COLOR
 
-    class_default_color = "#FF006E"
-    class_highlight_color = "#3A86FF"
+    class_default_color = OTHER_CLASSES_COLOR
+    class_highlight_color = MY_CLASS_COLOR
 
     def _update_bins(viewers: Iterable[CDSHistogramView], _msg: Optional[NumericalDataChangedMessage]=None):
         props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
@@ -169,7 +179,7 @@ def Page():
         layer_viewer.add_data(class_data)
         class_layer = layer_viewer.layers[1]
         class_layer.state.zorder = 1
-        class_layer.state.color = "#3A86FF"
+        class_layer.state.color = MY_CLASS_COLOR
         class_layer.state.size = 8
         class_layer.state.visible = False
 
@@ -208,7 +218,7 @@ def Page():
         student_hist_viewer.state.x_att = class_summary_data.id['age_value']
         student_hist_viewer.state.x_axislabel = "Age (Gyr)"
         student_hist_viewer.state.title = "My class ages (5 galaxies each)"
-        student_hist_viewer.layers[0].state.color = "#8338EC"
+        student_hist_viewer.layers[0].state.color = MY_CLASS_COLOR
 
         all_data = models_to_glue_data(all_measurements, label="All Measurements")
         all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
@@ -240,13 +250,13 @@ def Page():
         all_student_hist_viewer.state.x_att = student_summ_data.id['age_value']
         all_student_hist_viewer.state.x_axislabel = "Age (Gyr)"
         all_student_hist_viewer.state.title = "All student ages (5 galaxies each)"
-        all_student_hist_viewer.layers[0].state.color = "#FFBE0B"
+        all_student_hist_viewer.layers[0].state.color = OTHER_STUDENTS_COLOR
 
         class_hist_viewer.add_data(all_class_summ_data)
         class_hist_viewer.state.x_att = all_class_summ_data.id['age_value']
         class_hist_viewer.state.x_axislabel = "Age (Gyr)"
         class_hist_viewer.state.title = "All class ages (~100 galaxies each)"
-        class_hist_viewer.layers[0].state.color = "#619EFF"
+        class_hist_viewer.layers[0].state.color = OTHER_CLASSES_COLOR
 
         # This looks weird, and it kinda is!
         # The idea here is that the all students viewer will always have a wider range than the all classes viewer
@@ -423,7 +433,9 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_res1),
                     state_view={
-                        "class_data_size": COMPONENT_STATE.value.class_data_size
+                        "class_data_size": COMPONENT_STATE.value.class_data_size,
+                        "my_color": MY_DATA_COLOR_NAME,
+                        "my_class_color": MY_CLASS_COLOR_NAME,
                     }
                 )
                 ScaffoldAlert(
@@ -549,6 +561,10 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_res1c),
+                    state_view={
+                        "my_class_color": MY_CLASS_COLOR_NAME,
+                        "other_class_color": OTHER_CLASSES_COLOR_NAME,
+                    }
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeRangec.vue",
@@ -607,6 +623,7 @@ def Page():
                                 glue_data=[class_summary_data],
                                 units=["Gyr"],
                                 transform=round,
+                                color=GENERIC_COLOR
                             )
 
                     with rv.Col():
@@ -704,6 +721,7 @@ def Page():
                             glue_data=hist_data,
                             units=units,
                             transform=round,
+                            color=GENERIC_COLOR
                         )
 
                     with rv.Col():

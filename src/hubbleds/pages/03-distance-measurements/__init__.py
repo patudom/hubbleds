@@ -14,7 +14,12 @@ from cosmicds.components import (
     )
 from cosmicds.logger import setup_logger
 from cosmicds.state import BaseState, BaseLocalState
-
+from hubbleds.viewer_marker_colors import (
+    MY_DATA_COLOR,
+    MY_DATA_COLOR_NAME,
+    GENERIC_COLOR,
+    LIGHT_GENERIC_COLOR
+)
 
 from hubbleds.base_component_state import (
     transition_next,
@@ -698,7 +703,7 @@ def Page():
             #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
             #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
             #     event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
-            #     state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_consensus_2'), 'score_tag': 'ang_meas_consensus_2'}
+            #     state_view={'color': MY_DATA_COLOR_NAME, 'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_consensus_2'), 'score_tag': 'ang_meas_consensus_2'}
             # )
             # Not doing the 2nd measurement #dot_seq7 is transition to doing all galaxies. This is not dot_seq5
             # ScaffoldAlert(
