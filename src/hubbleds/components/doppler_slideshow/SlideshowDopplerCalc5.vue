@@ -876,8 +876,7 @@
         </v-btn>
         <v-btn
             v-if="step === 3"
-            class="black--text"
-            color="accent"
+            class="black--text demo-button"
             depressed
             @click="() => {
               set_dialog(false);

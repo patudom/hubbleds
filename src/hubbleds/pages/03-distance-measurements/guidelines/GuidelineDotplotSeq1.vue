@@ -20,10 +20,10 @@
         Let's see how your measurement compares with a random subset of measured values from others who have completed this Data Story.
       </p>
       <p>
-        This dot plot shows the distrubution of distances measured.
+        This dot plot shows the distribution of distances measured.
       </p> 
       <p>
-        The red-orange dot shows your measurement. 
+        The {{ state_view.color }} dot shows your measurement. 
       </p>
     </div>
   </scaffold-alert>

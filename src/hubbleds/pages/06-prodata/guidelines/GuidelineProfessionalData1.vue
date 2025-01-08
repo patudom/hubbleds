@@ -12,7 +12,7 @@
       class="mb-4"
     >
     <p>
-      Edwin Hubble's own data from 1929 is shown in purple. (Your class's data is shown in blue).
+      Edwin Hubble's own data from 1929 is shown in {{ state_view.hubble1929_color }}. (As before, your class's data is shown in {{ state_view.class_color }}).
     </p>
 
     <p>

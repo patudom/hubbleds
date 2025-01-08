@@ -23,6 +23,7 @@ from hubbleds.components import (
     DotplotTutorialSlideshow,
 )
 from hubbleds.state import GalaxyData, StudentMeasurement
+from hubbleds.viewer_marker_colors import MY_DATA_COLOR, MY_DATA_COLOR_NAME, LIGHT_GENERIC_COLOR, GENERIC_COLOR
 
 # from solara.lab import Ref
 from solara.toestand import Ref
@@ -178,7 +179,7 @@ def Page():
                 LOCAL_STATE.value.example_measurements,
                 label=EXAMPLE_GALAXY_MEASUREMENTS,
             )
-            example_measurements_glue.style.color = "red"
+            example_measurements_glue.style.color = MY_DATA_COLOR
             if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                 existing = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
                 existing.update_values_from_data(example_measurements_glue)
@@ -186,7 +187,7 @@ def Page():
             else:
                 gjapp.data_collection.append(example_measurements_glue)
                 use_this = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-            use_this.style.color = "red"
+            use_this.style.color = MY_DATA_COLOR
     
             egsd = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
             add_link(
