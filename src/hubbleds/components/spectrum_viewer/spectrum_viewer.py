@@ -259,13 +259,13 @@ def SpectrumViewer(
         )
         
         # Light gray measurement line
-        if (marker_position is not None) and (not spectrum_click_enabled):
-            fig.add_vline(
-                x = marker_position.value,
-                line_width = 2,
-                line_color = LIGHT_GENERIC_COLOR,
-                visible = True,
-            )
+        # if (marker_position is not None) and (not spectrum_click_enabled):
+        #     fig.add_vline(
+        #         x = marker_position.value,
+        #         line_width = 2,
+        #         line_color = LIGHT_GENERIC_COLOR,
+        #         visible = True,
+        #     )
         
 
         # Red Observed H-alpha Marker Line
