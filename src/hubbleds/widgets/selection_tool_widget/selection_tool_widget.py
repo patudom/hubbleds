@@ -158,6 +158,7 @@ class SelectionToolWidget(v.VueTemplate):
             self._on_galaxy_selected(galaxy)
         if self._deselect_galaxy is not None:
             self._deselect_galaxy()
+        self.set_sdss_12()
         self.selected = False
 
     @property
