@@ -14,6 +14,7 @@ def SelectionTool(
     galaxy_added_callback: Callable,
     deselect_galaxy_callback: Callable,
     selected_measurement: dict | None,
+    sdss_12_counter: solara.Reactive[int],
 ):
     with rv.Card() as main:
         with rv.Card(class_="pa-0 ma-0", elevation=0):
@@ -29,6 +30,8 @@ def SelectionTool(
 
             tool_widget = solara.get_widget(tool_container)
             tool_widget.children = (selection_tool_widget,)
+
+            sdss_12_counter.subscribe(lambda _count: selection_tool_widget.set_sdss_12())
 
             def cleanup():
                 tool_widget.children = ()
