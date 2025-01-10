@@ -2,6 +2,7 @@ import reacton.ipyvuetify as rv
 import solara
 from solara import Reactive
 from typing import Callable, Optional, Dict
+from hubbleds.viewer_marker_colors import GENERIC_COLOR
 
 
 @solara.component_vue("LineDrawPlot.vue")
@@ -20,6 +21,7 @@ def LineDrawPlot(chart_id: str,
                  clear_class_layer: Optional[int]=False,
                  clear_drawn_line: Optional[int]=False,
                  clear_fit_line: Optional[int]=False,
+                 bfg_color: Optional[str]=GENERIC_COLOR
 ):
     pass
 
@@ -111,4 +113,5 @@ def LineDrawViewer(chart_id: str,
                      clear_class_layer=clear_class_layer,
                      clear_drawn_line = clear_drawn_line,
                      clear_fit_line = clear_fit_line,
+                     bfg_color = GENERIC_COLOR
         )

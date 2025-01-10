@@ -27,6 +27,14 @@ from hubbleds.state import (
     get_free_response, 
     get_multiple_choice
 )
+from hubbleds.viewer_marker_colors import (
+    MY_CLASS_COLOR,
+    MY_CLASS_COLOR_NAME,
+    HUBBLE_1929_COLOR,
+    HUBBLE_1929_COLOR_NAME,
+    HST_KEY_COLOR,
+    HST_KEY_COLOR_NAME,
+)
 
 from ...utils import HST_KEY_AGE, models_to_glue_data, AGE_CONSTANT
 
@@ -155,7 +163,7 @@ def Page():
         if data not in viewer.state.layers_data:
             print('adding class data')
             data.style.markersize = 10
-            data.style.color = '#FF6D00'
+            data.style.color = MY_CLASS_COLOR
             viewer.add_data(data)
             viewer.state.x_att = data.id['est_dist_value']
             viewer.state.y_att = data.id['velocity_value']
@@ -168,7 +176,7 @@ def Page():
         if data not in viewer.state.layers_data:
             print('adding Hubble 1929')
             data.style.markersize = 10
-            data.style.color = '#D500F9'
+            data.style.color = HUBBLE_1929_COLOR
             viewer.add_data(data)
             viewer.state.x_att = data.id['Distance (Mpc)']
             viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
@@ -181,7 +189,7 @@ def Page():
         if data not in viewer.state.layers_data:
             print('adding HST key')
             data.style.markersize = 10
-            data.style.color = '#AEEA00'
+            data.style.color = HST_KEY_COLOR
             viewer.add_data(data)
             viewer.state.x_att = data.id['Distance (Mpc)']
             viewer.state.y_att = data.id['Velocity (km/s)']  
@@ -259,14 +267,18 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat0),
             )
-            s = ScaffoldAlert(
+            ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData1.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat1),
                 event_mc_callback = lambda event: mc_callback(event, LOCAL_STATE),
-                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'pro-dat1'), 'score_tag': 'pro-dat1'}
+                state_view={
+                    'mc_score': get_multiple_choice(LOCAL_STATE, 'pro-dat1'), 'score_tag': 'pro-dat1',
+                    'class_color': MY_CLASS_COLOR_NAME,
+                    'hubble1929_color': HUBBLE_1929_COLOR_NAME,
+                    }
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData2.vue",
@@ -277,15 +289,15 @@ def Page():
                 event_mc_callback = lambda event: mc_callback(event, LOCAL_STATE),
                 state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'pro-dat2'), 'score_tag': 'pro-dat2'}
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineProfessionalData3.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat3),
-                event_mc_callback = lambda event: mc_callback(event, LOCAL_STATE),
-                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'pro-dat3'), 'score_tag': 'pro-dat3'}
-            )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineProfessionalData3.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat3),
+            #     event_mc_callback = lambda event: mc_callback(event, LOCAL_STATE),
+            #     state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'pro-dat3'), 'score_tag': 'pro-dat3'}
+            # )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData4.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -307,6 +319,9 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat5),
+                state_view={
+                    'hst_key_color': HST_KEY_COLOR_NAME
+                }
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData6.vue",
@@ -375,13 +390,13 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sto_fin2),
             )
-            ScaffoldAlert(
-                GUIDELINE_ROOT / "GuidelineStoryFinish3.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                show=COMPONENT_STATE.value.is_current_step(Marker.sto_fin3),
-            )
+            # ScaffoldAlert(
+            #     GUIDELINE_ROOT / "GuidelineStoryFinish3.vue",
+            #     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+            #     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+            #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
+            #     show=COMPONENT_STATE.value.is_current_step(Marker.sto_fin3),
+            # )
         
         with rv.Col(class_="no-padding"):
             with solara.Columns([3,9], classes=["no-padding"]):

@@ -12,6 +12,7 @@ from solara.toestand import Ref
 from typing import Dict, List, Tuple
 
 from cosmicds.components import ScaffoldAlert, StateEditor, ViewerLayout
+from hubbleds.viewer_marker_colors import MY_DATA_COLOR, MY_CLASS_COLOR, GENERIC_COLOR
 from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
@@ -95,7 +96,7 @@ def Page():
             "Velocity (km/hr)": [4, 8, 10],
         })
         race_data = GLOBAL_STATE.value.add_or_update_data(race_data)
-        race_data.style.color = "#f00"
+        race_data.style.color = GENERIC_COLOR
         race_data.style.alpha = 1
         race_data.style.markersize = 10
         race_viewer.add_data(race_data)
@@ -130,7 +131,7 @@ def Page():
         if not class_data.components:
             class_data = empty_data_from_model_class(StudentMeasurement, label="Stage 4 Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
-        class_data.style.color = "#3A86FF"
+        class_data.style.color = MY_CLASS_COLOR
         class_data.style.alpha = 1
         class_data.style.markersize = 10
 
@@ -395,7 +396,7 @@ def Page():
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
                 with solara.Columns([3,9], classes=["no-padding"]):
-                    colors = ("#3A86FF", "#FB5607")
+                    colors = (MY_CLASS_COLOR, MY_DATA_COLOR)
                     sizes = (8, 12)
                     with rv.Col(class_="no-padding"):
                         PlotlyLayerToggle(chart_id="line-draw-viewer",

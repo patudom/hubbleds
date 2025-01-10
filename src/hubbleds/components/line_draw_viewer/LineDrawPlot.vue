@@ -1,7 +1,7 @@
 <script>
 export default {
   name: "LineDrawPlot",
-  props: ["chart_id", "draw_active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label", "height", "margins", "display_best_fit_gal", "best_fit_gal_layer_index", "clear_class_layer", "clear_drawn_line", "clear_fit_line"],
+  props: ["chart_id", "draw_active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label", "height", "margins", "display_best_fit_gal", "best_fit_gal_layer_index", "clear_class_layer", "clear_drawn_line", "clear_fit_line", "bfg_color"],
   async mounted() {
     await window.plotlyPromise;
 
@@ -356,7 +356,7 @@ export default {
               x: [Math.round(x_best_fit_galaxy)],
               y: [Math.round(y_best_fit_galaxy)],
               mode: "markers", 
-              marker: { size: 14, color: "orange" },
+              marker: { size: 14, color: this.bfg_color },
               visible: true,
               hoverinfo: "skip"
             };

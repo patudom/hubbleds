@@ -19,7 +19,7 @@ class Marker(enum.Enum, BaseMarker):
     pro_dat0 = enum.auto()
     pro_dat1 = enum.auto()
     pro_dat2 = enum.auto()
-    pro_dat3 = enum.auto()
+    # pro_dat3 = enum.auto()
     pro_dat4 = enum.auto()
     pro_dat5 = enum.auto()
     pro_dat6 = enum.auto()
@@ -28,7 +28,7 @@ class Marker(enum.Enum, BaseMarker):
     pro_dat9 = enum.auto()
     sto_fin1 = enum.auto()
     sto_fin2 = enum.auto()
-    sto_fin3 = enum.auto()
+    # sto_fin3 = enum.auto()
     
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.pro_dat0
@@ -56,12 +56,8 @@ class ComponentState(BaseComponentState, BaseState):
         return LOCAL_STATE.value.question_completed("pro-dat1")
     
     @property
-    def pro_dat3_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("pro-dat2")
-    
-    @property
     def pro_dat4_gate(self) -> bool:
-        return LOCAL_STATE.value.question_completed("pro-dat3") 
+        return LOCAL_STATE.value.question_completed("pro-dat2") 
     
     @property
     def pro_dat5_gate(self) -> bool:
