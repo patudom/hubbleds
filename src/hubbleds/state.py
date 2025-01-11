@@ -97,10 +97,10 @@ class StudentMeasurement(BaseModel):
 
 class BaseSummary(BaseModel):
     hubble_fit_value: float
-    hubble_fit_unit: str
+    hubble_fit_unit: str = "km / s"
     age_value: float
-    age_unit: str
-    last_data_update: datetime.datetime
+    age_unit: str = "Gyr"
+    last_data_update: Optional[datetime.datetime] = None
 
 
 class StudentSummary(BaseSummary):
