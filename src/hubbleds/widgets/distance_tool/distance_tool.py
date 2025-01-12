@@ -47,6 +47,8 @@ class DistanceTool(v.VueTemplate):
     galaxy_min_size = Angle("6 arcsec") # 3 x sdss resolution
     bad_measurement = Bool(False).tag(sync=True)
 
+    SDSS_12 = "SDSS 12"
+
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
 
@@ -70,14 +72,24 @@ class DistanceTool(v.VueTemplate):
         self._rt.stop()
         super().__del__()
 
+    def set_sdss_12(self):
+        if self.widget.foreground != self.SDSS_12:
+            self.widget.foreground = self.SDSS_12
+        else:
+            self.widget._on_foreground_change({"new": self.SDSS_12})
+
+        if self.widget.background != self.SDSS_12:
+            self.widget.background = self.SDSS_12
+        else:
+            self.widget.set_background_image({"new": self.SDSS_12})
+
     def _setup_widget(self):
-        # Temp update to set background to SDSS. Once we remove galaxies without SDSS WWT tiles from the catalog, make background DSS again, and set wwt.foreground_opacity = 0, per Peter Williams.
-        self.widget.background = 'SDSS 12'
-        self.widget.foreground = 'SDSS 12'
+        self.set_sdss_12()
         self.widget.center_on_coordinates(self.START_COORDINATES, fov= 42 * u.arcmin, #start in close enough to see galaxies
                                           instant=True)
 
     def reset_canvas(self):
+        self.set_sdss_12()
         self.send({"method": "reset", "args": []})
 
     def update_text(self):
@@ -97,6 +109,7 @@ class DistanceTool(v.VueTemplate):
                 self.view_changing = False
 
     def vue_toggle_measuring(self, _args=None):
+        self.set_sdss_12()
         self.measuring = not self.measuring
         self.ruler_click_count += 1
 
