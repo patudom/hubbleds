@@ -174,7 +174,8 @@ def SpectrumViewer(
                             color=spectrum_color,
                             width=2,
                         ),
-                      mode='lines', 
+                        mode='lines',
+                        hovertemplate="%{x:.0f} Å<extra></extra>",
                     ))
          
         fig.update_layout(
