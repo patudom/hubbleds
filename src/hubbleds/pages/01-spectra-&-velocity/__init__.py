@@ -211,6 +211,8 @@ def Page():
     #   in the ipywwt package itself.
     show_selection_tool, set_show_selection_tool = solara.use_state(False)
 
+    selection_tool_bg_count = solara.use_reactive(0)
+
     async def _delay_selection_tool():
         await asyncio.sleep(3)
         set_show_selection_tool(True)
@@ -332,6 +334,15 @@ def Page():
     Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
     
     speech = Ref(GLOBAL_STATE.fields.speech)
+
+
+    def _on_marker_updated(marker):
+        if COMPONENT_STATE.value.current_step_between(Marker.mee_gui1, Marker.sel_gal4):
+            selection_tool_bg_count.set(selection_tool_bg_count.value + 1)
+
+    Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
+    
+
     
     with solara.Row():
         with solara.Column():
@@ -463,7 +474,7 @@ def Page():
             if show_example_data_table:
                 selection_tool_galaxy = selected_example_measurement
             else:
-                selection_tool_galaxy= selected_measurement
+                selection_tool_galaxy = selected_measurement
             
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
@@ -477,6 +488,7 @@ def Page():
                     else None
                 ),
                 deselect_galaxy_callback=_deselect_galaxy_callback,
+                sdss_12_counter=selection_tool_bg_count,
             )
             
             if show_snackbar.value:
