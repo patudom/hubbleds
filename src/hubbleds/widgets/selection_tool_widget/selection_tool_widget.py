@@ -30,6 +30,8 @@ class SelectionToolWidget(v.VueTemplate):
     selected = Bool(False).tag(sync=True)
     highlighted = Bool(False).tag(sync=True)
 
+    SDSS_12 = "SDSS 12"
+
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame="icrs")
 
@@ -38,8 +40,7 @@ class SelectionToolWidget(v.VueTemplate):
         self.widget = WWTWidget()
         
         def _setup():
-            self.widget.background = "SDSS 12"
-            self.widget.foreground = "SDSS 12"
+            self.set_sdss_12()
             self.widget.center_on_coordinates(
                 self.START_COORDINATES,
                 fov=6 * u.arcmin,  # start in close enough to see galaxies
@@ -104,6 +105,17 @@ class SelectionToolWidget(v.VueTemplate):
 
         super().__init__(*args, **kwargs)
 
+    def set_sdss_12(self):
+        if self.widget.foreground != self.SDSS_12:
+            self.widget.foreground = self.SDSS_12
+        else:
+            self.widget._on_foreground_change({"new": self.SDSS_12})
+
+        if self.widget.background != self.SDSS_12:
+            self.widget.background = self.SDSS_12
+        else:
+            self.widget.set_background_image({"new": self.SDSS_12})
+
     def center_on_start_coordinates(self):
         self.widget.center_on_coordinates(
             self.START_COORDINATES,
@@ -112,6 +124,7 @@ class SelectionToolWidget(v.VueTemplate):
         )
 
     def show_galaxies(self, show=True):
+        self.set_sdss_12()
         if self.sdss_layer is not None:
             if self.sdss_layer in self.widget.layers._layers:
                 self.widget.layers.remove_layer(self.sdss_layer)
@@ -144,6 +157,7 @@ class SelectionToolWidget(v.VueTemplate):
             self._on_galaxy_selected(galaxy)
         if self._deselect_galaxy is not None:
             self._deselect_galaxy()
+        self.set_sdss_12()
         self.selected = False
 
     @property
@@ -156,6 +170,7 @@ class SelectionToolWidget(v.VueTemplate):
 
     def reset_view(self):
         print("in reset_view within selection_tool_widget.py")
+        self.set_sdss_12()
         self.widget.center_on_coordinates(
             self.START_COORDINATES, fov=FULL_FOV, instant=True
         )
