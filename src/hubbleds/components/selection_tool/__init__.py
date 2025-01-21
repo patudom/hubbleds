@@ -31,7 +31,7 @@ def SelectionTool(
             tool_widget = solara.get_widget(tool_container)
             tool_widget.children = (selection_tool_widget,)
 
-            bg_counter.subscribe(lambda _count: selection_tool_widget.toggle_background())
+            bg_counter.subscribe(lambda _count: selection_tool_widget.set_background())
 
             def cleanup():
                 tool_widget.children = ()

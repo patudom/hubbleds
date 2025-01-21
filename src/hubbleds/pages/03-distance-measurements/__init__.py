@@ -71,7 +71,7 @@ def DistanceToolComponent(galaxy,
                           ruler_count_callback,
                           use_guard,
                           bad_measurement_callback,
-                          sdss_12_counter):
+                          bg_counter):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -119,7 +119,7 @@ def DistanceToolComponent(galaxy,
 
         widget.observe(get_ruler_click_count, ["ruler_click_count"])
 
-        sdss_12_counter.subscribe(lambda _count: widget.set_background())
+        bg_counter.subscribe(lambda _count: widget.set_background())
 
     solara.use_effect(_define_callbacks, [])
     
