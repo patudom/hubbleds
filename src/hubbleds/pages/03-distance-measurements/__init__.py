@@ -76,7 +76,7 @@ def DistanceToolComponent(galaxy,
 
     def set_selected_galaxy():
         widget = solara.get_widget(tool)
-        widget.set_sdss_12()
+        widget.set_background()
         if galaxy:
             widget.measuring = False
             widget.go_to_location(galaxy["ra"], galaxy["decl"], fov=GALAXY_FOV)
@@ -119,7 +119,7 @@ def DistanceToolComponent(galaxy,
 
         widget.observe(get_ruler_click_count, ["ruler_click_count"])
 
-        sdss_12_counter.subscribe(lambda _count: widget.set_sdss_12())
+        sdss_12_counter.subscribe(lambda _count: widget.set_background())
 
     solara.use_effect(_define_callbacks, [])
     
