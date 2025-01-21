@@ -169,6 +169,9 @@ class SelectionToolWidget(v.VueTemplate):
     def deselect_galaxy(self, cb):
         self._deselect_galaxy = cb
 
+    def reset_tiles(self):
+        self.widget.send({"type": "clear_tile_cache"})
+
     def reset_view(self):
         print("in reset_view within selection_tool_widget.py")
         self.set_sdss_12()
@@ -190,6 +193,9 @@ class SelectionToolWidget(v.VueTemplate):
         if self.selected_layer is not None:
             self.widget.layers.remove_layer(self.selected_layer)
         self.selected_layer = layer
+
+    def vue_clear_tile_cache(self, _args=None):
+        self.widget.clear_tile_cache()
 
     def vue_select_current_galaxy(self, _args=None):
         self.select_galaxy(self.current_galaxy)
