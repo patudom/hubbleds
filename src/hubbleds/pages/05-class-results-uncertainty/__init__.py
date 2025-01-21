@@ -310,26 +310,40 @@ def Page():
     _update_bins((viewers["student_hist"],))
 
     logger.info("DATA IS READY")
+    for viewer in viewers.values():
+        viewer.state.reset_limits(visible_only=True)
 
     def show_class_data(marker):
+        logger.info("show_class_data")
         if "Class Data" in GLOBAL_STATE.value.glue_data_collection:
             class_data = GLOBAL_STATE.value.glue_data_collection["Class Data"]
             layer = viewers["layer"].layer_artist_for_data(class_data)
-            layer.state.visible = Marker.is_at_or_after(marker, Marker.cla_dat1)
+            logger.info(f"class data was visible: {layer.state.visible}")
+            should_be_visible = Marker.is_at_or_after(marker, Marker.cla_dat1)
+            if layer.state.visible is not should_be_visible:
+                layer.state.visible = should_be_visible
+            logger.info(f"class data visible: {layer.state.visible}")
 
     def show_student_data(marker):
+        logger.info("show_student_data")
         if "My Data" in GLOBAL_STATE.value.glue_data_collection:
             student_data = GLOBAL_STATE.value.glue_data_collection["My Data"]
             layer = viewers["layer"].layer_artist_for_data(student_data)
-            layer.state.visible = Marker.is_at_or_before(marker, Marker.fin_cla1)
+            logger.info(f"student data was visible: {layer.state.visible}")
+            should_be_visible = Marker.is_at_or_before(marker, Marker.fin_cla1)
+            if layer.state.visible is not should_be_visible:
+                layer.state.visible = should_be_visible
+            logger.info(f"student data visible: {layer.state.visible}")
+
+    def update_layer_viewer_visibilities(marker):
+        with viewers["layer"].figure.batch_update():
+            show_class_data(marker)
+            show_student_data(marker)
 
     current_step = Ref(COMPONENT_STATE.fields.current_step)
     
-    current_step.subscribe(show_class_data)
-    show_class_data(COMPONENT_STATE.value.current_step)
-
-    current_step.subscribe(show_student_data)
-    show_student_data(COMPONENT_STATE.value.current_step)   
+    current_step.subscribe(update_layer_viewer_visibilities)
+    update_layer_viewer_visibilities(COMPONENT_STATE.value.current_step)
 
     class_best_fit_clicked = Ref(COMPONENT_STATE.fields.class_best_fit_clicked)
 
