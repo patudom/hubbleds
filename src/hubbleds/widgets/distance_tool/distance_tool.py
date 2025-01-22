@@ -38,6 +38,7 @@ class DistanceTool(v.VueTemplate):
     _dec = Angle(0 * u.deg)
     wwtStyle = Dict().tag(sync=True)
     reset_style = Bool(False).tag(sync=True)
+    background = Unicode().tag(sync=True)
     
     # Guard
     guard = Bool(False).tag(sync=True)
@@ -46,12 +47,14 @@ class DistanceTool(v.VueTemplate):
     bad_measurement = Bool(False).tag(sync=True)
 
     SDSS_12 = "SDSS 12"
+    DSS = "Digitized Sky Survey (Color)"
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
 
     def __init__(self, *args, **kwargs):
         self.widget = WWTWidget()
+        self.background = self.SDSS_12
         timer = Timer(3.0, self._setup_widget)
         timer.start()
         self.measuring = kwargs.get('measuring', False)
@@ -70,24 +73,31 @@ class DistanceTool(v.VueTemplate):
         self._rt.stop()
         super().__del__()
 
-    def set_sdss_12(self):
-        if self.widget.foreground != self.SDSS_12:
-            self.widget.foreground = self.SDSS_12
+    def set_background(self):
+        if self.widget.foreground != self.background:
+            self.widget.foreground = self.background
         else:
-            self.widget._on_foreground_change({"new": self.SDSS_12})
+            self.widget._on_foreground_change({"new": self.background})
 
-        if self.widget.background != self.SDSS_12:
-            self.widget.background = self.SDSS_12
+        if self.widget.background != self.background:
+            self.widget.background = self.background
         else:
-            self.widget.set_background_image({"new": self.SDSS_12})
+            self.widget.set_background_image({"new": self.background})
+
+    def vue_toggle_background(self, _args=None):
+        if self.background == self.SDSS_12:
+            self.background = self.DSS
+        else:
+            self.background = self.SDSS_12
+        self.set_background()
 
     def _setup_widget(self):
-        self.set_sdss_12()
+        self.set_background()
         self.widget.center_on_coordinates(self.START_COORDINATES, fov= 42 * u.arcmin, #start in close enough to see galaxies
                                           instant=True)
 
     def reset_canvas(self):
-        self.set_sdss_12()
+        self.set_background()
         self.send({"method": "reset", "args": []})
 
     def update_text(self):
@@ -107,7 +117,7 @@ class DistanceTool(v.VueTemplate):
                 self.view_changing = False
 
     def vue_toggle_measuring(self, _args=None):
-        self.set_sdss_12()
+        self.set_background()
         self.measuring = not self.measuring
         self.ruler_click_count += 1
 
@@ -199,3 +209,6 @@ class DistanceTool(v.VueTemplate):
     def vue_set_contrast(self, contrast, *_args):
         print(f"Contrast: {contrast}")
         self.contrast = contrast
+
+    def vue_clear_tile_cache(self, _args=None):
+        self.widget.clear_tile_cache()

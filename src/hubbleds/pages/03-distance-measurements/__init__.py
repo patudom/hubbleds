@@ -71,12 +71,12 @@ def DistanceToolComponent(galaxy,
                           ruler_count_callback,
                           use_guard,
                           bad_measurement_callback,
-                          sdss_12_counter):
+                          bg_counter):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
         widget = solara.get_widget(tool)
-        widget.set_sdss_12()
+        widget.set_background()
         if galaxy:
             widget.measuring = False
             widget.go_to_location(galaxy["ra"], galaxy["decl"], fov=GALAXY_FOV)
@@ -119,7 +119,7 @@ def DistanceToolComponent(galaxy,
 
         widget.observe(get_ruler_click_count, ["ruler_click_count"])
 
-        sdss_12_counter.subscribe(lambda _count: widget.set_sdss_12())
+        bg_counter.subscribe(lambda _count: widget.set_background())
 
     solara.use_effect(_define_callbacks, [])
     
@@ -458,7 +458,7 @@ def Page():
                 ruler_count_callback=_get_ruler_clicks_cb,
                 bad_measurement_callback=_bad_measurement_cb,
                 use_guard=True,
-                sdss_12_counter=distance_tool_bg_count,
+                bg_counter=distance_tool_bg_count,
             )
             
             if COMPONENT_STATE.value.bad_measurement:
