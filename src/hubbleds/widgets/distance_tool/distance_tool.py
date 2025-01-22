@@ -47,7 +47,7 @@ class DistanceTool(v.VueTemplate):
     bad_measurement = Bool(False).tag(sync=True)
 
     SDSS_12 = "SDSS 12"
-    DSS = "DSS"
+    DSS = "Digitized Sky Survey (Color)"
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
