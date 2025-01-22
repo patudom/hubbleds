@@ -31,7 +31,7 @@ class SelectionToolWidget(v.VueTemplate):
     highlighted = Bool(False).tag(sync=True)
     background = Unicode().tag(sync=True)
 
-    SDSS_12 = "SDSS 12"
+    SDSS = "SDSS9 color"
     DSS = "Digitized Sky Survey (Color)"
 
     UPDATE_TIME = 1  # seconds
@@ -41,7 +41,7 @@ class SelectionToolWidget(v.VueTemplate):
         # self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self.widget = WWTWidget()
 
-        self.background = self.SDSS_12
+        self.background = self.SDSS
         
         def _setup():
             self.set_background()
@@ -122,10 +122,10 @@ class SelectionToolWidget(v.VueTemplate):
             self.widget.set_background_image({"new": self.background})
 
     def vue_toggle_background(self, _args=None):
-        if self.background == self.SDSS_12:
+        if self.background == self.SDSS:
             self.background = self.DSS
         else:
-            self.background = self.SDSS_12
+            self.background = self.SDSS
         self.set_background()
 
     def center_on_start_coordinates(self):
