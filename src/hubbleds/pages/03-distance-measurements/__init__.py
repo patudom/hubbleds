@@ -458,7 +458,7 @@ def Page():
                 ruler_count_callback=_get_ruler_clicks_cb,
                 bad_measurement_callback=_bad_measurement_cb,
                 use_guard=True,
-                sdss_12_counter=distance_tool_bg_count,
+                bg_counter=distance_tool_bg_count,
             )
             
             if COMPONENT_STATE.value.bad_measurement:
