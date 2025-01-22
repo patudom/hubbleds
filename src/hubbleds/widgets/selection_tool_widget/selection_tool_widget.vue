@@ -202,7 +202,7 @@
             <v-icon>mdi-image-multiple</v-icon>
           </v-btn>
         </template>
-        {{ `Use ${background === 'SDSS 12' ? 'DSS' : 'SDSS'} Images` }}
+        {{ `Use ${background === 'SDSS9 color' ? 'DSS' : 'SDSS'} Images` }}
       </v-tooltip>
     </div>
   </v-card>

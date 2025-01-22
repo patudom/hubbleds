@@ -46,7 +46,7 @@ class DistanceTool(v.VueTemplate):
     galaxy_min_size = Angle("6 arcsec") # 3 x sdss resolution
     bad_measurement = Bool(False).tag(sync=True)
 
-    SDSS_12 = "SDSS 12"
+    SDSS = "SDSS9 color"
     DSS = "Digitized Sky Survey (Color)"
 
     UPDATE_TIME = 1  # seconds
@@ -54,7 +54,7 @@ class DistanceTool(v.VueTemplate):
 
     def __init__(self, *args, **kwargs):
         self.widget = WWTWidget()
-        self.background = self.SDSS_12
+        self.background = self.SDSS
         timer = Timer(3.0, self._setup_widget)
         timer.start()
         self.measuring = kwargs.get('measuring', False)
@@ -85,10 +85,10 @@ class DistanceTool(v.VueTemplate):
             self.widget.set_background_image({"new": self.background})
 
     def vue_toggle_background(self, _args=None):
-        if self.background == self.SDSS_12:
+        if self.background == self.SDSS:
             self.background = self.DSS
         else:
-            self.background = self.SDSS_12
+            self.background = self.SDSS
         self.set_background()
 
     def _setup_widget(self):
