@@ -310,8 +310,9 @@ def Page():
     _update_bins((viewers["student_hist"],))
 
     logger.info("DATA IS READY")
-    for viewer in viewers.values():
-        viewer.state.reset_limits(visible_only=True)
+    for name, viewer in viewers.items():
+        visible_only = "slider" not in name
+        viewer.state.reset_limits(visible_only=visible_only)
 
     def show_class_data(marker):
         if "Class Data" in GLOBAL_STATE.value.glue_data_collection:
