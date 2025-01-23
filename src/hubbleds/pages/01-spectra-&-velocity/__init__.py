@@ -247,10 +247,40 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
         router.push("02-distance-introduction")
 
+# This is what we'll need on main to truly get random galaxies.
+    # def _select_random_galaxies():
+    #     need = 5 - len(LOCAL_STATE.value.measurements)
+    #     if need <= 0:
+    #         return
+    #     galaxies = LOCAL_API.get_galaxies(LOCAL_STATE)
+    #     sample = np.random.choice(galaxies, size=need, replace=False)
+    #     new_measurements = [StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+    #                                            galaxy=galaxy)
+    #                          for galaxy in sample]
+    #     measurements = LOCAL_STATE.value.measurements + new_measurements
+    #     Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
-    def _select_random_galaxies():
-        pass
-    
+    # def _select_one_random_galaxy():
+    #     if len(LOCAL_STATE.value.measurements) >= 1:
+    #         return
+    #     need = 1
+    #     galaxies = LOCAL_API.get_galaxies(LOCAL_STATE)
+    #     sample = np.random.choice(galaxies, size=need, replace=False)
+    #     new_measurements = [StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+    #                                            galaxy=galaxy)
+    #                          for galaxy in sample]
+    #     measurements = LOCAL_STATE.value.measurements + new_measurements
+    #     Ref(LOCAL_STATE.fields.measurements).set(measurements)
+
+#For Demo, just get first galaxy in default list.
+    def _select_one_random_galaxy():
+        if len(LOCAL_STATE.value.measurements) >= 1:
+            return
+        measurements = [] 
+        dummy_measurements = LOCAL_API.get_dummy_data()
+        first_measurement = dummy_measurements[0]
+        measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id, galaxy=first_measurement.galaxy))
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)   
 
     def num_bad_velocities():
         measurements = Ref(LOCAL_STATE.fields.measurements)
@@ -381,6 +411,9 @@ def Page():
                 },
                 speech=speech.value,
             )
+            if COMPONENT_STATE.value.is_current_step(Marker.sel_gal2):
+                solara.Button(label="Select a random galaxy", on_click=_select_one_random_galaxy, classes=["emergency-button"])
+
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies3.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
