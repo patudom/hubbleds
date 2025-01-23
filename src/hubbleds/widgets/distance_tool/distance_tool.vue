@@ -90,7 +90,7 @@
             right
             absolute
             style="margin-top: 96px"
-            color="var(--success-dark)"
+            color="#CCCCCC"
             class="selection-fab black--text"
             v-bind="attrs"
             v-on="on"
@@ -99,25 +99,6 @@
           </v-btn>
         </template>
         Refresh images
-      </v-tooltip>
-      <v-tooltip top>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            fab
-            dark
-            top
-            left
-            absolute
-            style="margin-top: 96px"
-            color="var(--success-dark)"
-            class="selection-fab black--text"
-            v-bind="attrs"
-            v-on="on"
-            @click="toggle_background()">
-            <v-icon>mdi-image-multiple</v-icon>
-          </v-btn>
-        </template>
-        {{ `Use ${background === 'SDSS9 color' ? 'DSS' : 'SDSS'} Images` }}
       </v-tooltip>
     </div>
     <contrast-brightness-control 

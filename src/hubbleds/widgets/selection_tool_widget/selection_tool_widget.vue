@@ -174,58 +174,39 @@
             right
             absolute
             style="margin-top: 96px"
-            color="var(--success-dark)"
+            color="#CCCCCC"
             class="selection-fab black--text"
             v-bind="attrs"
             v-on="on"
+            v-show="Object.keys(candidate_galaxy).length !== 0"
             @click="clear_tile_cache()">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
         </template>
         Refresh images
       </v-tooltip>
-
-      <v-tooltip top>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            fab
-            dark
-            top
-            left
-            absolute
-            style="margin-top: 96px"
-            color="var(--success-dark)"
-            class="selection-fab black--text"
-            v-bind="attrs"
-            v-on="on"
-            @click="toggle_background()">
-            <v-icon>mdi-image-multiple</v-icon>
-          </v-btn>
-        </template>
-        {{ `Use ${background === 'SDSS9 color' ? 'DSS' : 'SDSS'} Images` }}
-      </v-tooltip>
     </div>
   </v-card>
 </template>
 
 <style scoped>
-//#selection-root {
-//  --toolbar-height: 48px;
-//  --widget-height: 400px;
-//  height: calc(var(--toolbar-height) + var(--widget-height));
-//  width: 100%;
-//}
+/* #selection-root {
+  --toolbar-height: 48px;
+  --widget-height: 400px;
+  height: calc(var(--toolbar-height) + var(--widget-height));
+  width: 100%;
+} */
 
 .selection-content {
   width: 100%;
   height: 400px;
 }
 
-//.wwt-widget {
-//  height: 400px;
-//  width: 100%;
-//  position: absolute;
-//}
+/* .wwt-widget {
+  height: 400px;
+  width: 100%;
+  position: absolute;
+} */
 
 .selection-fab {
   --margin: 15px;
