@@ -247,10 +247,17 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
         router.push("02-distance-introduction")
 
-
     def _select_random_galaxies():
-        pass
-    
+        need = 5 - len(LOCAL_STATE.value.measurements)
+        if need <= 0:
+            return
+        galaxies = LOCAL_API.get_galaxies(LOCAL_STATE)
+        sample = np.random.choice(galaxies, size=need, replace=False)
+        new_measurements = [StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
+                                               galaxy=galaxy)
+                             for galaxy in sample]
+        measurements = LOCAL_STATE.value.measurements + new_measurements
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
     def num_bad_velocities():
         measurements = Ref(LOCAL_STATE.fields.measurements)
@@ -349,6 +356,7 @@ def Page():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
             solara.Button(label="Demo Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_stage1_go_stage2, classes=["demo-button"])
+            solara.Button(label="Demo Shortcut: Choose 5 random galaxies", on_click=_select_random_galaxies, classes=["demo-button"])
 
     with rv.Row():
         with rv.Col(cols=4):
