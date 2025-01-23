@@ -311,6 +311,11 @@ def Page():
 
     logger.info("DATA IS READY")
     for name, viewer in viewers.items():
+        # We don't want to reset the class histogram's limits
+        # as we let its limits be controlled by the student histogram
+        # viewer's limits
+        if name == "class_hist":
+            continue
         visible_only = "slider" not in name
         viewer.state.reset_limits(visible_only=visible_only)
 
