@@ -208,7 +208,18 @@ footer .v-card__text {
     display: none;
   }
 }
-
+/* also hide on narrow screens */
+@media (max-width: 600px) {
+  footer.v-footer {
+    display: none;
+  }
+}
+/* at 950px the lines wrap to be 3+ lines*/
+@media (max-width: 950px) {
+  .cosmicds-footer .v-card__text {
+      line-height: 1;
+  }
+}
 .theme--dark .cosmicds-footer {
     background-color: var(--cosmicds-blue) !important; 
     color: #BDBDBD !important; 
