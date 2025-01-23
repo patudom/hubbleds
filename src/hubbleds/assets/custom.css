@@ -318,6 +318,11 @@ div.plotly .hoverlayer g.axistext {
     color: white !important;
 }
 
+.emergency-button {
+    background-color: #CCCCCC !important;
+    color: black !important;
+}
+
 /* Sidebar navigation active item */
 .v-list-item-group .v-list-item--active:not(.layer_toggle .v-list-item--active) {
     color: white;
