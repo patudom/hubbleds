@@ -97,12 +97,12 @@ def DistanceToolComponent(galaxy,
                           bad_measurement_callback,
                           brightness_callback,
                           reset_canvas,
-                          sdss_12_counter):
+                          sdss_counter):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
         widget = solara.get_widget(tool)
-        widget.set_sdss_12()
+        widget.set_sdss()
         if galaxy:
             widget.measuring = False
             widget.go_to_location(galaxy["ra"], galaxy["decl"], fov=GALAXY_FOV)
@@ -157,7 +157,7 @@ def DistanceToolComponent(galaxy,
             
         widget.observe(update_brightness, ["brightness"])
 
-        sdss_12_counter.subscribe(lambda _count: widget.set_sdss_12())
+        sdss_counter.subscribe(lambda _count: widget.set_sdss())
 
     solara.use_effect(_define_callbacks, [])
     
@@ -642,7 +642,7 @@ def Page():
                 use_guard=True,
                 brightness_callback=brightness_callback,
                 reset_canvas=reset_canvas,
-                sdss_12_counter=distance_tool_bg_count,
+                sdss_counter=distance_tool_bg_count,
             )
             
             if COMPONENT_STATE.value.bad_measurement:
