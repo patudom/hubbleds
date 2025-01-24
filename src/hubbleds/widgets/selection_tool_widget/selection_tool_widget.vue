@@ -190,23 +190,23 @@
 </template>
 
 <style scoped>
-//#selection-root {
-//  --toolbar-height: 48px;
-//  --widget-height: 400px;
-//  height: calc(var(--toolbar-height) + var(--widget-height));
-//  width: 100%;
-//}
+/* #selection-root {
+  --toolbar-height: 48px;
+  --widget-height: 400px;
+  height: calc(var(--toolbar-height) + var(--widget-height));
+  width: 100%;
+} */
 
 .selection-content {
   width: 100%;
   height: 400px;
 }
 
-//.wwt-widget {
-//  height: 400px;
-//  width: 100%;
-//  position: absolute;
-//}
+/* .wwt-widget {
+  height: 400px;
+  width: 100%;
+  position: absolute;
+} */
 
 .selection-fab {
   --margin: 15px;
