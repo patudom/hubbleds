@@ -40,7 +40,7 @@ class SelectionToolWidget(v.VueTemplate):
         self.widget = WWTWidget()
         
         def _setup():
-            self.set_sdss_12()
+            self.set_sdss()
             self.widget.center_on_coordinates(
                 self.START_COORDINATES,
                 fov=6 * u.arcmin,  # start in close enough to see galaxies
@@ -105,7 +105,7 @@ class SelectionToolWidget(v.VueTemplate):
 
         super().__init__(*args, **kwargs)
 
-    def set_sdss_12(self):
+    def set_sdss(self):
         if self.widget.foreground != self.SDSS:
             self.widget.foreground = self.SDSS
         else:
@@ -124,7 +124,7 @@ class SelectionToolWidget(v.VueTemplate):
         )
 
     def show_galaxies(self, show=True):
-        self.set_sdss_12()
+        self.set_sdss()
         if self.sdss_layer is not None:
             if self.sdss_layer in self.widget.layers._layers:
                 self.widget.layers.remove_layer(self.sdss_layer)
@@ -157,7 +157,7 @@ class SelectionToolWidget(v.VueTemplate):
             self._on_galaxy_selected(galaxy)
         if self._deselect_galaxy is not None:
             self._deselect_galaxy()
-        self.set_sdss_12()
+        self.set_sdss()
         self.selected = False
 
     @property
@@ -170,7 +170,7 @@ class SelectionToolWidget(v.VueTemplate):
 
     def reset_view(self):
         print("in reset_view within selection_tool_widget.py")
-        self.set_sdss_12()
+        self.set_sdss()
         self.widget.center_on_coordinates(
             self.START_COORDINATES, fov=FULL_FOV, instant=True
         )
