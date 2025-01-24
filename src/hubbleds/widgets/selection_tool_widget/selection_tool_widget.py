@@ -30,7 +30,7 @@ class SelectionToolWidget(v.VueTemplate):
     selected = Bool(False).tag(sync=True)
     highlighted = Bool(False).tag(sync=True)
 
-    SDSS_12 = "SDSS 12"
+    SDSS = "SDSS9 color"
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame="icrs")
@@ -106,15 +106,15 @@ class SelectionToolWidget(v.VueTemplate):
         super().__init__(*args, **kwargs)
 
     def set_sdss_12(self):
-        if self.widget.foreground != self.SDSS_12:
-            self.widget.foreground = self.SDSS_12
+        if self.widget.foreground != self.SDSS:
+            self.widget.foreground = self.SDSS
         else:
-            self.widget._on_foreground_change({"new": self.SDSS_12})
+            self.widget._on_foreground_change({"new": self.SDSS})
 
-        if self.widget.background != self.SDSS_12:
-            self.widget.background = self.SDSS_12
+        if self.widget.background != self.SDSS:
+            self.widget.background = self.SDSS
         else:
-            self.widget.set_background_image({"new": self.SDSS_12})
+            self.widget.set_background_image({"new": self.SDSS})
 
     def center_on_start_coordinates(self):
         self.widget.center_on_coordinates(
