@@ -90,7 +90,7 @@
             right
             absolute
             style="margin-top: 96px"
-            color="var(--success-dark)"
+            color="#CCCCCC"
             class="selection-fab black--text"
             v-bind="attrs"
             v-on="on"

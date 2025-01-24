@@ -174,10 +174,11 @@
             right
             absolute
             style="margin-top: 96px"
-            color="var(--success-dark)"
+            color="#CCCCCC"
             class="selection-fab black--text"
             v-bind="attrs"
             v-on="on"
+            v-show="Object.keys(candidate_galaxy).length !== 0"
             @click="clear_tile_cache()">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
