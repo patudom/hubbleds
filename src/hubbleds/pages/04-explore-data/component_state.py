@@ -40,7 +40,6 @@ class HubbleSlideshow(BaseModel):
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.first()
-    total_steps: int = len(Marker)
     stage_id: str = "explore_data"
     show_hubble_slideshow_dialog: bool = False
     hubble_slideshow_finished: bool = False
@@ -56,14 +55,10 @@ class ComponentState(BaseComponentState, BaseState):
     # computed fields are included in the model when serialized
     @computed_field
     @property
-    def max_step(self) -> int:
-        self._max_step = max(self.current_step.value, self._max_step) # type: ignore
-        return self._max_step
-    
-    @computed_field
-    @property
-    def progress(self) -> float:
-        return round(100 * (self._max_step + 1) / (self.total_steps - 1))
+    def total_steps(self) -> int:
+        # ignore the last marker, which is a dummy marker
+        return len(Marker) - 1
+
 
 
     @field_validator("current_step", mode="before")

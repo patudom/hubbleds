@@ -87,7 +87,6 @@ class VelocityReflection(BaseModel):
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.mee_gui1
-    total_steps: int = len(Marker)
     stage_id: str = "spectra_&_velocity"
     show_example_galaxy: bool = False
     selected_galaxy: int = 0
@@ -116,22 +115,13 @@ class ComponentState(BaseComponentState, BaseState):
     velocity_reflection_state: VelocityReflection = VelocityReflection()
     reflection_complete: bool = False
     show_dop_cal4_values: bool = False
-    
-    _max_step: int = 0 # not included in model
-    
+
     # computed fields are included in the model when serialized
     @computed_field
     @property
-    def max_step(self) -> int:
-        self._max_step = max(self.current_step.value, self._max_step) # type: ignore
-        return self._max_step
-    
-    @computed_field
-    @property
-    def progress(self) -> float:
-        # +1 for zero index, -1 for extra step
-        return round(100 * (self._max_step + 1) / (self.total_steps - 1))
-
+    def total_steps(self) -> int:
+        # ignore the last marker, which is a dummy marker
+        return len(Marker) - 1
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:

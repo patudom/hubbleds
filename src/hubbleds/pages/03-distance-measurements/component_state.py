@@ -48,7 +48,6 @@ class Marker(enum.Enum, BaseMarker):
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.ang_siz1
-    total_steps: int = len(Marker)
     stage_id: str = "distance_measurements"
     
     example_angular_sizes_total: int = 0
@@ -68,19 +67,11 @@ class ComponentState(BaseComponentState, BaseState):
     angular_size_line: Optional[float | int] = None
     distance_line: Optional[float | int] = None
     
-    _max_step: int = 0 # not included in model
-    
-    # computed fields are included in the model when serialized
     @computed_field
     @property
-    def max_step(self) -> int:
-        self._max_step = max(self.current_step.value, self._max_step) # type: ignore
-        return self._max_step
-    
-    @computed_field
-    @property
-    def progress(self) -> float:
-        return round(100 * (self._max_step + 1) / (self.total_steps - 1))
+    def total_steps(self) -> int:
+        # ignore the last marker, which is a dummy marker
+        return len(Marker) - 1
 
     
     @field_validator("current_step", mode="before")
