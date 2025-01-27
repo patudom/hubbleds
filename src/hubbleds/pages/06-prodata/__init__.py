@@ -305,7 +305,7 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat4),
                 event_mc_callback = lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
-                event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+                event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                 state_view={
                     'mc_score': get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, 'pro-dat4'), 
                     'score_tag': 'pro-dat4',
@@ -346,7 +346,7 @@ def Page():
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat7),
                 event_mc_callback = lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
-                event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+                event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                 state_view={
                     'mc_score': get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, 'pro-dat7'), 
                     'score_tag': 'pro-dat7',
@@ -360,7 +360,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat8),
-                event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+                event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                 state_view={
                     'free_response_a': get_free_response(LOCAL_STATE, COMPONENT_STATE,'prodata-reflect-8a'),
                     'free_response_b': get_free_response(LOCAL_STATE, COMPONENT_STATE,'prodata-reflect-8b'),
