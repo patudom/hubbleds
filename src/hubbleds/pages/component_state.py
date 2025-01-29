@@ -13,11 +13,15 @@ class IntroSlideshow(BaseModel):
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.int_sli1
-    total_steps: int = len(Marker)
     stage_id: str = "introduction"
     intro_slideshow_state: IntroSlideshow = IntroSlideshow()
     
     _max_step: int = 0 # not included in model
+    
+    @computed_field
+    @property
+    def total_steps(self) -> int:
+        return len(Marker)
     
     # computed fields are included in the model when serialized
     @computed_field
