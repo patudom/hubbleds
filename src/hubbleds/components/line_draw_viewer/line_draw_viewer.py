@@ -51,7 +51,7 @@ def LineDrawViewer(chart_id: str,
                    clear_fit_line: Optional[int]=False,
 ):
 
-    draw_active = draw_active or solara.use_reactive(False)
+    draw_active = draw_active if draw_active is not None else solara.use_reactive(False)
     fit_active = solara.use_reactive(False)
     # best_fit_active = solara.use_reactive(False)
 
@@ -88,12 +88,12 @@ def LineDrawViewer(chart_id: str,
             )
 
             draw_button = solara.IconButton(
-                classes=["toolbar"], icon_name="mdi-message-draw", on_click=_on_draw_clicked, 
+                classes=["toolbar"], icon_name="mdi-message-draw", on_click=_on_draw_clicked,
                 disabled=(not draw_enabled)
             )
 
             # best_fit_button = solara.IconButton(
-            #     classes=["toolbar"], icon_name="mdi-star-box-outline", on_click=on_best_fit_clicked, 
+            #     classes=["toolbar"], icon_name="mdi-star-box-outline", on_click=on_best_fit_clicked,
             # )
 
             rv.BtnToggle(v_model="selected", children=[fit_button, draw_button], background_color="primary", borderless=True)
