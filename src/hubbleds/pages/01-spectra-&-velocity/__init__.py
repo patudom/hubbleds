@@ -1486,19 +1486,15 @@ def Page():
                                 max_step_completed=COMPONENT_STATE.value.velocity_reflection_state.max_step_completed,
                                 reflection_complete=COMPONENT_STATE.value.reflection_complete,
                                 state_view={
-                                    "mc_score_2": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "wavelength-comparison"
-                                    ),
+                                    "mc_score_2": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "wavelength-comparison"),
                                     "score_tag_2": "wavelength-comparison",
                                     "mc_score_3": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "galaxy-motion"),
                                     "score_tag_3": "galaxy-motion",
-                                    "mc_score_4": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "steady-state-consistent"
-                                    ),
+                                    "mc_score_4": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "steady-state-consistent"),
                                     "score_tag_4": "steady-state-consistent",
-                                    "mc_score_5": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "moving-randomly-consistent"
-                                    ),
+                                    "mc_score_5": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "moving-randomly-consistent"),
                                     "score_tag_5": "moving-randomly-consistent",
-                                    "mc_score_6": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "peers-data-agree"
-                                    ),
+                                    "mc_score_6": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "peers-data-agree"),
                                     "score_tag_6": "peers-data-agree",
                                 },
                                 event_set_dialog=show_reflection_dialog.set,

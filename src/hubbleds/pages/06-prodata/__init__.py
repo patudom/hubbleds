@@ -309,7 +309,7 @@ def Page():
                 state_view={
                     'mc_score': get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, 'pro-dat4'), 
                     'score_tag': 'pro-dat4',
-                    'free_response': get_free_response(LOCAL_STATE, COMPONENT_STATE,'prodata-free-4'),
+                    'free_response': get_free_response(LOCAL_STATE, COMPONENT_STATE, 'prodata-free-4'),
                     'mc_completed': LOCAL_STATE.value.question_completed("pro-dat4"),
                 }
             )
@@ -350,7 +350,7 @@ def Page():
                 state_view={
                     'mc_score': get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, 'pro-dat7'), 
                     'score_tag': 'pro-dat7',
-                    'free_response': get_free_response(LOCAL_STATE, COMPONENT_STATE,'prodata-free-7'),
+                    'free_response': get_free_response(LOCAL_STATE, COMPONENT_STATE, 'prodata-free-7'),
                     'mc_completed': LOCAL_STATE.value.question_completed("pro-dat7"),
                 }                
             )
