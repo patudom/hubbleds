@@ -200,8 +200,10 @@ from typing import TypeVar
 BaseComponentStateT = TypeVar('BaseComponentStateT', bound='BaseComponentState')
 
 def get_free_response(local_state: Reactive[LocalState], component_state: Reactive[BaseComponentStateT], tag: str):
+    logger.info(f"Getting Free Response for tag: {tag}")
     # check if the question present
     if tag in local_state.value.free_responses['responses']:
+        
         return local_state.value.free_responses['responses'][tag]
     
     # Create question on Ref
@@ -211,9 +213,19 @@ def get_free_response(local_state: Reactive[LocalState], component_state: Reacti
     return free_responses[tag]
 
 
-
+def fix_free_responses_stage_missing(tag, local_state: Reactive[LocalState], component_state: Reactive[BaseComponentStateT]):
+    # just add the state if it's missing
+    free_responses = Ref(local_state.fields.free_responses).value.copy()['responses']
+    if tag not in free_responses.keys():
+        free_responses[tag] = dict(tag=tag, response="", initialized=True, stage=component_state.value.stage_id)
+        Ref(local_state.fields.free_responses).set({'responses': free_responses})
+        
+        
 def get_multiple_choice(local_state: Reactive[LocalState], component_state: Reactive[BaseComponentStateT], tag: str):
+    logger.info(f"Getting MC Score for tag: {tag}")
     if tag in local_state.value.mc_scoring['scores']:
+        if 'stage' not in local_state.value.mc_scoring['scores'][tag]:
+            local_state.value.mc_scoring['scores'][tag]['stage'] = component_state.value.stage_id
         return local_state.value.mc_scoring['scores'][tag]
     
     mc_scoring = Ref(local_state.fields.mc_scoring).value.copy()['scores']
@@ -254,6 +266,8 @@ def mc_callback(
     # mc-score event returns a data which is an mc-score dictionary (includes tag)
     elif event[0] == "mc-score":
         new_score = mc_scoring[event[1]["tag"]].copy() # make a copy of the current score
+        if 'stage' not in new_score:
+            new_score['stage'] = component_state.value.stage_id
         new_score.update(event[1]) # update with new score, choice, tries, and wrong_attempts, but keeps the stage
         mc_scoring[event[1]["tag"]] = new_score
         Ref(local_state.fields.mc_scoring).set({'scores': mc_scoring})
@@ -278,6 +292,8 @@ def mc_callback(
         raise ValueError(f"Unknown event in mc_callback: <<{event}>> ")
 
 
+
+
 def fr_callback(
     event: Tuple[str, dict[str, str]],
     local_state: Reactive[LocalState],
@@ -299,6 +315,8 @@ def fr_callback(
                 callback()
     elif event[0] == "fr-update":
         free_responses[event[1]["tag"]]['response'] = event[1]["response"]
+        if 'stage' not in free_responses[event[1]["tag"]]:
+            free_responses[event[1]["tag"]]['stage'] = component_state.value.stage_id
         Ref(local_state.fields.free_responses).set({'responses': free_responses})
         if callback is not None:
                 callback()
