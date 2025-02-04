@@ -190,6 +190,9 @@ class SelectionToolWidget(v.VueTemplate):
             self.widget.layers.remove_layer(self.selected_layer)
         self.selected_layer = layer
 
+    def vue_clear_tile_cache(self, _args=None):
+        self.widget.clear_tile_cache()
+
     def vue_select_current_galaxy(self, _args=None):
         self.select_galaxy(self.current_galaxy)
         self.current_galaxy = {}

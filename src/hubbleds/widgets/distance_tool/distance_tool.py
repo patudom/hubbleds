@@ -203,3 +203,6 @@ class DistanceTool(v.VueTemplate):
     def vue_set_contrast(self, contrast, *_args):
         print(f"Contrast: {contrast}")
         self.contrast = contrast
+
+    def vue_clear_tile_cache(self, _args=None):
+        self.widget.clear_tile_cache()
