@@ -171,10 +171,6 @@ class ComponentState(BaseComponentState, BaseState):
         return self.zoom_tool_activated
 
     @property
-    def che_mea1_gate(self) -> bool:
-        return self.doppler_state.velocity_calculated
-
-    @property
     def dot_seq1_gate(self) -> bool:
         return self.dotplot_tutorial_finished
     
