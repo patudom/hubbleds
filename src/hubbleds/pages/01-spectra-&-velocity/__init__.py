@@ -486,7 +486,7 @@ def Page():
                 x_label="Velocity (km/s)",
                 y_label="Count",
                 zorder=[1,5],
-                nbin=74,
+                nbin=30,
                 x_bounds=dotplot_bounds,
                 reset_bounds=dotplot_reset_bounds,
                 hide_layers=ignore,  # type: ignore
