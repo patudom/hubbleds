@@ -14,7 +14,7 @@ from cosmicds.components import (
     )
 from cosmicds.logger import setup_logger
 from cosmicds.state import BaseState, BaseLocalState
-from hubbleds.demo_utils import fill_data_points, fill_velocities
+from hubbleds.demo_utils import fill_data_points, fill_thetas, fill_velocities
 from hubbleds.viewer_marker_colors import (
     MY_DATA_COLOR,
     MY_DATA_COLOR_NAME,
@@ -216,15 +216,7 @@ def Page():
         router.push("04-explore-data")
 
     def _fill_thetas():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   velocity_value=measurement.velocity_value,
-                                                   ang_size_value=measurement.ang_size_value,
-                                                   galaxy=measurement.galaxy))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        fill_thetas()
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
 
     with solara.Row():
