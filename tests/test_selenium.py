@@ -8,24 +8,24 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
 
 
-@pytest.fixture(scope="function")
-def selenium(selenium, request):
-    browser = request.config.getoption("--driver")
-    options = None
-
-    if browser == "firefox":
-        options = FirefoxOptions()
-    elif browser == "chrome":
-        options = ChromeOptions()
-    elif browser == "edge":
-        options = EdgeOptions()
-
-    if options is not None:
-        options.add_argument("--headless")
-
-    driver = webdriver.Firefox(options=options)
-    yield driver
-    driver.quit()
+# @pytest.fixture(scope="function")
+# def selenium(selenium, request):
+#     browser = request.config.getoption("--driver")
+#     options = None
+#
+#     if browser == "firefox":
+#         options = FirefoxOptions()
+#     elif browser == "chrome":
+#         options = ChromeOptions()
+#     elif browser == "edge":
+#         options = EdgeOptions()
+#
+#     if options is not None:
+#         options.add_argument("--headless")
+#
+#     driver = webdriver.Firefox(options=options)
+#     yield driver
+#     driver.quit()
 
 
 @pytest.mark.selenium
