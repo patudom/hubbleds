@@ -12,6 +12,7 @@ from solara.toestand import Ref
 from typing import Dict, List, Tuple
 
 from cosmicds.components import ScaffoldAlert, StateEditor, ViewerLayout
+from hubbleds.demo_utils import fill_data_points
 from hubbleds.viewer_marker_colors import MY_DATA_COLOR, MY_CLASS_COLOR, GENERIC_COLOR
 from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_multiple_choice, get_free_response, mc_callback, fr_callback
@@ -48,6 +49,9 @@ def Page():
     solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+
+    if not LOCAL_STATE.value.measurements:
+        fill_data_points()
 
     async def _load_component_state():
         # Load stored component state from database, measurement data is

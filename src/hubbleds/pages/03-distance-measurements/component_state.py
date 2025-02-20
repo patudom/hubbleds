@@ -73,8 +73,12 @@ class ComponentState(BaseComponentState, BaseState):
     
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:
+        print(v, isinstance(v, int))
+        print(len(Marker))
         if isinstance(v, int):
+            print(f"Returning {Marker(v)}")
             return Marker(v)
+        print(f"Returning raw value: {v}")
         return v
 
     @property
