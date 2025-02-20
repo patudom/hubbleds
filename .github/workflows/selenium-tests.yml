@@ -1,0 +1,74 @@
+name: Selenium Tests for CosmicDS
+
+on:
+  push:
+    branches:
+      - short-demo
+  pull_request:
+    branches:
+      - short-demo
+
+jobs:
+  selenium-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    name: Run Selenium Tests on ${{ matrix.browser }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: short-demo
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-selenium selenium
+          pip install .
+
+      - name: Install WebDrivers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable firefox microsoft-edge-stable
+          
+          wget -q "https://chromedriver.storage.googleapis.com/$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip" -O chromedriver.zip
+          unzip chromedriver.zip
+          sudo mv chromedriver /usr/local/bin/
+
+          wget -q "https://github.com/mozilla/geckodriver/releases/latest/download/geckodriver-linux64.tar.gz"
+          tar -xvzf geckodriver-linux64.tar.gz
+          sudo mv geckodriver /usr/local/bin/
+
+          wget -q "https://msedgedriver.azureedge.net/$(curl -s https://msedgedriver.azureedge.net/LATEST_STABLE)/edgedriver_linux64.zip" -O edgedriver.zip
+          unzip edgedriver.zip
+          sudo mv msedgedriver /usr/local/bin/
+
+      - name: Start Solara Server
+        run: |
+          solara run hubbleds.pages --port=8865 &
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            curl -s http://localhost:8865/ && break
+            echo "Waiting..."
+            sleep 3
+          done
+          echo "Server is ready!"
+        env:
+          SOLARA_SESSION_SECRET_KEY: ${{ secrets.SOLARA_SESSION_SECRET_KEY }}
+          SOLARA_OAUTH_CLIENT_ID: ${{ secrets.SOLARA_OAUTH_CLIENT_ID }}
+          SOLARA_OAUTH_CLIENT_SECRET: ${{ secrets.SOLARA_OAUTH_CLIENT_SECRET }}
+          SOLARA_OAUTH_API_BASE_URL: ${{ secrets.SOLARA_OAUTH_API_BASE_URL }}
+          SOLARA_OAUTH_SCOPE: "openid profile email"
+          SOLARA_SESSION_HTTPS_ONLY: "false"
+          CDS_API_KEY: ${{ secrets.CDS_API_KEY }}
+          CDS_DISABLE_DB: "true"
+
+      - name: Run Selenium Tests on ${{ matrix.browser }}
+        run: pytest --driver ${{ matrix.browser }} -m selenium
