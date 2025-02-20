@@ -4,26 +4,28 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
 
 
-@pytest.fixture(scope="function")
-def selenium(selenium, request):
-    browser = request.config.getoption("--driver")
-    options = None
-
-    if browser == "firefox":
-        options = FirefoxOptions()
-    # elif browser == "chrome":
-    #     options = ChromeOptions()
-    # elif browser == "edge":
-    #     options = EdgeOptions()
-
-    if options:
-        options.add_argument("--headless")
-
-    driver = webdriver.Firefox(options=options)
-    yield driver
-    driver.quit()
+# @pytest.fixture(scope="function")
+# def selenium(selenium, request):
+#     browser = request.config.getoption("--driver")
+#     options = None
+#
+#     if browser == "firefox":
+#         options = FirefoxOptions()
+#     elif browser == "chrome":
+#         options = ChromeOptions()
+#     elif browser == "edge":
+#         options = EdgeOptions()
+#
+#     if options:
+#         options.add_argument("--headless")
+#
+#     driver = webdriver.Firefox(options=options)
+#     yield driver
+#     driver.quit()
 
 
 @pytest.mark.selenium
