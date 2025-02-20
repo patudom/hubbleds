@@ -40,7 +40,7 @@ jobs:
           
           wget -q "https://storage.googleapis.com/chrome-for-testing-public/$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE)/linux64/chromedriver-linux64.zip" -O chromedriver.zip
           unzip chromedriver.zip
-          sudo mv chromedriver /usr/local/bin/
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
 
           wget -q "https://github.com/mozilla/geckodriver/releases/download/v0.35.0/geckodriver-v0.35.0-linux64.tar.gz"
           tar -xvzf geckodriver-v0.35.0-linux64.tar.gz
@@ -48,7 +48,7 @@ jobs:
 
           wget -q "https://msedgedriver.azureedge.net/$(curl https://msedgedriver.azureedge.net/LATEST_STABLE | iconv -f UTF-16 -t UTF-8 | tr -d '\r')/edgedriver_linux64.zip" -O edgedriver.zip
           unzip edgedriver.zip
-          sudo mv msedgedriver /usr/local/bin/
+          sudo mv edgedriver/msedgedriver /usr/local/bin/
 
       - name: Start Solara Server
         run: |
