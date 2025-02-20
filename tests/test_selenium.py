@@ -30,15 +30,15 @@ def selenium(selenium, request):
 
 @pytest.mark.selenium
 def test_homepage_title(selenium):
-    selenium.get("http://localhost:8865")  # Change this to your web app URL
+    selenium.get("http://localhost:8865")
 
     WebDriverWait(selenium, 10).until(EC.title_contains("HubbleDS"))
     assert "HubbleDS" in selenium.title
 
 
 @pytest.mark.selenium
-def test_click_demo_button(selenium):
-    selenium.get("http://localhost:8865")  # Open your test page
+def test_jump_to_stage_one(selenium):
+    selenium.get("http://localhost:8865")
 
     # Wait until the button is visible and clickable
     button = WebDriverWait(selenium, 10).until(
@@ -51,7 +51,5 @@ def test_click_demo_button(selenium):
     # Wait for the URL to change
     WebDriverWait(selenium, 10).until(EC.url_changes("http://localhost:8865"))
 
-    # Optionally, verify that clicking the button triggered the expected behavior
-    assert (
-        "01-spectra-&-velocity" in selenium.current_url
-    )  # Update based on what the button does
+    # Verify that clicking the button triggered the expected behavior
+    assert "01-spectra-&-velocity" in selenium.current_url
