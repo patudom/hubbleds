@@ -138,6 +138,19 @@ def Page():
             second.style.color = GENERIC_COLOR
             gjapp.data_collection.append(second)
             
+            np.random.seed(42)
+            # 50% of the first measurements will be used for the tutorial
+            tutorial_data = [e for e in example_seed_data if np.random.rand() <= 0.5]
+            # filter some of the correct values to reduce counts
+            filter_func = lambda x: (x < 11_130 or x > 11_220) or np.random.rand() <= 0.75
+            tutorial_data = [e for e in tutorial_data if filter_func(e['velocity_value'])]
+            tutorial = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_tutorial',
+                            **{k: np.asarray([r[k] for r in tutorial_data])
+                               for k in example_seed_data[0].keys()}
+                            )
+            tutorial.style.color = GENERIC_COLOR
+            gjapp.data_collection.append(tutorial)
+            
             link_seed_data(gjapp)
         
         return gjapp
@@ -987,8 +1000,9 @@ def Page():
                     )
                     
                     tut_viewer_data = None
-                    if EXAMPLE_GALAXY_SEED_DATA in gjapp.data_collection:
-                        tut_viewer_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                    if EXAMPLE_GALAXY_SEED_DATA+'_tutorial' in gjapp.data_collection:
+                        tut_viewer_data: Data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA+'_tutorial']
+                    # solara.Markdown(tut_viewer_data.to_dataframe().to_markdown())
                     DotplotTutorialSlideshow(
                         dialog=COMPONENT_STATE.value.show_dotplot_tutorial_dialog,
                         step=COMPONENT_STATE.value.dotplot_tutorial_state.step,
@@ -1001,7 +1015,8 @@ def Page():
                                                     line_marker_color=LIGHT_GENERIC_COLOR,
                                                     unit="km / s",
                                                     x_label="Velocity (km/s)",
-                                                    y_label="Count"
+                                                    y_label="Count",
+                                                    nbin=20
                                                     ),
                                                     
                         event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
