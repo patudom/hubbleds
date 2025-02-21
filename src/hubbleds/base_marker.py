@@ -1,15 +1,8 @@
 from enum import EnumMeta
 from functools import total_ordering
 
-@total_ordering
+
 class BaseMarker(metaclass=EnumMeta):
-    
-    # enums already have an __eq__ dunder method, 
-    # so only need to add one comparison
-    def __lt__(self, other):
-        if type(other) is type(self):
-            return self.value < other.value
-        return NotImplemented
     
 
     @classmethod

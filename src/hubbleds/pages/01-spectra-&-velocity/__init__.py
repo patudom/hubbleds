@@ -312,11 +312,11 @@ def Page():
         if (not isloaded):
             return
 
-        if COMPONENT_STATE.value.current_step == Marker.sel_gal2:
+        if COMPONENT_STATE.value.current_step.value == Marker.sel_gal2.value:
             if COMPONENT_STATE.value.total_galaxies == 5:
                 transition_to(COMPONENT_STATE, Marker.sel_gal3, force=True)
 
-        if COMPONENT_STATE.value.current_step > Marker.cho_row1:
+        if COMPONENT_STATE.value.current_step.value > Marker.cho_row1.value:
             COMPONENT_STATE.value.selected_example_galaxy = 1576  # id of the first example galaxy
 
     loaded_component_state.subscribe(_initialize_state)
@@ -338,15 +338,15 @@ def Page():
 
     @computed
     def show_synced_lines():
-        return COMPONENT_STATE.value.current_step >= Marker.dot_seq5
+        return COMPONENT_STATE.value.current_step.value >= Marker.dot_seq5.value
 
     @computed
     def sync_plot_lines():
-        return COMPONENT_STATE.value.current_step >= Marker.dot_seq5
+        return COMPONENT_STATE.value.current_step.value >= Marker.dot_seq5.value
 
     @computed
     def sync_plot_zoom():
-        return COMPONENT_STATE.value.current_step >= Marker.dot_seq5
+        return COMPONENT_STATE.value.current_step.value >= Marker.dot_seq5.value
 
     ## ----- Make sure we are initialized in the correct state ----- ##
     def sync_example_velocity_to_wavelength(velocity):
@@ -376,7 +376,7 @@ def Page():
             return [v2w(v, lambda_rest) for v in value]
             
     
-    
+
     
     def _reactive_subscription_setup():
         Ref(COMPONENT_STATE.fields.selected_galaxy).subscribe(print_selected_galaxy)
@@ -394,7 +394,7 @@ def Page():
 
     def create_dotplot_viewer(first_dotplot = True, show_which_meas = 'first', show_which_seed = 'first', ignore_full_seed_data = True, ignore_full_meas_data = True):
         print("\n\n ======== \ncreate_dotplot_viewer\n\n")
-        show_meas = COMPONENT_STATE.value.current_step >= Marker.int_dot1        
+        show_meas = COMPONENT_STATE.value.current_step.value >= Marker.int_dot1.value        
         ignore = []
         
         if show_meas and (EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection):
@@ -485,9 +485,7 @@ def Page():
 
 
     def _on_marker_updated(marker):
-        if COMPONENT_STATE.value.is_current_step(Marker.dot_seq4):
-            initialize_bounds(max_spectrum_bounds.value)
-        if COMPONENT_STATE.value.current_step >= Marker.rem_vel1:
+        if COMPONENT_STATE.value.current_step.value >= Marker.rem_vel1.value:
             update_second_example_measurement() # either set them to current or keep from DB
         if COMPONENT_STATE.value.current_step_between(Marker.mee_gui1, Marker.sel_gal4):
             selection_tool_bg_count.set(selection_tool_bg_count.value + 1)
@@ -744,7 +742,7 @@ def Page():
                         )
                     )
                     
-                    if COMPONENT_STATE.value.current_step == Marker.rem_vel1:
+                    if COMPONENT_STATE.value.current_step.value == Marker.rem_vel1.value:
                         add_example_measurements_to_glue()
 
                 DopplerSlideshow(
@@ -1325,10 +1323,10 @@ def Page():
                     def obs_wav_marker_value():
                         meas = LOCAL_STATE.value.example_measurements
                         if LOCAL_STATE.value.measurements_loaded and len(meas) > 0:
-                            step = COMPONENT_STATE.value.current_step
-                            if step >= Marker.rem_vel1 and meas[1].obs_wave_value is not None:
+                            step = COMPONENT_STATE.value.current_step.value
+                            if step >= Marker.rem_vel1.value and meas[1].obs_wave_value is not None:
                                 return meas[1].obs_wave_value
-                            elif step >= Marker.dot_seq1 and meas[0].velocity_value is not None:
+                            elif step >= Marker.dot_seq1.value and meas[0].velocity_value is not None:
                                 return meas[0].obs_wave_value
                         return COMPONENT_STATE.value.obs_wave
 
@@ -1351,7 +1349,7 @@ def Page():
                             COMPONENT_STATE.value.current_step_between(
                             Marker.obs_wav1, Marker.obs_wav2
                         )
-                        or COMPONENT_STATE.value.current_step == Marker.rem_vel1
+                        or COMPONENT_STATE.value.current_step.value == Marker.rem_vel1.value
                         ),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
                         on_rest_wave_tool_clicked=lambda: rest_wave_tool_activated.set(
