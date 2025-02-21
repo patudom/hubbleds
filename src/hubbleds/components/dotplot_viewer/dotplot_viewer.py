@@ -63,7 +63,7 @@ def DotplotViewer(
     zorder: Optional[list[int]] = None,
     nbin: int = 75,
     x_bounds: Optional[Reactive[list[float]]] = None,
-    reset_bounds: Reactive[list] = Reactive([]),
+    reset_bounds: list = [],
     hide_layers: Reactive[List[Data | Subset]] | list[Data | Subset] = [],
     ):
     
@@ -98,7 +98,6 @@ def DotplotViewer(
     line_marker_at = solara.use_reactive(line_marker_at)
     vertical_line_visible = solara.use_reactive(vertical_line_visible)
     x_bounds = solara.use_reactive(x_bounds) # type: ignore
-    reset_bounds = solara.use_reactive(reset_bounds)
     hide_layers = solara.use_reactive(hide_layers)
     
     with rv.Card() as main:
@@ -319,8 +318,8 @@ def DotplotViewer(
             # prevent_callback = False
             
             def _on_reset_bounds(*args):
-                if None not in reset_bounds.value and len(reset_bounds.value) == 2:
-                    new_range = reset_bounds.value
+                if None not in reset_bounds and len(reset_bounds) == 2:
+                    new_range = reset_bounds
                     dotplot_view.state.x_min = new_range[0]
                     dotplot_view.state.x_max = new_range[1]
                 else:

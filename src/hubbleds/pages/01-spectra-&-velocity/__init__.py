@@ -335,7 +335,6 @@ def Page():
     sync_velocity_line = solara.use_reactive(0.0)
     spectrum_bounds = solara.use_reactive([])
     dotplot_bounds = solara.use_reactive([])
-    max_spectrum_bounds = solara.use_reactive([])
 
     @computed
     def show_synced_lines():
@@ -377,27 +376,12 @@ def Page():
             return [v2w(v, lambda_rest) for v in value]
             
     
-    @computed
-    def dotplot_reset_bounds():
-        if COMPONENT_STATE.value.current_step <= Marker.dot_seq4:
-            return []
-        if len(LOCAL_STATE.value.example_measurements) > 0:
-            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            return [w2v(w, lambda_rest) for w in max_spectrum_bounds.value]
-        return []
-
-    def initialize_bounds(value):
-        logger.info('Initializing dotplot to max spectrum bounds')
-        if len(value) == 2:
-            lr = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            dotplot_bounds.set([w2v(w, lr) for w in max_spectrum_bounds.value])
-            spectrum_bounds.set([value[0], value[1]])
     
     
     def _reactive_subscription_setup():
         Ref(COMPONENT_STATE.fields.selected_galaxy).subscribe(print_selected_galaxy)
         Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
-        max_spectrum_bounds.subscribe(initialize_bounds)
+
         
         sync_reactives(spectrum_bounds, 
                        dotplot_bounds, 
@@ -488,7 +472,11 @@ def Page():
                 zorder=[1,5],
                 nbin=30,
                 x_bounds=dotplot_bounds,
-                reset_bounds=dotplot_reset_bounds,
+                reset_bounds=list(
+                    map(
+                        sync_example_wavelength_to_velocity,
+                        # bounds of example galaxy spectrum
+                        [3796.6455078125, 9187.5576171875])),
                 hide_layers=ignore,  # type: ignore
             )
         return main
@@ -1373,7 +1361,6 @@ def Page():
                         on_reset_tool_clicked=_on_reset,
                         marker_position=sync_wavelength_line if show_synced_lines.value else None,
                         spectrum_bounds = spectrum_bounds, # type: ignore
-                        max_spectrum_bounds=max_spectrum_bounds,
                         show_obs_wave_line=COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4),
                         on_set_marker_position=_on_set_marker_location,
                     )
