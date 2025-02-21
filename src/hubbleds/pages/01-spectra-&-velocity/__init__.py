@@ -353,14 +353,7 @@ def Page():
     def show_synced_lines():
         return COMPONENT_STATE.value.current_step.value >= Marker.dot_seq5.value
 
-    @computed
-    def sync_plot_lines():
-        return COMPONENT_STATE.value.current_step.value >= Marker.dot_seq5.value
-
-    @computed
-    def sync_plot_zoom():
-        return COMPONENT_STATE.value.current_step.value >= Marker.dot_seq5.value
-
+    
     ## ----- Make sure we are initialized in the correct state ----- ##
     def sync_example_velocity_to_wavelength(velocity):
         if len(LOCAL_STATE.value.example_measurements) > 0:
@@ -377,16 +370,14 @@ def Page():
             return velocity
     
     def sync_spectrum_to_dotplot_range(value):
-        if sync_plot_zoom.value:
-            logger.info('Setting dotplot range from spectrum range')
-            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            return [w2v(v, lambda_rest) for v in value]
+        logger.info('Setting dotplot range from spectrum range')
+        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+        return [w2v(v, lambda_rest) for v in value]
     
     def sync_dotplot_to_spectrum_range(value):
-        if sync_plot_zoom.value:
-            logger.info('Setting spectrum range from dotplot range')
-            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            return [v2w(v, lambda_rest) for v in value]
+        logger.info('Setting spectrum range from dotplot range')
+        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+        return [v2w(v, lambda_rest) for v in value]
             
     
 
