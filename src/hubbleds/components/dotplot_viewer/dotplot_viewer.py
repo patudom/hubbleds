@@ -54,17 +54,21 @@ def DotplotViewer(
     title = None, 
     height=300, 
     on_click_callback = None, 
-    line_marker_at: Optional[Reactive | int | float] = None, 
+    line_marker_at: Optional[float | int] = None,  # type: ignore
+    on_line_marker_at_changed: Callable = lambda x: None,
     line_marker_color = LIGHT_GENERIC_COLOR, 
-    vertical_line_visible: Union[Reactive[bool], bool] = True,
+    vertical_line_visible: bool = True, # type: ignore
+    on_vertical_line_visible_changed: Callable = lambda x: None,
     unit: Optional[str] = None,
     x_label: Optional[str] = None,
     y_label: Optional[str] = None,
-    zorder: Optional[list[int]] = None,
     nbin: int = 75,
-    x_bounds: Optional[Reactive[list[float]]] = None,
-    reset_bounds: list = [],
-    hide_layers: Reactive[List[Data | Subset]] | list[Data | Subset] = [],
+    x_bounds: list[float] = [],  # type: ignore
+    on_x_bounds_changed: Callable = lambda x: None,
+    reset_bounds: list = [],  # type: ignore
+    on_reset_bounds_changed: Callable = lambda x: None,
+    hide_layers: List[Data | Subset] = [],  # type: ignore
+    on_hide_layers_changed: Callable = lambda x: None,
     ):
     
     """
@@ -94,11 +98,17 @@ def DotplotViewer(
     """
     
     logger.info(f"creating DotplotViewer: {title}")
+    x_bounds: Reactive[list] = solara.use_reactive(x_bounds, on_change=on_x_bounds_changed) # type: ignore
+    vertical_line_visible: Reactive[bool] = solara.use_reactive(vertical_line_visible, on_change=on_vertical_line_visible_changed) # type: ignore
+    line_marker_at: Reactive[Number] = solara.use_reactive(line_marker_at, on_change=on_line_marker_at_changed) # type: ignore
+    reset_bounds: Reactive[list] = solara.use_reactive(reset_bounds, on_change=on_reset_bounds_changed) # type: ignore
+    hide_layers: Reactive[list] = solara.use_reactive(hide_layers, on_change=on_hide_layers_changed) # type: ignore
     
-    line_marker_at = solara.use_reactive(line_marker_at)
-    vertical_line_visible = solara.use_reactive(vertical_line_visible)
-    x_bounds = solara.use_reactive(x_bounds) # type: ignore
-    hide_layers = solara.use_reactive(hide_layers)
+    if len(x_bounds.value) == 0 and len(reset_bounds.value) == 2:
+        x_bounds.set(reset_bounds.value)
+        
+        
+    
     
     with rv.Card() as main:
         with rv.Toolbar(dense=True, class_="toolbar"):
@@ -319,8 +329,8 @@ def DotplotViewer(
             # prevent_callback = False
             
             def _on_reset_bounds(*args):
-                if None not in reset_bounds and len(reset_bounds) == 2:
-                    new_range = reset_bounds
+                if None not in reset_bounds.value and len(reset_bounds.value) == 2:
+                    new_range = reset_bounds.value
                     dotplot_view.state.x_min = new_range[0]
                     dotplot_view.state.x_max = new_range[1]
                 else:
@@ -354,7 +364,7 @@ def DotplotViewer(
                 tool.activate()
                 old_activate = tool.activate
                 def new_activate():
-                    if len(reset_bounds) == 2:
+                    if len(reset_bounds.value) == 2:
                         _on_reset_bounds()
                     else:
                         old_activate()
