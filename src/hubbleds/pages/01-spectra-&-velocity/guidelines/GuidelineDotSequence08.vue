@@ -31,6 +31,7 @@
           :initialization="state_view.mc_score"
           >
           </mc-radiogroup>
+        <v-btn @click="zoom_to_range()">Click</v-btn> to zoom to recommended range
     </div>
   </scaffold-alert>
 </template>

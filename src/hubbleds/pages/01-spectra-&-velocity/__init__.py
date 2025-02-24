@@ -1092,6 +1092,7 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
+                    event_zoom_to_range= lambda event: dotplot_bounds.set([9000, 13500]),
                     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq8),
                     state_view={
                         "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "vel_meas_consensus"),
