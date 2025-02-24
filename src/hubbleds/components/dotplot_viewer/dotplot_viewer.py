@@ -31,7 +31,10 @@ from glue_jupyter import JupyterApplication
 
 
 def valid_two_element_array(arr: Union[None, list]):
-    return not (arr is None or len(arr) != 2 or np.isnan(arr).any())
+    try:
+        return not (arr is None or len(arr) != 2 or np.isnan(arr).any())
+    except:
+        return False
 
 def different_value(arr, value, index):
     if not valid_two_element_array(arr):
@@ -119,27 +122,11 @@ def DotplotViewer(
             toolbar_container = rv.Html(tag="div")
 
         viewer_container = rv.Html(tag="div", style_=f"width: 100%; height: {height}px", class_="mb-4")
-        
-        def _line_ids_for_viewer(viewer: PlotlyBaseView):
-            line_ids = []
-            traces = list(chain(l.traces() for l in viewer.layers))
-            for trace in viewer.figure.data:
-                if trace not in traces and isinstance(trace, Scatter) and getattr(trace, "meta", None):
-                    line_ids.append(trace.meta)
-
-            return line_ids
-        
-        def _remove_lines(viewers: List[PlotlyBaseView], line_ids: List[List[str]]):
-            if not line_ids:
-                return
-            for (viewer, viewer_line_ids) in zip(viewers, line_ids):
-                shapes = viewer.figure.layout.shapes
-                shapes = tuple(s for s in shapes if s.name not in viewer_line_ids)
-                viewer.figure.layout.shapes = shapes
 
         
         def _add_vertical_line(viewer: PlotlyBaseView, value: Number, color: str, label: str = None, line_ids: list[str] = []):
             line_id = str(uuid4())
+            print(line_id)
             line_ids.append(line_id)
             viewer.figure.add_vline(x=value, line_color=color, line_width=2, name=line_id)
 
@@ -240,23 +227,25 @@ def DotplotViewer(
             
             line_ids = [] #[_line_ids_for_viewer(dotplot_view)]
             
-            def _update_lines(value = None):
-                # remove any pre existing lines
-
-                _remove_lines([dotplot_view], line_ids)
+            def _update_lines(value = None):                
+                if value is not None:
+                    if len(line_ids) > 0:
+                        dotplot_view.figure.update_shapes(
+                            patch=dict(visible=vertical_line_visible.value and value is not None, x0=value, x1=value),
+                            selector={'name': line_ids[0]})
+                    elif len(line_ids) == 0:
+                        _add_vertical_line(dotplot_view, value, line_marker_color, label = "Line Marker", line_ids = line_ids)
+                elif len(line_ids) > 0:
+                    dotplot_view.figure.update_shapes(
+                        patch=dict(visible=vertical_line_visible.value),
+                        selector={'name': line_ids[0]})
                 
-                line_ids.clear()
-                
-                if vertical_line_visible.value and value is not None:
-                    _add_vertical_line(dotplot_view, value, line_marker_color, label = "Line Marker", line_ids = line_ids)
-                
-                # line_ids.append(_line_ids_for_viewer(dotplot_view))
             
             
             
             if title is not None:
                 dotplot_view.state.title = title
-    
+
             title_widget = solara.get_widget(title_container)
             title_widget.children = (dotplot_view.state.title or "DOTPLOT VIEWER",)
 
@@ -314,19 +303,7 @@ def DotplotViewer(
                 dotplot_view.figure.update_coloraxes(showscale=False)
             
 
-            def apply_zorder():
-                pass
-                # logger.info(f"({title}) Applying zorder")
-                # if zorder:
-                #     logger.info(f"({title}) zorder: {zorder}")
-                #     logger.info(f"({title}) layers: {dotplot_view.layers}")
-                #     for i, layer in enumerate(dotplot_view.layers):
-                #         try:
-                #             layer.state.zorder = zorder[i]
-                #         except IndexError:
-                #             layer.state.zorder = max(zorder) + 1
             
-            # prevent_callback = False
             
             def _on_reset_bounds(*args):
                 if None not in reset_bounds.value and len(reset_bounds.value) == 2:
@@ -355,8 +332,6 @@ def DotplotViewer(
                     logger.info(f'({title}) Bounds already set')
             
             def extend_the_tools():  
-                # extend_tool(dotplot_view, 'plotly:home', activate_cb=apply_zorder)
-                # extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=apply_zorder)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_bounds_changed, )
             extend_the_tools()
             tool = dotplot_view.toolbar.tools['plotly:home']
@@ -393,8 +368,6 @@ def DotplotViewer(
                 tool.activate()
             
             reset_selection()
-            
-            viewer_data_log = ''.join([f"\n\t{l.layer.label}: {'visible' if l.visible else 'not visible'}" for l in dotplot_view.layers])            
             
             def cleanup():
                 for cnt in (title_widget, toolbar_widget, viewer_widget):
