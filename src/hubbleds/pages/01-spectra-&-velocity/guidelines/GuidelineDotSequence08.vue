@@ -21,7 +21,7 @@
             ]"
             :feedbacks="[
             'Try again. Make sure you zoom in to where most of the data points are and see if they are clustered around more than one velocity value.',
-            'Correct. When we exclude outliers, we see that measurements are clustered around more than one velocity value.',
+            'Yes. When we exclude outliers and zoom into the central data tower, we see that measurements are clustered around more than one velocity value.',
             'Consider only the range of values that excludes outliers. If measurements are clustered around a single velocity value, there is consensus. If they are clustered around multiple values, there is not consensus.'
             ]" 
           :correct-answers="[1]"
