@@ -280,7 +280,8 @@ def Page():
         dummy_measurements = LOCAL_API.get_dummy_data()
         first_measurement = dummy_measurements[0]
         measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id, galaxy=first_measurement.galaxy))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)   
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        _galaxy_selected_callback(first_measurement.galaxy)
 
     def num_bad_velocities():
         measurements = Ref(LOCAL_STATE.fields.measurements)
