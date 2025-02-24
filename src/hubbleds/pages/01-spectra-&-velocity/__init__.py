@@ -173,17 +173,17 @@ def Page():
 
     @computed
     def use_second_measurement():
-        return COMPONENT_STATE.value.current_step.value >= Marker.rem_vel1.value
+        return Ref(COMPONENT_STATE.fields.current_step).value.value >= Marker.rem_vel1.value
 
     @computed
     def selected_example_measurement():
-        return LOCAL_STATE.value.get_example_measurement(
-            COMPONENT_STATE.value.selected_example_galaxy,
+        return Ref(LOCAL_STATE.fields.get_example_measurement).value(
+            Ref(COMPONENT_STATE.fields.selected_example_galaxy).value,
             measurement_number='second' if use_second_measurement.value else 'first')
 
     @computed
     def selected_measurement():
-        return LOCAL_STATE.value.get_measurement(COMPONENT_STATE.value.selected_galaxy)
+        return Ref(LOCAL_STATE.fields.get_measurement).value(Ref(COMPONENT_STATE.fields.selected_galaxy).value)
     
     def add_link(from_dc_name, from_att, to_dc_name, to_att):
         _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att)
@@ -288,7 +288,7 @@ def Page():
         need = 5 - len(LOCAL_STATE.value.measurements)
         if need <= 0:
             return
-        galaxies = LOCAL_API.get_galaxies(LOCAL_STATE)
+        galaxies: list = LOCAL_API.get_galaxies(LOCAL_STATE)
         sample = np.random.choice(galaxies, size=need, replace=False)
         new_measurements = [StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
                                                galaxy=galaxy)
@@ -350,7 +350,7 @@ def Page():
 
     @computed
     def show_synced_lines():
-        return COMPONENT_STATE.value.current_step.value >= Marker.dot_seq5.value
+        return Ref(COMPONENT_STATE.fields.current_step).value.value >= Marker.dot_seq5.value
 
     
     ## ----- Make sure we are initialized in the correct state ----- ##
@@ -400,12 +400,12 @@ def Page():
         show_meas = COMPONENT_STATE.value.current_step.value >= Marker.int_dot1.value        
         ignore = []
             
-            if show_which_seed == 'first':
-                seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first']
-            elif show_which_seed == 'second':
-                seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_second']
-            else:
-                seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+        if show_which_seed == 'first':
+            seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first']
+        elif show_which_seed == 'second':
+            seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_second']
+        else:
+            seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
         
         if show_meas and (EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection):
             
@@ -415,7 +415,7 @@ def Page():
                 ]
             
             # we only ever show subsets. so always ignore the full data
-                ignore.append(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS])
+            ignore.append(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS])
             
             if show_which_meas == 'second': # ignore the first
                 subset = subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "first measurement")
