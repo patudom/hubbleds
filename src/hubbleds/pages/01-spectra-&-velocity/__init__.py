@@ -230,9 +230,9 @@ def Page():
     
     def _glue_sync_setup():
         logger.info('running _glue_sync_setup')
-        if LOCAL_STATE.value.measurements_loaded:
-            logger.info(f'\texample_measurements: {len(LOCAL_STATE.value.example_measurements)}')
-            logger.info(f'\tmeasurements: {len(LOCAL_STATE.value.measurements)}')
+        if Ref(LOCAL_STATE.fields.measurements_loaded).value:
+            # logger.info(f'\texample_measurements: {len(LOCAL_STATE.value.example_measurements)}')
+            # logger.info(f'\tmeasurements: {len(LOCAL_STATE.value.measurements)}')
             add_example_measurements_to_glue()
             update_second_example_measurement()
     
@@ -399,83 +399,7 @@ def Page():
             wavelength = sync_example_velocity_to_wavelength(point.xs[0])
             if wavelength:
                 sync_wavelength_line.set(wavelength)
-                
-    def create_dotplot_viewer(first_dotplot = True, show_which_meas = 'first', show_which_seed = 'first', show_full_meas_data = True):
-        print("\n\n ======== \ncreate_dotplot_viewer\n\n")
-        show_meas = Ref(COMPONENT_STATE.fields.current_step).value.value >= Marker.int_dot1.value        
-        ignore = []
-            
-        if show_which_seed == 'first':
-            seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first']
-        elif show_which_seed == 'second':
-            seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_second']
-        else:
-            seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
-        
-        if show_meas and (EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection):
-            
-            viewer_data = [
-                seed,
-                gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-                ]
-            
-            # we only ever show subsets. so always ignore the full data
-            ignore.append(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS])
-            
-            if show_which_meas == 'second': # ignore the first
-                subset = subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "first measurement")
-                if subset is not None:
-                    ignore.append(subset)
-            elif show_which_meas == 'first': # ignore the second
-                subset = subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "second measurement")
-                if subset is not None:
-                    ignore.append(subset)
-        else:
-            viewer_data = [seed]
-        
-        
-        
-        # we'll need to use/modify this for syncing 2 dot plots or for syncing auto-zoomed in x-ranges.
-        def _on_click_callback(point):
-            sync_velocity_line.set(point.xs[0])
-            wavelength = sync_example_velocity_to_wavelength(point.xs[0])
-            if wavelength:
-                sync_wavelength_line.set(wavelength)
-        
-        logger.info(f"\n IGNORED LAYERS: {ignore} \n")
-        
-        with solara.Div() as main:
-            title = "Dotplot: Example Galaxy Velocities"
-            if not first_dotplot:
-                title += " (2nd Measurement)"
-            solara.Text(title)
-            if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                solara.Markdown(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS].to_dataframe()[['obs_wave_value','velocity_value', 'measurement_number']].to_markdown())
-            solara.Text(f"Ignored layers: {ignore}")
-            DotplotViewer(
-                gjapp,
-                title=title,
-                data=viewer_data,
-                component_id=DB_VELOCITY_FIELD,
-                vertical_line_visible=show_synced_lines.value,
-                line_marker_at=sync_velocity_line.value,
-                line_marker_color=LIGHT_GENERIC_COLOR,
-                on_click_callback=_on_click_callback,
-                unit="km / s",
-                x_label="Velocity (km/s)",
-                y_label="Count",
-                nbin=30,
-                x_bounds=dotplot_bounds.value,
-                on_x_bounds_changed=dotplot_bounds.set,
-                reset_bounds=list(
-                    map(
-                        sync_example_wavelength_to_velocity,
-                        # bounds of example galaxy spectrum
-                        [3796.6455078125, 9187.5576171875])),
-                hide_layers=ignore,  # type: ignore
-            )
-        return main
-    
+ 
     speech = Ref(GLOBAL_STATE.fields.speech)
 
 
@@ -1145,18 +1069,18 @@ def Page():
             with rv.Col(cols=12, lg=8):
                 print("Creating 2nd dotplot viewer")
                 if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                    viewer_data = [
+                    viewer_data2 = [
                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_second'],
                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
                             ]
-                    ignore = [
+                    ignore2 = [
                         gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
                         subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "first measurement")
                         ]
                     DotplotViewer(
                         gjapp,
                         title="2nd Measurement",
-                        data=viewer_data,
+                        data=viewer_data2,
                         component_id=DB_VELOCITY_FIELD,
                         vertical_line_visible=show_synced_lines.value,
                         line_marker_at=sync_velocity_line.value,
@@ -1173,7 +1097,7 @@ def Page():
                                 sync_example_wavelength_to_velocity,
                                 # bounds of example galaxy spectrum
                                 [3796.6455078125, 9187.5576171875])),
-                        hide_layers=ignore,  # type: ignore
+                        hide_layers=ignore2,  # type: ignore
                     )
 
 
