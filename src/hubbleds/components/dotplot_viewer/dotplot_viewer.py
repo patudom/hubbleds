@@ -22,7 +22,6 @@ from typing import Callable, Iterable, List, cast, Union, Optional
 from solara.toestand import Reactive
 import numpy as np
 
-from cosmicds.components import LayerToggle
 
 from cosmicds.logger import setup_logger
 logger = setup_logger("DOTPLOT")
@@ -133,12 +132,14 @@ def DotplotViewer(
         
         def _add_data(viewer: PlotlyBaseView, data: Union[Data, tuple]):
             if isinstance(data, Data):
+                logger.info(f"{title}: Adding data: {data.label}")
                 viewer.add_data(data)
             else:
+                logger.info(f"{title}: Adding data: {data.label}")
                 viewer.add_data(data[0], layer_type=data[1])
 
         def _add_viewer():
-            logger.info(f"Dotplot _add_viewer()")
+            logger.info(f"{title}: _add_viewer()")
             if data is None:
                 viewer_data = Data(label = "Test Data", x=[randint(1, 10) for _ in range(30)])
                 gjapp.data_collection.append(viewer_data)
@@ -191,26 +192,23 @@ def DotplotViewer(
             def get_layer(layer_name):
                 layer_artist = dotplot_view.layer_artist_for_data(layer_name) # type: ignore
                 if layer_artist is None:
-                    logger.warning(f"Layer not found: {layer_name}")
+                    logger.warning(f"{title}: Layer not found: {layer_name}")
                 return layer_artist
             
             def hide_ignored_layers(*args):
-                logger.info("Hiding ignored layers")
+                logger.info(f"{title}: Hiding ignored layers")
                 layers = dotplot_view.layers
                 hidden_layers = [get_layer(l) for l in hide_layers.value] # type: ignore
                 # visible_layers = [l for l in layers if l not in hidden_layers]
                 for layer in hidden_layers:
                     if layer is not None:
-                        # logger.info(f"\n\t({title}) Hiding layer: {layer.layer.label}")
+                        logger.info(f"({title}): Hiding: {layer.layer.label}")
                         layer.visible = False
                 for layer in layers:
                     if (layer is not None) and not layer in hidden_layers:
-                        # logger.info(f"\n\t({title}) Showing layer: {layer.layer.label}")
+                        logger.info(f"({title}): Showing: {layer.layer.label}")
                         layer.visible = True
-                layer_status = ''.join([f"\n\t{l.layer.label}: {'visible' if l.visible else 'not visible'}" for l in dotplot_view.layers])
             
-            hide_ignored_layers()
-            hide_layers.subscribe(hide_ignored_layers)
 
             # override the default selection layer
             def new_update_selection(self=dotplot_view):
@@ -293,7 +291,7 @@ def DotplotViewer(
                     if on_click_callback is not None:
                         on_click_callback(points)
                 else:
-                   logger.info(f"({title}) No points selected")
+                   logger.info(f"{title}: No points selected")
 
                 
                 
@@ -319,10 +317,10 @@ def DotplotViewer(
                     new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
                 
                 if ( valid_two_element_array(x_bounds.value) and not np.isclose(x_bounds.value, new_range).all() ):
-                    logger.info(f'({title}) reset x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
+                    logger.info(f'{title}: reset x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
                     x_bounds.set(new_range)
                 else:
-                    logger.info(f'({title}) Bounds already set')
+                    logger.info(f'{title}: Bounds already set')
             
             def _on_wavezoom(*args):
                 logger.info(f"{title}: Zoomed")
@@ -331,10 +329,10 @@ def DotplotViewer(
                     not valid_two_element_array(x_bounds.value) or
                     not np.isclose(x_bounds.value, new_range).all()
                     ):
-                    logger.info(f'({title}) set x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
+                    logger.info(f'{title}: set x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
                     x_bounds.set(new_range)
                 else:
-                    logger.info(f'({title}) Bounds already set')
+                    logger.info(f'{title}: Bounds already set')
             
             def extend_the_tools():  
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_wavezoom, )
@@ -362,6 +360,7 @@ def DotplotViewer(
             line_marker_at.subscribe(lambda new_val: _update_lines(value = new_val))
             vertical_line_visible.subscribe(lambda new_val: _update_lines())
             def update_x_bounds(new_val):
+                logger.info(f"{title}: Updating x_bounds")
                 if new_val is not None and len(new_val) == 2:
                     dotplot_view.state.x_min = new_val[0]
                     dotplot_view.state.x_max = new_val[1]
@@ -372,6 +371,9 @@ def DotplotViewer(
             home_tool.activate()
             
             reset_selection()
+            
+            hide_ignored_layers()
+            hide_layers.subscribe(hide_ignored_layers)
             
             def cleanup():
                 for cnt in (title_widget, toolbar_widget, viewer_widget):
