@@ -172,16 +172,21 @@ def DotplotViewer(
             
             
             
-            for layer in dotplot_view.layers:
-                for trace in layer.traces():
-                    trace.update(hoverinfo="skip", hovertemplate=None)
+            # for layer in dotplot_view.layers:
+            #     for trace in layer.traces():
+            #         trace.update(hoverinfo="skip", hovertemplate=None)
 
-            def no_hover_update(self: DotplotScatterLayerArtist):
-                with dotplot_view.figure.batch_update():
-                    _original_update_data(self)
-                    for trace in self.traces():
-                        trace.update(hoverinfo="skip", hovertemplate=None)
-            DotplotScatterLayerArtist._update_data = no_hover_update
+            # this doesn't even get run;
+            # def no_hover_update(self: DotplotScatterLayerArtist):
+            #     logger.info(f"{title}: no_hover_update")
+            #     hide_ignored_layers()
+            #     with dotplot_view.figure.batch_update():
+            #         _original_update_data(self)
+            #         for trace in self.traces():
+            #             trace.update(hoverinfo="skip", hovertemplate=None)
+            #         self._update_zorder()
+            # DotplotScatterLayerArtist._update_data = no_hover_update
+            
                 
             def get_layer(layer_name):
                 layer_artist = dotplot_view.layer_artist_for_data(layer_name) # type: ignore
@@ -319,8 +324,8 @@ def DotplotViewer(
                 else:
                     logger.info(f'({title}) Bounds already set')
             
-            def _on_bounds_changed(*args):
-                logger.info("Bounds changed")
+            def _on_wavezoom(*args):
+                logger.info(f"{title}: Zoomed")
                 new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
                 if (
                     not valid_two_element_array(x_bounds.value) or
@@ -332,7 +337,7 @@ def DotplotViewer(
                     logger.info(f'({title}) Bounds already set')
             
             def extend_the_tools():  
-                extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_bounds_changed, )
+                extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_wavezoom, )
             extend_the_tools()
             tool = dotplot_view.toolbar.tools['plotly:home']
             if tool:
@@ -363,9 +368,8 @@ def DotplotViewer(
                 reset_selection()
             x_bounds.subscribe(update_x_bounds)
             
-            tool = dotplot_view.toolbar.tools['plotly:home']
-            if tool:
-                tool.activate()
+            home_tool = dotplot_view.toolbar.tools['plotly:home']
+            home_tool.activate()
             
             reset_selection()
             
