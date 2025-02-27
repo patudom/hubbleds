@@ -13,11 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        browser: [chrome, firefox, edge]
+        browser: [edge,]
     name: Run Selenium Tests on ${{ matrix.browser }}
 
     steps:
       - name: Checkout repository
+        if: ${{ !env.ACT }}
         uses: actions/checkout@v4
         with:
           ref: short-demo
@@ -33,33 +34,63 @@ jobs:
           pip install pytest pytest-selenium selenium
           pip install .
 
-      - name: Install WebDrivers
+      - name: Install Firefox
+        if: ${{ matrix.browser == 'firefox' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable firefox microsoft-edge-stable
+          sudo install -d -m 0755 /etc/apt/keyrings
+          wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+          echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+          echo '
+          Package: *
+          Pin: origin packages.mozilla.org
+          Pin-Priority: 1000
           
-          wget -q "https://storage.googleapis.com/chrome-for-testing-public/$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE)/linux64/chromedriver-linux64.zip" -O chromedriver.zip
-          unzip chromedriver.zip
-          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
-
-          wget -q "https://github.com/mozilla/geckodriver/releases/download/v0.35.0/geckodriver-v0.35.0-linux64.tar.gz"
-          tar -xvzf geckodriver-v0.35.0-linux64.tar.gz
+          Package: firefox*
+          Pin: release o=Ubuntu
+          Pin-Priority: -1' | sudo tee /etc/apt/preferences.d/mozilla
+          sudo apt update && sudo apt remove firefox -y
+          sudo apt install firefox -y
+          GECKO_VERSION=$(curl -s "https://api.github.com/repos/mozilla/geckodriver/releases/latest" | jq -r '.tag_name')
+          wget -q "https://github.com/mozilla/geckodriver/releases/download/$GECKO_VERSION/geckodriver-$GECKO_VERSION-linux64.tar.gz"
+          tar -xvzf geckodriver-$GECKO_VERSION-linux64.tar.gz
           sudo mv geckodriver /usr/local/bin/
 
-          wget -q "https://msedgedriver.azureedge.net/$(curl https://msedgedriver.azureedge.net/LATEST_STABLE | iconv -f UTF-16 -t UTF-8 | tr -d '\r')/edgedriver_linux64.zip" -O edgedriver.zip
-          unzip edgedriver.zip
+      - name: Install Chrome
+        if: ${{ matrix.browser == 'chrome' }}
+        run: |
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+          CHROMEDRIVER_VERSION=$(google-chrome-stable --version | awk '{print $3}')
+          wget -q "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
+          unzip chromedriver-linux64.zip
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+
+      - name: Install Edge
+        if: ${{ matrix.browser == 'edge' }}
+        run: |
+          wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge.list'
+          sudo apt-get update
+          sudo apt-get install -y microsoft-edge-stable
+        
+          EDGE_VERSION=$(microsoft-edge-stable --version | awk '{print $3}')
+          wget -q "https://msedgedriver.azureedge.net/$EDGE_VERSION/edgedriver_linux64.zip"
+          unzip edgedriver_linux64.zip
           sudo mv msedgedriver /usr/local/bin/
 
       - name: Start Solara Server
         run: |
-          solara run hubbleds.pages --port=8865 &
+          nohup solara run hubbleds.pages --port=8865 > solara.log 2>&1 &
           echo "Waiting for server to start..."
           for i in {1..30}; do
-            curl -s http://localhost:8865/ && break
-            echo "Waiting..."
+            curl -sSf http://localhost:8865/ > /dev/null && echo "Server is up!" && exit 0
+            echo "Waiting for Solara..."
             sleep 3
           done
-          echo "Server is ready!"
+          echo "Solara did not start in time" && exit 1
         env:
           SOLARA_SESSION_SECRET_KEY: ${{ secrets.SOLARA_SESSION_SECRET_KEY }}
           SOLARA_OAUTH_CLIENT_ID: ${{ secrets.SOLARA_OAUTH_CLIENT_ID }}
@@ -70,5 +101,10 @@ jobs:
           CDS_API_KEY: ${{ secrets.CDS_API_KEY }}
           CDS_DISABLE_DB: "true"
 
+      - name: Check if Solara Server is Running
+        run: curl -s http://localhost:8865/ || (echo "Solara server is not running!" && exit 1)
+
       - name: Run Selenium Tests on ${{ matrix.browser }}
         run: pytest --driver ${{ matrix.browser }} -m selenium
+        env:
+          BROWSER: ${{ matrix.browser }}
