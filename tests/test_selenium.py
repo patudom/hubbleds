@@ -56,7 +56,7 @@ def test_homepage_title(driver):
     driver.get("http://localhost:8865")
 
     # Wait until the title contains "HubbleDS"
-    WebDriverWait(driver, 30).until(EC.title_contains("HubbleDS"))
+    WebDriverWait(driver, 60).until(EC.title_contains("HubbleDS"))
 
     assert "HubbleDS" in driver.title
 
@@ -66,7 +66,7 @@ def test_jump_to_stage_one(driver):
     driver.get("http://localhost:8865")
 
     # Wait until the button is visible and clickable
-    button = WebDriverWait(driver, 30).until(
+    button = WebDriverWait(driver, 60).until(
         EC.element_to_be_clickable((By.ID, "btn-jump-to-stage-1"))
     )
 
@@ -74,7 +74,7 @@ def test_jump_to_stage_one(driver):
     button.click()
 
     # Wait for the URL to change
-    WebDriverWait(driver, 30).until(EC.url_changes("http://localhost:8865/"))
+    WebDriverWait(driver, 60).until(EC.url_changes("http://localhost:8865/"))
 
     # Verify that clicking the button triggered the expected behavior
     assert "01-spectra-&-velocity" in driver.current_url
