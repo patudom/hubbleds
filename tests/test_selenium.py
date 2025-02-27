@@ -55,6 +55,9 @@ def driver(request):
 def test_homepage_title(driver):
     driver.get("http://localhost:8865")
 
+    print(driver.current_url)
+    print(driver.title)
+
     # Wait until the title contains "HubbleDS"
     WebDriverWait(driver, 60).until(EC.title_contains("HubbleDS"))
 
