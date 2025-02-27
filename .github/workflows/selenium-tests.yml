@@ -14,7 +14,7 @@ jobs:
     environment: Workflow Testing Environment
     strategy:
       matrix:
-        browser: [firefox]
+        browser: [firefox, chrome, edge]
     name: Run Selenium Tests on ${{ matrix.browser }}
 
     steps:
