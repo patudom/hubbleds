@@ -81,6 +81,19 @@ jobs:
           unzip edgedriver_linux64.zip
           sudo mv msedgedriver /usr/local/bin/
 
+      - name: Check Secrets
+        run: |
+          if [[ -z "${{ secrets.SOLARA_SESSION_SECRET_KEY }}" ]]; then
+            echo "SOLARA_SESSION_SECRET_KEY is not set!"
+          else
+            echo "SOLARA_SESSION_SECRET_KEY is set."
+          fi
+          if [[ -z "${{ secrets.CDS_API_KEY }}" ]]; then
+            echo "CDS_API_KEY is not set!"
+          else
+            echo "CDS_API_KEY is set."
+          fi
+
       - name: Start Solara Server
         run: |
           nohup solara run hubbleds.pages --port=8865 > solara.log 2>&1 &
