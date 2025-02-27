@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        browser: [edge,]
+        browser: [firefox, chrome, edge]
     name: Run Selenium Tests on ${{ matrix.browser }}
 
     steps:
