@@ -66,7 +66,7 @@
               <v-card-text>
                 <v-container>
                   <p>
-                    This <b>dot plot</b> displays&#8212;as a dot&#8212;a example set of made up data similar to the measurements you are making. 
+                    This is a <b>dot plot</b> for a set of velocity values similar to the measurements you are making. Each measured velocity value is represented by a single <b>dot</b>.
                   </p>
                   <p>
                     Dots are stacked within velocity <b>ranges</b> called <b>bins</b>.
