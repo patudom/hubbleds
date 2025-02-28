@@ -12,6 +12,7 @@ from solara.toestand import Ref
 from typing import Dict, List, Tuple
 
 from cosmicds.components import ScaffoldAlert, StateEditor, ViewerLayout
+from hubbleds.demo_utils import fill_data_points
 from hubbleds.viewer_marker_colors import MY_DATA_COLOR, MY_CLASS_COLOR, GENERIC_COLOR
 from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_multiple_choice, get_free_response, mc_callback, fr_callback
@@ -49,6 +50,9 @@ def Page():
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
 
+    if not LOCAL_STATE.value.measurements:
+        fill_data_points()
+
     async def _load_component_state():
         # Load stored component state from database, measurement data is
         # considered higher-level and is loaded when the story starts
@@ -77,12 +81,6 @@ def Page():
     class_plot_data = solara.use_reactive([])
 
     student_plot_data = solara.use_reactive(LOCAL_STATE.value.measurements)
-    async def _load_student_data():
-        if not LOCAL_STATE.value.measurements_loaded:
-            logger.info("Loading measurements")
-            measurements = LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
-            student_plot_data.set(measurements)
-    solara.lab.use_task(_load_student_data)
 
     def glue_setup() -> Tuple[JupyterApplication, Dict[str, CDSScatterView]]:
         gjapp = JupyterApplication(
