@@ -361,32 +361,32 @@ def Page():
         clear_fit_line = solara.use_reactive(0)
 
         def _on_marker_update(marker):
-            if Marker.is_between(marker, Marker.tre_dat2, Marker.hub_exp1):
+            if marker.is_between(Marker.tre_dat2, Marker.hub_exp1):
                 layers_enabled.set((True, True))
             else:
                 layers_enabled.set((False, True))
 
-            if Marker.is_at_or_after(marker, Marker.tre_lin2):
+            if marker >= Marker.tre_lin2:
                 draw_enabled.set(True)
             else:
                 draw_enabled.set(False)
 
-            if Marker.is_at_or_after(marker, Marker.bes_fit1):
+            if marker >= Marker.bes_fit1:
                 fit_enabled.set(True)
             else:
                 fit_enabled.set(False)
 
-            if Marker.is_at_or_after(marker, Marker.hyp_gal1):
+            if marker >= Marker.hyp_gal1:
                 display_best_fit_gal.set(True)
             else:
                 display_best_fit_gal.set(False)
 
-            if Marker.is_on(marker, Marker.tre_lin1):
+            if marker is Marker.tre_lin1:
                 # What we really want is for the viewer to check if this layer is visible when it gets to this marker, and if so, clear it.
                 clear_class_layer.set(clear_class_layer.value + 1)
 
             #This has the same issues as above.
-            if Marker.is_on(marker, Marker.age_uni1):
+            if marker is Marker.age_uni1:
                 clear_drawn_line.set(clear_drawn_line.value + 1)
                 draw_active.set(False)
             

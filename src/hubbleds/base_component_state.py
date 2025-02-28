@@ -88,10 +88,10 @@ class BaseComponentState:
 
     def current_step_between(self, start: BaseMarker, end: BaseMarker = None):
         end = end or self.current_step.last()
-        return self.current_step.is_between(self.current_step, start, end)
+        return self.current_step.is_between(start, end)
 
     def current_step_at_or_before(self, end):
-        return self.current_step.is_at_or_before(self.current_step, end)
+        return self.current_step <= end
 
     def current_step_at_or_after(self, start):
-        return self.current_step.is_at_or_after(self.current_step, start)
+        return self.current_step >= start
