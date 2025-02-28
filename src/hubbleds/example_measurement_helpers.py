@@ -71,6 +71,12 @@ def link_seed_data(gjapp):
             _add_link(gjapp, egsd, DB_MEASWAVE_FIELD, second, DB_MEASWAVE_FIELD)
             _add_link(gjapp, egsd, DB_ANGSIZE_FIELD, second, DB_ANGSIZE_FIELD)
             _add_link(gjapp, egsd, DB_DISTANCE_FIELD, second, DB_DISTANCE_FIELD)
+        # if EXAMPLE_GALAXY_SEED_DATA + 'tutorial' in gjapp.data_collection:
+        #     second = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + 'tutorial']
+        #     _add_link(gjapp, egsd, DB_VELOCITY_FIELD, second, DB_VELOCITY_FIELD)
+        #     _add_link(gjapp, egsd, DB_MEASWAVE_FIELD, second, DB_MEASWAVE_FIELD)
+        #     _add_link(gjapp, egsd, DB_ANGSIZE_FIELD, second, DB_ANGSIZE_FIELD)
+        #     _add_link(gjapp, egsd, DB_DISTANCE_FIELD, second, DB_DISTANCE_FIELD)
 
 
 def _update_second_example_measurement(example_measurements: list[StudentMeasurement]):

@@ -42,7 +42,6 @@ class Marker(enum.Enum, BaseMarker):
     dot_seq11 = enum.auto()  
     rem_vel1 = enum.auto() # need to be able to reameasure. should show old measurement in table still. 
 
-    dot_seq14 = enum.auto()
     rem_gal1 = enum.auto()
     ref_dat1 = enum.auto()
     dop_cal6 = enum.auto()

@@ -63,7 +63,7 @@ def DotplotViewer(
     zorder: Optional[list[int]] = None,
     nbin: int = 75,
     x_bounds: Optional[Reactive[list[float]]] = None,
-    reset_bounds: Reactive[list] = Reactive([]),
+    reset_bounds: list = [],
     hide_layers: Reactive[List[Data | Subset]] | list[Data | Subset] = [],
     ):
     
@@ -98,7 +98,6 @@ def DotplotViewer(
     line_marker_at = solara.use_reactive(line_marker_at)
     vertical_line_visible = solara.use_reactive(vertical_line_visible)
     x_bounds = solara.use_reactive(x_bounds) # type: ignore
-    reset_bounds = solara.use_reactive(reset_bounds)
     hide_layers = solara.use_reactive(hide_layers)
     
     with rv.Card() as main:
@@ -319,23 +318,16 @@ def DotplotViewer(
             # prevent_callback = False
             
             def _on_reset_bounds(*args):
-                if None not in reset_bounds.value and len(reset_bounds.value) == 2:
-                    new_range = reset_bounds.value
+                if None not in reset_bounds and len(reset_bounds) == 2:
+                    new_range = reset_bounds
                     dotplot_view.state.x_min = new_range[0]
                     dotplot_view.state.x_max = new_range[1]
                 else:
                     new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
                 
-                # new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
-                if (
-                    not valid_two_element_array(x_bounds.value) or
-                    not np.isclose(x_bounds.value, new_range).all()
-                    ):
-                    if valid_two_element_array(new_range):
-                        logger.info(f'({title}) reset x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
-                        x_bounds.set(new_range)
-                    else:
-                        logger.info(f'Skipped setting x_bounds: {new_range}')
+                if ( valid_two_element_array(x_bounds.value) and not np.isclose(x_bounds.value, new_range).all() ):
+                    logger.info(f'({title}) reset x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
+                    x_bounds.set(new_range)
                 else:
                     logger.info(f'({title}) Bounds already set')
             
@@ -354,12 +346,18 @@ def DotplotViewer(
             def extend_the_tools():  
                 extend_tool(dotplot_view, 'plotly:home', activate_cb=apply_zorder)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=apply_zorder)
-                extend_tool(dotplot_view, 'plotly:home', activate_cb=_on_reset_bounds, activate_before_tool=False)
                 extend_tool(dotplot_view, 'hubble:wavezoom', deactivate_cb=_on_bounds_changed, )
             extend_the_tools()
             tool = dotplot_view.toolbar.tools['plotly:home']
             if tool:
                 tool.activate()
+                old_activate = tool.activate
+                def new_activate():
+                    if len(reset_bounds) == 2:
+                        _on_reset_bounds()
+                    else:
+                        old_activate()
+                tool.activate = new_activate
 
             zoom_tool = dotplot_view.toolbar.tools['hubble:wavezoom']
             def on_zoom(bounds_old, bounds_new):

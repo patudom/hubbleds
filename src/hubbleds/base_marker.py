@@ -1,7 +1,7 @@
 from enum import EnumMeta
 from functools import total_ordering
 
-@total_ordering
+
 class BaseMarker(metaclass=EnumMeta):
     
     def __lt__(self, other):

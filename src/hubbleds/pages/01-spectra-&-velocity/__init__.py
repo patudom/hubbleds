@@ -138,6 +138,19 @@ def Page():
             second.style.color = GENERIC_COLOR
             gjapp.data_collection.append(second)
             
+            np.random.seed(42)
+            # 50% of the first measurements will be used for the tutorial
+            tutorial_data = [e for e in example_seed_data if np.random.rand() <= 0.5]
+            # filter some of the correct values to reduce counts
+            filter_func = lambda x: (x < 11_130 or x > 11_220) or np.random.rand() <= 0.75
+            tutorial_data = [e for e in tutorial_data if filter_func(e['velocity_value'])]
+            tutorial = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_tutorial',
+                            **{k: np.asarray([r[k] for r in tutorial_data])
+                               for k in example_seed_data[0].keys()}
+                            )
+            tutorial.style.color = GENERIC_COLOR
+            gjapp.data_collection.append(tutorial)
+            
             link_seed_data(gjapp)
         
         return gjapp
@@ -312,11 +325,11 @@ def Page():
         if (not isloaded):
             return
 
-        if COMPONENT_STATE.value.current_step == Marker.sel_gal2:
+        if COMPONENT_STATE.value.current_step.value == Marker.sel_gal2.value:
             if COMPONENT_STATE.value.total_galaxies == 5:
                 transition_to(COMPONENT_STATE, Marker.sel_gal3, force=True)
 
-        if COMPONENT_STATE.value.current_step > Marker.cho_row1:
+        if COMPONENT_STATE.value.current_step.value > Marker.cho_row1.value:
             COMPONENT_STATE.value.selected_example_galaxy = 1576  # id of the first example galaxy
 
     loaded_component_state.subscribe(_initialize_state)
@@ -335,20 +348,12 @@ def Page():
     sync_velocity_line = solara.use_reactive(0.0)
     spectrum_bounds = solara.use_reactive([])
     dotplot_bounds = solara.use_reactive([])
-    max_spectrum_bounds = solara.use_reactive([])
 
     @computed
     def show_synced_lines():
-        return COMPONENT_STATE.value.current_step >= Marker.dot_seq5
+        return COMPONENT_STATE.value.current_step.value >= Marker.dot_seq5.value
 
-    @computed
-    def sync_plot_lines():
-        return COMPONENT_STATE.value.current_step >= Marker.dot_seq5
-
-    @computed
-    def sync_plot_zoom():
-        return COMPONENT_STATE.value.current_step >= Marker.dot_seq5
-
+    
     ## ----- Make sure we are initialized in the correct state ----- ##
     def sync_example_velocity_to_wavelength(velocity):
         if len(LOCAL_STATE.value.example_measurements) > 0:
@@ -365,39 +370,22 @@ def Page():
             return velocity
     
     def sync_spectrum_to_dotplot_range(value):
-        if sync_plot_zoom.value:
-            logger.info('Setting dotplot range from spectrum range')
-            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            return [w2v(v, lambda_rest) for v in value]
+        logger.info('Setting dotplot range from spectrum range')
+        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+        return [w2v(v, lambda_rest) for v in value]
     
     def sync_dotplot_to_spectrum_range(value):
-        if sync_plot_zoom.value:
-            logger.info('Setting spectrum range from dotplot range')
-            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            return [v2w(v, lambda_rest) for v in value]
+        logger.info('Setting spectrum range from dotplot range')
+        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+        return [v2w(v, lambda_rest) for v in value]
             
     
-    @computed
-    def dotplot_reset_bounds():
-        if COMPONENT_STATE.value.current_step <= Marker.dot_seq4:
-            return []
-        if len(LOCAL_STATE.value.example_measurements) > 0:
-            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            return [w2v(w, lambda_rest) for w in max_spectrum_bounds.value]
-        return []
 
-    def initialize_bounds(value):
-        logger.info('Initializing dotplot to max spectrum bounds')
-        if len(value) == 2:
-            lr = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-            dotplot_bounds.set([w2v(w, lr) for w in max_spectrum_bounds.value])
-            spectrum_bounds.set([value[0], value[1]])
-    
     
     def _reactive_subscription_setup():
         Ref(COMPONENT_STATE.fields.selected_galaxy).subscribe(print_selected_galaxy)
         Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
-        max_spectrum_bounds.subscribe(initialize_bounds)
+
         
         sync_reactives(spectrum_bounds, 
                        dotplot_bounds, 
@@ -410,7 +398,7 @@ def Page():
 
     def create_dotplot_viewer(first_dotplot = True, show_which_meas = 'first', show_which_seed = 'first', ignore_full_seed_data = True, ignore_full_meas_data = True):
         print("\n\n ======== \ncreate_dotplot_viewer\n\n")
-        show_meas = COMPONENT_STATE.value.current_step >= Marker.int_dot1        
+        show_meas = COMPONENT_STATE.value.current_step.value >= Marker.int_dot1.value        
         ignore = []
         
         if show_meas and (EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection):
@@ -486,9 +474,13 @@ def Page():
                 x_label="Velocity (km/s)",
                 y_label="Count",
                 zorder=[1,5],
-                nbin=74,
+                nbin=30,
                 x_bounds=dotplot_bounds,
-                reset_bounds=dotplot_reset_bounds,
+                reset_bounds=list(
+                    map(
+                        sync_example_wavelength_to_velocity,
+                        # bounds of example galaxy spectrum
+                        [3796.6455078125, 9187.5576171875])),
                 hide_layers=ignore,  # type: ignore
             )
         return main
@@ -497,9 +489,7 @@ def Page():
 
 
     def _on_marker_updated(marker):
-        if COMPONENT_STATE.value.is_current_step(Marker.dot_seq4):
-            initialize_bounds(max_spectrum_bounds.value)
-        if COMPONENT_STATE.value.current_step >= Marker.rem_vel1:
+        if COMPONENT_STATE.value.current_step.value >= Marker.rem_vel1.value:
             update_second_example_measurement() # either set them to current or keep from DB
         if COMPONENT_STATE.value.current_step_between(Marker.mee_gui1, Marker.sel_gal4):
             selection_tool_bg_count.set(selection_tool_bg_count.value + 1)
@@ -632,7 +622,7 @@ def Page():
                 print("is galaxy selected:", galaxy_is_selected.value)             
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-            Marker.cho_row1, Marker.dot_seq14 #placeholder so it doesn't break - change to last new dot_seq marker.
+            Marker.cho_row1, Marker.rem_vel1 
             )
             if show_example_data_table:
                 selection_tool_galaxy = selected_example_measurement
@@ -756,7 +746,7 @@ def Page():
                         )
                     )
                     
-                    if COMPONENT_STATE.value.current_step == Marker.rem_vel1:
+                    if COMPONENT_STATE.value.current_step.value == Marker.rem_vel1.value:
                         add_example_measurements_to_glue()
 
                 DopplerSlideshow(
@@ -861,7 +851,7 @@ def Page():
 
         with rv.Col(cols=12, lg=8):
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-                Marker.cho_row1, Marker.dot_seq14  # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
+                Marker.cho_row1, Marker.rem_vel1 
             )
 
             if show_example_data_table:
@@ -990,7 +980,7 @@ def Page():
 
     # dot plot slideshow button row
 
-    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1): 
         with rv.Row(class_="no-padding"):
             with rv.Col(cols=12, lg=4, class_="no-padding"):
                 pass
@@ -1001,8 +991,9 @@ def Page():
                     )
                     
                     tut_viewer_data = None
-                    if EXAMPLE_GALAXY_SEED_DATA in gjapp.data_collection:
-                        tut_viewer_data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
+                    if EXAMPLE_GALAXY_SEED_DATA+'_tutorial' in gjapp.data_collection:
+                        tut_viewer_data: Data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA+'_tutorial']
+                    # solara.Markdown(tut_viewer_data.to_dataframe().to_markdown())
                     DotplotTutorialSlideshow(
                         dialog=COMPONENT_STATE.value.show_dotplot_tutorial_dialog,
                         step=COMPONENT_STATE.value.dotplot_tutorial_state.step,
@@ -1015,7 +1006,8 @@ def Page():
                                                     line_marker_color=LIGHT_GENERIC_COLOR,
                                                     unit="km / s",
                                                     x_label="Velocity (km/s)",
-                                                    y_label="Count"
+                                                    y_label="Count",
+                                                    nbin=20
                                                     ),
                                                     
                         event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
@@ -1024,7 +1016,7 @@ def Page():
                     )
                 
     # Dot Plot 1st measurement row
-    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1): 
         with rv.Row(class_="no-y-padding"):
             with rv.Col(cols=12, lg=4, class_="no-y-padding"):
                 ScaffoldAlert(
@@ -1085,6 +1077,7 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
                     speech=speech.value,
+                    event_zoom_to_range= lambda event: dotplot_bounds.set([9000, 13500]),
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineDotSequence07.vue",
@@ -1100,6 +1093,7 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
+                    event_zoom_to_range= lambda event: dotplot_bounds.set([9000, 13500]),
                     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq8),
                     state_view={
                         "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "vel_meas_consensus"),
@@ -1117,28 +1111,6 @@ def Page():
                         show_which_meas='first' if COMPONENT_STATE.value.current_step != Marker.rem_vel1 else 'second',
                         show_which_seed='first'
                     )
-
-    # Dot Plot 2nd measurement row
-
-    if COMPONENT_STATE.value.current_step_between(Marker.dot_seq14, Marker.dot_seq14):
-        with rv.Row():
-            with rv.Col(cols=12, lg=4):
-                ScaffoldAlert(
-                    GUIDELINE_ROOT / "GuidelineDotSequence14.vue",
-                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq14),
-                    speech=speech.value,
-                )
-            with rv.Col(cols=12, lg=8):
-                print("Creating 2nd dotplot viewer")
-                create_dotplot_viewer(
-                    first_dotplot=False,
-                    show_which_meas='second',
-                    show_which_seed='second'
-                )
-
 
     # Spectrum Viewer row
     if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.che_mea1) or COMPONENT_STATE.value.current_step_between(Marker.dot_seq4, Marker.rem_vel1) or COMPONENT_STATE.value.current_step_at_or_after(Marker.rem_gal1):
@@ -1268,7 +1240,7 @@ def Page():
                 show_example_spectrum = COMPONENT_STATE.value.current_step_between(
                     Marker.mee_spe1, Marker.che_mea1
                 ) or COMPONENT_STATE.value.current_step_between(
-                    Marker.dot_seq4, Marker.dot_seq14  # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+                    Marker.dot_seq4, Marker.rem_vel1 
                 )
 
                 show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(
@@ -1337,10 +1309,10 @@ def Page():
                     def obs_wav_marker_value():
                         meas = LOCAL_STATE.value.example_measurements
                         if LOCAL_STATE.value.measurements_loaded and len(meas) > 0:
-                            step = COMPONENT_STATE.value.current_step
-                            if step >= Marker.rem_vel1 and meas[1].obs_wave_value is not None:
+                            step = COMPONENT_STATE.value.current_step.value
+                            if step >= Marker.rem_vel1.value and meas[1].obs_wave_value is not None:
                                 return meas[1].obs_wave_value
-                            elif step >= Marker.dot_seq1 and meas[0].velocity_value is not None:
+                            elif step >= Marker.dot_seq1.value and meas[0].velocity_value is not None:
                                 return meas[0].obs_wave_value
                         return COMPONENT_STATE.value.obs_wave
 
@@ -1363,7 +1335,7 @@ def Page():
                             COMPONENT_STATE.value.current_step_between(
                             Marker.obs_wav1, Marker.obs_wav2
                         )
-                        or COMPONENT_STATE.value.current_step == Marker.rem_vel1
+                        or COMPONENT_STATE.value.current_step.value == Marker.rem_vel1.value
                         ),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
                         on_rest_wave_tool_clicked=lambda: rest_wave_tool_activated.set(
@@ -1373,7 +1345,6 @@ def Page():
                         on_reset_tool_clicked=_on_reset,
                         marker_position=sync_wavelength_line if show_synced_lines.value else None,
                         spectrum_bounds = spectrum_bounds, # type: ignore
-                        max_spectrum_bounds=max_spectrum_bounds,
                         show_obs_wave_line=COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4),
                         on_set_marker_position=_on_set_marker_location,
                     )
