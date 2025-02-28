@@ -447,7 +447,7 @@ class LocalAPI(BaseAPI):
         seq = SeedSequence(70)
         gen = Generator(PCG64(seq))
         indices = arange(len(res_json))
-        N = 100
+        N = 75
         random_subset = gen.choice(indices, size=N, replace=False)
         # random_subset = range(len(res_json))
         measurements = []
