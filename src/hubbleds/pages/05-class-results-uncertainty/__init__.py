@@ -1,6 +1,5 @@
 from contextlib import ExitStack
 from echo import delay_callback, add_callback
-from glue.core import Subset
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
@@ -144,6 +143,11 @@ def Page():
         if not LOCAL_STATE.value.measurements:
             fill_data_points()
 
+        class_id = GLOBAL_STATE.value.classroom.class_info["id"]
+        for m in LOCAL_STATE.value.measurements:
+            m.class_id = class_id
+
+        student_id = GLOBAL_STATE.value.student.id
         class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
         measurements = Ref(LOCAL_STATE.fields.class_measurements)
         student_ids = Ref(LOCAL_STATE.fields.stage_5_class_data_students)
@@ -153,6 +157,8 @@ def Page():
         measurements.set(class_measurements)
 
         all_measurements, student_summaries, class_summaries = LOCAL_API.get_all_data(LOCAL_STATE)
+        all_measurements = [m for m in all_measurements if m.student_id != student_id]
+        all_measurements.extend(m for m in LOCAL_STATE.value.measurements)
         all_meas = Ref(LOCAL_STATE.fields.all_measurements)
         all_stu_summaries = Ref(LOCAL_STATE.fields.student_summaries)
         all_cls_summaries = Ref(LOCAL_STATE.fields.class_summaries)
@@ -166,9 +172,8 @@ def Page():
         student_data = GLOBAL_STATE.value.add_or_update_data(student_data)
 
         class_ids = LOCAL_STATE.value.stage_5_class_data_students
-        class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
-        if GLOBAL_STATE.value.student.id not in student_ids.value:
-            class_data_points.extend(m for m in LOCAL_STATE.value.measurements)
+        class_data_points = [m for m in LOCAL_STATE.value.class_measurements if (m.student_id in class_ids and m.student_id != student_id)]
+        class_data_points.extend(m for m in LOCAL_STATE.value.measurements)
         class_data = models_to_glue_data(class_data_points, label="Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
 
@@ -187,7 +192,6 @@ def Page():
         class_layer.state.color = MY_CLASS_COLOR
         class_layer.state.size = 8
         class_layer.state.visible = False
-
 
         layer_viewer.state.x_att = class_data.id['est_dist_value']
         layer_viewer.state.y_att = class_data.id['velocity_value']
@@ -227,6 +231,12 @@ def Page():
                                                            label="My Summary")
         else:
             my_summ_subset = class_summary_data.subsets[0]
+
+        db_h0, db_age = create_single_summary(distances=class_data["est_dist_value"],
+                                                 velocities=class_data["velocity_value"])
+        class_summary = next(summ for summ in all_cls_summaries.value if summ.class_id == class_id)
+        class_summary.hubble_fit_value = db_h0
+        class_summary.age_value = db_age
 
         my_measurements = LOCAL_STATE.value.measurements
         my_distances = [distance for m in my_measurements if ((distance := m.est_dist_value) is not None and m.velocity_value is not None)]
