@@ -137,13 +137,15 @@ class SelectionToolWidget(v.VueTemplate):
 
     def show_galaxies(self, show=True):
         self.set_background()
-        if self.sdss_layer is not None:
-            if self.sdss_layer in self.widget.layers._layers:
-                self.widget.layers.remove_layer(self.sdss_layer)
-                self.sdss_layer = None
 
-        if show and self.sdss_layer is None:
-            layer = self.widget.layers.add_table_layer(self.sdss_table, marker_type="gaussian", size_scale=100, color="#00FF00", marker_scale="screen")
+        opacity = int(show)
+        if self.sdss_layer is None:
+            layer = self.widget.layers.add_table_layer(self.sdss_table,
+                                                       marker_type="gaussian",
+                                                       size_scale=100,
+                                                       color="#00FF00",
+                                                       marker_scale="screen",
+                                                       opacity=opacity)
                                                         
             # self.widget.layers.add_table_layer(self.sdss_table)
             # #try passing these as kwargs to add_table_layer.
@@ -151,6 +153,8 @@ class SelectionToolWidget(v.VueTemplate):
             # layer.size_scale = 100
             # layer.color = "#00FF00"
             self.sdss_layer = layer
+        else:
+            self.sdss_layer.opacity = opacity
 
     @property
     def on_galaxy_selected(self):
