@@ -208,23 +208,23 @@ def Page():
             viewer.layer_artist_for_data(data).visible = False
 
     def add_data_by_marker(viewer, marker):
-        if Marker.is_at_or_after(marker, Marker.pro_dat0):
+        if marker >= Marker.pro_dat0:
             show_class_data(viewer)
-        if Marker.is_between(marker, Marker.pro_dat1, Marker.pro_dat4):
+        if marker.is_between(Marker.pro_dat1, Marker.pro_dat4):
             show_class_data(viewer)
             show_hubble1929_data(viewer)
             hide_hstkey_data(viewer)
-        if Marker.is_between(marker, Marker.pro_dat5, Marker.pro_dat7):
+        if marker.is_between(Marker.pro_dat5, Marker.pro_dat7):
             show_class_data(viewer)
             show_hst_key_data(viewer)
             hide_hubble1929_data(viewer)
-        if Marker.is_at_or_after(marker, Marker.pro_dat8):
+        if marker >= Marker.pro_dat8:
             show_class_data(viewer)
             show_hubble1929_data(viewer)
             show_hst_key_data(viewer)
 
     def display_fit_legend(marker):
-        show_legend(viewer, show=Marker.is_at_or_after(marker, Marker.pro_dat8))
+        show_legend(viewer, show=marker >= Marker.pro_dat8)
 
     current_step = Ref(COMPONENT_STATE.fields.current_step)
     current_step.subscribe(lambda step: add_data_by_marker(viewer, step))

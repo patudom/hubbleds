@@ -135,6 +135,9 @@ def Page():
             "class_hist": class_hist_viewer
         }
 
+        student_slider_viewer.state.reset_limits_from_visible = False
+        class_slider_viewer.state.reset_limits_from_visible = False
+
         two_hist_viewers = (all_student_hist_viewer, class_hist_viewer)
         for att in ('x_min', 'x_max'):
             link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
@@ -292,7 +295,7 @@ def Page():
             viewer.figure.update_layout(hovermode="closest")
 
         for viewer in viewers.values():
-            viewer.state.reset_limits(visible_only=True)
+            viewer.state.reset_limits()
 
         gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
                                             handler=partial(_update_bins, two_hist_viewers),
@@ -327,14 +330,13 @@ def Page():
         # viewer's limits
         if name == "class_hist":
             continue
-        visible_only = "slider" not in name
-        viewer.state.reset_limits(visible_only=visible_only)
+        viewer.state.reset_limits()
 
     def show_class_data(marker):
         if "Class Data" in GLOBAL_STATE.value.glue_data_collection:
             class_data = GLOBAL_STATE.value.glue_data_collection["Class Data"]
             layer = viewers["layer"].layer_artist_for_data(class_data)
-            should_be_visible = Marker.is_at_or_after(marker, Marker.cla_dat1)
+            should_be_visible = marker >= Marker.cla_dat1
             if layer.state.visible is not should_be_visible:
                 layer.state.visible = should_be_visible
 
@@ -342,7 +344,7 @@ def Page():
         if "My Data" in GLOBAL_STATE.value.glue_data_collection:
             student_data = GLOBAL_STATE.value.glue_data_collection["My Data"]
             layer = viewers["layer"].layer_artist_for_data(student_data)
-            should_be_visible = Marker.is_at_or_before(marker, Marker.fin_cla1)
+            should_be_visible = marker <= Marker.fin_cla1
             if layer.state.visible is not should_be_visible:
                 layer.state.visible = should_be_visible
 
@@ -368,7 +370,7 @@ def Page():
         viewer.layers[1].state.visible = not value
 
     def _on_marker_updated(marker):
-        if Marker.is_at_or_before(marker, Marker.sho_mya1) or Marker.is_at_or_after(marker, Marker.con_int2):
+        if marker <= Marker.sho_mya1 or marker >= Marker.con_int2:
             show_class_hide_my_age_subset(True)
 
     Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
@@ -574,7 +576,7 @@ def Page():
                 student_slider_subset.style.markersize = 12
                 if not student_slider_setup:
                     viewer = viewers["student_slider"]
-                    viewer.state.reset_limits(visible_only=False)
+                    viewer.state.reset_limits()
                     viewer.toolbar.tools["hubble:linefit"].activate()
                     set_student_slider_setup(True)
 
@@ -644,7 +646,7 @@ def Page():
                 class_slider_subset.style.color = color
                 if not class_slider_setup:
                     viewer = viewers["class_slider"]
-                    viewer.state.reset_limits(visible_only=False)
+                    viewer.state.reset_limits()
                     viewer.toolbar.tools["hubble:linefit"].activate()
                     set_class_slider_setup(True)
 

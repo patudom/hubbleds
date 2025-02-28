@@ -552,8 +552,8 @@ def Page():
 
         with rv.Col():
             def show_ruler_range(marker):
-                COMPONENT_STATE.value.show_ruler = Marker.is_between(marker, Marker.ang_siz3, Marker.est_dis4) or \
-                Marker.is_between(marker, Marker.dot_seq5b, Marker.last())
+                COMPONENT_STATE.value.show_ruler = marker.is_between(Marker.ang_siz3, Marker.est_dis4) or \
+                marker.is_between(Marker.dot_seq5b, Marker.last())
             
             current_step = Ref(COMPONENT_STATE.fields.current_step)
             current_step.subscribe(show_ruler_range)
