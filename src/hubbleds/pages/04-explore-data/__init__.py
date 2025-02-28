@@ -81,12 +81,6 @@ def Page():
     class_plot_data = solara.use_reactive([])
 
     student_plot_data = solara.use_reactive(LOCAL_STATE.value.measurements)
-    async def _load_student_data():
-        if not LOCAL_STATE.value.measurements_loaded:
-            logger.info("Loading measurements")
-            measurements = LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
-            student_plot_data.set(measurements)
-    solara.lab.use_task(_load_student_data)
 
     def glue_setup() -> Tuple[JupyterApplication, Dict[str, CDSScatterView]]:
         gjapp = JupyterApplication(
