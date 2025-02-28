@@ -1,4 +1,5 @@
 import solara
+from hubbleds.demo_utils import fill_velocities
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, mc_callback
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
@@ -237,14 +238,7 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
     def _fill_stage1_go_stage2():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   galaxy=measurement.galaxy,
-                                                   velocity_value=measurement.velocity_value))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        fill_velocities()
         router.push("02-distance-introduction")
 
 # This is what we'll need on main to truly get random galaxies.
@@ -280,7 +274,8 @@ def Page():
         dummy_measurements = LOCAL_API.get_dummy_data()
         first_measurement = dummy_measurements[0]
         measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id, galaxy=first_measurement.galaxy))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)   
+        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        _galaxy_selected_callback(first_measurement.galaxy)
 
     def num_bad_velocities():
         measurements = Ref(LOCAL_STATE.fields.measurements)

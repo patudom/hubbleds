@@ -1,0 +1,124 @@
+name: Selenium Tests for CosmicDS
+
+on:
+  push:
+    branches:
+      - short-demo
+  pull_request_target:
+    branches:
+      - short-demo
+
+jobs:
+  selenium-tests:
+    runs-on: ubuntu-latest
+    environment: Workflow Testing Environment
+    strategy:
+      matrix:
+        browser: [firefox, chrome, edge]
+    name: Run Selenium Tests on ${{ matrix.browser }}
+
+    steps:
+      - name: Checkout repository
+        if: ${{ !env.ACT }}
+        uses: actions/checkout@v4
+        with:
+          ref: short-demo
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-selenium selenium
+          pip install .
+
+      - name: Install Firefox
+        if: ${{ matrix.browser == 'firefox' }}
+        run: |
+          sudo install -d -m 0755 /etc/apt/keyrings
+          wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+          echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+          echo '
+          Package: *
+          Pin: origin packages.mozilla.org
+          Pin-Priority: 1000
+          
+          Package: firefox*
+          Pin: release o=Ubuntu
+          Pin-Priority: -1' | sudo tee /etc/apt/preferences.d/mozilla
+          sudo apt update && sudo apt remove firefox -y
+          sudo apt install firefox -y
+          GECKO_VERSION=$(curl -s "https://api.github.com/repos/mozilla/geckodriver/releases/latest" | jq -r '.tag_name')
+          wget -q "https://github.com/mozilla/geckodriver/releases/download/$GECKO_VERSION/geckodriver-$GECKO_VERSION-linux64.tar.gz"
+          tar -xvzf geckodriver-$GECKO_VERSION-linux64.tar.gz
+          sudo mv geckodriver /usr/local/bin/
+
+      - name: Install Chrome
+        if: ${{ matrix.browser == 'chrome' }}
+        run: |
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+          CHROMEDRIVER_VERSION=$(google-chrome-stable --version | awk '{print $3}')
+          wget -q "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
+          unzip chromedriver-linux64.zip
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+
+      - name: Install Edge
+        if: ${{ matrix.browser == 'edge' }}
+        run: |
+          wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge.list'
+          sudo apt-get update
+          sudo apt-get install -y microsoft-edge-stable
+        
+          EDGE_VERSION=$(microsoft-edge-stable --version | awk '{print $3}')
+          wget -q "https://msedgedriver.azureedge.net/$EDGE_VERSION/edgedriver_linux64.zip"
+          unzip edgedriver_linux64.zip
+          sudo mv msedgedriver /usr/local/bin/
+
+      - name: Check Secrets
+        run: |
+          if [[ -z "${{ secrets.SOLARA_SESSION_SECRET_KEY }}" ]]; then
+            echo "SOLARA_SESSION_SECRET_KEY is not set!"
+          else
+            echo "SOLARA_SESSION_SECRET_KEY is set."
+          fi
+          if [[ -z "${{ secrets.CDS_API_KEY }}" ]]; then
+            echo "CDS_API_KEY is not set!"
+          else
+            echo "CDS_API_KEY is set."
+          fi
+
+      - name: Start Solara Server
+        run: |
+          nohup solara run hubbleds.pages --port=8865 > solara.log 2>&1 &
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            curl -sSf http://localhost:8865/ > /dev/null && echo "Server is up!" && exit 0
+            echo "Waiting for Solara..."
+            sleep 3
+          done
+          echo "Solara did not start in time" && exit 1
+        env:
+          SOLARA_SESSION_SECRET_KEY: ${{ secrets.SOLARA_SESSION_SECRET_KEY }}
+          SOLARA_OAUTH_CLIENT_ID: ${{ secrets.SOLARA_OAUTH_CLIENT_ID }}
+          SOLARA_OAUTH_CLIENT_SECRET: ${{ secrets.SOLARA_OAUTH_CLIENT_SECRET }}
+          SOLARA_OAUTH_API_BASE_URL: ${{ secrets.SOLARA_OAUTH_API_BASE_URL }}
+          SOLARA_OAUTH_SCOPE: "openid profile email"
+          SOLARA_SESSION_HTTPS_ONLY: "false"
+          CDS_API_KEY: ${{ secrets.CDS_API_KEY }}
+          CDS_DISABLE_DB: "true"
+
+      - name: Check if Solara Server is Running
+        run: curl -s http://localhost:8865/ || (echo "Solara server is not running!" && exit 1)
+
+      - name: Run Selenium Tests on ${{ matrix.browser }}
+        run: pytest --driver ${{ matrix.browser }} -m selenium
+        env:
+          BROWSER: ${{ matrix.browser }}

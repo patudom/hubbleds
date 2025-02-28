@@ -19,6 +19,7 @@ from cosmicds.utils import empty_data_from_model_class, show_legend, show_layer_
 from cosmicds.viewers import CDSHistogramView
 from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
+from hubbleds.demo_utils import fill_data_points
 from hubbleds.tools import *  # noqa
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, StudentSummary, get_free_response, get_multiple_choice, mc_callback, fr_callback
 from hubbleds.utils import create_single_summary, make_summary_data, models_to_glue_data
@@ -132,12 +133,15 @@ def Page():
             "class_hist": class_hist_viewer
         }
 
+        student_slider_viewer.state.reset_limits_from_visible = False
+        class_slider_viewer.state.reset_limits_from_visible = False
+
         two_hist_viewers = (all_student_hist_viewer, class_hist_viewer)
         for att in ('x_min', 'x_max'):
             link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
 
-        if not LOCAL_STATE.value.measurements_loaded:
-            LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
+        if not LOCAL_STATE.value.measurements:
+            fill_data_points()
 
         class_id = GLOBAL_STATE.value.classroom.class_info["id"]
         for m in LOCAL_STATE.value.measurements:
@@ -326,8 +330,7 @@ def Page():
         # viewer's limits
         if name == "class_hist":
             continue
-        visible_only = "slider" not in name
-        viewer.state.reset_limits(visible_only=visible_only)
+        viewer.state.reset_limits()
 
     def show_class_data(marker):
         if "Class Data" in GLOBAL_STATE.value.glue_data_collection:

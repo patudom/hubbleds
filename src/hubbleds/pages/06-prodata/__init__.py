@@ -12,6 +12,7 @@ from cosmicds.components import (
 )
 from cosmicds.logger import setup_logger
 from cosmicds.utils import show_legend, show_layer_traces_in_legend
+from hubbleds.demo_utils import fill_data_points
 
 # hubbleds
 from hubbleds.remote import LOCAL_API
@@ -77,8 +78,12 @@ def Page():
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
 
+    if not LOCAL_STATE.value.measurements:
+        fill_data_points()
+
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+
         logger.info("Finished loading component state")
         loaded_component_state.set(True)
     
@@ -106,12 +111,10 @@ def Page():
             GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
         )
         
-        
         def add_link(from_dc_name, from_att, to_dc_name, to_att):
                 from_dc = gjapp.data_collection[from_dc_name]
                 to_dc = gjapp.data_collection[to_dc_name]
                 gjapp.add_link(from_dc, from_att, to_dc, to_att)
-
 
         data_dir = Path(__file__).parent.parent.parent / "data"
         if HUBBLE_KEY_DATA_LABEL not in gjapp.data_collection:
@@ -139,8 +142,6 @@ def Page():
 
         viewer = cast(HubbleFitView, gjapp.new_data_viewer(HubbleFitView, show=False))
         viewer.state.title = "Professional Data"
-        viewer.figure.update_xaxes(showline=True, mirror=False)
-        viewer.figure.update_yaxes(showline=True, mirror=False)
         viewer.ignore(lambda data: data.label == "student_slider_subset")
         
         return gjapp, viewer
