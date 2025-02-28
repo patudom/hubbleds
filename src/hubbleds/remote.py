@@ -444,24 +444,12 @@ class LocalAPI(BaseAPI):
         #     res_json = json.load(f)
         res_json = json.loads(read_csv(path).to_json(orient='records'))
         
-        
-        # # TODO: Note that though this is from the old code
-        # # it seems to only pick the 2nd measurement
-        # vels = [record[DB_VELOCITY_FIELD] for record in res_json]
-        # good = [(vel is not None and vel > 0) for vel in vels]
-        # seq = SeedSequence(42)
-        # gen = Generator(PCG64(seq))
-        # indices = arange(len(good))
-        # indices = indices[1::2][:85] # we need to keep the first 85 so that it always selects the same galaxies "randomly"
-        # random_subset = gen.choice(indices[good[1::2][:85]], size=40, replace=False)
-        # random_subset = ravel(column_stack((random_subset, random_subset+1)))
-        # # This is the subset
-        # # [121 122  13  14 159 160  23  24 161 162 137 138 111 112 155 156  69  70
-        # #     75  76  81  82  11  12 129 130  93  94  99 100  17  18  37  38 169 170
-        # #     67  68 107 108 119 120  65  66  45  46 141 142  73  74 165 166  85  86
-        # #     59  60  87  88  27  28 109 110  51  52  47  48  97  98  89  90  63  64
-        # #     91  92 143 144 149 150 103 104]
-        random_subset = range(len(res_json))
+        seq = SeedSequence(70)
+        gen = Generator(PCG64(seq))
+        indices = arange(len(res_json))
+        N = 100
+        random_subset = gen.choice(indices, size=N, replace=False)
+        # random_subset = range(len(res_json))
         measurements = []
 
         _filter_func = lambda x: res_json[x]['measurement_number'] == which
