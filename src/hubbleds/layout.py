@@ -12,7 +12,6 @@ logger = setup_logger("LAYOUT")
 
 @solara.component
 def Layout(children=[]):
-    logger.info("Mounted external libraries.")
 
     student_id = Ref(GLOBAL_STATE.fields.student.id)
     loaded_states = solara.use_reactive(False)
@@ -34,8 +33,6 @@ def Layout(children=[]):
 
         # Retrieve the student's app and local states
         LOCAL_API.get_app_story_states(GLOBAL_STATE, LOCAL_STATE)
-        Ref(GLOBAL_STATE.fields.update_db).set(False)
-
 
         # Load in the student's measurements
         measurements = LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)

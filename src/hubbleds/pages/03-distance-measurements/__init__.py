@@ -14,6 +14,7 @@ from cosmicds.components import (
     )
 from cosmicds.logger import setup_logger
 from cosmicds.state import BaseState, BaseLocalState
+from hubbleds.demo_utils import fill_data_points, fill_thetas, fill_velocities
 from hubbleds.viewer_marker_colors import (
     MY_DATA_COLOR,
     MY_DATA_COLOR_NAME,
@@ -135,8 +136,13 @@ def Page():
 
     distance_tool_bg_count = solara.use_reactive(0)
 
+    if not LOCAL_STATE.value.measurements:
+        fill_velocities()
+
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+
+        logger.info(LOCAL_STATE.value.measurements)
         logger.info("Finished loading component state")
         loaded_component_state.set(True)
     
@@ -204,31 +210,20 @@ def Page():
         
     solara.use_memo(_state_callback_setup)
     
-    def _fill_data_points():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        for measurement in dummy_measurements:
-            measurement.student_id = GLOBAL_STATE.value.student.id
-        Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
+    def _fill_data_to_stage_4():
+        fill_data_points()
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
         router.push("04-explore-data")
 
     def _fill_thetas():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   velocity_value=measurement.velocity_value,
-                                                   ang_size_value=measurement.ang_size_value,
-                                                   galaxy=measurement.galaxy))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        fill_thetas()
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
 
     with solara.Row():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
         with solara.Column():
-            solara.Button(label="Demo Shortcut: Fill in distance data & Jump to Stage 4", on_click=_fill_data_points, classes=["demo-button"])
+            solara.Button(label="Demo Shortcut: Fill in distance data & Jump to Stage 4", on_click=_fill_data_to_stage_4, classes=["demo-button"])
     # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
@@ -628,7 +623,6 @@ def Page():
 
                 @solara.lab.computed
                 def example_table_kwargs():
-                    ang_size_tot = COMPONENT_STATE.value.example_angular_sizes_total
                     tab = [e.model_dump(exclude={'galaxy': {'spectrum'}}) for e in LOCAL_STATE.value.example_measurements]
                     
                     return {
@@ -651,8 +645,10 @@ def Page():
 
                 @solara.lab.computed
                 def table_kwargs():
-                    ang_size_tot = COMPONENT_STATE.value.angular_sizes_total
+                    logger.info("TABLE KWARGS COMPUTED")
                     table_data = [s.model_dump(exclude={'galaxy': {'spectrum'}, 'measurement_number':True}) for s in LOCAL_STATE.value.measurements]
+                    logger.info(LOCAL_STATE.value.measurements)
+                    logger.info(table_data)
                     return {
                         "title": "My Galaxies",
                         "headers": common_headers, # + [{ "text": "Measurement Number", "value": "measurement_number" }],

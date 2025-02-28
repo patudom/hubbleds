@@ -20,6 +20,7 @@ from cosmicds.utils import empty_data_from_model_class, show_legend, show_layer_
 from cosmicds.viewers import CDSHistogramView
 from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
+from hubbleds.demo_utils import fill_data_points
 from hubbleds.tools import *  # noqa
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, StudentSummary, get_free_response, get_multiple_choice, mc_callback, fr_callback
 from hubbleds.utils import create_single_summary, make_summary_data, models_to_glue_data
@@ -140,8 +141,8 @@ def Page():
         for att in ('x_min', 'x_max'):
             link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
 
-        if not LOCAL_STATE.value.measurements_loaded:
-            LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
+        if not LOCAL_STATE.value.measurements:
+            fill_data_points()
 
         class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
         measurements = Ref(LOCAL_STATE.fields.class_measurements)

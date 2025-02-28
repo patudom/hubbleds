@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - short-demo
-  pull_request:
+  pull_request_target:
     branches:
       - short-demo
 
