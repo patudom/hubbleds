@@ -10,6 +10,7 @@
       Choose a response
     </template>
     <div>
+      <v-btn color="secondary" @click="zoom_to_range()" class="mb-6 mt-2">zoom to optimal range</v-btn> 
       <p>
         Based on this graph do you think there is <strong>consensus</strong> on the velocity of this galaxy?
       </p>
@@ -31,7 +32,6 @@
           :initialization="state_view.mc_score"
           >
           </mc-radiogroup>
-        <v-btn @click="zoom_to_range()">Click</v-btn> to zoom to recommended range
     </div>
   </scaffold-alert>
 </template>

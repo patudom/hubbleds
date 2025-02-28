@@ -1077,6 +1077,7 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
                     speech=speech.value,
+                    event_zoom_to_range= lambda event: dotplot_bounds.set([9000, 13500]),
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineDotSequence07.vue",
