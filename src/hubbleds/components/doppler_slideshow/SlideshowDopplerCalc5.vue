@@ -22,11 +22,14 @@
           <v-btn
               icon
               @click="() => { 
-                set_dialog(false); 
+                set_dialog(false);
+                if (step < length-1) 
+                  { 
+                    back_callback(); // if user closes dialog, this is equivalent to going back to dop_cal4
+                  }
                 if (step === length-1) 
                   { 
                     set_student_vel_calc(true);
-                    set_step(0);
                     next_callback();
                   }
               }"
@@ -50,7 +53,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <p>
@@ -162,7 +165,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <v-card
@@ -277,7 +280,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <v-card
@@ -395,7 +398,7 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <v-card
@@ -522,15 +525,16 @@
         >
           <v-lazy>
             <v-card-text
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
                 class="pt-8"
             >
               <p>
                 Now enter the <b>speed of light</b> in <b>km/s</b> in the empty box below.
               </p>
               <v-card
-                  class="JaxEquation pa-3"
-                  color="info"
+                v-if="student_c==0"
+                class="JaxEquation pa-3"
+                color="info"
               >
                 $$ v = c \times \textcolor{black}{\colorbox{#FFAB91}{
                 {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
@@ -553,6 +557,23 @@
                   zeroes. The speed of light is highlighted in yellow below.
                 </v-alert>
               </v-card>
+              <v-card
+                v-else
+                class="JaxEquation pa-3"
+                color="info"
+              >
+                $$ v = c \times \textcolor{black}{\colorbox{#FFAB91}{
+                {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
+                $$ v = \textcolor{black}{\colorbox{#FFAB91}{ {{ student_c.toLocaleString() }} }}\text{ km/s} \times \textcolor{black}{\colorbox{#FFAB91}{
+                {{ (lambda_obs / lambda_rest - 1).toFixed(4) }} } } $$
+                <v-divider role="presentation"></v-divider>
+                <div
+                    class="font-weight-medium mt-3"
+                >
+                  Click <b>CALCULATE</b> to multiply through and obtain the speed of this galaxy.
+                </div>              
+              </v-card>
+
               <v-divider role="presentation"></v-divider>
               <v-card
                   class="legend mt-8"
@@ -656,11 +677,12 @@
 
         <v-window-item :value="5"
                        class="no-transition"
+                       ref="last_step"
         >
           <v-lazy>
             <v-card-text
                 class="pt-8"
-                v-intersect="typesetMathJax"
+                v-intersect="mathJaxObserver"
             >
               <v-card
                   class="past_block pa-3"
@@ -705,7 +727,7 @@
                 <div
                     class="font-weight-medium mt-3"
                 >
-                  Click <b>DONE</b> to close this pop-up window. The velocity will be filled in in the table for this
+                  Click <b>DONE</b> to close this pop-up window. The velocity will be entered in the table for this
                   galaxy.
                 </div>
               </v-card>
@@ -797,10 +819,19 @@
 
       <v-card-actions>
         <v-btn
-            :disabled="step === 0"
             class="black--text"
             color="accent"
-            @click="set_step(step - 1)"
+            @click="() => { 
+                if (step === 0) 
+                  { 
+                    set_dialog(false);
+                    back_callback(); // If on first step, send back to dop_cal4
+                  }
+                else 
+                  { 
+                    set_step(step - 1)
+                  }
+              }"
         >
           Back
         </v-btn>
@@ -821,7 +852,7 @@
                 :disabled="n > max_step_completed_5 + 2"
                 :input-value="active"
                 icon
-                @click="toggle"
+                @click="toggle; set_step(n-1)"
             >
               <v-icon>mdi-record</v-icon>
             </v-btn>
@@ -845,14 +876,18 @@
             color="accent"
             elevation="2"
             @click="() => {
-              validateLightSpeed(['speed_light']) ? set_step(step + 1) : null;
+              // If we've already passed this step before, just advance to next step because we've already validated in the past
+              if (max_step_completed_5 > 4) {
+                set_step(step + 1);
+              }
               if (validateLightSpeed(['speed_light'])) {
                 set_student_c(parseAnswer(['speed_light']));
                 storeStudentVel(parseAnswer(['speed_light']), [lambda_obs, lambda_rest]);
+                set_step(step + 1);
               }
           }"
         >
-          calculate
+          {{ (max_step_completed_5 <= 4) ? 'calculate' : 'next'}}
         </v-btn>
         <v-btn
             v-if="step === length-1"
@@ -862,22 +897,19 @@
             @click="() => {
               set_dialog(false);
               set_student_vel_calc(true);
-              set_step(0);
               next_callback();
             }"
         >
           Done
         </v-btn>
         <v-btn
-            class="black--text"
-            color="error"
+            class="demo-button"
             depressed
             @click="() => {
               set_dialog(false);
               set_student_c(300000);
               storeStudentVel(300000, [lambda_obs, lambda_rest]);
               set_student_vel_calc(true);
-              set_step(0);
               next_callback();
             }"
         >
@@ -927,12 +959,28 @@ mjx-mpadded {
 <script>
 export default {
   methods: {
-    typesetMathJax(entries, _observer, intersecting) {
+    mathJaxObserver(entries, _observer, intersecting) {
       if (intersecting) {
         this.$nextTick(() => {
-          MathJax.typesetPromise(entries.map(entry => entry.target));
+          this.refreshMathJax(entries.map(entry => entry.target));
         });
       }
+    },
+
+    removeMathJax(containers) {
+      containers.forEach(container => container.querySelectorAll("mjx-container").forEach(el => container.remove(el)));
+      MathJax.typesetClear(containers);
+    },
+
+    refreshMathJax(containers) {
+      const containersToReset = containers.filter(this.containsMathJax);
+      this.removeMathJax(containersToReset);
+      this.$nextTick(() => MathJax.typesetPromise(containersToReset));
+    },
+
+    containsMathJax(container) {
+      const mathJaxOpeningDelimiters = [ "$$", "\\(", "\\[" ];
+      return mathJaxOpeningDelimiters.some(delim => container.innerHTML.includes(delim));
     },
 
     getValue(inputID) {

@@ -1,7 +1,7 @@
 <script>
 export default {
   name: "LineDrawPlot",
-  props: ["chart_id", "draw_active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label", "height", "margins", "display_best_fit_gal", "best_fit_gal_layer_index", "clear_class_layer", "clear_drawn_line", "clear_fit_line"],
+  props: ["chart_id", "draw_active", "fit_active", "line_drawn", "line_fit", "plot_data", "x_axis_label", "y_axis_label", "height", "margins", "display_best_fit_gal", "best_fit_gal_layer_index", "clear_class_layer", "clear_drawn_line", "clear_fit_line", "bfg_color"],
   async mounted() {
     await window.plotlyPromise;
 
@@ -237,19 +237,19 @@ export default {
     },
     linearRegression(x, y, forceOrigin=true) {
       const sum = (s, a) => s + a;
-      const sumX = x.reduce(sum);
-      const sumY = y.reduce(sum);
+      const sumXY = x.reduce((s, a, i) => s + a * y[i], 0);
+      const sumXsq = x.reduce((s, a) => s + a * a, 0);
       if (forceOrigin) {
-        const a = sumY / sumX;
+        const a = sumXY / sumXsq;
         return [a, 0];
       } else {
         const n = x.length;
-        const sumXsq = x.reduce((s, a) => s + a * a, 0);
-        const sumXY = x.reduce((s, a, i) => s + a * y[i], 0);
+        const sumX = x.reduce(sum);
+        const sumY = y.reduce(sum);
         const xAvg = sumX / n;
         const yAvg = sumY / n;
         const a = (n * sumXY - (sumX * sumY)) / (n * sumXsq - (sumX * sumX));
-        const b = yAvg - b * xAvg;
+        const b = yAvg - a * xAvg;
         return [a, b];
       }
     },
@@ -356,7 +356,7 @@ export default {
               x: [Math.round(x_best_fit_galaxy)],
               y: [Math.round(y_best_fit_galaxy)],
               mode: "markers", 
-              marker: { size: 14, color: "orange" },
+              marker: { size: 14, color: this.bfg_color },
               visible: true,
               hoverinfo: "skip"
             };

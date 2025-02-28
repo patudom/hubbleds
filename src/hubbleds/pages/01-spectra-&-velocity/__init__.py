@@ -24,6 +24,7 @@ from hubbleds.components import (
     DotplotTutorialSlideshow,
 )
 from hubbleds.state import GalaxyData, StudentMeasurement
+from hubbleds.viewer_marker_colors import MY_DATA_COLOR, MY_DATA_COLOR_NAME, LIGHT_GENERIC_COLOR, GENERIC_COLOR
 
 # from solara.lab import Ref
 from solara.toestand import Ref
@@ -128,13 +129,13 @@ def Page():
                          **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
                             for k in example_seed_data[0].keys()}
                             )
-            first.style.color = "#C94456"
+            first.style.color = GENERIC_COLOR
             gjapp.data_collection.append(first)
             second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
                          **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
                             for k in example_seed_data[0].keys()}
                             )
-            second.style.color = "#4449C9"
+            second.style.color = GENERIC_COLOR
             gjapp.data_collection.append(second)
             
             link_seed_data(gjapp)
@@ -204,11 +205,11 @@ def Page():
                 LOCAL_STATE.value.example_measurements,
                 label=EXAMPLE_GALAXY_MEASUREMENTS,
             )
-            example_measurements_glue.style.color = "red"
+            example_measurements_glue.style.color = MY_DATA_COLOR
             create_example_subsets(gjapp, example_measurements_glue)
 
             use_this = add_or_update_data(example_measurements_glue)
-            use_this.style.color = "red"
+            use_this.style.color = MY_DATA_COLOR
 
             link_example_seed_and_measurements(gjapp)
         else:
@@ -230,6 +231,8 @@ def Page():
     #   doing this here; revisit in the future and implement proper handling
     #   in the ipywwt package itself.
     show_selection_tool, set_show_selection_tool = solara.use_state(False)
+
+    selection_tool_bg_count = solara.use_reactive(0)
 
     async def _delay_selection_tool():
         await asyncio.sleep(3)
@@ -258,7 +261,7 @@ def Page():
                                                    galaxy=measurement.galaxy))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
-    def _fill_stage1_go_stage3():
+    def _fill_stage1_go_stage2():
         dummy_measurements = LOCAL_API.get_dummy_data()
         measurements = []
         for measurement in dummy_measurements:
@@ -267,7 +270,7 @@ def Page():
                                                    galaxy=measurement.galaxy,
                                                    velocity_value=measurement.velocity_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        router.push("03-distance-measurements")
+        router.push("02-distance-introduction")
 
     def _select_random_galaxies():
         need = 5 - len(LOCAL_STATE.value.measurements)
@@ -420,12 +423,12 @@ def Page():
                 seed = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
             
             viewer_data = [
-                (gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "scatter"),
+                gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
                 seed
             ]
             # If the student has made a measurement, that is the 0th layer.
             layer0 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-            zorder = [5, 1]
+            zorder = [1,5]
             if ignore_full_meas_data:
                 ignore.append(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS])
             if show_which_meas == 'second': # ignore the first
@@ -477,12 +480,12 @@ def Page():
                 component_id=DB_VELOCITY_FIELD,
                 vertical_line_visible=show_synced_lines.value,  #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
                 line_marker_at=sync_velocity_line,
-                line_marker_color='green' if show_synced_lines.value else 'green',
+                line_marker_color=LIGHT_GENERIC_COLOR,
                 on_click_callback=_on_click_callback,
                 unit="km / s",
                 x_label="Velocity (km/s)",
-                y_label="Number",
-                zorder=zorder,
+                y_label="Count",
+                zorder=[1,5],
                 nbin=74,
                 x_bounds=dotplot_bounds,
                 reset_bounds=dotplot_reset_bounds,
@@ -498,7 +501,8 @@ def Page():
             initialize_bounds(max_spectrum_bounds.value)
         if COMPONENT_STATE.value.current_step >= Marker.rem_vel1:
             update_second_example_measurement() # either set them to current or keep from DB
-        pass
+        if COMPONENT_STATE.value.current_step_between(Marker.mee_gui1, Marker.sel_gal4):
+            selection_tool_bg_count.set(selection_tool_bg_count.value + 1)
 
     Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
     
@@ -508,10 +512,8 @@ def Page():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
         with solara.Column():
-            solara.Button(label="Fill default vel & dist measurements", on_click=_fill_galaxies)
-            solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies)
-
-    # WWT Selection Tool Row
+            solara.Button(label="Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_stage1_go_stage2, classes=["demo-button"])
+            solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies, classes=["demo-button"])
 
     with rv.Row():
         with rv.Col(cols=12, lg=4):
@@ -635,7 +637,7 @@ def Page():
             if show_example_data_table:
                 selection_tool_galaxy = selected_example_measurement
             else:
-                selection_tool_galaxy= selected_measurement
+                selection_tool_galaxy = selected_measurement
             
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
@@ -649,6 +651,7 @@ def Page():
                     else None
                 ),
                 deselect_galaxy_callback=_deselect_galaxy_callback,
+                sdss_counter=selection_tool_bg_count,
             )
             
             if show_snackbar.value:
@@ -683,14 +686,14 @@ def Page():
             show_values = Ref(COMPONENT_STATE.fields.show_dop_cal4_values)
             
             def _on_validate_transition(validated):
-                logger.info("Validated transition to dop_cal4: %s", validated)
+                logger.info("Validated transition to dop_cal5: %s", validated)
                 validation_4_failed.set(not validated)
                 show_values.set(validated)
                 if not validated:
                     return
                 
                 if validated:
-                    transition_next(COMPONENT_STATE)
+                    transition_to(COMPONENT_STATE, Marker.dop_cal5)
 
                 show_doppler_dialog = Ref(COMPONENT_STATE.fields.show_doppler_dialog)
                 logger.info("Setting show_doppler_dialog to %s", validated)
@@ -699,14 +702,13 @@ def Page():
             
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc4.vue",
-                event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.current_step_in(
                     [Marker.dop_cal4, Marker.dop_cal5]
                 ),
                 state_view={
-                    "lambda_obs": COMPONENT_STATE.value.obs_wave,
+                    "lambda_obs": round(COMPONENT_STATE.value.obs_wave),
                     "lambda_rest": (
                         selected_example_measurement.value.rest_wave_value
                         if selected_example_measurement.value is not None
@@ -715,15 +717,12 @@ def Page():
                     "failed_validation_4": validation_4_failed.value,
                     "fill_values": show_values.value,
                 },
-                # event_failed_validation_4_callback=_on_validated_transition,
                 event_on_validate_transition=_on_validate_transition,
                 speech=speech.value,
             )
 
             # This whole slideshow is basically dop_cal5
-            if COMPONENT_STATE.value.current_step_between(
-                Marker.dop_cal4, Marker.che_mea1
-            ):
+            if COMPONENT_STATE.value.is_current_step(Marker.dop_cal5):
                 show_doppler_dialog = Ref(COMPONENT_STATE.fields.show_doppler_dialog)
                 step = Ref(COMPONENT_STATE.fields.doppler_state.step)
                 validation_5_failed = Ref(
@@ -765,7 +764,7 @@ def Page():
                     titles=COMPONENT_STATE.value.doppler_state.titles,
                     step=COMPONENT_STATE.value.doppler_state.step,
                     length=COMPONENT_STATE.value.doppler_state.length,
-                    lambda_obs=COMPONENT_STATE.value.obs_wave,
+                    lambda_obs=round(COMPONENT_STATE.value.obs_wave),
                     lambda_rest=(
                         selected_example_measurement.value.rest_wave_value
                         if selected_example_measurement.value is not None
@@ -783,11 +782,11 @@ def Page():
                     event_set_student_vel_calc=velocity_calculated.set,
                     event_set_student_vel=_velocity_calculated_callback,
                     event_set_student_c=student_c.set,
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                     state_view={
-                        "mc_score": get_multiple_choice(
-                            LOCAL_STATE, "interpret-velocity"
+                        "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "interpret-velocity"
                         ),
                         "score_tag": "interpret-velocity",
                     },
@@ -795,7 +794,7 @@ def Page():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                event_back_callback=lambda _: _on_validate_transition(True), # Send user back to dop_cal5 and open dialog
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.che_mea1),
                 speech=speech.value,
@@ -827,8 +826,8 @@ def Page():
                 },
                 speech=speech.value,
             )
-            # if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
-            #     solara.Button(label="Shortcut: Fill Wavelength Measurements", on_click=_fill_lambdas)
+            if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
+                solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none;", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -842,9 +841,9 @@ def Page():
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                 show=COMPONENT_STATE.value.is_current_step(Marker.ref_vel1),
-                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, "reflect_vel_value"), 'score_tag': 'reflect_vel_value'},
+                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "reflect_vel_value"), 'score_tag': 'reflect_vel_value'},
                 speech=speech.value,
             )
             ScaffoldAlert(
@@ -1013,38 +1012,16 @@ def Page():
                                                     data=tut_viewer_data,
                                                     component_id=DB_VELOCITY_FIELD,
                                                     vertical_line_visible=False,
+                                                    line_marker_color=LIGHT_GENERIC_COLOR,
                                                     unit="km / s",
                                                     x_label="Velocity (km/s)",
-                                                    y_label="Number"
+                                                    y_label="Count"
                                                     ),
                                                     
                         event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
                             True
                         ),
                     )
-                    
-                # def create_dotplot_viewer():
-                #     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                #         viewer_data = [
-                #             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                #             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA],
-                #         ]
-                #     else:
-                #         viewer_data = [gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]]
-                #     return DotplotViewer(gjapp,
-                #                          data=viewer_data,
-                #                          component_id=DB_VELOCITY_FIELD,
-                #                          vertical_line_visible=True, #COMPONENT_STATE.value.current_step_between(Marker.dot_seq2, Marker.dot_seq6),
-                #                          line_marker_at=sync_velocity_line,
-                #                          on_click_callback=lambda point: sync_velocity_line.set(point.xs[0]),
-                #                          unit="km / s",
-                #                          x_label="Velocity (km/s)",
-                #                          y_label="Number",
-                #                          zorder=[5,1],
-                #                          nbin=75,
-                #                          x_bounds = dotplot_bounds,
-                #                          reset_bounds = dotplot_reset_bounds.value
-                #                          )
                 
     # Dot Plot 1st measurement row
     if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
@@ -1057,6 +1034,9 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.int_dot1),
                     speech=speech.value,
+                    state_view={
+                        "color": MY_DATA_COLOR_NAME
+                    }
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineDotSequence01.vue",
@@ -1119,10 +1099,10 @@ def Page():
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq8),
                     state_view={
-                        "mc_score": get_multiple_choice(LOCAL_STATE, "vel_meas_consensus"),
+                        "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "vel_meas_consensus"),
                         "score_tag": "vel_meas_consensus",
                     },
                     speech=speech.value,
@@ -1190,8 +1170,7 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.res_wav1),
                     state_view={
                         "selected_example_galaxy": selected_example_galaxy_data,
-                        "lambda_on": COMPONENT_STATE.value.obs_wave_tool_activated,
-                        "lambda_used": COMPONENT_STATE.value.obs_wave_tool_used,
+                        "lambda_on": COMPONENT_STATE.value.rest_wave_tool_activated,
                     },
                     speech=speech.value,
                 )
@@ -1212,7 +1191,8 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.obs_wav2),
                     state_view={
                         "selected_example_galaxy": selected_example_galaxy_data,
-                        "zoom_tool_activate": COMPONENT_STATE.value.zoom_tool_activated,
+                        "zoom_tool_activated": COMPONENT_STATE.value.zoom_tool_activated,
+                        "zoom_tool_active": COMPONENT_STATE.value.zoom_tool_active,
                     },
                     speech=speech.value,
                 )
@@ -1239,6 +1219,9 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4),
                     speech=speech.value,
+                    state_view={
+                        "color": MY_DATA_COLOR_NAME,
+                    },
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineDotSequence10.vue",
@@ -1309,18 +1292,21 @@ def Page():
                                 example_measurement_index
                             ]
                         )
+
+                        obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                        obs_wave.set(value)
                         
                         if example_measurement.value.velocity_value is None:
                             example_measurement.set(
                                 example_measurement.value.model_copy(
-                                    update={"obs_wave_value": value}
+                                    update={"obs_wave_value": round(value)}
                                 )
                             )
                         else:
                             velocity = velocity_from_wavelengths(value, example_measurement.value.rest_wave_value)
                             example_measurement.set(
                                 example_measurement.value.model_copy(
-                                    update={"obs_wave_value": value, "velocity_value": velocity}
+                                    update={"obs_wave_value": round(value), "velocity_value": velocity}
                                 )
                             )
                         example_measurements[example_measurement_index] = example_measurement.value
@@ -1337,11 +1323,14 @@ def Page():
                             sync_velocity_line.set(velocity)
 
                     obs_wave_tool_used = Ref(COMPONENT_STATE.fields.obs_wave_tool_used)
-                    obs_wave_tool_activated = Ref(
-                        COMPONENT_STATE.fields.obs_wave_tool_activated
+                    rest_wave_tool_activated = Ref(
+                        COMPONENT_STATE.fields.rest_wave_tool_activated
                     )
                     zoom_tool_activated = Ref(
                         COMPONENT_STATE.fields.zoom_tool_activated
+                    )
+                    zoom_tool_active = Ref(
+                        COMPONENT_STATE.fields.zoom_tool_active
                     )
                     
                     @computed
@@ -1355,6 +1344,13 @@ def Page():
                                 return meas[0].obs_wave_value
                         return COMPONENT_STATE.value.obs_wave
 
+
+                    def _on_zoom():
+                        zoom_tool_activated.set(True)
+                        zoom_tool_active.set(True)
+
+                    def _on_reset():
+                        zoom_tool_active.set(False)
                     
                     SpectrumViewer(
                         galaxy_data=(
@@ -1370,10 +1366,11 @@ def Page():
                         or COMPONENT_STATE.value.current_step == Marker.rem_vel1
                         ),
                         on_obs_wave_measured=_example_wavelength_measured_callback,
-                        on_obs_wave_tool_clicked=lambda: obs_wave_tool_activated.set(
+                        on_rest_wave_tool_clicked=lambda: rest_wave_tool_activated.set(
                             True
                         ),
-                        on_zoom_tool_clicked=lambda: zoom_tool_activated.set(True),
+                        on_zoom=_on_zoom,
+                        on_reset_tool_clicked=_on_reset,
                         marker_position=sync_wavelength_line if show_synced_lines.value else None,
                         spectrum_bounds = spectrum_bounds, # type: ignore
                         max_spectrum_bounds=max_spectrum_bounds,
@@ -1401,6 +1398,10 @@ def Page():
                         num_bad_velocities()
 
                         if not is_bad:
+
+                            obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                            obs_wave.set(value)
+
                             measurement = Ref(
                                 LOCAL_STATE.fields.measurements[measurement_index]
                             )
@@ -1408,7 +1409,7 @@ def Page():
                             if measurement.value.velocity_value is None:
                                 measurement.set(
                                     measurement.value.model_copy(
-                                        update={"obs_wave_value": value}
+                                        update={"obs_wave_value": round(value)}
                                     )
                                 )
                                 
@@ -1416,12 +1417,9 @@ def Page():
                                 velocity = velocity_from_wavelengths(value, measurement.value.rest_wave_value)
                                 measurement.set(
                                     measurement.value.model_copy(
-                                        update={"obs_wave_value": value, "velocity_value": velocity}
+                                        update={"obs_wave_value": round(value), "velocity_value": velocity}
                                     )
                                 )
-
-                            obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
-                            obs_wave.set(value)
                             
                             set_obs_wave_total()
                             
@@ -1488,27 +1486,19 @@ def Page():
                                 max_step_completed=COMPONENT_STATE.value.velocity_reflection_state.max_step_completed,
                                 reflection_complete=COMPONENT_STATE.value.reflection_complete,
                                 state_view={
-                                    "mc_score_2": get_multiple_choice(
-                                        LOCAL_STATE, "wavelength-comparison"
-                                    ),
+                                    "mc_score_2": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "wavelength-comparison"),
                                     "score_tag_2": "wavelength-comparison",
-                                    "mc_score_3": get_multiple_choice(LOCAL_STATE, "galaxy-motion"),
+                                    "mc_score_3": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "galaxy-motion"),
                                     "score_tag_3": "galaxy-motion",
-                                    "mc_score_4": get_multiple_choice(
-                                        LOCAL_STATE, "steady-state-consistent"
-                                    ),
+                                    "mc_score_4": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "steady-state-consistent"),
                                     "score_tag_4": "steady-state-consistent",
-                                    "mc_score_5": get_multiple_choice(
-                                        LOCAL_STATE, "moving-randomly-consistent"
-                                    ),
+                                    "mc_score_5": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "moving-randomly-consistent"),
                                     "score_tag_5": "moving-randomly-consistent",
-                                    "mc_score_6": get_multiple_choice(
-                                        LOCAL_STATE, "peers-data-agree"
-                                    ),
+                                    "mc_score_6": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "peers-data-agree"),
                                     "score_tag_6": "peers-data-agree",
                                 },
                                 event_set_dialog=show_reflection_dialog.set,
-                                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                                 # These are numbered based on window-item value
                                 event_set_step=reflect_step.set,
                                 event_set_max_step_completed=reflect_max_step_completed.set,

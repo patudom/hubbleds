@@ -1,15 +1,10 @@
-from random import randint
 
 import solara
-from solara import Reactive
-from hubbleds.base_component_state import BaseComponentState
-from glue.core import Data
 from reacton import ipyvuetify as rv
 from hubbleds.state import LOCAL_STATE
 from hubbleds.widgets import SelectionToolWidget
 from typing import Callable
-from hubbleds.state import GalaxyData, StudentMeasurement
-from solara.lab import Ref
+from hubbleds.state import GalaxyData
 
 
 @solara.component
@@ -19,7 +14,7 @@ def SelectionTool(
     galaxy_added_callback: Callable,
     deselect_galaxy_callback: Callable,
     selected_measurement: dict | None,
-    dependencies: list = None,
+    sdss_counter: solara.Reactive[int],
 ):
     with rv.Card() as main:
         with rv.Card(class_="pa-0 ma-0", elevation=0):
@@ -28,13 +23,15 @@ def SelectionTool(
         def _add_widget():
             selection_tool_widget = SelectionToolWidget(
                 table_layer_data={
-                    k: [x.dict()[k] for x in LOCAL_STATE.value.galaxies]
-                    for k in LOCAL_STATE.value.galaxies[0].dict()
+                    k: [x.dict()[k] for x in LOCAL_STATE.value.galaxies.values()]
+                    for k in ["id", "ra", "decl"]
                 }
             )
 
             tool_widget = solara.get_widget(tool_container)
             tool_widget.children = (selection_tool_widget,)
+
+            sdss_counter.subscribe(lambda _count: selection_tool_widget.set_sdss())
 
             def cleanup():
                 tool_widget.children = ()
@@ -44,16 +41,25 @@ def SelectionTool(
 
         solara.use_effect(_add_widget, dependencies=[])
 
+        def _on_galaxy_selected(gal: dict):
+            if not gal:
+                return
+            data = LOCAL_STATE.value.galaxies[int(gal["id"])]
+            galaxy_added_callback(data)
+
+        def _on_current_galaxy_changed(change: dict):
+            gal = change["new"]
+            if not gal:
+                return
+            data = LOCAL_STATE.value.galaxies[int(gal["id"])]
+            galaxy_selected_callback(data)
+
         def _setup_callbacks():
             selection_tool_widget = solara.get_widget(tool_container).children[0]
 
-            selection_tool_widget.on_galaxy_selected = (
-                lambda gal: galaxy_added_callback(GalaxyData(**gal))
-            )
+            selection_tool_widget.on_galaxy_selected = _on_galaxy_selected
             selection_tool_widget.observe(
-                lambda change: galaxy_selected_callback(
-                    GalaxyData(**change["new"]) if len(change["new"]) > 0 else None
-                ),
+                _on_current_galaxy_changed,
                 ["current_galaxy"],
             )
             selection_tool_widget.deselect_galaxy = deselect_galaxy_callback

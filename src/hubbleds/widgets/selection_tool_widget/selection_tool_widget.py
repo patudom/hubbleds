@@ -1,3 +1,4 @@
+from threading import Timer
 import astropy.units as u
 import ipyvue as v
 from astropy.coordinates import SkyCoord
@@ -29,19 +30,25 @@ class SelectionToolWidget(v.VueTemplate):
     selected = Bool(False).tag(sync=True)
     highlighted = Bool(False).tag(sync=True)
 
+    SDSS = "SDSS9 color"
+
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame="icrs")
 
     def __init__(self, table_layer_data: dict, *args, **kwargs):
         # self.widget = WWTJupyterWidget(hide_all_chrome=True)
         self.widget = WWTWidget()
-        self.widget.background = "SDSS: Sloan Digital Sky Survey (Optical)"
-        self.widget.foreground = "SDSS: Sloan Digital Sky Survey (Optical)"
-        self.widget.center_on_coordinates(
-            self.START_COORDINATES,
-            fov=6 * u.arcmin,  # start in close enough to see galaxies
-            instant=False,
-        )
+        
+        def _setup():
+            self.set_sdss()
+            self.widget.center_on_coordinates(
+                self.START_COORDINATES,
+                fov=6 * u.arcmin,  # start in close enough to see galaxies
+                instant=False,
+            )
+
+        timer = Timer(3.0, _setup)
+        timer.start()
 
         # df = data.to_dataframe()
         self.sdss_table = Table(table_layer_data)
@@ -77,10 +84,9 @@ class SelectionToolWidget(v.VueTemplate):
             source = wwt.most_recent_source
             galaxy = source["layerData"]
 
-            for k in ["ra", "decl", "z"]:
+            for k in ["ra", "decl"]:
                 galaxy[k] = float(galaxy[k])
 
-            galaxy["element"] = galaxy["element"].replace("?", "α")  # Hacky fix for now
             fov = min(wwt.get_fov(), GALAXY_FOV)
 
             self.go_to_location(galaxy["ra"], galaxy["decl"], fov=fov)
@@ -88,9 +94,9 @@ class SelectionToolWidget(v.VueTemplate):
             self.candidate_galaxy = galaxy
 
             if not self.selected_data.empty:
-                gal_names = [k for k in self.selected_data["name"]]
+                gal_ids = [k for k in self.selected_data["id"]]
 
-                if self.current_galaxy["name"] in gal_names:
+                if self.current_galaxy["id"] in gal_ids:
                     self.candidate_galaxy = {}
 
             self.selected = True
@@ -98,6 +104,17 @@ class SelectionToolWidget(v.VueTemplate):
         self.widget.set_selection_change_callback(wwt_cb)
 
         super().__init__(*args, **kwargs)
+
+    def set_sdss(self):
+        if self.widget.foreground != self.SDSS:
+            self.widget.foreground = self.SDSS
+        else:
+            self.widget._on_foreground_change({"new": self.SDSS})
+
+        if self.widget.background != self.SDSS:
+            self.widget.background = self.SDSS
+        else:
+            self.widget.set_background_image({"new": self.SDSS})
 
     def center_on_start_coordinates(self):
         self.widget.center_on_coordinates(
@@ -107,6 +124,7 @@ class SelectionToolWidget(v.VueTemplate):
         )
 
     def show_galaxies(self, show=True):
+        self.set_sdss()
         if self.sdss_layer is not None:
             if self.sdss_layer in self.widget.layers._layers:
                 self.widget.layers.remove_layer(self.sdss_layer)
@@ -139,6 +157,7 @@ class SelectionToolWidget(v.VueTemplate):
             self._on_galaxy_selected(galaxy)
         if self._deselect_galaxy is not None:
             self._deselect_galaxy()
+        self.set_sdss()
         self.selected = False
 
     @property
@@ -151,6 +170,7 @@ class SelectionToolWidget(v.VueTemplate):
 
     def reset_view(self):
         print("in reset_view within selection_tool_widget.py")
+        self.set_sdss()
         self.widget.center_on_coordinates(
             self.START_COORDINATES, fov=FULL_FOV, instant=True
         )
@@ -169,6 +189,9 @@ class SelectionToolWidget(v.VueTemplate):
         if self.selected_layer is not None:
             self.widget.layers.remove_layer(self.selected_layer)
         self.selected_layer = layer
+
+    def vue_clear_tile_cache(self, _args=None):
+        self.widget.clear_tile_cache()
 
     def vue_select_current_galaxy(self, _args=None):
         self.select_galaxy(self.current_galaxy)
@@ -191,11 +214,6 @@ class SelectionToolWidget(v.VueTemplate):
             return
         if self.current_galaxy["id"]:
             data = {"galaxy_id": int(self.current_galaxy["id"])}
-        else:
-            name = self.current_galaxy["name"]
-            if not name.endswith(".fits"):
-                name += ".fits"
-            data = {"galaxy_name": name}
-        GLOBAL_STATE.request_session().put(
-            f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-galaxy-bad", json=data
-        )
+            GLOBAL_STATE.request_session().put(
+                f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-galaxy-bad", json=data
+            )

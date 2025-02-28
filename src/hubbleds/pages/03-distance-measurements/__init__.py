@@ -15,7 +15,12 @@ from cosmicds.components import (
     )
 from cosmicds.logger import setup_logger
 from cosmicds.state import BaseState, BaseLocalState
-
+from hubbleds.viewer_marker_colors import (
+    MY_DATA_COLOR,
+    MY_DATA_COLOR_NAME,
+    GENERIC_COLOR,
+    LIGHT_GENERIC_COLOR
+)
 
 from hubbleds.base_component_state import (
     transition_next,
@@ -84,12 +89,20 @@ def update_second_example_measurement():
     else:
         logger.info('\t\t no changes for second measurement')
 
-@solara.component
-def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count_callback, use_guard, bad_measurement_callback, brightness_callback, reset_canvas):
+def DistanceToolComponent(galaxy,
+                          show_ruler,
+                          angular_size_callback,
+                          ruler_count_callback,
+                          use_guard,
+                          bad_measurement_callback,
+                          brightness_callback,
+                          reset_canvas,
+                          sdss_counter):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
         widget = solara.get_widget(tool)
+        widget.set_sdss()
         if galaxy:
             widget.measuring = False
             widget.go_to_location(galaxy["ra"], galaxy["decl"], fov=GALAXY_FOV)
@@ -144,6 +157,8 @@ def DistanceToolComponent(galaxy, show_ruler, angular_size_callback, ruler_count
             
         widget.observe(update_brightness, ["brightness"])
 
+        sdss_counter.subscribe(lambda _count: widget.set_sdss())
+
     solara.use_effect(_define_callbacks, [])
     
     
@@ -155,6 +170,8 @@ def Page():
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+
+    distance_tool_bg_count = solara.use_reactive(0)
 
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -194,13 +211,13 @@ def Page():
                          **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
                             for k in example_seed_data[0].keys()}
                             )
-            first.style.color = "#C94456"
+            first.style.color = GENERIC_COLOR
             gjapp.data_collection.append(first)
             second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
                          **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
                             for k in example_seed_data[0].keys()}
                             )
-            second.style.color = "#4449C9"
+            second.style.color = GENERIC_COLOR
             gjapp.data_collection.append(second)
             
             link_seed_data(gjapp)
@@ -304,11 +321,11 @@ def Page():
         if len(LOCAL_STATE.value.example_measurements) > 0:
             logger.info(f'has {len(LOCAL_STATE.value.example_measurements)} example measurements')
             example_measurements_glue = models_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
-            example_measurements_glue.style.color = "red"
+            example_measurements_glue.style.color = MY_DATA_COLOR
             create_example_subsets(gjapp, example_measurements_glue)
             
             use_this = add_or_update_data(example_measurements_glue)
-            use_this.style.color = "red"
+            use_this.style.color = MY_DATA_COLOR
 
             link_example_seed_and_measurements(gjapp)
         else:
@@ -323,8 +340,8 @@ def Page():
     with solara.Row():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
-        # with solara.Column():
-        #     solara.Button(label="Shortcut: Fill in distance data & Go to Stage 4", on_click=_fill_data_points)
+        with solara.Column():
+            solara.Button(label="Shortcut: Fill in distance data & Jump to Stage 4", on_click=_fill_data_points, classes=["demo-button"])
     # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
     
 
@@ -334,7 +351,7 @@ def Page():
         else:
             LOCAL_API.put_measurements(GLOBAL_STATE, LOCAL_STATE)
             
-    def _update_angular_size(update_example: bool, galaxy, angular_size, count, meas_num = 'first'):
+    def _update_angular_size(update_example: bool, galaxy, angular_size, count, meas_num = 'first', brightness = 1.0):
         # if bool(galaxy) and angular_size is not None:
         arcsec_value = int(angular_size.to(u.arcsec).value)
         if update_example:
@@ -345,7 +362,8 @@ def Page():
                 measurement.set(
                     measurement.value.model_copy(
                         update={
-                            "ang_size_value": arcsec_value
+                            "ang_size_value": arcsec_value,
+                            "brightness": brightness
                             }
                         )
                 )
@@ -361,7 +379,8 @@ def Page():
                 measurement.set(
                     measurement.value.model_copy(
                         update={
-                            "ang_size_value": arcsec_value
+                            "ang_size_value": arcsec_value,
+                            "brightness": brightness
                             }
                         )
                 )
@@ -416,6 +435,7 @@ def Page():
     ang_size_dotplot_range = solara.use_reactive([])
     dist_dotplot_range = solara.use_reactive([])
     fill_galaxy_pressed = solara.use_reactive(COMPONENT_STATE.value.distances_total >= 5)
+    current_brightness = solara.use_reactive(1.0)
     
     @solara.lab.computed
     def sync_dotplot_axes():
@@ -442,9 +462,8 @@ def Page():
         if marker_new == Marker.dot_seq5:
             # clear the canvas before we get to the second measurement. 
             reset_canvas.set(reset_canvas.value + 1)
-            
-            
-        
+
+        distance_tool_bg_count.set(distance_tool_bg_count.value + 1)
     
     Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
 
@@ -561,7 +580,7 @@ def Page():
                 """
                 data = current_data.value
                 count = Ref(COMPONENT_STATE.fields.example_angular_sizes_total) if on_example_galaxy_marker.value else Ref(COMPONENT_STATE.fields.angular_sizes_total)
-                _update_angular_size(on_example_galaxy_marker.value, current_galaxy.value, angle, count, example_galaxy_measurement_number.value)
+                _update_angular_size(on_example_galaxy_marker.value, current_galaxy.value, angle, count, example_galaxy_measurement_number.value, brightness = current_brightness.value)
                 put_measurements(samples=on_example_galaxy_marker.value)
                 if on_example_galaxy_marker.value:
                     value = int(angle.to(u.arcsec).value)
@@ -607,6 +626,11 @@ def Page():
                 ruler_click_count = Ref(COMPONENT_STATE.fields.ruler_click_count)
                 ruler_click_count.set(count)
             
+            def brightness_callback(brightness):
+                logger.info(f'Brightness: {brightness}')
+                current_brightness.set(brightness / 100)
+                
+            
             # solara.Button("Reset Canvas", on_click=lambda: reset_canvas.set(reset_canvas.value + 1))
             DistanceToolComponent(
                 galaxy=current_galaxy.value,
@@ -615,8 +639,9 @@ def Page():
                 ruler_count_callback=_get_ruler_clicks_cb,
                 bad_measurement_callback=_bad_measurement_cb,
                 use_guard=True,
-                brightness_callback=lambda b: logger.info(f'Update Brightness: {b}'),
-                reset_canvas=reset_canvas.value
+                brightness_callback=brightness_callback,
+                reset_canvas=reset_canvas.value,
+                sdss_counter=distance_tool_bg_count,
             )
             
             if COMPONENT_STATE.value.bad_measurement:
@@ -719,8 +744,8 @@ def Page():
                     "bad_angsize": False
                 }
             )
-            # if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
-            #     solara.Button(label="Shortcut: Fill Angular Size Measurements", on_click=_fill_thetas)
+            if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
+                solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
                 event_next_callback=lambda _: router.push("04-explore-data"),
@@ -755,7 +780,7 @@ def Page():
                     fill_galaxy_pressed.set(True)
 
                 if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
-                    solara.Button("Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances())
+                    solara.Button("Demo Shortcut: Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances() , classes=["demo-button"])
 
 
                 common_headers = [
@@ -763,7 +788,7 @@ def Page():
                         "text": "Galaxy Name",
                         "align": "start",
                         "sortable": False,
-                        "value": "galaxy_id"
+                        "value": "name"
                     },
                     { "text": "&theta; (arcsec)", "value": "ang_size_value" },
                     { "text": "Distance (Mpc)", "value": "est_dist_value" },
@@ -856,6 +881,9 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq1),
+                state_view={
+                    "color": MY_DATA_COLOR_NAME,
+                },                
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq2.vue",
@@ -863,8 +891,8 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq2),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE),
-                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_consensus'), 'score_tag': 'ang_meas_consensus'}
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
+                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, 'ang_meas_consensus'), 'score_tag': 'ang_meas_consensus'}
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDotplotSeq3.vue",
@@ -886,8 +914,8 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq4a),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE),
-                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_dist_relation'), 'score_tag': 'ang_meas_dist_relation'}
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
+                state_view={'mc_score': get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, 'ang_meas_dist_relation'), 'score_tag': 'ang_meas_dist_relation'}
             )
             # Not doing the 2nd measurement #dot_seq6 is comparison of 1st and 2nd measurement
             # ScaffoldAlert(
@@ -897,7 +925,7 @@ def Page():
             #     can_advance=COMPONENT_STATE.value.can_transition(next=True),
             #     show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq6),
             #     event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE, callback=set_mc_scoring),
-            #     state_view={'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_consensus_2'), 'score_tag': 'ang_meas_consensus_2'}
+            #     state_view={'color': MY_DATA_COLOR_NAME, 'mc_score': get_multiple_choice(LOCAL_STATE, 'ang_meas_consensus_2'), 'score_tag': 'ang_meas_consensus_2'}
             # )
             # Not doing the 2nd measurement #dot_seq7 is transition to doing all galaxies. This is not dot_seq5
             # ScaffoldAlert(
@@ -965,10 +993,11 @@ def Page():
                                             component_id="est_dist_value",
                                             vertical_line_visible=show_dotplot_lines,
                                             line_marker_at=Ref(COMPONENT_STATE.fields.distance_line),
+                                            line_marker_color=LIGHT_GENERIC_COLOR,
                                             on_click_callback=set_angular_size_line,
                                             unit="Mpc",
                                             x_label="Distance (Mpc)",
-                                            y_label="Number",
+                                            y_label="Count",
                                             zorder=[5,1],
                                             x_bounds=dist_dotplot_range,
                                             hide_layers=ignore
@@ -983,10 +1012,11 @@ def Page():
                                                 component_id="ang_size_value",
                                                 vertical_line_visible=show_dotplot_lines,
                                                 line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
+                                                line_marker_color=LIGHT_GENERIC_COLOR,
                                                 on_click_callback=set_distance_line,
                                                 unit="arcsec",
                                                 x_label="Angular Size (arcsec)",
-                                                y_label="Number",
+                                                y_label="Count",
                                                 zorder=[5,1],
                                                 x_bounds=ang_size_dotplot_range,
                                                 hide_layers=ignore

@@ -12,6 +12,7 @@ from solara.toestand import Ref
 from typing import Dict, List, Tuple
 
 from cosmicds.components import ScaffoldAlert, StateEditor, ViewerLayout
+from hubbleds.viewer_marker_colors import MY_DATA_COLOR, MY_CLASS_COLOR, GENERIC_COLOR
 from hubbleds.components import DataTable, HubbleExpUniverseSlideshow, LineDrawViewer, PlotlyLayerToggle
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_multiple_choice, get_free_response, mc_callback, fr_callback
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
@@ -95,7 +96,7 @@ def Page():
             "Velocity (km/hr)": [4, 8, 10],
         })
         race_data = GLOBAL_STATE.value.add_or_update_data(race_data)
-        race_data.style.color = "#f00"
+        race_data.style.color = GENERIC_COLOR
         race_data.style.alpha = 1
         race_data.style.markersize = 10
         race_viewer.add_data(race_data)
@@ -130,7 +131,7 @@ def Page():
         if not class_data.components:
             class_data = empty_data_from_model_class(StudentMeasurement, label="Stage 4 Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
-        class_data.style.color = "#3A86FF"
+        class_data.style.color = MY_CLASS_COLOR
         class_data.style.alpha = 1
         class_data.style.markersize = 10
 
@@ -151,7 +152,14 @@ def Page():
     if load_class_data.finished:
         _on_class_data_loaded(load_class_data.value)
 
-    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+    def _jump_stage_5():
+        router.push("05-class-results-uncertainty")
+
+    with solara.Row():
+        with solara.Column():
+            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+        with solara.Column():
+            solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -210,9 +218,9 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.tre_dat1),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE),
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                 state_view={
-                    "mc_score": get_multiple_choice(LOCAL_STATE, "tre-dat-mc1"),
+                    "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "tre-dat-mc1"),
                     "score_tag": "tre-dat-mc1"
                 }
             )
@@ -229,9 +237,9 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.tre_dat3),
-                event_mc_callback=lambda event: mc_callback(event=event, local_state=LOCAL_STATE),
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                 state_view={
-                    'mc_score': get_multiple_choice(LOCAL_STATE, 'tre-dat-mc3'),
+                    'mc_score': get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, 'tre-dat-mc3'),
                     'score_tag': 'tre-dat-mc3'
                 }
             )
@@ -241,9 +249,9 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.rel_vel1),
-                event_mc_callback=lambda event: mc_callback(event = event, local_state = LOCAL_STATE),
+                event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                 state_view={
-                    'mc_score': get_multiple_choice(LOCAL_STATE, 'galaxy-trend'),
+                    'mc_score': get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, 'galaxy-trend'),
                     'score_tag': 'galaxy-trend'
                 }
             )
@@ -323,11 +331,11 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est1),
-                event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+                event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                 state_view={
-                    'free_response_a': get_free_response(LOCAL_STATE, 'shortcoming-1'),
-                    'free_response_b': get_free_response(LOCAL_STATE, 'shortcoming-2'),
-                    'free_response_c': get_free_response(LOCAL_STATE, 'other-shortcomings'),
+                    'free_response_a': get_free_response(LOCAL_STATE, COMPONENT_STATE,'shortcoming-1'),
+                    'free_response_b': get_free_response(LOCAL_STATE, COMPONENT_STATE,'shortcoming-2'),
+                    'free_response_c': get_free_response(LOCAL_STATE, COMPONENT_STATE,'other-shortcomings'),
                 }
             )
             ScaffoldAlert(
@@ -388,26 +396,31 @@ def Page():
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
                 with solara.Columns([3,9], classes=["no-padding"]):
-                    colors = ("#3A86FF", "#FB5607")
+                    colors = (MY_CLASS_COLOR, MY_DATA_COLOR)
                     sizes = (8, 12)
                     with rv.Col(class_="no-padding"):
+
+                        def _layer_toggled(data):
+                            if data["visible"] and data["index"] is 3:
+                                Ref(COMPONENT_STATE.fields.class_data_displayed).set(True)
+
                         PlotlyLayerToggle(chart_id="line-draw-viewer",
-                        # (Plotly calls layers traces, but we'll use layers for consistency with glue).
-                        # For the line draw viewer:
-                        # Layer 0 = line that the student draws
-                        # Layer 1, 2 = fit lines for data layers.
-                        # Layer 3, 4 = data layers.
-                        # Layer 5 = endpoint for drawn line.
-                        # Add Layer 6 = best fit galaxy marker.
+                                          # (Plotly calls layers traces, but we'll use layers for consistency with glue).
+                                          # For the line draw viewer:
+                                          # Layer 0 = line that the student draws
+                                          # Layer 1, 2 = fit lines for data layers.
+                                          # Layer 3, 4 = data layers.
+                                          # Layer 5 = endpoint for drawn line.
+                                          # Add Layer 6 = best fit galaxy marker.
                                           layer_indices=(3, 4),
 
-                        # These are the indices (within the specified tuple, which has 2 data layers) of the layers that we want to have initially checked/displayed. 
-                        # If only 1 layer is selected, you still need the comma, otherwise this will be interpreted as an int instead of a tuple. This means "check & display layer 1, which is the student data layer."
-
+                                          # These are the indices (within the specified tuple, which has 2 data layers) of the layers that we want to have initially checked/displayed. 
+                                          # If only 1 layer is selected, you still need the comma, otherwise this will be interpreted as an int instead of a tuple. This means "check & display layer 1, which is the student data layer."
                                           initial_selected=(1,),
                                           enabled=layers_enabled.value,
                                           colors=colors,
-                                          labels=("Class Data", "My Data"))
+                                          labels=("Class Data", "My Data"),
+                                          event_layer_toggled=_layer_toggled)
                     with rv.Col(class_="no-padding"):
                         if student_plot_data.value and class_plot_data.value:
                             # Note the ordering here - we want the student data on top
@@ -480,13 +493,13 @@ def Page():
                         step=COMPONENT_STATE.value.hubble_slideshow_state.step,
                         max_step_completed=COMPONENT_STATE.value.hubble_slideshow_state.max_step_completed,
                         state_view={
-                            "mc_score": get_multiple_choice(LOCAL_STATE, "race-age"),
+                            "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "race-age"),
                             "score_tag": "race-age"
                         },
                         
                         event_set_dialog=dialog.set,
                         event_set_step=step.set,
                         event_set_max_step_completed=max_step_completed.set,
-                        event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                        event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                         event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
                     )

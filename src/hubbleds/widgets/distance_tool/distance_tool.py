@@ -1,4 +1,5 @@
 from datetime import datetime
+from threading import Timer
 
 import astropy.units as u
 import ipyvue as v
@@ -46,12 +47,15 @@ class DistanceTool(v.VueTemplate):
     galaxy_min_size = Angle("6 arcsec") # 3 x sdss resolution
     bad_measurement = Bool(False).tag(sync=True)
 
+    SDSS = "SDSS9 color"
+
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
 
     def __init__(self, *args, **kwargs):
         self.widget = WWTWidget()
-        self._setup_widget()
+        timer = Timer(3.0, self._setup_widget)
+        timer.start()
         self.measuring = kwargs.get('measuring', False)
         self.guard = kwargs.get('guard', False)
         self.angular_size = Angle(0, u.deg)
@@ -69,14 +73,24 @@ class DistanceTool(v.VueTemplate):
         self._rt.stop()
         super().__del__()
 
+    def set_sdss(self):
+        if self.widget.foreground != self.SDSS:
+            self.widget.foreground = self.SDSS
+        else:
+            self.widget._on_foreground_change({"new": self.SDSS})
+
+        if self.widget.background != self.SDSS:
+            self.widget.background = self.SDSS
+        else:
+            self.widget.set_background_image({"new": self.SDSS})
+
     def _setup_widget(self):
-        # Temp update to set background to SDSS. Once we remove galaxies without SDSS WWT tiles from the catalog, make background DSS again, and set wwt.foreground_opacity = 0, per Peter Williams.
-        self.widget.background = 'SDSS: Sloan Digital Sky Survey (Optical)'
-        self.widget.foreground = 'SDSS: Sloan Digital Sky Survey (Optical)'
+        self.set_sdss()
         self.widget.center_on_coordinates(self.START_COORDINATES, fov= 42 * u.arcmin, #start in close enough to see galaxies
                                           instant=True)
 
     def reset_canvas(self):
+        self.set_sdss()
         self.resetting = True
         self.send({"method": "reset", "args": []})
 
@@ -97,6 +111,7 @@ class DistanceTool(v.VueTemplate):
                 self.view_changing = False
 
     def vue_toggle_measuring(self, _args=None):
+        self.set_sdss()
         self.measuring = not self.measuring
         self.ruler_click_count += 1
 
@@ -193,3 +208,6 @@ class DistanceTool(v.VueTemplate):
     def vue_set_contrast(self, contrast, *_args):
         print(f"Contrast: {contrast}")
         self.contrast = contrast
+
+    def vue_clear_tile_cache(self, _args=None):
+        self.widget.clear_tile_cache()

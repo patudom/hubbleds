@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator, Field
+from pydantic import BaseModel, field_validator, Field, computed_field
 from cosmicds.state import BaseState
 from hubbleds.base_marker import BaseMarker
 import enum
@@ -95,13 +95,14 @@ class ComponentState(BaseComponentState, BaseState):
     selected_example_galaxy: int = 0
     total_galaxies: int = 0
     spectrum_tutorial_opened: bool = False
-    obs_wave_tool_activated: bool = False
+    rest_wave_tool_activated: bool = False
     obs_wave_tool_used: bool = False
     spectrum_clicked: bool = False
-    zoom_tool_activated: bool = False
+    zoom_tool_activated: bool = False # has it ever been used?
+    zoom_tool_active: bool = False # is it currently on?
     doppler_calc_reached: bool = False
     obs_wave: float = 0
-    show_doppler_dialog: bool = False
+    show_doppler_dialog: bool = Field(False, exclude=True)
     doppler_state: DopplerCalculation = DopplerCalculation()
     show_dotplot_tutorial_dialog: bool = False
     dotplot_tutorial_state: DotPlotTutorial = DotPlotTutorial()
@@ -114,6 +115,13 @@ class ComponentState(BaseComponentState, BaseState):
     velocity_reflection_state: VelocityReflection = VelocityReflection()
     reflection_complete: bool = False
     show_dop_cal4_values: bool = False
+
+    # computed fields are included in the model when serialized
+    @computed_field
+    @property
+    def total_steps(self) -> int:
+        # ignore the last marker, which is a dummy marker
+        return len(Marker) - 1
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:
@@ -159,7 +167,7 @@ class ComponentState(BaseComponentState, BaseState):
 
     @property
     def obs_wav1_gate(self) -> bool:
-        return self.obs_wave_tool_activated
+        return self.rest_wave_tool_activated
 
     @property
     def obs_wav2_gate(self) -> bool:
@@ -168,10 +176,6 @@ class ComponentState(BaseComponentState, BaseState):
     @property
     def dop_cal0_gate(self) -> bool:
         return self.zoom_tool_activated
-
-    @property
-    def che_mea1_gate(self) -> bool:
-        return self.doppler_state.velocity_calculated
 
     @property
     def dot_seq1_gate(self) -> bool:

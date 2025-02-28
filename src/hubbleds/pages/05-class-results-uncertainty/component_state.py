@@ -1,6 +1,6 @@
 import solara
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, computed_field
 
 from cosmicds.state import BaseState
 from hubbleds.base_marker import BaseMarker
@@ -23,6 +23,7 @@ class Marker(enum.Enum, BaseMarker):
     lea_unc1 = enum.auto()
     mos_lik1 = enum.auto()
     age_dis1 = enum.auto()
+    sho_mya1 = enum.auto()
     mos_lik2 = enum.auto()
     mos_lik3 = enum.auto()
     mos_lik4 = enum.auto()
@@ -62,6 +63,14 @@ class ComponentState(BaseComponentState, BaseState):
     uncertainty_state: UncertaintyState = UncertaintyState()
     uncertainty_slideshow_finished: bool = False
     class_best_fit_clicked: bool = False
+    
+    @computed_field
+    @property
+    def total_steps(self) -> int:
+        # ignore the last marker, which is a dummy marker
+        return len(Marker) - 1
+
+
 
     @field_validator("current_step", mode="before")
     def convert_int_to_enum(cls, v: Any) -> Marker:

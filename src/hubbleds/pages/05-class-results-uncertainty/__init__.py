@@ -1,5 +1,6 @@
 from contextlib import ExitStack
 from echo import delay_callback, add_callback
+from glue.core import Subset
 from glue.core.message import NumericalDataChangedMessage
 from glue.core.subset import RangeSubsetState
 from glue_jupyter import JupyterApplication
@@ -14,18 +15,28 @@ from pathlib import Path
 import reacton.ipyvuetify as rv
 from typing import Dict, Iterable, Optional, Tuple
 
-from cosmicds.components import PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
+from cosmicds.components import LayerToggle, PercentageSelector, ScaffoldAlert, StateEditor, StatisticsSelector, ViewerLayout
 from cosmicds.utils import empty_data_from_model_class, show_legend, show_layer_traces_in_legend
 from cosmicds.viewers import CDSHistogramView
 from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
 from hubbleds.tools import *  # noqa
-from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_free_response, get_multiple_choice, mc_callback, fr_callback
-from hubbleds.utils import make_summary_data, models_to_glue_data
+from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, ClassSummary, StudentMeasurement, StudentSummary, get_free_response, get_multiple_choice, mc_callback, fr_callback
+from hubbleds.utils import create_single_summary, make_summary_data, models_to_glue_data
 from hubbleds.viewers.hubble_histogram_viewer import HubbleHistogramView
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
+from hubbleds.viewer_marker_colors import (
+    MY_DATA_COLOR,
+    MY_DATA_COLOR_NAME,
+    MY_CLASS_COLOR,
+    MY_CLASS_COLOR_NAME,
+    OTHER_CLASSES_COLOR,
+    OTHER_CLASSES_COLOR_NAME,
+    OTHER_STUDENTS_COLOR,
+    GENERIC_COLOR
+)
 
 from cosmicds.logger import setup_logger
 
@@ -39,6 +50,8 @@ GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 def Page():
     solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
+    student_slider_setup, set_student_slider_setup = solara.use_state(False)
+    class_slider_setup, set_class_slider_setup = solara.use_state(False)
     router = solara.use_router()
 
     async def _load_component_state():
@@ -68,11 +81,11 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
-    student_default_color = "#3A86FF"
-    student_highlight_color = "#FF5A00"
+    student_default_color = MY_CLASS_COLOR
+    student_highlight_color = MY_DATA_COLOR
 
-    class_default_color = "#FF006E"
-    class_highlight_color = "#3A86FF"
+    class_default_color = OTHER_CLASSES_COLOR
+    class_highlight_color = MY_CLASS_COLOR
 
     def _update_bins(viewers: Iterable[CDSHistogramView], _msg: Optional[NumericalDataChangedMessage]=None):
         props = ('hist_n_bin', 'hist_x_min', 'hist_x_max')
@@ -122,6 +135,9 @@ def Page():
             "class_hist": class_hist_viewer
         }
 
+        student_slider_viewer.state.reset_limits_from_visible = False
+        class_slider_viewer.state.reset_limits_from_visible = False
+
         two_hist_viewers = (all_student_hist_viewer, class_hist_viewer)
         for att in ('x_min', 'x_max'):
             link((all_student_hist_viewer.state, att), (class_hist_viewer.state, att))
@@ -137,7 +153,17 @@ def Page():
             student_ids.set(ids)
         measurements.set(class_measurements)
 
-        all_measurements, student_summaries, class_summaries = LOCAL_API.get_all_data(LOCAL_STATE)
+        all_measurements, student_summaries, class_summaries = LOCAL_API.get_all_data(GLOBAL_STATE, LOCAL_STATE)
+        if GLOBAL_STATE.value.classroom.class_info is not None:
+            class_id = GLOBAL_STATE.value.classroom.class_info["id"]
+            class_distances = [distance for m in class_measurements if ((distance := m.est_dist_value) is not None and m.velocity_value is not None)]
+            class_velocities = [velocity for m in class_measurements if (m.est_dist_value is not None and (velocity := m.velocity_value) is not None)]
+            my_class_h0, my_class_age = create_single_summary(distances=class_distances, velocities=class_velocities)
+            class_summaries.append(ClassSummary(class_id=class_id, hubble_fit_value=my_class_h0, age_value=my_class_age))
+            for measurement in class_measurements:
+                measurement.class_id = class_id
+            all_measurements.extend(class_measurements)
+
         all_meas = Ref(LOCAL_STATE.fields.all_measurements)
         all_stu_summaries = Ref(LOCAL_STATE.fields.student_summaries)
         all_cls_summaries = Ref(LOCAL_STATE.fields.class_summaries)
@@ -167,7 +193,7 @@ def Page():
         layer_viewer.add_data(class_data)
         class_layer = layer_viewer.layers[1]
         class_layer.state.zorder = 1
-        class_layer.state.color = "#3A86FF"
+        class_layer.state.color = MY_CLASS_COLOR
         class_layer.state.size = 8
         class_layer.state.visible = False
 
@@ -192,21 +218,36 @@ def Page():
         student_slider_viewer.state.title = "My Class Data"
         student_slider_viewer.add_subset(student_slider_subset)
         student_slider_viewer.layers[0].state.visible = False
-        student_slider_viewer.toolbar.tools["hubble:linefit"].activate()
         show_layer_traces_in_legend(student_slider_viewer)
         show_legend(student_slider_viewer, show=True)
 
+        student_id = GLOBAL_STATE.value.student.id
         class_summary_data = make_summary_data(class_data,
                                                input_id_field="student_id",
                                                output_id_field="id",
                                                label="Class Summaries")
         class_summary_data = GLOBAL_STATE.value.add_or_update_data(class_summary_data)
+        if len(class_summary_data.subsets) == 0:
+            my_summ_subset_state = RangeSubsetState(student_id, student_id, class_summary_data.id["id"])
+            my_summ_subset = class_summary_data.new_subset(subset=my_summ_subset_state,
+                                                           color="#FB5607",
+                                                           alpha=1,
+                                                           label="My Summary")
+        else:
+            my_summ_subset = class_summary_data.subsets[0]
+
+        my_measurements = LOCAL_STATE.value.measurements
+        my_distances = [distance for m in my_measurements if ((distance := m.est_dist_value) is not None and m.velocity_value is not None)]
+        my_velocities = [velocity for m in my_measurements if (m.est_dist_value is not None and (velocity := m.velocity_value) is not None)]
+        my_h0, my_age = create_single_summary(distances=my_distances, velocities=my_velocities)
+        student_summaries.append(StudentSummary(student_id=student_id, hubble_fit_value=my_h0, age_value=my_age))
 
         student_hist_viewer.add_data(class_summary_data)
         student_hist_viewer.state.x_att = class_summary_data.id['age_value']
         student_hist_viewer.state.x_axislabel = "Age (Gyr)"
         student_hist_viewer.state.title = "My class ages (5 galaxies each)"
-        student_hist_viewer.layers[0].state.color = "#8338EC"
+        student_hist_viewer.layers[0].state.color = MY_CLASS_COLOR
+        student_hist_viewer.add_subset(my_summ_subset)
 
         all_data = models_to_glue_data(all_measurements, label="All Measurements")
         all_data = GLOBAL_STATE.value.add_or_update_data(all_data)
@@ -230,7 +271,6 @@ def Page():
         class_slider_viewer.state.title = "All Classes Data"
         class_slider_viewer.layers[0].state.visible = False
         class_slider_viewer.add_subset(class_slider_subset)
-        class_slider_viewer.toolbar.tools["hubble:linefit"].activate()
         show_layer_traces_in_legend(class_slider_viewer)
         show_legend(class_slider_viewer, show=True)        
 
@@ -238,13 +278,13 @@ def Page():
         all_student_hist_viewer.state.x_att = student_summ_data.id['age_value']
         all_student_hist_viewer.state.x_axislabel = "Age (Gyr)"
         all_student_hist_viewer.state.title = "All student ages (5 galaxies each)"
-        all_student_hist_viewer.layers[0].state.color = "#FFBE0B"
+        all_student_hist_viewer.layers[0].state.color = OTHER_STUDENTS_COLOR
 
         class_hist_viewer.add_data(all_class_summ_data)
         class_hist_viewer.state.x_att = all_class_summ_data.id['age_value']
         class_hist_viewer.state.x_axislabel = "Age (Gyr)"
         class_hist_viewer.state.title = "All class ages (~100 galaxies each)"
-        class_hist_viewer.layers[0].state.color = "#619EFF"
+        class_hist_viewer.layers[0].state.color = OTHER_CLASSES_COLOR
 
         # This looks weird, and it kinda is!
         # The idea here is that the all students viewer will always have a wider range than the all classes viewer
@@ -253,6 +293,9 @@ def Page():
 
         for viewer in (student_hist_viewer, all_student_hist_viewer, class_hist_viewer):
             viewer.figure.update_layout(hovermode="closest")
+
+        for viewer in viewers.values():
+            viewer.state.reset_limits()
 
         gjapp.data_collection.hub.subscribe(gjapp.data_collection, NumericalDataChangedMessage,
                                             handler=partial(_update_bins, two_hist_viewers),
@@ -281,26 +324,39 @@ def Page():
     _update_bins((viewers["student_hist"],))
 
     logger.info("DATA IS READY")
+    for name, viewer in viewers.items():
+        # We don't want to reset the class histogram's limits
+        # as we let its limits be controlled by the student histogram
+        # viewer's limits
+        if name == "class_hist":
+            continue
+        viewer.state.reset_limits()
 
     def show_class_data(marker):
         if "Class Data" in GLOBAL_STATE.value.glue_data_collection:
             class_data = GLOBAL_STATE.value.glue_data_collection["Class Data"]
             layer = viewers["layer"].layer_artist_for_data(class_data)
-            layer.state.visible = Marker.is_at_or_after(marker, Marker.cla_dat1)
+            should_be_visible = Marker.is_at_or_after(marker, Marker.cla_dat1)
+            if layer.state.visible is not should_be_visible:
+                layer.state.visible = should_be_visible
 
     def show_student_data(marker):
         if "My Data" in GLOBAL_STATE.value.glue_data_collection:
             student_data = GLOBAL_STATE.value.glue_data_collection["My Data"]
             layer = viewers["layer"].layer_artist_for_data(student_data)
-            layer.state.visible = Marker.is_at_or_before(marker, Marker.fin_cla1)
+            should_be_visible = Marker.is_at_or_before(marker, Marker.fin_cla1)
+            if layer.state.visible is not should_be_visible:
+                layer.state.visible = should_be_visible
+
+    def update_layer_viewer_visibilities(marker):
+        with viewers["layer"].figure.batch_update():
+            show_class_data(marker)
+            show_student_data(marker)
 
     current_step = Ref(COMPONENT_STATE.fields.current_step)
     
-    current_step.subscribe(show_class_data)
-    show_class_data(COMPONENT_STATE.value.current_step)
-
-    current_step.subscribe(show_student_data)
-    show_student_data(COMPONENT_STATE.value.current_step)   
+    current_step.subscribe(update_layer_viewer_visibilities)
+    update_layer_viewer_visibilities(COMPONENT_STATE.value.current_step)
 
     class_best_fit_clicked = Ref(COMPONENT_STATE.fields.class_best_fit_clicked)
 
@@ -308,10 +364,28 @@ def Page():
         if not class_best_fit_clicked.value:
             class_best_fit_clicked.set(active)
 
+    def show_class_hide_my_age_subset(value):
+        viewer=viewers["student_hist"]
+        viewer.layers[0].state.visible = True # in case student turned class off
+        viewer.layers[1].state.visible = not value
+
+    def _on_marker_updated(marker):
+        if Marker.is_at_or_before(marker, Marker.sho_mya1) or Marker.is_at_or_after(marker, Marker.con_int2):
+            show_class_hide_my_age_subset(True)
+
+    Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
+
     line_fit_tool = viewers["layer"].toolbar.tools['hubble:linefit']
     add_callback(line_fit_tool, 'active',  _on_best_fit_line_shown)
 
-    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+    def _jump_stage_6():
+        router.push("06-prodata")
+
+    with solara.Row():
+        with solara.Column():
+            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
+        with solara.Column():
+            solara.Button(label="Shortcut: Jump to Stage 6", on_click=_jump_stage_6, classes=["demo-button"])
 
     def _on_component_state_loaded(value: bool):
         if not value:
@@ -394,9 +468,9 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.you_age1c),
                     state_view={
-                        "low_guess": get_free_response(LOCAL_STATE, "likely-low-age").get("response"),
-                        "high_guess": get_free_response(LOCAL_STATE, "likely-high-age").get("response"),
-                        "best_guess": get_free_response(LOCAL_STATE, "best-guess-age").get("response"),
+                        "low_guess": get_free_response(LOCAL_STATE, COMPONENT_STATE,"likely-low-age").get("response"),
+                        "high_guess": get_free_response(LOCAL_STATE, COMPONENT_STATE,"likely-high-age").get("response"),
+                        "best_guess": get_free_response(LOCAL_STATE, COMPONENT_STATE,"best-guess-age").get("response"),
                     }                    
                 )
 
@@ -414,7 +488,9 @@ def Page():
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_res1),
                     state_view={
-                        "class_data_size": COMPONENT_STATE.value.class_data_size
+                        "class_data_size": COMPONENT_STATE.value.class_data_size,
+                        "my_color": MY_DATA_COLOR_NAME,
+                        "my_class_color": MY_CLASS_COLOR_NAME,
                     }
                 )
                 ScaffoldAlert(
@@ -423,9 +499,9 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.rel_age1),
-                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                     state_view={
-                        "mc_score": get_multiple_choice(LOCAL_STATE, "age-slope-trend"),
+                        "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "age-slope-trend"),
                         "score_tag": "age-slope-trend"
                     }
                 )
@@ -498,6 +574,11 @@ def Page():
                 color = student_highlight_color if highlighted else student_default_color
                 student_slider_subset.style.color = color
                 student_slider_subset.style.markersize = 12
+                if not student_slider_setup:
+                    viewer = viewers["student_slider"]
+                    viewer.state.reset_limits()
+                    viewer.toolbar.tools["hubble:linefit"].activate()
+                    set_student_slider_setup(True)
 
             with rv.Col(class_="no-padding"):
                 ViewerLayout(viewer=viewers["student_slider"])
@@ -522,11 +603,11 @@ def Page():
                         UncertaintySlideshow(
                             event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
                             step=COMPONENT_STATE.value.uncertainty_state.step,
-                            age_calc_short1=get_free_response(LOCAL_STATE, "shortcoming-1").get("response"),
-                            age_calc_short2=get_free_response(LOCAL_STATE, "shortcoming-2").get("response"),
-                            age_calc_short_other=get_free_response(LOCAL_STATE, "other-shortcomings").get("response"),    
-                            event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
-                            free_responses=[get_free_response(LOCAL_STATE,'shortcoming-4'), get_free_response(LOCAL_STATE,'systematic-uncertainty')]   
+                            age_calc_short1=get_free_response(LOCAL_STATE, COMPONENT_STATE,"shortcoming-1").get("response"),
+                            age_calc_short2=get_free_response(LOCAL_STATE, COMPONENT_STATE,"shortcoming-2").get("response"),
+                            age_calc_short_other=get_free_response(LOCAL_STATE, COMPONENT_STATE,"other-shortcomings").get("response"),    
+                            event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+                            free_responses=[get_free_response(LOCAL_STATE, COMPONENT_STATE,'shortcoming-4'), get_free_response(LOCAL_STATE, COMPONENT_STATE,'systematic-uncertainty')]   
                         )
             
     #--------------------- Row 3: ALL DATA HUBBLE VIEWER - during class sequence -----------------------
@@ -540,6 +621,10 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.cla_res1c),
+                    state_view={
+                        "my_class_color": MY_CLASS_COLOR_NAME,
+                        "other_class_color": OTHER_CLASSES_COLOR_NAME,
+                    }
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeRangec.vue",
@@ -559,6 +644,11 @@ def Page():
                 class_slider_subset.subset_state = RangeSubsetState(id, id, all_data.id['class_id'])
                 color = class_highlight_color if highlighted else class_default_color
                 class_slider_subset.style.color = color
+                if not class_slider_setup:
+                    viewer = viewers["class_slider"]
+                    viewer.state.reset_limits()
+                    viewer.toolbar.tools["hubble:linefit"].activate()
+                    set_class_slider_setup(True)
 
             with rv.Col():
                 ViewerLayout(viewer=viewers["class_slider"])
@@ -578,35 +668,41 @@ def Page():
                     UncertaintySlideshow(
                         event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
                         step=COMPONENT_STATE.value.uncertainty_state.step,
-                        age_calc_short1=get_free_response(LOCAL_STATE, "shortcoming-1").get("response"),
-                        age_calc_short2=get_free_response(LOCAL_STATE, "shortcoming-2").get("response"),
-                        age_calc_short_other=get_free_response(LOCAL_STATE, "other-shortcomings").get("response"),  
-                        event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
-                        free_responses=[get_free_response(LOCAL_STATE, 'shortcoming-4'), get_free_response(LOCAL_STATE, 'systematic-uncertainty')]
+                        age_calc_short1=get_free_response(LOCAL_STATE, COMPONENT_STATE,"shortcoming-1").get("response"),
+                        age_calc_short2=get_free_response(LOCAL_STATE, COMPONENT_STATE,"shortcoming-2").get("response"),
+                        age_calc_short_other=get_free_response(LOCAL_STATE, COMPONENT_STATE,"other-shortcomings").get("response"),  
+                        event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+                        free_responses=[get_free_response(LOCAL_STATE, COMPONENT_STATE,'shortcoming-4'), get_free_response(LOCAL_STATE, COMPONENT_STATE,'systematic-uncertainty')]
                 )
 
     #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------
+    class_summary_data = gjapp.data_collection["Class Summaries"]
+    def _on_percentage_selected_changed(_option, value):
+        my_summ_subset = class_summary_data.subsets[0]
+        my_summ_subset.style.alpha = 1 - int(value)
+
     if COMPONENT_STATE.value.current_step_between(Marker.age_dis1, Marker.con_int3):
         with solara.ColumnsResponsive(12, large=[5,7]):
             with rv.Col():
-                with rv.Row():
-                    class_summary_data = gjapp.data_collection["Class Summaries"]
-                    with rv.Col():
-                        if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
+                if COMPONENT_STATE.value.current_step_between(Marker.mos_lik2, Marker.con_int3):
+                    with rv.Row():
+                        with rv.Col():
                             StatisticsSelector(
                                 viewers=[viewers["student_hist"]],
                                 glue_data=[class_summary_data],
                                 units=["Gyr"],
                                 transform=round,
+                                color=GENERIC_COLOR
                             )
 
-                    with rv.Col():
-                        if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
-                            PercentageSelector(
-                                viewers=[viewers["student_hist"]],
-                                glue_data=[class_summary_data],
-                                units=["Gyr"],
-                            )
+                        with rv.Col():
+                            if COMPONENT_STATE.value.current_step_between(Marker.con_int2, Marker.con_int3):
+                                PercentageSelector(
+                                    viewers=[viewers["student_hist"]],
+                                    glue_data=[class_summary_data],
+                                    units=["Gyr"],
+                                    on_selected_changed=_on_percentage_selected_changed
+                                )
 
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineClassAgeDistribution.vue",
@@ -614,6 +710,13 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.age_dis1),
+                )
+                ScaffoldAlert(
+                    GUIDELINE_ROOT / "GuidelineShowMyAgeDistribution.vue",
+                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
+                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
+                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                    show=COMPONENT_STATE.value.is_current_step(Marker.sho_mya1),
                 )
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineMostLikelyValue2.vue",
@@ -645,8 +748,24 @@ def Page():
                     show=COMPONENT_STATE.value.is_current_step(Marker.con_int2),
                 )
 
-            with rv.Col():
-                ViewerLayout(viewer=viewers["student_hist"])
+            if COMPONENT_STATE.value.current_step_between(Marker.sho_mya1, Marker.con_int1):
+                with rv.Col():
+                    with rv.Row():
+                        def _toggle_ignore(layer):
+                            return layer.layer.label not in ("My Summary", "Class Summaries")
+
+                        LayerToggle(viewer=viewers["student_hist"],
+                                    layers=["Class Summaries", "My Summary"],
+                                    names={"Class Summaries": "Class Ages",
+                                           "My Summary": "My Age"},
+                                    ignore_conditions=[_toggle_ignore])
+
+                    with rv.Row():
+                        ViewerLayout(viewer=viewers["student_hist"])
+            else:
+                with rv.Col():
+                    ViewerLayout(viewer=viewers["student_hist"])
+                
 
 
     ScaffoldAlert(
@@ -655,11 +774,11 @@ def Page():
         event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
         can_advance=COMPONENT_STATE.value.can_transition(next=True),
         show=COMPONENT_STATE.value.is_current_step(Marker.mos_lik4),
-        event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+        event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
         state_view={
-            'free_response_a': get_free_response(LOCAL_STATE,'best-guess-age'),
+            'free_response_a': get_free_response(LOCAL_STATE, COMPONENT_STATE,'best-guess-age'),
             # 'best_guess_answered': LOCAL_STATE.value.question_completed("best-guess-age"),
-            'free_response_b': get_free_response(LOCAL_STATE,'my-reasoning')
+            'free_response_b': get_free_response(LOCAL_STATE, COMPONENT_STATE,'my-reasoning')
         }
     )
 
@@ -669,12 +788,12 @@ def Page():
         event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
         can_advance=COMPONENT_STATE.value.can_transition(next=True),
         show=COMPONENT_STATE.value.is_current_step(Marker.con_int3),
-        event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+        event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
         state_view={
-            'free_response_a': get_free_response(LOCAL_STATE,'likely-low-age'),
-            'free_response_b': get_free_response(LOCAL_STATE,'likely-high-age'),
+            'free_response_a': get_free_response(LOCAL_STATE, COMPONENT_STATE,'likely-low-age'),
+            'free_response_b': get_free_response(LOCAL_STATE, COMPONENT_STATE,'likely-high-age'),
             # 'high_low_answered': LOCAL_STATE.value.question_completed("likely-low-age") and LOCAL_STATE.value.question_completed("likely-high-age"),
-            'free_response_c': get_free_response(LOCAL_STATE,'my-reasoning-2'),
+            'free_response_c': get_free_response(LOCAL_STATE, COMPONENT_STATE,'my-reasoning-2'),
         }
     )
 
@@ -695,6 +814,7 @@ def Page():
                             glue_data=hist_data,
                             units=units,
                             transform=round,
+                            color=GENERIC_COLOR
                         )
 
                     with rv.Col():
@@ -724,9 +844,9 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.two_his2),
-                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                     state_view = {
-                        "mc_score": get_multiple_choice(LOCAL_STATE, "histogram-range"),
+                        "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "histogram-range"),
                         "score_tag": "histogram-range"
                     }
                 )
@@ -736,9 +856,9 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.two_his3),
-                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                     state_view = {
-                        "mc_score": get_multiple_choice(LOCAL_STATE, "histogram-percent-range"),
+                        "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "histogram-percent-range"),
                         "score_tag": "histogram-percent-range"
                     }
                 )
@@ -748,9 +868,9 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.two_his4),
-                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE),
+                    event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                     state_view = {
-                        "mc_score": get_multiple_choice(LOCAL_STATE, "histogram-distribution"),
+                        "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "histogram-distribution"),
                         "score_tag": "histogram-distribution"
                     }
                 )
@@ -760,9 +880,9 @@ def Page():
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.two_his5),
-                    event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+                    event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                     state_view={
-                        'free_response': get_free_response(LOCAL_STATE,'unc-range-change-reasoning'),
+                        'free_response': get_free_response(LOCAL_STATE, COMPONENT_STATE,'unc-range-change-reasoning'),
                     }
                 )
                 ScaffoldAlert(
@@ -786,14 +906,14 @@ def Page():
             event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
             can_advance=COMPONENT_STATE.value.can_transition(next=True),
             show=COMPONENT_STATE.value.is_current_step(Marker.con_int2c),
-            event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
+            event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
             state_view={
-                "low_guess": get_free_response(LOCAL_STATE, "likely-low-age").get("response"),
-                "high_guess": get_free_response(LOCAL_STATE, "likely-high-age").get("response"),
-                "best_guess": get_free_response(LOCAL_STATE, "best-guess-age").get("response"),
-                'free_response_a': get_free_response(LOCAL_STATE, 'new-most-likely-age'),
-                'free_response_b': get_free_response(LOCAL_STATE, 'new-likely-low-age'),
-                'free_response_c': get_free_response(LOCAL_STATE, 'new-likely-high-age'),
-                'free_response_d': get_free_response(LOCAL_STATE, 'my-updated-reasoning'),
+                "low_guess": get_free_response(LOCAL_STATE, COMPONENT_STATE,"likely-low-age").get("response"),
+                "high_guess": get_free_response(LOCAL_STATE, COMPONENT_STATE,"likely-high-age").get("response"),
+                "best_guess": get_free_response(LOCAL_STATE, COMPONENT_STATE,"best-guess-age").get("response"),
+                'free_response_a': get_free_response(LOCAL_STATE, COMPONENT_STATE,'new-most-likely-age'),
+                'free_response_b': get_free_response(LOCAL_STATE, COMPONENT_STATE,'new-likely-low-age'),
+                'free_response_c': get_free_response(LOCAL_STATE, COMPONENT_STATE,'new-likely-high-age'),
+                'free_response_d': get_free_response(LOCAL_STATE, COMPONENT_STATE,'my-updated-reasoning'),
             }
         )

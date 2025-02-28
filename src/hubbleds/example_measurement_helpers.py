@@ -9,6 +9,10 @@ from .data_management import (
     DB_ANGSIZE_FIELD,
     DB_DISTANCE_FIELD,
 )
+from .viewer_marker_colors import (
+    MY_DATA_COLOR,
+    GENERIC_COLOR,
+)
 
 from .utils import _add_link
 from .state import StudentMeasurement
@@ -20,11 +24,11 @@ def create_measurement_subsets(gjapp: JupyterApplication, data: Data):
         current_subsets = data.subsets
         if 'first measurement' not in (s.label for s in current_subsets):
             first = data.new_subset(data.id['measurement_number'] == 'first', label='first measurement')
-            first.style.color = "#C94456"
+            first.style.color = GENERIC_COLOR
             first.style.alpha = 1.0
         if 'second measurement' not in (s.label for s in current_subsets):
             second = data.new_subset(data.id['measurement_number'] == 'second', label='second measurement')
-            second.style.color = "#4449C9"
+            second.style.color = GENERIC_COLOR
             second.style.alpha = 1.0
 
 
@@ -34,11 +38,11 @@ def create_example_subsets(gjapp: JupyterApplication, data: Data):
         current_subsets = example_data.subsets
         if 'first measurement' not in (s.label for s in current_subsets):
             first = example_data.new_subset(example_data.id['measurement_number'] == 'first', label='first measurement')
-            first.style.color = "#2CEBF5"
+            first.style.color = MY_DATA_COLOR
             first.style.alpha = 1.0
         if 'second measurement' not in (s.label for s in current_subsets):
             second = example_data.new_subset(example_data.id['measurement_number'] == 'second', label='second measurement')
-            second.style.color = "#62F705"
+            second.style.color = MY_DATA_COLOR
             second.style.alpha = 1.0
             
 
