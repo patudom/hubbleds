@@ -933,6 +933,7 @@
       </v-btn>
       <!-- first button below just being used for testing, delete when using live with students -->
       <v-btn
+        id="btn-jump-to-stage-1"
         v-if="step < length-1"
         class="demo-button"
         depressed
