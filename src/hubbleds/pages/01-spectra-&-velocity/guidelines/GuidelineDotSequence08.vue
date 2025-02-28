@@ -10,7 +10,9 @@
       Choose a response
     </template>
     <div>
-      <v-btn color="secondary" @click="zoom_to_range()" class="mb-6 mt-2">zoom to optimal range</v-btn> 
+      <div style="display: flex; justify-content: center;">
+        <v-btn color="secondary" @click="zoom_to_range()" class="mb-6 mt-2">zoom to optimal range</v-btn>
+      </div>
       <p>
         Based on this graph do you think there is <strong>consensus</strong> on the velocity of this galaxy?
       </p>
