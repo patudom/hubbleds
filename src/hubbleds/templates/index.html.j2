@@ -274,7 +274,8 @@
 
 <v-overlay v-model="serverError" width="500" opacity="0.7">
     <v-card style="border: 1px solid #DD2C00;">
-        <v-card-title class="text-h5 info">Apologies, we encountered a problem</v-card-title>
+        <v-card-title v-if="needsRefresh" class="text-h5 info">Trying to reconnect</v-card-title>
+        <v-card-title v-else class="text-h5 info">Apologies, we encountered a problem</v-card-title>
         <v-card-text class="mt-5">
             <v-progress-circular indeterminate size="50" class="center-self mb-3" style="text-align: center; justify-self: center;">
             </v-progress-circular>
