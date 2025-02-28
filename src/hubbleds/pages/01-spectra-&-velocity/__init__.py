@@ -622,7 +622,7 @@ def Page():
                 print("is galaxy selected:", galaxy_is_selected.value)             
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-            Marker.cho_row1, Marker.dot_seq14 #placeholder so it doesn't break - change to last new dot_seq marker.
+            Marker.cho_row1, Marker.rem_vel1 
             )
             if show_example_data_table:
                 selection_tool_galaxy = selected_example_measurement
@@ -851,7 +851,7 @@ def Page():
 
         with rv.Col(cols=12, lg=8):
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-                Marker.cho_row1, Marker.dot_seq14  # TODO: change this back to dot_seq14 if we put back 2nd galaxy measurement
+                Marker.cho_row1, Marker.rem_vel1 
             )
 
             if show_example_data_table:
@@ -980,7 +980,7 @@ def Page():
 
     # dot plot slideshow button row
 
-    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1): 
         with rv.Row(class_="no-padding"):
             with rv.Col(cols=12, lg=4, class_="no-padding"):
                 pass
@@ -1016,7 +1016,7 @@ def Page():
                     )
                 
     # Dot Plot 1st measurement row
-    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.dot_seq14): # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1): 
         with rv.Row(class_="no-y-padding"):
             with rv.Col(cols=12, lg=4, class_="no-y-padding"):
                 ScaffoldAlert(
@@ -1111,28 +1111,6 @@ def Page():
                         show_which_meas='first' if COMPONENT_STATE.value.current_step != Marker.rem_vel1 else 'second',
                         show_which_seed='first'
                     )
-
-    # Dot Plot 2nd measurement row
-
-    if COMPONENT_STATE.value.current_step_between(Marker.dot_seq14, Marker.dot_seq14):
-        with rv.Row():
-            with rv.Col(cols=12, lg=4):
-                ScaffoldAlert(
-                    GUIDELINE_ROOT / "GuidelineDotSequence14.vue",
-                    event_next_callback=lambda _: transition_next(COMPONENT_STATE),
-                    event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
-                    can_advance=COMPONENT_STATE.value.can_transition(next=True),
-                    show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq14),
-                    speech=speech.value,
-                )
-            with rv.Col(cols=12, lg=8):
-                print("Creating 2nd dotplot viewer")
-                create_dotplot_viewer(
-                    first_dotplot=False,
-                    show_which_meas='second',
-                    show_which_seed='second'
-                )
-
 
     # Spectrum Viewer row
     if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.che_mea1) or COMPONENT_STATE.value.current_step_between(Marker.dot_seq4, Marker.rem_vel1) or COMPONENT_STATE.value.current_step_at_or_after(Marker.rem_gal1):
@@ -1262,7 +1240,7 @@ def Page():
                 show_example_spectrum = COMPONENT_STATE.value.current_step_between(
                     Marker.mee_spe1, Marker.che_mea1
                 ) or COMPONENT_STATE.value.current_step_between(
-                    Marker.dot_seq4, Marker.dot_seq14  # TODO: Change this back to dot_seq14 if we put back 2nd galaxy measurement
+                    Marker.dot_seq4, Marker.rem_vel1 
                 )
 
                 show_galaxy_spectrum = COMPONENT_STATE.value.current_step_at_or_after(
