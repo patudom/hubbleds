@@ -10,7 +10,7 @@
         color="secondary"
         elevation="2"
         id="slideshow-button"
-        @click.stop="() => { dialog = true; }"
+        @click.stop="() => { show_dialog(true); }"
       >
         Dot Plot Tutorial
       </v-btn>
@@ -40,7 +40,7 @@
         <v-btn
           icon
           @click="() => { 
-            dialog = false; 
+            show_dialog(false); 
             if (step === length-1) 
               { 
                 tutorial_finished(); 
@@ -185,7 +185,7 @@
           class="black--text"
           depressed
           @click="() => { 
-            dialog = false; 
+            show_dialog(false); 
             tutorial_finished();
             set_step(0); 
           }"
