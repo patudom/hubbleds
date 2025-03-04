@@ -25,7 +25,8 @@ def SelectionTool(
                 table_layer_data={
                     k: [x.dict()[k] for x in LOCAL_STATE.value.galaxies.values()]
                     for k in ["id", "ra", "decl"]
-                }
+                },
+                show_galaxies=show_galaxies,
             )
 
             tool_widget = solara.get_widget(tool_container)
