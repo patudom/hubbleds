@@ -194,7 +194,7 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
-    
+    measurements_setup = solara.use_reactive(False)
     def _glue_setup() -> JupyterApplication:
         gjapp = gjapp = JupyterApplication(
             GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
@@ -222,6 +222,7 @@ def Page():
             gjapp.data_collection.append(second)
             
             link_seed_data(gjapp)
+        measurements_setup.set(True)
         
         return gjapp
     
@@ -331,10 +332,12 @@ def Page():
             link_example_seed_and_measurements(gjapp)
         else:
             logger.info('no example measurements yet')
-        
+    
+    subsets_setup = solara.use_reactive(False)
     def _glue_data_setup():
         add_example_measurements_to_glue()
         update_second_example_measurement()
+        subsets_setup.set(True)
     
     solara.use_effect(_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
 
@@ -970,9 +973,13 @@ def Page():
                 else:
                     show_dotplot_lines.set(False)
                 
+                
                 if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.ang_siz5a):
-                    ignore = []
-                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                    # solara.Text(f"measurements setup: {measurements_setup.value}")
+                    # solara.Text(f"subsets setup: {subsets_setup.value}")
+                    if measurements_setup.value and subsets_setup.value and EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                        ignore = []
+                    
                         ignore = [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
                         if COMPONENT_STATE.value.current_step_at_or_before(Marker.dot_seq5):
                             second = subset_by_label(ignore[0], 'second measurement')
@@ -984,11 +991,10 @@ def Page():
                                 ignore.append(first)
                     
                     
-                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                         DotplotViewer(gjapp, 
                                         data = [
+                                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
                                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first']
                                             ],
                                             title="Distance",
                                             component_id="est_dist_value",
@@ -999,15 +1005,15 @@ def Page():
                                             unit="Mpc",
                                             x_label="Distance (Mpc)",
                                             y_label="Count",
-                                            zorder=[5,1],
                                             x_bounds=dist_dotplot_range,
-                                            hide_layers=ignore
+                                            hide_layers=ignore,
+                                            nbin=30
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
                             DotplotViewer(gjapp, 
                                             data = [
+                                                gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'], 
                                                 gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS],
-                                                gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'] 
                                                 ],
                                                 title="Angular Size",
                                                 component_id="ang_size_value",
@@ -1018,9 +1024,9 @@ def Page():
                                                 unit="arcsec",
                                                 x_label="Angular Size (arcsec)",
                                                 y_label="Count",
-                                                zorder=[5,1],
                                                 x_bounds=ang_size_dotplot_range,
-                                                hide_layers=ignore
+                                                hide_layers=ignore,
+                                                nbin=30
                                                 )
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")
