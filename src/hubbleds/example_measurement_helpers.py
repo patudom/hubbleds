@@ -18,19 +18,6 @@ from .utils import _add_link
 from .state import StudentMeasurement
 
 
-def create_measurement_subsets(gjapp: JupyterApplication, data: Data):
-    if data.label in gjapp.data_collection:
-        data = gjapp.data_collection[data.label]
-        current_subsets = data.subsets
-        if 'first measurement' not in (s.label for s in current_subsets):
-            first = data.new_subset(data.id['measurement_number'] == 'first', label='first measurement')
-            first.style.color = GENERIC_COLOR
-            first.style.alpha = 1.0
-        if 'second measurement' not in (s.label for s in current_subsets):
-            second = data.new_subset(data.id['measurement_number'] == 'second', label='second measurement')
-            second.style.color = GENERIC_COLOR
-            second.style.alpha = 1.0
-
 
 def create_example_subsets(gjapp: JupyterApplication, data: Data):
     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
@@ -71,6 +58,12 @@ def link_seed_data(gjapp):
             _add_link(gjapp, egsd, DB_MEASWAVE_FIELD, second, DB_MEASWAVE_FIELD)
             _add_link(gjapp, egsd, DB_ANGSIZE_FIELD, second, DB_ANGSIZE_FIELD)
             _add_link(gjapp, egsd, DB_DISTANCE_FIELD, second, DB_DISTANCE_FIELD)
+        # if EXAMPLE_GALAXY_SEED_DATA + 'tutorial' in gjapp.data_collection:
+        #     second = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + 'tutorial']
+        #     _add_link(gjapp, egsd, DB_VELOCITY_FIELD, second, DB_VELOCITY_FIELD)
+        #     _add_link(gjapp, egsd, DB_MEASWAVE_FIELD, second, DB_MEASWAVE_FIELD)
+        #     _add_link(gjapp, egsd, DB_ANGSIZE_FIELD, second, DB_ANGSIZE_FIELD)
+        #     _add_link(gjapp, egsd, DB_DISTANCE_FIELD, second, DB_DISTANCE_FIELD)
 
 
 def _update_second_example_measurement(example_measurements: list[StudentMeasurement]):

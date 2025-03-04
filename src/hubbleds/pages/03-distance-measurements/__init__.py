@@ -271,7 +271,7 @@ def Page():
 
         logger.info('Initializing state')
         
-        if COMPONENT_STATE.value.current_step >= Marker.cho_row1:
+        if COMPONENT_STATE.value.current_step.value >= Marker.cho_row1.value:
             logger.info('Setting selected example galaxy')
             selected_example_galaxy = Ref(COMPONENT_STATE.fields.selected_example_galaxy)
             if len(LOCAL_STATE.value.example_measurements) > 0:
@@ -555,15 +555,15 @@ def Page():
 
         with rv.Col():
             def show_ruler_range(marker):
-                COMPONENT_STATE.value.show_ruler = Marker.is_between(marker, Marker.ang_siz3, Marker.est_dis4) or \
-                Marker.is_between(marker, Marker.dot_seq5b, Marker.last())
+                COMPONENT_STATE.value.show_ruler = marker.is_between(Marker.ang_siz3, Marker.est_dis4) or \
+                marker.is_between(Marker.dot_seq5b, Marker.last())
             
             current_step = Ref(COMPONENT_STATE.fields.current_step)
             current_step.subscribe(show_ruler_range)
 
             @solara.lab.computed
             def on_example_galaxy_marker():
-                return COMPONENT_STATE.value.current_step <= Marker.dot_seq5c
+                return COMPONENT_STATE.value.current_step.value <= Marker.dot_seq5c.value
 
             @solara.lab.computed
             def current_galaxy():
@@ -597,7 +597,7 @@ def Page():
                     bad_measurement.set(False)
                 auto_fill_distance = (
                     COMPONENT_STATE.value.current_step_between(Marker.est_dis4, Marker.dot_seq5c) 
-                    or COMPONENT_STATE.value.current_step >= Marker.fil_rem1
+                    or COMPONENT_STATE.value.current_step.value >= Marker.fil_rem1.value
                     or fill_galaxy_pressed.value
                 )
                 # the above, but if the student goes back, the distance should update if the distance is already set.
@@ -799,7 +799,7 @@ def Page():
                     
                 ]
 
-            if COMPONENT_STATE.value.current_step < Marker.rep_rem1:
+            if COMPONENT_STATE.value.current_step.value < Marker.rep_rem1.value:
                 def update_example_galaxy(galaxy):
                     flag = galaxy.get("value", True)
                     value = galaxy["item"]["galaxy"] if flag else None

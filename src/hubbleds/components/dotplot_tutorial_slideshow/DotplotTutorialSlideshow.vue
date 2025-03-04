@@ -10,7 +10,7 @@
         color="secondary"
         elevation="2"
         id="slideshow-button"
-        @click.stop="() => { dialog = true; }"
+        @click.stop="() => { show_dialog(true); }"
       >
         Dot Plot Tutorial
       </v-btn>
@@ -40,7 +40,7 @@
         <v-btn
           icon
           @click="() => { 
-            dialog = false; 
+            show_dialog(false); 
             if (step === length-1) 
               { 
                 tutorial_finished(); 
@@ -66,7 +66,7 @@
               <v-card-text>
                 <v-container>
                   <p>
-                    This <b>dot plot</b> displays&#8212;as a dot&#8212;every velocity measurement in our sample (excluding yours for now).
+                    This is a <b>dot plot</b> for a set of velocity values similar to the measurements you are making. Each measured velocity value is represented by a single <b>dot</b>.
                   </p>
                   <p>
                     Dots are stacked within velocity <b>ranges</b> called <b>bins</b>.
@@ -185,7 +185,7 @@
           class="black--text"
           depressed
           @click="() => { 
-            dialog = false; 
+            show_dialog(false); 
             tutorial_finished();
             set_step(0); 
           }"
