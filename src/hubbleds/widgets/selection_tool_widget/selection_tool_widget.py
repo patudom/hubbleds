@@ -88,10 +88,9 @@ class SelectionToolWidget(v.VueTemplate):
             source = wwt.most_recent_source
             galaxy = source["layerData"]
 
-            for k in ["ra", "decl", "z"]:
+            for k in ["ra", "decl"]:
                 galaxy[k] = float(galaxy[k])
 
-            galaxy["element"] = galaxy["element"].replace("?", "α")  # Hacky fix for now
             fov = min(wwt.get_fov(), GALAXY_FOV)
 
             self.go_to_location(galaxy["ra"], galaxy["decl"], fov=fov)
@@ -99,9 +98,9 @@ class SelectionToolWidget(v.VueTemplate):
             self.candidate_galaxy = galaxy
 
             if not self.selected_data.empty:
-                gal_names = [k for k in self.selected_data["name"]]
+                gal_ids = [k for k in self.selected_data["id"]]
 
-                if self.current_galaxy["name"] in gal_names:
+                if self.current_galaxy["id"] in gal_ids:
                     self.candidate_galaxy = {}
 
             self.selected = True
@@ -137,13 +136,15 @@ class SelectionToolWidget(v.VueTemplate):
 
     def show_galaxies(self, show=True):
         self.set_background()
-        if self.sdss_layer is not None:
-            if self.sdss_layer in self.widget.layers._layers:
-                self.widget.layers.remove_layer(self.sdss_layer)
-                self.sdss_layer = None
 
-        if show and self.sdss_layer is None:
-            layer = self.widget.layers.add_table_layer(self.sdss_table, marker_type="gaussian", size_scale=100, color="#00FF00", marker_scale="screen")
+        opacity = int(show)
+        if self.sdss_layer is None:
+            layer = self.widget.layers.add_table_layer(self.sdss_table,
+                                                       marker_type="gaussian",
+                                                       size_scale=100,
+                                                       color="#00FF00",
+                                                       marker_scale="screen",
+                                                       opacity=opacity)
                                                         
             # self.widget.layers.add_table_layer(self.sdss_table)
             # #try passing these as kwargs to add_table_layer.
@@ -151,6 +152,8 @@ class SelectionToolWidget(v.VueTemplate):
             # layer.size_scale = 100
             # layer.color = "#00FF00"
             self.sdss_layer = layer
+        else:
+            self.sdss_layer.opacity = opacity
 
     @property
     def on_galaxy_selected(self):
@@ -229,11 +232,6 @@ class SelectionToolWidget(v.VueTemplate):
             return
         if self.current_galaxy["id"]:
             data = {"galaxy_id": int(self.current_galaxy["id"])}
-        else:
-            name = self.current_galaxy["name"]
-            if not name.endswith(".fits"):
-                name += ".fits"
-            data = {"galaxy_name": name}
-        GLOBAL_STATE.request_session().put(
-            f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-galaxy-bad", json=data
-        )
+            GLOBAL_STATE.request_session().put(
+                f"{API_URL}/{HUBBLE_ROUTE_PATH}/mark-galaxy-bad", json=data
+            )
