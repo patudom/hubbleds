@@ -10,5 +10,6 @@ def DotplotTutorialSlideshow(
     max_step_completed: int,
     dotplot_viewer: Any,
     event_tutorial_finished: Callable,
+    event_show_dialog: Callable,
 ):
     pass

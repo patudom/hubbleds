@@ -928,6 +928,9 @@ def Page():
                         event_tutorial_finished=lambda _: dotplot_tutorial_finished.set(
                             True
                         ),
+                        event_show_dialog=lambda v: Ref(
+                            COMPONENT_STATE.fields.show_dotplot_tutorial_dialog
+                        ).set(v),
                     )
                 
     # Dot Plot 1st measurement row
