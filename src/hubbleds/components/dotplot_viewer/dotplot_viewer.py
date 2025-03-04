@@ -65,6 +65,7 @@ def DotplotViewer(
     x_label: Optional[str] = None,
     y_label: Optional[str] = None,
     nbin: int = 75,
+    nbin_func: Optional[Callable] = None,
     x_bounds: list[float] = [],  # type: ignore
     on_x_bounds_changed: Callable = lambda x: None,
     reset_bounds: list = [],  # type: ignore
@@ -170,6 +171,8 @@ def DotplotViewer(
                     dotplot_view.state.x_min = x_bounds.value[0]
                     dotplot_view.state.x_max = x_bounds.value[1]
             
+            if nbin_func is not None:
+                dotplot_view.state.hist_n_bin = nbin_func(dotplot_view.state.x_min, dotplot_view.state.x_max)   
             
             
             
@@ -305,7 +308,6 @@ def DotplotViewer(
                 dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0, coloraxis='coloraxis')
                 dotplot_view.figure.update_coloraxes(showscale=False)
             
-
             
             
             def _on_reset_bounds(*args):
@@ -359,11 +361,15 @@ def DotplotViewer(
                 
             line_marker_at.subscribe(lambda new_val: _update_lines(value = new_val))
             vertical_line_visible.subscribe(lambda new_val: _update_lines())
+            def reset_hist_n_bin():
+                if nbin_func is not None:
+                    dotplot_view.state.hist_n_bin = nbin_func(dotplot_view.state.x_min, dotplot_view.state.x_max)
             def update_x_bounds(new_val):
                 logger.info(f"{title}: Updating x_bounds")
                 if new_val is not None and len(new_val) == 2:
                     dotplot_view.state.x_min = new_val[0]
                     dotplot_view.state.x_max = new_val[1]
+                reset_hist_n_bin()
                 reset_selection()
             x_bounds.subscribe(update_x_bounds)
             
