@@ -176,20 +176,20 @@ def DotplotViewer(
             
             
             
-            # for layer in dotplot_view.layers:
-            #     for trace in layer.traces():
-            #         trace.update(hoverinfo="skip", hovertemplate=None)
+            for layer in dotplot_view.layers:
+                for trace in layer.traces():
+                    trace.update(hoverinfo="skip", hovertemplate=None)
 
             # this doesn't even get run;
-            # def no_hover_update(self: DotplotScatterLayerArtist):
-            #     logger.info(f"{title}: no_hover_update")
-            #     hide_ignored_layers()
-            #     with dotplot_view.figure.batch_update():
-            #         _original_update_data(self)
-            #         for trace in self.traces():
-            #             trace.update(hoverinfo="skip", hovertemplate=None)
-            #         self._update_zorder()
-            # DotplotScatterLayerArtist._update_data = no_hover_update
+            def no_hover_update(self: DotplotScatterLayerArtist):
+                logger.info(f"{title}: no_hover_update")
+                hide_ignored_layers()
+                with dotplot_view.figure.batch_update():
+                    _original_update_data(self)
+                    for trace in self.traces():
+                        trace.update(hoverinfo="skip", hovertemplate=None)
+                    self._update_zorder()
+            DotplotScatterLayerArtist._update_data = no_hover_update
             
                 
             def get_layer(layer_name):
@@ -284,6 +284,10 @@ def DotplotViewer(
                 yaxis=dict(
                     tickmode="auto",
                     titlefont_size=16,
+                ),
+                hoverlabel=dict(
+                    bgcolor="white",
+                    font_size=16,
                 ),
             )
             
