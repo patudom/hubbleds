@@ -89,6 +89,7 @@ def update_second_example_measurement():
     else:
         logger.info('\t\t no changes for second measurement')
 
+@solara.component
 def DistanceToolComponent(galaxy,
                           show_ruler,
                           angular_size_callback,
