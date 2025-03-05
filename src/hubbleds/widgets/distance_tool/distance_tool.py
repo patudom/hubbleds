@@ -66,7 +66,6 @@ class DistanceTool(v.VueTemplate):
         self._rt = RepeatedTimer(self.UPDATE_TIME, self._update_wwt_state)
         self._rt.start()
         self.update_text()
-        self.resetting = False
         super().__init__(*args, **kwargs)
 
     def __del__(self):
@@ -91,7 +90,6 @@ class DistanceTool(v.VueTemplate):
 
     def reset_canvas(self):
         self.set_sdss()
-        self.resetting = True
         self.send({"method": "reset", "args": []})
 
     def update_text(self):
@@ -117,11 +115,10 @@ class DistanceTool(v.VueTemplate):
 
     @observe('measuredDistance')
     def _on_measured_distance_changed(self, change):
-        if self.resetting:
-            self.resetting = False
-            return
         fov = self.widget.get_fov()
         widget_height = self._height_from_pixel_str(self.widget.layout.height)
+        if change["new"] == 0:
+            return
         ang_size = Angle(((change["new"] / widget_height) * fov))
         valid = self.validate_angular_size(ang_size, True)
         # print(ang_size, change["new"], valid)
