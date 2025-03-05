@@ -318,6 +318,7 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
     
+    subsets_setup = solara.use_reactive(False)
     def add_example_measurements_to_glue():
         logger.info('in add_example_measurements_to_glue')
         if len(LOCAL_STATE.value.example_measurements) > 0:
@@ -327,17 +328,19 @@ def Page():
             create_example_subsets(gjapp, example_measurements_glue)
             
             use_this = add_or_update_data(example_measurements_glue)
+            if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                subsets_setup.set(True)
             use_this.style.color = MY_DATA_COLOR
 
             link_example_seed_and_measurements(gjapp)
         else:
             logger.info('no example measurements yet')
     
-    subsets_setup = solara.use_reactive(False)
+    
     def _glue_data_setup():
         add_example_measurements_to_glue()
         update_second_example_measurement()
-        subsets_setup.set(True)
+    
     
     solara.use_effect(_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
 
