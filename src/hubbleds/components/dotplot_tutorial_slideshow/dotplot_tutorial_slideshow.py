@@ -11,5 +11,6 @@ def DotplotTutorialSlideshow(
     dotplot_viewer: Any,
     event_tutorial_finished: Callable,
     event_show_dialog: Callable,
+    event_set_step: Callable,
 ):
     pass

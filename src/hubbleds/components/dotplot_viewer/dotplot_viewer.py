@@ -65,6 +65,7 @@ def DotplotViewer(
     x_label: Optional[str] = None,
     y_label: Optional[str] = None,
     nbin: int = 75,
+    nbin_func: Optional[Callable] = None,
     x_bounds: list[float] = [],  # type: ignore
     on_x_bounds_changed: Callable = lambda x: None,
     reset_bounds: list = [],  # type: ignore
@@ -125,9 +126,9 @@ def DotplotViewer(
         
         def _add_vertical_line(viewer: PlotlyBaseView, value: Number, color: str, label: str = None, line_ids: list[str] = []):
             line_id = str(uuid4())
-            print(line_id)
+            # print(line_id)
             line_ids.append(line_id)
-            viewer.figure.add_vline(x=value, line_color=color, line_width=2, name=line_id)
+            viewer.figure.add_vline(x=value, line_color=color, line_width=2, name=line_id, visible = vertical_line_visible.value)
 
         
         def _add_data(viewer: PlotlyBaseView, data: Union[Data, tuple]):
@@ -170,23 +171,25 @@ def DotplotViewer(
                     dotplot_view.state.x_min = x_bounds.value[0]
                     dotplot_view.state.x_max = x_bounds.value[1]
             
+            if nbin_func is not None:
+                dotplot_view.state.hist_n_bin = nbin_func(dotplot_view.state.x_min, dotplot_view.state.x_max)   
             
             
             
-            # for layer in dotplot_view.layers:
-            #     for trace in layer.traces():
-            #         trace.update(hoverinfo="skip", hovertemplate=None)
+            for layer in dotplot_view.layers:
+                for trace in layer.traces():
+                    trace.update(hoverinfo="skip", hovertemplate=None)
 
             # this doesn't even get run;
-            # def no_hover_update(self: DotplotScatterLayerArtist):
-            #     logger.info(f"{title}: no_hover_update")
-            #     hide_ignored_layers()
-            #     with dotplot_view.figure.batch_update():
-            #         _original_update_data(self)
-            #         for trace in self.traces():
-            #             trace.update(hoverinfo="skip", hovertemplate=None)
-            #         self._update_zorder()
-            # DotplotScatterLayerArtist._update_data = no_hover_update
+            def no_hover_update(self: DotplotScatterLayerArtist):
+                logger.info(f"{title}: no_hover_update")
+                hide_ignored_layers()
+                with dotplot_view.figure.batch_update():
+                    _original_update_data(self)
+                    for trace in self.traces():
+                        trace.update(hoverinfo="skip", hovertemplate=None)
+                    self._update_zorder()
+            DotplotScatterLayerArtist._update_data = no_hover_update
             
                 
             def get_layer(layer_name):
@@ -267,6 +270,7 @@ def DotplotViewer(
                 margin=PLOTLY_MARGINS,
                 showlegend=False,
                 hovermode="x",
+                clickmode="event",
                 spikedistance=-1,
                 xaxis=dict(
                     spikecolor="black",
@@ -282,6 +286,10 @@ def DotplotViewer(
                     tickmode="auto",
                     titlefont_size=16,
                 ),
+                hoverlabel=dict(
+                    bgcolor="white",
+                    font_size=16,
+                ),
             )
             
             def on_click(trace, points, selector):
@@ -295,17 +303,16 @@ def DotplotViewer(
 
                 
                 
-            dotplot_view.figure.update_layout(clickmode="event", hovermode="closest", showlegend=False)
+
             dotplot_view.selection_layer.on_click(on_click)
             unit_str = f" {unit}" if unit else ""
-            dotplot_view.selection_layer.update(hovertemplate=f"%{{x:,.0f}}{unit_str}<extra></extra>")
+            dotplot_view.selection_layer.update(hovertemplate=f"%{{x:,.0f}}{unit_str}<extra></extra>", hoverinfo="x")
             def reset_selection():
                 dotplot_view.set_selection_active(True)
                 # special treatment for go.Heatmap from https://stackoverflow.com/questions/58630928/how-to-hide-the-colorbar-and-legend-in-plotly-express-bar-graph#comment131880779_68555667
                 dotplot_view.selection_layer.update(visible=True, z = [list(range(201))], opacity=0, coloraxis='coloraxis')
                 dotplot_view.figure.update_coloraxes(showscale=False)
             
-
             
             
             def _on_reset_bounds(*args):
@@ -359,11 +366,15 @@ def DotplotViewer(
                 
             line_marker_at.subscribe(lambda new_val: _update_lines(value = new_val))
             vertical_line_visible.subscribe(lambda new_val: _update_lines())
+            def reset_hist_n_bin():
+                if nbin_func is not None:
+                    dotplot_view.state.hist_n_bin = nbin_func(dotplot_view.state.x_min, dotplot_view.state.x_max)
             def update_x_bounds(new_val):
                 logger.info(f"{title}: Updating x_bounds")
                 if new_val is not None and len(new_val) == 2:
                     dotplot_view.state.x_min = new_val[0]
                     dotplot_view.state.x_max = new_val[1]
+                reset_hist_n_bin()
                 reset_selection()
             x_bounds.subscribe(update_x_bounds)
             
