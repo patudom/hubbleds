@@ -126,9 +126,9 @@ def DotplotViewer(
         
         def _add_vertical_line(viewer: PlotlyBaseView, value: Number, color: str, label: str = None, line_ids: list[str] = []):
             line_id = str(uuid4())
-            print(line_id)
+            # print(line_id)
             line_ids.append(line_id)
-            viewer.figure.add_vline(x=value, line_color=color, line_width=2, name=line_id)
+            viewer.figure.add_vline(x=value, line_color=color, line_width=2, name=line_id, visible = vertical_line_visible.value)
 
         
         def _add_data(viewer: PlotlyBaseView, data: Union[Data, tuple]):
