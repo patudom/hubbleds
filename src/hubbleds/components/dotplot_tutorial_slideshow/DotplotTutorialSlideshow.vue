@@ -145,7 +145,7 @@
           class="black--text"
           color="accent"
           depressed
-          @click="step--"
+          @click="set_step(step-1)"
         >
           Back
         </v-btn>
@@ -175,7 +175,7 @@
           color="accent"
           class="black--text"
           depressed
-          @click="() => { step++; }"
+          @click="() => { set_step(step+1); }"
         >
           {{ step < length-1 ? 'next' : '' }}
         </v-btn>

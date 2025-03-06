@@ -939,6 +939,7 @@ def Page():
                         event_show_dialog=lambda v: Ref(
                             COMPONENT_STATE.fields.show_dotplot_tutorial_dialog
                         ).set(v),
+                        event_set_step = Ref(COMPONENT_STATE.fields.dotplot_tutorial_state.step).set,
                     )
                 
     # Dot Plot 1st measurement row
