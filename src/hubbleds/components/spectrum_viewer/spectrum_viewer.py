@@ -174,8 +174,8 @@ def SpectrumViewer(
                             color=spectrum_color,
                             width=2,
                         ),
-                        mode='lines',
-                        hovertemplate="%{x:.0f} Å<extra></extra>",
+                      mode='lines', 
+                      hoverinfo="x"
                     ))
          
         fig.update_layout(
@@ -277,7 +277,7 @@ def SpectrumViewer(
             y0=0.82,
             y1=0.99,
             yref="paper",
-            # xref="x",
+            xref="x",
             line_color=H_ALPHA_COLOR,
             fillcolor=H_ALPHA_COLOR,
             ysizemode="scaled",
