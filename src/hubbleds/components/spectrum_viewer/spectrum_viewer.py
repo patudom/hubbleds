@@ -194,6 +194,7 @@ def SpectrumViewer(
                             width=2,
                         ),
                       mode='lines', 
+                      hoverinfo="x"
                     ))
          
         fig.update_layout(
