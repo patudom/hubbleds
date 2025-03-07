@@ -23,7 +23,7 @@ from numpy.random import Generator, PCG64, SeedSequence
 from numpy import arange, asarray
 from typing import Any
 
-ELEMENT_REST = {"H-α": 6562.79, "Mg-I": 5176.7}
+from .data_management import ELEMENT_REST
 DEBOUNCE_TIMEOUT = 1
 
 
