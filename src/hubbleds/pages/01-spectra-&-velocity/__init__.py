@@ -206,19 +206,7 @@ def Page():
 
     add_example_measurements_to_glue()
 
-
-    # Flag to show/hide the selection tool. TODO: we shouldn't need to be
-    #   doing this here; revisit in the future and implement proper handling
-    #   in the ipywwt package itself.
-    show_selection_tool, set_show_selection_tool = solara.use_state(False)
-
     selection_tool_bg_count = solara.use_reactive(0)
-
-    async def _delay_selection_tool():
-        await asyncio.sleep(3)
-        set_show_selection_tool(True)
-
-    solara.lab.use_task(_delay_selection_tool)
 
     def _fill_galaxies():
         dummy_measurements = LOCAL_API.get_dummy_data()
@@ -442,8 +430,9 @@ def Page():
                     show_snackbar.set(False)
             solara.lab.use_task(snackbar_off, dependencies=[show_snackbar])
             
-            def _galaxy_added_callback(galaxy_data: GalaxyData):
-                already_exists = galaxy_data.id in [
+            def _galaxy_added_callback(galaxy_data: dict):
+                galaxy = LOCAL_STATE.value.galaxies[int(galaxy_data['id'])]
+                already_exists = galaxy.id in [
                     x.galaxy_id for x in LOCAL_STATE.value.measurements
                 ]
 
@@ -461,7 +450,7 @@ def Page():
                     logger.info("Attempted to add more than 5 galaxies.")
                     return
 
-                logger.info("Adding galaxy `%s` to measurements.", galaxy_data.id)
+                logger.info("Adding galaxy `%s` to measurements.", galaxy.id)
 
                 measurements = Ref(LOCAL_STATE.fields.measurements)
 
@@ -470,7 +459,7 @@ def Page():
                     + [
                         StudentMeasurement(
                             student_id=GLOBAL_STATE.value.student.id,
-                            galaxy=galaxy_data,
+                            galaxy=galaxy,
                         )
                     ]
                 )
@@ -483,18 +472,18 @@ def Page():
                         transition_to(COMPONENT_STATE, Marker.not_gal1)
             total_galaxies.subscribe(advance_on_total_galaxies)
 
-            def _galaxy_selected_callback(galaxy_data: GalaxyData | None):
-                if galaxy_data is None:
-                    return
+            def _galaxy_selected_callback(galaxy_data: dict):
+                galaxy = LOCAL_STATE.value.galaxies[int(galaxy_data['id'])]
                 selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
-                selected_galaxy.set(galaxy_data.id)
+                selected_galaxy.set(galaxy.id)
                 galaxy_is_selected = Ref(COMPONENT_STATE.fields.galaxy_is_selected)
                 galaxy_is_selected.set(True)  
 
             def _deselect_galaxy_callback():
+                selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
+                selected_galaxy.set(None)
                 galaxy_is_selected = Ref(COMPONENT_STATE.fields.galaxy_is_selected)
-                galaxy_is_selected.set(False)  
-                print("is galaxy selected:", galaxy_is_selected.value)             
+                galaxy_is_selected.set(False)
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
             Marker.cho_row1, Marker.exp_ski1
