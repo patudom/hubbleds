@@ -442,7 +442,7 @@ class LocalAPI(BaseAPI):
         path = (Path(__file__).parent / "data" / "ExampleGalaxyDataFromStudents.csv").as_posix()
         # with open(path, 'r') as f:
         #     res_json = json.load(f)
-        res_json = json.loads(read_csv(path).to_json(orient='records'))
+        res_json = read_csv(path).to_dict(orient='records')
         
         seq = SeedSequence(70)
         gen = Generator(PCG64(seq))
