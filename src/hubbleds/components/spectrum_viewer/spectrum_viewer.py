@@ -175,7 +175,8 @@ def SpectrumViewer(
                             width=2,
                         ),
                       mode='lines', 
-                      hoverinfo="x"
+                      # This controls what info is displayed on the spike (set up in the layout), which is the vertical measuring tool.
+                      hoverinfo="x" # this displays just the x-value on hover (because we don't care about y)
                     ))
          
         fig.update_layout(
@@ -340,8 +341,9 @@ def SpectrumViewer(
         fig.update_layout(
             xaxis_zeroline=False,
             yaxis_zeroline=False,
+            # This is what creates the vertical line that we use as the measuring tool.
             xaxis=dict(
-                showspikes=spectrum_click_enabled,
+                showspikes=True,
                 # showline=spectrum_click_enabled,
                 spikecolor="black",
                 spikethickness=1,
