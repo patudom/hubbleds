@@ -1,4 +1,5 @@
 import solara
+from solara.lab import computed
 
 
 from reacton import ipyvuetify as rv
@@ -167,6 +168,7 @@ def DistanceToolComponent(galaxy,
 @solara.component
 def Page():
     solara.Title("HubbleDS")
+    print("Stage 3")
     
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
@@ -372,9 +374,9 @@ def Page():
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
    
         
-    @solara.lab.computed
+    @computed
     def use_second_measurement():
-        return COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq5)
+        return Ref(COMPONENT_STATE.fields.current_step).value >= Marker.dot_seq5
         
             
     def _update_distance_measurement(update_example: bool, galaxy, theta, measurement_number = 'first'):
@@ -418,9 +420,9 @@ def Page():
     fill_galaxy_pressed = solara.use_reactive(COMPONENT_STATE.value.distances_total >= 5)
     current_brightness = solara.use_reactive(1.0)
     
-    @solara.lab.computed
+    @computed
     def sync_dotplot_axes():
-        return COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.dot_seq4a)
+        return Ref(COMPONENT_STATE.fields.current_step_between).value(Marker.dot_seq1, Marker.dot_seq4a)
     
     def setup_zoom_sync():
         
@@ -448,7 +450,7 @@ def Page():
     
     Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
 
-    @solara.lab.computed
+    @computed
     def example_galaxy_measurement_number():
         if use_second_measurement.value:
             return 'second'
@@ -538,18 +540,18 @@ def Page():
             current_step = Ref(COMPONENT_STATE.fields.current_step)
             current_step.subscribe(show_ruler_range)
 
-            @solara.lab.computed
+            @computed
             def on_example_galaxy_marker():
-                return COMPONENT_STATE.value.current_step.value <= Marker.dot_seq5c.value
+                return Ref(COMPONENT_STATE.fields.current_step).value <= Marker.dot_seq5c
 
-            @solara.lab.computed
+            @computed
             def current_galaxy():
                 if on_example_galaxy_marker.value:
-                    return COMPONENT_STATE.value.selected_example_galaxy
+                    return Ref(COMPONENT_STATE.fields.selected_example_galaxy).value
                 else:
-                    return COMPONENT_STATE.value.selected_galaxy
+                    return Ref(COMPONENT_STATE.fields.selected_galaxy).value
 
-            @solara.lab.computed
+            @computed
             def current_data():
                 return LOCAL_STATE.value.example_measurements if on_example_galaxy_marker.value else LOCAL_STATE.value.measurements
 
@@ -786,15 +788,15 @@ def Page():
                     if COMPONENT_STATE.value.is_current_step(Marker.cho_row1):
                         transition_to(COMPONENT_STATE, Marker.ang_siz2)
                 
-                @solara.lab.computed
+                @computed
                 def selected_example_galaxy_index() -> list:
-                    if COMPONENT_STATE.value.selected_example_galaxy is None:
+                    if Ref(COMPONENT_STATE.fields.selected_example_galaxy).value is None:
                         return []
-                    if 'id' not in COMPONENT_STATE.value.selected_example_galaxy:
+                    if 'id' not in Ref(COMPONENT_STATE.fields.selected_example_galaxy).value:
                         return []
                     return [0]
                 
-                @solara.lab.computed
+                @computed
                 def example_galaxy_data():
                     if use_second_measurement.value:
                         return [
@@ -828,17 +830,17 @@ def Page():
                     selected_galaxy = Ref(COMPONENT_STATE.fields.selected_galaxy)
                     selected_galaxy.set(value)
                 
-                @solara.lab.computed
+                @computed
                 def selected_galaxy_index():
                     try:
-                        return [LOCAL_STATE.value.get_measurement_index(COMPONENT_STATE.value.selected_galaxy["id"])]
+                        return [LOCAL_STATE.value.get_measurement_index(Ref(COMPONENT_STATE.fields.selected_galaxy).value["id"])]
                     except:
                         return []
 
-                @solara.lab.computed
+                @computed
                 def table_kwargs():
-                    ang_size_tot = COMPONENT_STATE.value.angular_sizes_total
-                    table_data = [s.model_dump(exclude={'galaxy': {'spectrum'}, 'measurement_number':True}) for s in LOCAL_STATE.value.measurements]
+                    ang_size_tot = Ref(COMPONENT_STATE.fields.angular_sizes_total).value
+                    table_data = [s.model_dump(exclude={'galaxy': {'spectrum'}, 'measurement_number':True}) for s in Ref(LOCAL_STATE.fields.measurements).value]
                     return {
                         "title": "My Galaxies",
                         "headers": common_headers, # + [{ "text": "Measurement Number", "value": "measurement_number" }],
@@ -848,7 +850,7 @@ def Page():
                         "selected_indices": selected_galaxy_index.value,
                         "show_select": True,
                         "button_icon": "mdi-tape-measure",
-                        "show_button": COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1),
+                        "show_button": Ref(COMPONENT_STATE.fields.current_step_at_or_after).value(Marker.fil_rem1),
                         "event_on_button_pressed": lambda _: fill_galaxy_distances()
                     }
 
