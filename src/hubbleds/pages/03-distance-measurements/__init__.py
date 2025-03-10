@@ -429,8 +429,8 @@ def Page():
         sync_reactives(
             ang_size_dotplot_range,
             dist_dotplot_range,
-            lambda ang: ([(DISTANCE_CONSTANT / a) for a in ang][::-1] if sync_dotplot_axes.value else None), # angular size to distance
-            lambda dist: ([(DISTANCE_CONSTANT / d) for d in dist][::-1] if sync_dotplot_axes.value else None) # distance to angular size
+            lambda ang: ([(DISTANCE_CONSTANT / max(1, a)) for a in ang][::-1] if sync_dotplot_axes.value else None), # angular size to distance
+            lambda dist: ([(DISTANCE_CONSTANT / max(1, d)) for d in dist][::-1] if sync_dotplot_axes.value else None) # distance to angular size
         )
     
     solara.use_effect(setup_zoom_sync, dependencies = [])
@@ -969,7 +969,8 @@ def Page():
                             if first is not None:
                                 ignore.append(first)
                     
-                    
+                        def dist_bins(distmin, distmax):
+                            return int(10 + 0.3 * ((DISTANCE_CONSTANT / distmin) - (DISTANCE_CONSTANT / distmax)))
                         DotplotViewer(gjapp, 
                                         data = [
                                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
@@ -977,18 +978,25 @@ def Page():
                                             ],
                                             title="Distance",
                                             component_id="est_dist_value",
-                                            vertical_line_visible=show_dotplot_lines,
-                                            line_marker_at=Ref(COMPONENT_STATE.fields.distance_line),
+                                            vertical_line_visible=show_dotplot_lines.value,
+                                            on_vertical_line_visible_changed=show_dotplot_lines.set,
+                                            line_marker_at=Ref(COMPONENT_STATE.fields.distance_line).value,
+                                            on_line_marker_at_changed=Ref(COMPONENT_STATE.fields.distance_line).set,
                                             line_marker_color=LIGHT_GENERIC_COLOR,
                                             on_click_callback=set_angular_size_line,
                                             unit="Mpc",
                                             x_label="Distance (Mpc)",
                                             y_label="Count",
-                                            x_bounds=dist_dotplot_range,
+                                            x_bounds=dist_dotplot_range.value,
+                                            on_x_bounds_changed=dist_dotplot_range.set,
                                             hide_layers=ignore,
-                                            nbin=30
+                                            nbin=30,
+                                            nbin_func=dist_bins
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
+                            def angsize_bins(angmin, angmax):
+                                return int(10 + 0.3 * (angmax - angmin))
+                            
                             DotplotViewer(gjapp, 
                                             data = [
                                                 gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'], 
@@ -996,16 +1004,20 @@ def Page():
                                                 ],
                                                 title="Angular Size",
                                                 component_id="ang_size_value",
-                                                vertical_line_visible=show_dotplot_lines,
-                                                line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line),
+                                                vertical_line_visible=show_dotplot_lines.value,
+                                                on_vertical_line_visible_changed=show_dotplot_lines.set,
+                                                line_marker_at=Ref(COMPONENT_STATE.fields.angular_size_line).value,
+                                                on_line_marker_at_changed=Ref(COMPONENT_STATE.fields.angular_size_line).set,
                                                 line_marker_color=LIGHT_GENERIC_COLOR,
                                                 on_click_callback=set_distance_line,
                                                 unit="arcsec",
                                                 x_label="Angular Size (arcsec)",
                                                 y_label="Count",
-                                                x_bounds=ang_size_dotplot_range,
+                                                x_bounds=ang_size_dotplot_range.value,
+                                                on_x_bounds_changed=ang_size_dotplot_range.set,
                                                 hide_layers=ignore,
-                                                nbin=30
+                                                nbin=30,
+                                                nbin_func=angsize_bins
                                                 )
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")
