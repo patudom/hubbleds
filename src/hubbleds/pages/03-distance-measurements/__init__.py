@@ -66,7 +66,7 @@ from hubbleds.example_measurement_helpers import (
     create_example_subsets,
     link_example_seed_and_measurements,
     _update_second_example_measurement,
-    link_seed_data
+    load_and_create_seed_data
 )
 
 
@@ -202,26 +202,7 @@ def Page():
         
         # Get the example seed data
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
-            example_seed_data = LOCAL_API.get_example_seed_measurement(LOCAL_STATE, which = 'both')
-            data = Data(label=EXAMPLE_GALAXY_SEED_DATA, **{k: asarray([r[k] for r in example_seed_data]) for k in example_seed_data[0].keys()})
-            gjapp.data_collection.append(data)
-            
-            # create 'first measurement' and 'second measurement' datasets
-            # create_measurement_subsets(gjapp, data)
-            first = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_first', 
-                         **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
-                            for k in example_seed_data[0].keys()}
-                            )
-            first.style.color = GENERIC_COLOR
-            gjapp.data_collection.append(first)
-            second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
-                         **{k: asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
-                            for k in example_seed_data[0].keys()}
-                            )
-            second.style.color = GENERIC_COLOR
-            gjapp.data_collection.append(second)
-            
-            link_seed_data(gjapp)
+            load_and_create_seed_data(gjapp, LOCAL_STATE)
         measurements_setup.set(True)
         
         return gjapp
