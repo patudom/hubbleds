@@ -40,7 +40,7 @@ def SelectionTool(
 
             with rv.Html(
                 tag="div",
-                style_="position: relative; height: 500px; width: 100%",
+                style_="position: relative; height: 400px; width: 100%",
                 class_="selection-content",
             ):
                 wwt_container = rv.Html(tag="div")
