@@ -991,7 +991,8 @@ def Page():
                                             on_x_bounds_changed=dist_dotplot_range.set,
                                             hide_layers=ignore,
                                             nbin=30,
-                                            nbin_func=dist_bins
+                                            nbin_func=dist_bins,
+                                            reset_bounds=[DISTANCE_CONSTANT / 180, DISTANCE_CONSTANT / 1]
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
                             def angsize_bins(angmin, angmax):
@@ -1017,7 +1018,8 @@ def Page():
                                                 on_x_bounds_changed=ang_size_dotplot_range.set,
                                                 hide_layers=ignore,
                                                 nbin=30,
-                                                nbin_func=angsize_bins
+                                                nbin_func=angsize_bins,
+                                                reset_bounds=[0, 180]
                                                 )
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")
