@@ -27,7 +27,7 @@
         <v-icon>mdi-information-outline</v-icon>
       </v-btn>
     </v-toolbar>
-    <div class="distance-content">
+    <div class="distance-content" style="position: relative;">
       <!-- <v-snackbar
         v-model="bad_measurement"
         transition="fab-transition"
@@ -42,6 +42,13 @@
       >
         You've measured an impossible size for the galaxy. Please try again.
       </v-snackbar> -->
+      <v-overlay absolute opacity="1" v-show="!wwt_ready">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+          size="100"
+        ></v-progress-circular>
+      </v-overlay>
       <canvas
         v-show="measuring"
         class="distance-canvas"
@@ -89,7 +96,7 @@
             top 
             right
             absolute
-            style="margin-top: 96px"
+            style="margin-top: 44px"
             color="#CCCCCC"
             class="selection-fab black--text"
             v-bind="attrs"
