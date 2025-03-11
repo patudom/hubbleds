@@ -394,7 +394,7 @@ def Page():
 
             @solara.lab.computed
             def on_example_galaxy_marker():
-                return COMPONENT_STATE.value.current_step < Marker.rep_rem1
+                return current_step.value.value < Marker.rep_rem1.value
 
             @solara.lab.computed
             def current_galaxy():

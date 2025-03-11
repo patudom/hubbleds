@@ -46,6 +46,8 @@ class DistanceTool(v.VueTemplate):
     galaxy_min_size = Angle("6 arcsec") # 3 x sdss resolution
     bad_measurement = Bool(False).tag(sync=True)
 
+    wwt_ready = Bool(False).tag(sync=True)
+
     SDSS = "SDSS9 color"
     DSS = "Digitized Sky Survey (Color)"
 
@@ -55,34 +57,34 @@ class DistanceTool(v.VueTemplate):
     def __init__(self, *args, **kwargs):
         self.widget = WWTWidget()
         self.background = self.SDSS
-        timer = Timer(3.0, self._setup_widget)
-        timer.start()
         self.measuring = kwargs.get('measuring', False)
         self.guard = kwargs.get('guard', False)
         self.angular_size = Angle(0, u.deg)
         self.angular_height = Angle(60, u.deg)
+
+        # Wait for the WWT frontend to be ready
+        self.widget.observe(lambda change: self._setup(),
+                            names='_wwt_ready')
+
+        super().__init__(*args, **kwargs)
+
+    def _setup(self):
+        self.wwt_ready = True
+        self._setup_widget()
         self.widget._set_message_type_callback('wwt_view_state',
                                                self._update_wwt_state)
         self.last_update = datetime.now()
         self._rt = RepeatedTimer(self.UPDATE_TIME, self._update_wwt_state)
         self._rt.start()
         self.update_text()
-        super().__init__(*args, **kwargs)
 
     def __del__(self):
         self._rt.stop()
         super().__del__()
 
     def set_background(self):
-        if self.widget.foreground != self.background:
-            self.widget.foreground = self.background
-        else:
-            self.widget._on_foreground_change({"new": self.background})
-
-        if self.widget.background != self.background:
-            self.widget.background = self.background
-        else:
-            self.widget.set_background_image({"new": self.background})
+        self.widget.foreground = self.background
+        self.widget.background = self.background
 
     def vue_toggle_background(self, _args=None):
         if self.background == self.SDSS:
