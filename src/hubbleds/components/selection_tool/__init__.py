@@ -35,7 +35,7 @@ def SelectionTool(
     with rv.Card() as main:
         with rv.Card(color="info", class_="pa-1" if show_galaxies else ""):
             with rv.Toolbar(dense=True, class_="toolbar"):
-                rv.ToolbarTitle(children=["Cosmic Sky Viewer"])
+                rv.ToolbarTitle(children=["COSMIC SKY VIEWER"])
                 rv.Spacer()
 
             with rv.Html(
