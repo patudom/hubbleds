@@ -367,9 +367,12 @@ def DotplotViewer(
             line_marker_at.subscribe(lambda new_val: _update_lines(value = new_val))
             vertical_line_visible.subscribe(lambda new_val: _update_lines())
             def reset_hist_n_bin(xmin = None, xmax = None):
-                print("reset_hist_n_bin")
                 if nbin_func is not None:
-                    dotplot_view.state.hist_n_bin = nbin_func(xmin or dotplot_view.state.x_min, xmax or dotplot_view.state.x_max)
+                    if xmin is None:
+                        xmin = dotplot_view.state.x_min
+                    if xmax is None:
+                        xmax = dotplot_view.state.x_max
+                    dotplot_view.state.hist_n_bin = nbin_func(xmin, xmax)
             def update_x_bounds(new_val):
                 logger.info(f"{title}: Updating x_bounds")
                 if new_val is not None and len(new_val) == 2:
