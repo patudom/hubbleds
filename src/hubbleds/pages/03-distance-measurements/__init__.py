@@ -260,7 +260,8 @@ def Page():
                             }
                         )
                 )
-                count.set(count.value + 1)
+                ang_sizes_count = sum(1 for m in LOCAL_STATE.value.measurements if m.ang_size_value is not None)
+                count.set(ang_sizes_count)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
    
@@ -413,7 +414,6 @@ def Page():
                 updates the angular size of the galaxy in the data model and
                 puts the measurements in the database.
                 """
-                data = current_data.value
                 count = Ref(COMPONENT_STATE.fields.example_angular_sizes_total) if on_example_galaxy_marker.value else Ref(COMPONENT_STATE.fields.angular_sizes_total)
                 _update_angular_size(on_example_galaxy_marker.value, current_galaxy.value, angle, count)
                 put_measurements(samples=on_example_galaxy_marker.value)
