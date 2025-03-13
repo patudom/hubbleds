@@ -188,7 +188,6 @@ class LocalState(BaseLocalState):
         if tag in self.free_responses['responses']:
             return self.free_responses['responses'][tag]['response'] != ""
         elif tag in self.mc_scoring['scores']:
-            print(self.mc_scoring['scores'][tag])
             return self.mc_scoring['scores'][tag]['score'] is not None
 
         return False

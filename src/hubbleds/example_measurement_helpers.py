@@ -18,6 +18,12 @@ from .utils import _add_link
 from .state import StudentMeasurement
 
 
+from solara import Reactive
+from hubbleds.remote import LOCAL_API
+from hubbleds.state import LocalState # used as a type
+import numpy as np
+
+
 
 def create_example_subsets(gjapp: JupyterApplication, data: Data):
     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
@@ -86,3 +92,47 @@ def _update_second_example_measurement(example_measurements: list[StudentMeasure
             
             return changed, second
         return changed, None
+
+
+
+
+def load_and_create_seed_data(gjapp: JupyterApplication, local_state: Reactive[LocalState]):
+    example_seed_data = LOCAL_API.get_example_seed_measurement(local_state, which='both')
+            
+    data = Data(
+        label=EXAMPLE_GALAXY_SEED_DATA,
+        **{
+            k: np.asarray([r[k] for r in example_seed_data])
+            for k in example_seed_data[0].keys()
+        }
+    )
+    gjapp.data_collection.append(data)
+    # create 'first measurement' and 'second measurement' datasets
+    # create_measurement_subsets(gjapp, data)
+    first = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_first', 
+                    **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'first'])
+                    for k in example_seed_data[0].keys()}
+                    )
+    first.style.color = GENERIC_COLOR
+    gjapp.data_collection.append(first)
+    second = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_second', 
+                    **{k: np.asarray([r[k] for r in example_seed_data if r['measurement_number'] == 'second'])
+                    for k in example_seed_data[0].keys()}
+                    )
+    second.style.color = GENERIC_COLOR
+    gjapp.data_collection.append(second)
+    
+    np.random.seed(42)
+    # 50% of the first measurements will be used for the tutorial
+    tutorial_data = [e for e in example_seed_data if np.random.rand() <= 0.5]
+    # filter some of the correct values to reduce counts
+    filter_func = lambda x: (x < 11_130 or x > 11_220) or np.random.rand() <= 0.75
+    tutorial_data = [e for e in tutorial_data if filter_func(e['velocity_value'])]
+    tutorial = Data(label = EXAMPLE_GALAXY_SEED_DATA + '_tutorial',
+                    **{k: np.asarray([r[k] for r in tutorial_data])
+                        for k in example_seed_data[0].keys()}
+                    )
+    tutorial.style.color = GENERIC_COLOR
+    gjapp.data_collection.append(tutorial)
+    
+    link_seed_data(gjapp)
