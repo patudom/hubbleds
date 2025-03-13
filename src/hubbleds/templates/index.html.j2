@@ -70,12 +70,12 @@
                 if (!local) {
                     const script = document.createElement("script");
                     script.async = true;
-                    script.src = "https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"; // Replace with actual tag ID
+                    script.src = "https://www.googletagmanager.com/gtag/js?id=G-XQ7ZTZG0F3";
                     document.head.appendChild(script);
                     window.dataLayer = window.dataLayer || [];
                     function gtag(){dataLayer.push(arguments);}
                     gtag('js', new Date());
-                    gtag('config', "G-XXXXXXXXXX"); // Replace with actual tag ID
+                    gtag('config', "G-XQ7ZTZG0F3");
                 }`;
                 document.head.appendChild(gaScript);
             });
@@ -280,12 +280,15 @@
             <v-progress-circular indeterminate size="50" class="center-self mb-3" style="text-align: center; justify-self: center;">
             </v-progress-circular>
             <p>
-                The server has disconnected. Try refreshing this page in your browser. 
+                The server has disconnected. 
             </p>
             <p v-if="needsRefresh">
                  {% raw -%}
                     Will automatically reconnect in {{autoRefreshCount}} seconds.
                 {% endraw -%}               
+            </p>
+            <p v-else>
+                The app will attempt to reconnect if possible.
             </p>
             <p>     
                 If the problem persists, please email the CosmicDS team at <span style="font-weight:700">cosmicds@cfa.harvard.edu</span>. 
@@ -293,7 +296,7 @@
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="accent" @click="reload()" class="black--text">
+            <v-btn v-if="needsRefresh" color="accent" @click="reload()" class="black--text">
                 Refresh now
             </v-btn>
         </v-card-actions>
