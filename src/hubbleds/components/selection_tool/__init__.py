@@ -60,7 +60,8 @@ def SelectionTool(
                     # Add galaxy button
                     add_gal_btn = solara.Button(
                         v_on="tooltip.on",
-                        color="primary",
+                        color="var(--success-dark)",
+                        classes=["selection-fab", "black--text"],
                         fab=True,
                         bottom=True,
                         left=True,
@@ -85,7 +86,8 @@ def SelectionTool(
                 # Reset view button
                 reset_view_btn = solara.Button(
                     v_on="tooltip.on",
-                    color="primary",
+                    color="var(--success-dark)",
+                    classes=["selection-fab", "black--text"],
                     fab=True,
                     bottom=True,
                     right=True,
@@ -111,7 +113,8 @@ def SelectionTool(
                 if selected_galaxy.value is not None:
                     refresh_images_btn = solara.Button(
                         v_on="tooltip.on",
-                        color="primary",
+                        color="#CCCCCC",
+                        classes=["selection-fab", "black--text"],
                         fab=True,
                         top=True,
                         right=True,
