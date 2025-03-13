@@ -205,8 +205,6 @@ def Page():
     solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
 
     def _update_seed_data_with_examples(example_data):
-        print("Updating seed data")
-
         update_data = [
             [EXAMPLE_GALAXY_SEED_DATA, example_data],
             [EXAMPLE_GALAXY_SEED_DATA + "_first", [m for m in example_data if m.measurement_number == "first"]],
