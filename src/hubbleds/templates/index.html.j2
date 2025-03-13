@@ -296,7 +296,7 @@
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="accent" @click="reload()" class="black--text"  v-if="needsRefresh">
+            <v-btn v-if="needsRefresh" color="accent" @click="reload()" class="black--text">
                 Refresh now
             </v-btn>
         </v-card-actions>
