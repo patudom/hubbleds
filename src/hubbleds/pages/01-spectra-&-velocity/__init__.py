@@ -34,6 +34,7 @@ from ...data_management import (
     DB_VELOCITY_FIELD,
     EXAMPLE_GALAXY_MEASUREMENTS,
     DB_MEASWAVE_FIELD,
+    STUDENT_ID_COMPONENT,
 )
 import numpy as np
 from glue.core import Data
@@ -158,6 +159,40 @@ def Page():
     def add_link(from_dc_name, from_att, to_dc_name, to_att):
         _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att)
 
+    def _update_seed_data_with_examples(example_data):
+
+        label = EXAMPLE_GALAXY_SEED_DATA + "_first"
+        if label not in gjapp.data_collection:
+            return 
+
+        student = Ref(GLOBAL_STATE.fields.student)
+        data = gjapp.data_collection[label]
+        keep = data[STUDENT_ID_COMPONENT] != student.value.id
+        update = {
+            c.label: list(data[c][keep])
+            for c in data.main_components
+        }
+
+        examples_count = len(example_data)
+        if examples_count == 1:
+            measurement = example_data[0]
+        elif examples_count >= 2:
+            numbers = ("first", "second")
+            measurement = \
+                sorted(example_data,
+                       key=lambda v: numbers.index(v.measurement_number) if v.measurement_number in numbers else len(numbers)
+                )[1]
+
+            for component in data.main_components:
+                update[component.label].append(getattr(measurement, component.label, None))
+
+        new_data = Data(label=data.label, **update)
+        data.update_values_from_data(new_data)
+
+    example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
+    example_measurements.subscribe(_update_seed_data_with_examples)
+
+
     def update_second_example_measurement():
         example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
         if len(example_measurements.value) < 2:
@@ -173,12 +208,6 @@ def Page():
         else:
             logger.info('\t\t no changes for second measurement')
     
-    
-    
-
-    
-    
-
     def add_example_measurements_to_glue():
         logger.info('in add_example_measurements_to_glue')
         if len(LOCAL_STATE.value.example_measurements) > 0:
@@ -207,7 +236,7 @@ def Page():
             update_second_example_measurement()
     
     
-    solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
+    solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)]) 
 
     # Flag to show/hide the selection tool. TODO: we shouldn't need to be
     #   doing this here; revisit in the future and implement proper handling
@@ -906,7 +935,7 @@ def Page():
                     )
                 
     # Dot Plot 1st measurement row
-    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1): 
+    if COMPONENT_STATE.value.current_step_between(Marker.obs_wav2, Marker.rem_vel1): 
         with rv.Row(class_="no-y-padding"):
             with rv.Col(cols=12, lg=4, class_="no-y-padding"):
                 ScaffoldAlert(
@@ -999,7 +1028,7 @@ def Page():
                     viewer_data = [
                         gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
                         gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-                        ]
+                    ]
                     
                     if COMPONENT_STATE.value.current_step.value != Marker.rem_vel1.value:
                         ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "second measurement")]
