@@ -1,9 +1,5 @@
 <template>
   <scaffold-alert
-    color="info"
-    class="mb-4 mx-auto"
-    max-width="800"
-    elevation="6"
     title-text="Second Measurement Comparison"
     @back="back_callback()"
     @next="next_callback()"
@@ -11,10 +7,7 @@
     >
     <div class="mb-4">
       <p>
-        Your angular size and distance measurements are now entered in the table.
-      </p>
-      <p>
-        Click and drag the ends of the green measurement line if you want to make adjustments.
+        Note: If your new angular size measurement is larger than the "consensus", that does not mean your new measurement is wrong. It could mean, for example, that many students did not adjust the brightness of the galaxy when making their original measurement and may have missed the fainter parts of the galaxy, thereby underestimating the angular size and overestimating the distance. 
       </p>
     </div>
   </scaffold-alert>
