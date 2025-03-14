@@ -1,6 +1,7 @@
 import solara
 from solara.lab import computed
 
+import numpy as np
 
 from reacton import ipyvuetify as rv
 import solara.lab
@@ -968,9 +969,18 @@ def Page():
                             first = subset_by_label(ignore[0], 'first measurement')
                             if first is not None:
                                 ignore.append(first)
-                    
+                        # get angular size dotplot range
+                        df1 = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'].to_dataframe()["ang_size_value"].to_numpy()
+                        df2 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS].to_dataframe()
+                        df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
+                        df = np.concatenate((df1, df2))
+                        ang_min = np.min(df)
+                        ang_max = np.max(df)
+                        
+                        
+                        
                         def dist_bins(distmin, distmax):
-                            return int(10 + 0.3 * ((DISTANCE_CONSTANT / distmin) - (DISTANCE_CONSTANT / distmax)))
+                            return int(10 + 0.3 * min(180, ((DISTANCE_CONSTANT / distmin) - (DISTANCE_CONSTANT / distmax))))
                         DotplotViewer(gjapp, 
                                         data = [
                                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
@@ -992,11 +1002,11 @@ def Page():
                                             hide_layers=ignore,
                                             nbin=30,
                                             nbin_func=dist_bins,
-                                            reset_bounds=[DISTANCE_CONSTANT / 180, DISTANCE_CONSTANT / 1]
+                                            reset_bounds=[DISTANCE_CONSTANT / ang_max, DISTANCE_CONSTANT / ang_min]
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
                             def angsize_bins(angmin, angmax):
-                                return int(10 + 0.3 * (angmax - angmin))
+                                return int(10 + 0.3 * min(180,(angmax - angmin)))
                             
                             DotplotViewer(gjapp, 
                                             data = [
@@ -1019,7 +1029,7 @@ def Page():
                                                 hide_layers=ignore,
                                                 nbin=30,
                                                 nbin_func=angsize_bins,
-                                                reset_bounds=[0, 180]
+                                                reset_bounds=[ang_min, ang_max]
                                                 )
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")
