@@ -59,6 +59,7 @@ from .component_state import COMPONENT_STATE, Marker
 
 from numpy import asarray
 import astropy.units as u
+from astropy.coordinates import Angle
 
 from pathlib import Path
 from typing import List, Tuple, cast
@@ -100,7 +101,9 @@ def DistanceToolComponent(galaxy,
                           bad_measurement_callback,
                           brightness_callback,
                           reset_canvas,
-                          sdss_counter):
+                          sdss_counter,
+                          guard_range
+                          ):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -118,6 +121,13 @@ def DistanceToolComponent(galaxy,
         widget.show_ruler = show_ruler
 
     solara.use_effect(turn_ruler_on, [show_ruler])
+    
+    def set_guard(min, max):
+        print(f'set_guard: min={min}, max={max}')
+        widget = cast(DistanceTool,solara.get_widget(tool))
+        widget.set_guard(max=max, min=min)
+            
+    solara.use_effect(lambda: set_guard(*guard_range), [guard_range])
     
     def turn_on_guard():
         widget = cast(DistanceTool,solara.get_widget(tool))
@@ -614,7 +624,8 @@ def Page():
                 logger.info(f'Brightness: {brightness}')
                 current_brightness.set(brightness / 100)
                 
-            
+            example_guard_range = [Angle("6 arcsec"), Angle("6 arcmin")]
+            normal_guard_range = [Angle("6 arcsec"), Angle("60 arcmin")]
             # solara.Button("Reset Canvas", on_click=lambda: reset_canvas.set(reset_canvas.value + 1))
             DistanceToolComponent(
                 galaxy=current_galaxy.value,
@@ -626,6 +637,7 @@ def Page():
                 brightness_callback=brightness_callback,
                 reset_canvas=reset_canvas.value,
                 sdss_counter=distance_tool_bg_count,
+                guard_range=example_guard_range if on_example_galaxy_marker.value else normal_guard_range
             )
             
             if COMPONENT_STATE.value.bad_measurement:
