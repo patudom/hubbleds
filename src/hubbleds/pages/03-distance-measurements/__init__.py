@@ -986,8 +986,8 @@ def Page():
                         df2 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS].to_dataframe()
                         df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
                         df = np.concatenate((df1, df2))
-                        ang_min = np.min(df)
-                        ang_max = np.max(df)
+                        ang_min = np.min(df)*0.9
+                        ang_max = np.max(df)*1.1
                         
                         
                         
