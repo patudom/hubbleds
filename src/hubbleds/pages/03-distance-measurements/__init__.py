@@ -1,6 +1,7 @@
 import solara
 from solara.lab import computed
 
+import numpy as np
 
 from reacton import ipyvuetify as rv
 import solara.lab
@@ -58,6 +59,7 @@ from .component_state import COMPONENT_STATE, Marker
 
 from numpy import asarray
 import astropy.units as u
+from astropy.coordinates import Angle
 
 from pathlib import Path
 from typing import List, Tuple, cast
@@ -99,7 +101,9 @@ def DistanceToolComponent(galaxy,
                           bad_measurement_callback,
                           brightness_callback,
                           reset_canvas,
-                          sdss_counter):
+                          sdss_counter,
+                          guard_range
+                          ):
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -117,6 +121,13 @@ def DistanceToolComponent(galaxy,
         widget.show_ruler = show_ruler
 
     solara.use_effect(turn_ruler_on, [show_ruler])
+    
+    def set_guard(min, max):
+        print(f'set_guard: min={min}, max={max}')
+        widget = cast(DistanceTool,solara.get_widget(tool))
+        widget.set_guard(max=max, min=min)
+            
+    solara.use_effect(lambda: set_guard(*guard_range), [guard_range])
     
     def turn_on_guard():
         widget = cast(DistanceTool,solara.get_widget(tool))
@@ -613,7 +624,8 @@ def Page():
                 logger.info(f'Brightness: {brightness}')
                 current_brightness.set(brightness / 100)
                 
-            
+            example_guard_range = [Angle("6 arcsec"), Angle("6 arcmin")]
+            normal_guard_range = [Angle("6 arcsec"), Angle("60 arcmin")]
             # solara.Button("Reset Canvas", on_click=lambda: reset_canvas.set(reset_canvas.value + 1))
             DistanceToolComponent(
                 galaxy=current_galaxy.value,
@@ -625,6 +637,7 @@ def Page():
                 brightness_callback=brightness_callback,
                 reset_canvas=reset_canvas.value,
                 sdss_counter=distance_tool_bg_count,
+                guard_range=example_guard_range if on_example_galaxy_marker.value else normal_guard_range
             )
             
             if COMPONENT_STATE.value.bad_measurement:
@@ -968,9 +981,18 @@ def Page():
                             first = subset_by_label(ignore[0], 'first measurement')
                             if first is not None:
                                 ignore.append(first)
-                    
+                        # get angular size dotplot range
+                        df1 = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'].to_dataframe()["ang_size_value"].to_numpy()
+                        df2 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS].to_dataframe()
+                        df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
+                        df = np.concatenate((df1, df2))
+                        ang_min = np.min(df)*0.9
+                        ang_max = np.max(df)*1.1
+                        
+                        
+                        
                         def dist_bins(distmin, distmax):
-                            return int(10 + 0.3 * ((DISTANCE_CONSTANT / distmin) - (DISTANCE_CONSTANT / distmax)))
+                            return int(10 + 0.3 * min(180, ((DISTANCE_CONSTANT / distmin) - (DISTANCE_CONSTANT / distmax))))
                         DotplotViewer(gjapp, 
                                         data = [
                                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
@@ -992,11 +1014,11 @@ def Page():
                                             hide_layers=ignore,
                                             nbin=30,
                                             nbin_func=dist_bins,
-                                            reset_bounds=[DISTANCE_CONSTANT / 180, DISTANCE_CONSTANT / 1]
+                                            reset_bounds=[DISTANCE_CONSTANT / ang_max, DISTANCE_CONSTANT / ang_min]
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
                             def angsize_bins(angmin, angmax):
-                                return int(10 + 0.3 * (angmax - angmin))
+                                return int(10 + 0.3 * min(180,(angmax - angmin)))
                             
                             DotplotViewer(gjapp, 
                                             data = [
@@ -1019,7 +1041,7 @@ def Page():
                                                 hide_layers=ignore,
                                                 nbin=30,
                                                 nbin_func=angsize_bins,
-                                                reset_bounds=[0, 180]
+                                                reset_bounds=[ang_min, ang_max]
                                                 )
                     else:
                         # raise ValueError("Example galaxy measurements not found in glue data collection")
