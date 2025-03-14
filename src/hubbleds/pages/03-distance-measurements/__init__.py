@@ -807,16 +807,9 @@ def Page():
                             x.dict() for x in LOCAL_STATE.value.example_measurements if x.measurement_number == 'first'
                         ]
                 
-                with solara.Card('REMOVE', style={'background-color': 'var(--warning-dark)'} ):
-                    solara.Text(f"selected example galaxy {selected_example_galaxy_index.value}")
-                    solara.Text(f"selected example galaxy {COMPONENT_STATE.value.selected_example_galaxy}")
-                    DataTable(title="Example Measurements",
-                            headers=common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }], 
-                            items=[x.model_dump() for x in LOCAL_STATE.value.example_measurements])
-                
                 DataTable(
                     title="Example Galaxy",
-                    headers=common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }], 
+                    headers=common_headers, 
                     items=example_galaxy_data.value,
                     show_select=True,
                     selected_indices=selected_example_galaxy_index.value,
