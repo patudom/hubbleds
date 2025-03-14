@@ -207,7 +207,6 @@ def Page():
             example_measurements.set([example_measurements.value[0], updated])
         else:
             logger.info('\t\t no changes for second measurement')
-        _update_seed_data_with_examples(example_measurements.value)
     
     def add_example_measurements_to_glue():
         logger.info('in add_example_measurements_to_glue')
