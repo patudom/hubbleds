@@ -1,5 +1,4 @@
 from datetime import datetime
-from threading import Timer
 
 import astropy.units as u
 import ipyvue as v
@@ -38,8 +37,7 @@ class DistanceTool(v.VueTemplate):
     _dec = Angle(0 * u.deg)
     wwtStyle = Dict().tag(sync=True)
     reset_style = Bool(False).tag(sync=True)
-    brightness = Float(1).tag(sync=True)
-    contrast = Float(0).tag(sync=True)
+    background = Unicode().tag(sync=True)
     
     # Guard
     guard = Bool(False).tag(sync=True)
@@ -47,49 +45,60 @@ class DistanceTool(v.VueTemplate):
     galaxy_min_size = Angle("6 arcsec") # 3 x sdss resolution
     bad_measurement = Bool(False).tag(sync=True)
 
+    wwt_ready = Bool(False).tag(sync=True)
+
     SDSS = "SDSS9 color"
+    DSS = "Digitized Sky Survey (Color)"
 
     UPDATE_TIME = 1  # seconds
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
 
     def __init__(self, *args, **kwargs):
         self.widget = WWTWidget()
-        timer = Timer(3.0, self._setup_widget)
-        timer.start()
+        self.background = self.SDSS
         self.measuring = kwargs.get('measuring', False)
         self.guard = kwargs.get('guard', False)
         self.angular_size = Angle(0, u.deg)
         self.angular_height = Angle(60, u.deg)
+
+        # Wait for the WWT frontend to be ready
+        self.widget.observe(lambda change: self._setup(),
+                            names='_wwt_ready')
+
+        super().__init__(*args, **kwargs)
+
+    def _setup(self):
+        self.wwt_ready = True
+        self._setup_widget()
         self.widget._set_message_type_callback('wwt_view_state',
                                                self._update_wwt_state)
         self.last_update = datetime.now()
         self._rt = RepeatedTimer(self.UPDATE_TIME, self._update_wwt_state)
         self._rt.start()
         self.update_text()
-        super().__init__(*args, **kwargs)
 
     def __del__(self):
         self._rt.stop()
         super().__del__()
 
-    def set_sdss(self):
-        if self.widget.foreground != self.SDSS:
-            self.widget.foreground = self.SDSS
-        else:
-            self.widget._on_foreground_change({"new": self.SDSS})
+    def set_background(self):
+        self.widget.foreground = self.background
+        self.widget.background = self.background
 
-        if self.widget.background != self.SDSS:
-            self.widget.background = self.SDSS
+    def vue_toggle_background(self, _args=None):
+        if self.background == self.SDSS:
+            self.background = self.DSS
         else:
-            self.widget.set_background_image({"new": self.SDSS})
+            self.background = self.SDSS
+        self.set_background()
 
     def _setup_widget(self):
-        self.set_sdss()
+        self.set_background()
         self.widget.center_on_coordinates(self.START_COORDINATES, fov= 42 * u.arcmin, #start in close enough to see galaxies
                                           instant=True)
 
     def reset_canvas(self):
-        self.set_sdss()
+        self.set_background()
         self.send({"method": "reset", "args": []})
 
     def update_text(self):
@@ -109,7 +118,7 @@ class DistanceTool(v.VueTemplate):
                 self.view_changing = False
 
     def vue_toggle_measuring(self, _args=None):
-        self.set_sdss()
+        self.set_background()
         self.measuring = not self.measuring
         self.ruler_click_count += 1
 
@@ -117,8 +126,6 @@ class DistanceTool(v.VueTemplate):
     def _on_measured_distance_changed(self, change):
         fov = self.widget.get_fov()
         widget_height = self._height_from_pixel_str(self.widget.layout.height)
-        if change["new"] == 0:
-            return
         ang_size = Angle(((change["new"] / widget_height) * fov))
         valid = self.validate_angular_size(ang_size, True)
         # print(ang_size, change["new"], valid)
@@ -168,8 +175,6 @@ class DistanceTool(v.VueTemplate):
     
     def reset_brightness_contrast(self):
         self.wwtStyle = {}
-        self.brightness = 100
-        self.contrast = 100
         # toggle reset style to trigger watch in vue
         self.reset_style = True
         self.reset_style = False

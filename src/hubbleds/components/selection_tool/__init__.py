@@ -1,10 +1,20 @@
-
-import solara
-from reacton import ipyvuetify as rv
-from hubbleds.state import LOCAL_STATE
-from hubbleds.widgets import SelectionToolWidget
 from typing import Callable
-from hubbleds.state import GalaxyData
+
+import astropy.units as u
+import solara
+from astropy.coordinates import SkyCoord
+from astropy.table import Table
+from ipywwt import WWTWidget
+from reacton import ipyvuetify as rv
+
+from ...state import LOCAL_STATE
+from ...utils import GALAXY_FOV
+
+SDSS = "SDSS9 color"
+DSS = "Digitized Sky Survey (Color)"
+
+UPDATE_TIME = 1  # seconds
+START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame="icrs")
 
 
 @solara.component
@@ -13,86 +23,229 @@ def SelectionTool(
     galaxy_selected_callback: Callable,
     galaxy_added_callback: Callable,
     deselect_galaxy_callback: Callable,
-    selected_measurement: dict | None,
-    sdss_counter: solara.Reactive[int],
 ):
+    show_wwt = solara.use_reactive(False)
+    selected_galaxy = solara.use_reactive(None)
+    current_layer = solara.use_reactive(None)
+    reset_view = solara.use_reactive(False)
+    refresh_images = solara.use_reactive(False)
+
     with rv.Card() as main:
-        with rv.Card(class_="pa-0 ma-0", elevation=0):
-            tool_container = rv.Html(tag="div")
+        with rv.Card(color="info", class_="pa-1" if show_galaxies else ""):
+            with rv.Toolbar(dense=True, class_="toolbar"):
+                rv.ToolbarTitle(children=["COSMIC SKY VIEWER"])
+                rv.Spacer()
 
-        def _add_widget():
-            selection_tool_widget = SelectionToolWidget(
-                table_layer_data={
-                    k: [x.dict()[k] for x in LOCAL_STATE.value.galaxies.values()]
-                    for k in ["id", "ra", "decl"]
-                },
-                show_galaxies=show_galaxies,
-            )
+            with rv.Html(
+                tag="div",
+                style_="position: relative; height: 400px; width: 100%",
+                class_="selection-content",
+            ):
+                wwt_container = rv.Html(tag="div")
 
-            tool_widget = solara.get_widget(tool_container)
-            tool_widget.children = (selection_tool_widget,)
+                if not show_wwt.value:
+                    with rv.Overlay(absolute=True, opacity=1):
+                        rv.ProgressCircular(
+                            size=100, color="primary", indeterminate=True
+                        )
 
-            sdss_counter.subscribe(lambda _count: selection_tool_widget.set_sdss())
+                if selected_galaxy.value is not None:
+                    def _on_galaxy_added():
+                        galaxy_added_callback(selected_galaxy.value)
+                        selected_galaxy.set(None)
+                        deselect_galaxy_callback()
 
-            def cleanup():
-                tool_widget.children = ()
-                selection_tool_widget.close()
+                    # Add galaxy button
+                    add_gal_btn = solara.Button(
+                        v_on="tooltip.on",
+                        color="var(--success-dark)",
+                        classes=["selection-fab", "black--text"],
+                        fab=True,
+                        bottom=True,
+                        left=True,
+                        absolute=True,
+                        style="--margin: 15px; --card-padding: 16px; bottom: 0px !important; margin-bottom: var(--margin); margin-left: calc(var(--margin) - var(--card-padding));",
+                        children=[rv.Icon(children=["mdi-plus"])],
+                        on_click=_on_galaxy_added,
+                    )
 
-            return cleanup
+                    rv.Tooltip(
+                        top=True,
+                        v_slots=[
+                            {
+                                "name": "activator",
+                                "variable": "tooltip",
+                                "children": rv.FabTransition(children=[add_gal_btn]),
+                            }
+                        ],
+                        children=["Add Galaxy to the Dataset"],
+                    )
 
-        solara.use_effect(_add_widget, dependencies=[])
-
-        def _on_galaxy_selected(gal: dict):
-            if not gal:
-                return
-            data = LOCAL_STATE.value.galaxies[int(gal["id"])]
-            galaxy_added_callback(data)
-
-        def _on_current_galaxy_changed(change: dict):
-            gal = change["new"]
-            if not gal:
-                return
-            data = LOCAL_STATE.value.galaxies[int(gal["id"])]
-            galaxy_selected_callback(data)
-
-        def _setup_callbacks():
-            selection_tool_widget = solara.get_widget(tool_container).children[0]
-
-            selection_tool_widget.on_galaxy_selected = _on_galaxy_selected
-            selection_tool_widget.observe(
-                _on_current_galaxy_changed,
-                ["current_galaxy"],
-            )
-            selection_tool_widget.deselect_galaxy = deselect_galaxy_callback
-
-        solara.use_effect(_setup_callbacks, dependencies=[])
-
-        def _update_selection():
-            selection_tool_widget = solara.get_widget(tool_container).children[0]
-
-            # Update selection tool
-            selection_tool_widget.show_galaxies(show_galaxies)
-            selection_tool_widget.highlighted = show_galaxies
-
-            if show_galaxies:
-                selection_tool_widget.center_on_start_coordinates()
-
-        solara.use_effect(
-            _update_selection, dependencies=[show_galaxies]
-        )
-
-        def _update_position():
-            selection_tool_widget = solara.get_widget(tool_container).children[0]
-
-            # Update the selected position
-            if selected_measurement is not None:
-                selection_tool_widget.go_to_location(
-                    selected_measurement["galaxy"]["ra"],
-                    selected_measurement["galaxy"]["decl"],
+                # Reset view button
+                reset_view_btn = solara.Button(
+                    v_on="tooltip.on",
+                    color="var(--success-dark)",
+                    classes=["selection-fab", "black--text"],
+                    fab=True,
+                    bottom=True,
+                    right=True,
+                    absolute=True,
+                    style="--margin: 15px; --card-padding: 16px; bottom: 0px !important; margin-bottom: var(--margin); margin-right: calc(var(--margin) - var(--card-padding));",
+                    children=[rv.Icon(children=["mdi-cached"])],
+                    on_click=lambda: reset_view.set(not reset_view.value)
                 )
 
-        solara.use_effect(
-            _update_position, dependencies=[selected_measurement]
+                rv.Tooltip(
+                    top=True,
+                    v_slots=[
+                        {
+                            "name": "activator",
+                            "variable": "tooltip",
+                            "children": rv.FabTransition(children=[reset_view_btn]),
+                        }
+                    ],
+                    children=["Reset View"],
+                )
+
+                # Refresh images button
+                if selected_galaxy.value is not None:
+                    refresh_images_btn = solara.Button(
+                        v_on="tooltip.on",
+                        color="#CCCCCC",
+                        classes=["selection-fab", "black--text"],
+                        fab=True,
+                        top=True,
+                        right=True,
+                        absolute=True,
+                        style_="--margin: 15px; --card-padding: 16px; top: 0px !important; margin-top: var(--margin); margin-right: calc(var(--margin) - var(--card-padding));",
+                        children=[
+                            rv.Icon(children=["mdi-refresh"])
+                        ],
+                        on_click=lambda: refresh_images.set(not refresh_images.value),
+                    )
+
+                    rv.Tooltip(
+                        top=True,
+                        v_slots=[
+                            {
+                                "name": "activator",
+                                "variable": "tooltip",
+                                "children": rv.FabTransition(
+                                    children=[refresh_images_btn]
+                                ),
+                            }
+                        ],
+                        children=["Refresh Images"],
+                    )
+
+    def _add_widget():
+        """
+        Add the WWT widget to the container.
+        """
+        wwt_widget = WWTWidget()
+        wwt_widget.observe(lambda change: show_wwt.set(change["new"]), "_wwt_ready")
+
+        wwt_widget_container = solara.get_widget(wwt_container)
+        wwt_widget_container.children = (wwt_widget,)
+
+        def cleanup():
+            wwt_widget_container.children = ()
+            wwt_widget.close()
+
+        return cleanup
+
+    solara.use_effect(_add_widget, dependencies=[])
+
+    def _on_wwt_ready():
+        """
+        Set up the WWT widget when it is ready.
+        """
+        wwt_widget = solara.get_widget(wwt_container).children[0]
+
+        # Update the displayed foreground and background
+        wwt_widget.foreground = SDSS
+        wwt_widget.background = SDSS
+
+        # Center the field on the location of the table data
+        wwt_widget.center_on_coordinates(
+            START_COORDINATES, fov=60 * u.deg, instant=False
         )
 
-        return main
+        # Set up the selection callback
+        def _on_selection_changed(wwt, updated):
+            if "most_recent_source" not in updated:
+                return
+
+            source = wwt.most_recent_source
+            galaxy = source["layerData"]
+
+            for k in ["ra", "decl"]:
+                galaxy[k] = float(galaxy[k])
+
+            fov = min(wwt_widget.get_fov(), GALAXY_FOV)
+
+            wwt_widget.center_on_coordinates(
+                SkyCoord(galaxy["ra"], galaxy["decl"], unit=u.deg), fov=fov
+            )
+            selected_galaxy.set(galaxy)
+            galaxy_selected_callback(galaxy)
+
+        wwt_widget.set_selection_change_callback(_on_selection_changed)
+
+    solara.use_effect(_on_wwt_ready, dependencies=[show_wwt.value])
+
+    def _on_show_galaxies():
+        """
+        Show or hide the galaxies on the WWT widget.
+        """
+        wwt_widget = solara.get_widget(wwt_container).children[0]
+
+        if current_layer.value is None:
+            table = Table(
+                {
+                    k: [x.dict()[k] for x in LOCAL_STATE.value.galaxies.values()]
+                    for k in ["id", "ra", "decl"]
+                }
+            )
+
+            layer = wwt_widget.layers.add_table_layer(
+                frame="Sky",
+                table=table,
+                lon_att="ra",
+                lat_att="decl",
+                marker_type="gaussian",
+                size_scale=100,
+                color="#00FF00",
+                marker_scale="screen",
+            )
+
+            current_layer.set(layer)
+
+        current_layer.value.opacity = int(show_galaxies)
+
+        if show_galaxies:
+            wwt_widget.center_on_coordinates(
+                START_COORDINATES, fov=60 * u.deg, instant=True
+            )
+
+    solara.use_effect(_on_show_galaxies, dependencies=[show_galaxies])
+
+    def _on_reset_view():
+        """
+        Reset the view of the WWT widget.
+        """
+        wwt_widget = solara.get_widget(wwt_container).children[0]
+        wwt_widget.center_on_coordinates(
+            START_COORDINATES, fov=60 * u.deg, instant=True
+        )
+
+    solara.use_effect(_on_reset_view, dependencies=[reset_view.value])
+
+    def _on_refresh_images():
+        """
+        Refresh the images in the WWT widget.
+        """
+        wwt_widget = solara.get_widget(wwt_container).children[0]
+        wwt_widget.refresh_tile_cache()
+
+    solara.use_effect(_on_refresh_images, dependencies=[refresh_images.value])
