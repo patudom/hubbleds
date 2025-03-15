@@ -7,7 +7,13 @@
     >
     <div class="mb-4">
       <p>
-        Note: If your new angular size measurement is larger than the "consensus", that does not mean your new measurement is wrong. It could mean, for example, that many students did not adjust the brightness of the galaxy when making their original measurement and may have missed the fainter parts of the galaxy, thereby underestimating the angular size and overestimating the distance. 
+        If your new angular size measurement does not fall at the most commonly measured value, that does not mean your new measurement is wrong.
+      </p>
+      <p>
+        The first measurements were made before viewing the tips on how to make accurate measurements, so it is possible that there was a tendency for the first measurements to be too small or too large.
+      </p>
+      <p>
+        Can you think of ways that the first measurements could have a tendency to be wrong, and in which direction?
       </p>
     </div>
   </scaffold-alert>
