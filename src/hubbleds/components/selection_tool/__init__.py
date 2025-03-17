@@ -14,6 +14,7 @@ SDSS = "SDSS9 color"
 DSS = "Digitized Sky Survey (Color)"
 
 UPDATE_TIME = 1  # seconds
+INIT_COORDINATE = SkyCoord(170 * u.deg, 13.3 * u.deg, frame="icrs")
 START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame="icrs")
 
 
@@ -170,7 +171,7 @@ def SelectionTool(
 
         # Center the field on the location of the table data
         _go_to_location(
-            wwt_widget, coords=START_COORDINATES, fov=60 * u.deg, instant=False
+            wwt_widget, coords=INIT_COORDINATE, fov=4 * u.deg, instant=False
         )
 
         # Set up the selection callback
@@ -240,7 +241,8 @@ def SelectionTool(
         fov: u.Quantity,
         instant: Optional[bool] = None,
         motion_counted: bool = True,
-    ):
+    ):  
+        print(f"Going to location: {coords}, fov: {fov}, instant: {instant}, motion_counted: {motion_counted}")
         if instant is None:
             if motion_counted:
                 instant = motions_left <= 0
