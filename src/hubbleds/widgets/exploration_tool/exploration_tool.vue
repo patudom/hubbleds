@@ -69,7 +69,7 @@
 </template>
 
 <style scoped>
-#exploration-widget .p-Widget, iframe {
+#exploration-widget .p-Widget, #exploration-widget .p-Widget iframe {
   height: 350px !important;
   width: 100% !important;
 }
