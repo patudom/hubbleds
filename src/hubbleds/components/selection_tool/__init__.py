@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import astropy.units as u
 import solara
@@ -23,12 +23,14 @@ def SelectionTool(
     galaxy_selected_callback: Callable,
     galaxy_added_callback: Callable,
     deselect_galaxy_callback: Callable,
+    selected_measurement: Optional[dict] = None,
 ):
     show_wwt = solara.use_reactive(False)
     selected_galaxy = solara.use_reactive(None)
     current_layer = solara.use_reactive(None)
     reset_view = solara.use_reactive(False)
     refresh_images = solara.use_reactive(False)
+    motions_left, set_motions_left = solara.use_state(2)
 
     with rv.Card() as main:
         with rv.Card(color="info", class_="pa-1" if show_galaxies else ""):
@@ -167,8 +169,8 @@ def SelectionTool(
         wwt_widget.background = SDSS
 
         # Center the field on the location of the table data
-        wwt_widget.center_on_coordinates(
-            START_COORDINATES, fov=60 * u.deg, instant=False
+        _go_to_location(
+            wwt_widget, coords=START_COORDINATES, fov=60 * u.deg, instant=False
         )
 
         # Set up the selection callback
@@ -184,8 +186,10 @@ def SelectionTool(
 
             fov = min(wwt_widget.get_fov(), GALAXY_FOV)
 
-            wwt_widget.center_on_coordinates(
-                SkyCoord(galaxy["ra"], galaxy["decl"], unit=u.deg), fov=fov
+            _go_to_location(
+                wwt_widget,
+                coords=SkyCoord(galaxy["ra"], galaxy["decl"], unit=u.deg),
+                fov=fov
             )
             selected_galaxy.set(galaxy)
             galaxy_selected_callback(galaxy)
@@ -224,19 +228,37 @@ def SelectionTool(
         current_layer.value.opacity = int(show_galaxies)
 
         if show_galaxies:
-            wwt_widget.center_on_coordinates(
-                START_COORDINATES, fov=60 * u.deg, instant=True
+            _go_to_location(
+                wwt_widget, coords=START_COORDINATES, fov=60 * u.deg, instant=True
             )
 
     solara.use_effect(_on_show_galaxies, dependencies=[show_galaxies])
+
+    def _go_to_location(
+        wwt_widget: WWTWidget,
+        coords: SkyCoord,
+        fov: u.Quantity,
+        instant: Optional[bool] = None,
+        motion_counted: bool = True,
+    ):
+        if instant is None:
+            if motion_counted:
+                instant = motions_left <= 0
+                set_motions_left(motions_left - 1)
+            else:
+                instant = True
+
+        wwt_widget.center_on_coordinates(
+            coords, fov=fov, instant=instant,
+        )
 
     def _on_reset_view():
         """
         Reset the view of the WWT widget.
         """
         wwt_widget = solara.get_widget(wwt_container).children[0]
-        wwt_widget.center_on_coordinates(
-            START_COORDINATES, fov=60 * u.deg, instant=True
+        _go_to_location(
+            wwt_widget, coords=START_COORDINATES, fov=60 * u.deg, instant=True
         )
 
     solara.use_effect(_on_reset_view, dependencies=[reset_view.value])
@@ -249,3 +271,18 @@ def SelectionTool(
         wwt_widget.refresh_tile_cache()
 
     solara.use_effect(_on_refresh_images, dependencies=[refresh_images.value])
+
+    def _update_position():
+        if selected_measurement is None:
+            return
+
+        galaxy = selected_measurement["galaxy"]
+        coords = SkyCoord(galaxy["ra"] * u.deg, galaxy["decl"] * u.deg, frame="icrs")
+
+        wwt_widget = solara.get_widget(wwt_container).children[0]
+        _go_to_location(wwt_widget,
+                        coords=coords,
+                        fov=GALAXY_FOV,
+                        motion_counted=True)
+
+    solara.use_effect(_update_position, dependencies=[selected_measurement])
