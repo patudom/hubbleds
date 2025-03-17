@@ -36,7 +36,7 @@ class ExplorationTool(v.VueTemplate):
 
     def __init__(self, *args, **kwargs):
         # self.widget = WWTJupyterWidget(hide_all_chrome=True)
-        self.widget = WWTWidget()
+        self.widget = WWTWidget(use_remote=True)
 
         # Wait for the WWT frontend to be ready
         self.widget.observe(lambda change: self._setup(),
