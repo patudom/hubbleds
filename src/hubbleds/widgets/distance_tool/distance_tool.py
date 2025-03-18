@@ -54,7 +54,7 @@ class DistanceTool(v.VueTemplate):
     START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
 
     def __init__(self, *args, **kwargs):
-        self.widget = WWTWidget()
+        self.widget = WWTWidget(use_remote=True)
         self.background = self.SDSS
         self.measuring = kwargs.get('measuring', False)
         self.guard = kwargs.get('guard', False)
