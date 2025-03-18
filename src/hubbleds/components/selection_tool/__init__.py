@@ -145,7 +145,7 @@ def SelectionTool(
         """
         Add the WWT widget to the container.
         """
-        wwt_widget = WWTWidget()
+        wwt_widget = WWTWidget(use_remote=True)
         wwt_widget.observe(lambda change: show_wwt.set(change["new"]), "_wwt_ready")
 
         wwt_widget_container = solara.get_widget(wwt_container)
