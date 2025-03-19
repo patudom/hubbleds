@@ -557,6 +557,7 @@ def Page():
                 galaxy_selected_callback=_galaxy_selected_callback,
                 galaxy_added_callback=_galaxy_added_callback,
                 selected_galaxy=selection_tool_galaxy,
+                background_counter=selection_tool_bg_count,
                 deselect_galaxy_callback=_deselect_galaxy_callback,
                 candidate_galaxy=selection_tool_candidate_galaxy.value,
                 on_wwt_ready=lambda: Ref(COMPONENT_STATE.fields.wwt_ready).set(True),
