@@ -51,8 +51,15 @@
           </v-card>
         </v-dialog>
       </div>
-    </v-toolbar>         
-    <div id="exploration-root">
+    </v-toolbar>
+    <div id="exploration-root" style="position: relative;">
+      <v-overlay absolute opacity="1" v-show="!wwt_ready">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+          size="100"
+        ></v-progress-circular>
+      </v-overlay>
       <jupyter-widget
         :widget="widget"
         id="exploration-widget"
@@ -62,8 +69,10 @@
 </template>
 
 <style scoped>
-#exploration-widget .p-Widget, iframe {
+#exploration-widget .p-Widget, #exploration-widget .p-Widget iframe {
   height: 350px !important;
   width: 100% !important;
 }
 </style>
+<script setup lang="ts">
+</script>

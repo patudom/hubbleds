@@ -22,6 +22,8 @@ class ExplorationTool(v.VueTemplate):
     dialog = Bool(False).tag(sync=True)
     highlighted = Bool(False).tag(sync=True)
 
+    wwt_ready = Bool(False).tag(sync=True)
+
     _fov = Angle(0 * u.deg)
     _ra = Angle(0 * u.deg)
     _dec = Angle(0 * u.deg)
@@ -34,7 +36,16 @@ class ExplorationTool(v.VueTemplate):
 
     def __init__(self, *args, **kwargs):
         # self.widget = WWTJupyterWidget(hide_all_chrome=True)
-        self.widget = WWTWidget()
+        self.widget = WWTWidget(use_remote=True)
+
+        # Wait for the WWT frontend to be ready
+        self.widget.observe(lambda change: self._setup(),
+                            names='_wwt_ready')
+
+        super().__init__(*args, **kwargs)
+
+    def _setup(self):
+        self.wwt_ready = True
         self.widget.foreground = "Digitized Sky Survey (Color)"
         self.widget.background = "Digitized Sky Survey (Color)"
         self.widget._set_message_type_callback(
@@ -42,7 +53,6 @@ class ExplorationTool(v.VueTemplate):
         )
         self.last_update = datetime.now()
         self._rt = RepeatedTimer(self.UPDATE_TIME, self._update_if_needed)
-        super().__init__(*args, **kwargs)
 
     def _update_if_needed(self):
         delta = datetime.now() - self.last_update
