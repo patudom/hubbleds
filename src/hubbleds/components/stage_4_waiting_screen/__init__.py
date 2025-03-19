@@ -13,6 +13,8 @@ def Stage4WaitingScreen(
     completed_count: int,
 ):
 
+    show_wwt = solara.use_reactive(False)
+
     with rv.Card():
         with rv.Toolbar(color="warning", dense=True, dark=True):
             rv.ToolbarTitle(class_="text-h6 text-uppercase font-weight-regular",
@@ -31,7 +33,14 @@ def Stage4WaitingScreen(
                         """
                     )
 
-                WWTWidget.element()
+                with solara.Div(style={"position": "relative", "height": "400px"}):
+                    wwt_container = rv.Html(tag="div")
+
+                    if not show_wwt.value:
+                        with rv.Overlay(absolute=True, opacity=1):
+                            rv.ProgressCircular(
+                                size=100, color="primary", indeterminate=True
+                            )
 
                 Counter(text="Number of classmates who have completed measurements", value=completed_count)
 
@@ -39,5 +48,18 @@ def Stage4WaitingScreen(
                     solara.Button(label="Advance",
                                   on_click=on_advance_click,
                                   disabled=not can_advance)
+        
+    def _add_widget():
+        wwt_widget = WWTWidget(use_remote=True)
+        wwt_widget.observe(lambda change: show_wwt.set(change["new"]), "_wwt_ready")
 
-                   
+        wwt_widget_container = solara.get_widget(wwt_container)
+        wwt_widget_container.children = (wwt_widget,)
+
+        def cleanup():
+            wwt_widget_container.children = ()
+            wwt_widget.close()
+
+        return cleanup
+
+    solara.use_effect(_add_widget, dependencies=[])
