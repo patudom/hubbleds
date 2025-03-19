@@ -51,7 +51,7 @@ class DistanceTool(v.VueTemplate):
     DSS = "Digitized Sky Survey (Color)"
 
     UPDATE_TIME = 1  # seconds
-    START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame='icrs')
+    START_COORDINATES = SkyCoord(170 * u.deg, 13.3 * u.deg, frame='icrs')
 
     def __init__(self, *args, **kwargs):
         self.widget = WWTWidget(use_remote=True)
@@ -94,7 +94,7 @@ class DistanceTool(v.VueTemplate):
 
     def _setup_widget(self):
         self.set_background()
-        self.widget.center_on_coordinates(self.START_COORDINATES, fov= 42 * u.arcmin, #start in close enough to see galaxies
+        self.widget.center_on_coordinates(self.START_COORDINATES, fov= 60 * u.arcmin, #start in close enough to see galaxies
                                           instant=True)
 
     def reset_canvas(self):
