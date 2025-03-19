@@ -17,7 +17,7 @@
         This is a view of the cosmic sky, like the one you explored in the introduction. This view shows a more modern data set from the Sloan Digital Sky Survey (SDSS), which has collected imaging and spectral data for millions of galaxies. 
       </p>
       <p>
-        This Data Story will focus on a nearby subset of spiral galaxies.
+        This Data Story will focus on a nearby subset of spiral galaxies, like the ones shown here.
       </p>
     </div>
   </scaffold-alert>

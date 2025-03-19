@@ -171,7 +171,7 @@ def SelectionTool(
 
         # Center the field on the location of the table data
         _go_to_location(
-            wwt_widget, coords=INIT_COORDINATE, fov=4 * u.deg, instant=False
+            wwt_widget, coords=INIT_COORDINATE, fov=1 * u.deg, instant=True
         )
 
         # Set up the selection callback
