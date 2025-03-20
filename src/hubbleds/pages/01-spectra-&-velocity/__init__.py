@@ -78,6 +78,7 @@ def Page():
     solara.Title("HubbleDS")
     logger.info("Rendering Stage 1: Spectra & Velocity")
     loaded_component_state = solara.use_reactive(False)
+    selection_tool_candidate_galaxy = solara.use_reactive(None)
     router = solara.use_router()
 
     async def _load_component_state():
@@ -290,12 +291,7 @@ def Page():
         need = 1
         galaxies = LOCAL_API.get_galaxies(LOCAL_STATE)
         sample = np.random.choice(galaxies, size=need, replace=False)
-        new_measurements = [StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                               galaxy=galaxy)
-                             for galaxy in sample]
-        measurements = LOCAL_STATE.value.measurements + new_measurements
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        _galaxy_selected_callback(measurements[0].galaxy)    
+        selection_tool_candidate_galaxy.set(sample[0].model_dump())
 
     def num_bad_velocities():
         measurements = Ref(LOCAL_STATE.fields.measurements)
@@ -544,12 +540,13 @@ def Page():
                 galaxy_is_selected.set(False)  
 
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
-            Marker.cho_row1, Marker.rem_vel1 
+                Marker.cho_row1, Marker.rem_vel1 
             )
-            if show_example_data_table:
-                selection_tool_galaxy = selected_example_measurement
-            else:
-                selection_tool_galaxy = selected_measurement
+
+            selection_tool_measurement = selected_example_measurement if show_example_data_table else selected_measurement
+            selection_tool_galaxy = selection_tool_measurement.value.galaxy.model_dump() \
+                                        if (selection_tool_measurement.value is not None and selection_tool_measurement.value.galaxy is not None) \
+                                        else None
             
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
@@ -557,12 +554,9 @@ def Page():
                 ),
                 galaxy_selected_callback=_galaxy_selected_callback,
                 galaxy_added_callback=_galaxy_added_callback,
-                selected_measurement=(
-                    selection_tool_galaxy.value.model_dump()
-                    if selection_tool_galaxy.value is not None
-                    else None
-                ),
+                selected_galaxy=selection_tool_galaxy,
                 deselect_galaxy_callback=_deselect_galaxy_callback,
+                candidate_galaxy=selection_tool_candidate_galaxy.value,
             )
             
             if show_snackbar.value:
