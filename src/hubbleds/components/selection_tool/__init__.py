@@ -14,6 +14,7 @@ SDSS = "SDSS9 color"
 DSS = "Digitized Sky Survey (Color)"
 
 UPDATE_TIME = 1  # seconds
+INIT_COORDINATE = SkyCoord(170 * u.deg, 13.3 * u.deg, frame="icrs")
 START_COORDINATES = SkyCoord(180 * u.deg, 25 * u.deg, frame="icrs")
 
 
@@ -170,7 +171,7 @@ def SelectionTool(
 
         # Center the field on the location of the table data
         wwt_widget.center_on_coordinates(
-            START_COORDINATES, fov=60 * u.deg, instant=False
+            INIT_COORDINATES, fov=1 * u.deg, instant=True
         )
 
         # Set up the selection callback
