@@ -286,7 +286,7 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
     
     def _select_one_random_galaxy():
-        if len(LOCAL_STATE.value.measurements) >= 1:
+        if len(LOCAL_STATE.value.measurements) >= 5:
             return
         need = 1
         galaxies = LOCAL_API.get_galaxies(LOCAL_STATE)
@@ -450,9 +450,6 @@ def Page():
                 speech=speech.value,
             )
 
-            if COMPONENT_STATE.value.is_current_step(Marker.sel_gal2):
-                solara.Button(label="Select a random galaxy", on_click=_select_one_random_galaxy, classes=["emergency-button"])
-
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies3.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -466,6 +463,10 @@ def Page():
                 },
                 speech=speech.value,
             )
+
+            if COMPONENT_STATE.value.is_current_step(Marker.sel_gal2) or COMPONENT_STATE.value.is_current_step(Marker.sel_gal3):
+                solara.Button(label="Select a random galaxy", on_click=_select_one_random_galaxy, classes=["emergency-button"])
+
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineSelectGalaxies4.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),

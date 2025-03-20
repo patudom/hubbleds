@@ -58,7 +58,7 @@
         (If no green dots are visible, try clicking back and then next to refresh the view.
       </p>
       <p style="font-weight: 300">
-        If the green dots still do not appear, use the gray "SELECT A RANDOM GALAXY" button to move forward.)
+        If the green dots still do not appear, use the gray "SELECT A RANDOM GALAXY" button instead.)
       </p>
     </div>
     <div

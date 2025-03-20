@@ -25,6 +25,9 @@
       <p>
         Pan around the sky and click on one of these dots to select that galaxy.
       </p>
+      <p style="font-weight: 300">
+        (If the green dots did not appear, use the gray "SELECT A RANDOM GALAXY" button instead.)
+      </p>
     </div>
     <div
       v-if="state_view.total_galaxies < 5 && state_view.galaxy_is_selected"
@@ -42,6 +45,9 @@
     >
       <p>
         Choose another galaxy to enter into your table. You can pan around the sky from where you are or click the <v-btn icon dark small disabled class="mx-1 black--text" elevation="2" style="background-color: var(--success-dark);"><v-icon style="color:black!important;">mdi-cached</v-icon></v-btn> button to reset the view.
+      </p>
+      <p style="font-weight: 300">
+        (If the green dots did not appear, use the gray "SELECT A RANDOM GALAXY" button instead.)
       </p>
     </div>
     <div
