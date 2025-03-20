@@ -961,7 +961,7 @@ def Page():
                         ignore = []
                     
                         ignore = [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
-                        if COMPONENT_STATE.value.current_step_at_or_before(Marker.dot_seq5):
+                        if COMPONENT_STATE.value.current_step < Marker.dot_seq5:
                             second = subset_by_label(ignore[0], 'second measurement')
                             if second is not None:
                                 ignore.append(second)
