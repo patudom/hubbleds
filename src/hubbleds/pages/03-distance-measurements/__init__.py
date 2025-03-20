@@ -638,7 +638,14 @@ def Page():
             )
             
             if COMPONENT_STATE.value.bad_measurement:
-                solara.Error("This measurement seems to be too large/small. Make sure you are appropriately zoomed in on the galaxy and are measuring the full size.")
+                rv.Alert(
+                    elevation=2,
+                    icon="mdi-alert-circle-outline",
+                    prominent=True,
+                    dark=True,
+                    class_="ma-2 student-warning",
+                    children=["Please try again. This measurement seems to be too large/small. Make sure you are appropriately zoomed in on the galaxy and are measuring the full size."]
+                )
 
             with rv.Col(cols=6, offset=3):
                 if COMPONENT_STATE.value.current_step_at_or_after(Marker.ang_siz5a):
