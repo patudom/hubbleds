@@ -24,10 +24,11 @@ def SelectionTool(
     galaxy_selected_callback: Callable,
     galaxy_added_callback: Callable,
     deselect_galaxy_callback: Callable,
-    selected_measurement: Optional[dict] = None,
+    selected_galaxy: Optional[dict] = None,
+    candidate_galaxy: Optional[dict] = None,
 ):
     show_wwt = solara.use_reactive(False)
-    selected_galaxy = solara.use_reactive(None)
+    selected = solara.use_reactive(candidate_galaxy)
     current_layer = solara.use_reactive(None)
     reset_view = solara.use_reactive(False)
     refresh_images = solara.use_reactive(False)
@@ -52,10 +53,10 @@ def SelectionTool(
                             size=100, color="primary", indeterminate=True
                         )
 
-                if selected_galaxy.value is not None:
+                if selected.value is not None:
                     def _on_galaxy_added():
-                        galaxy_added_callback(selected_galaxy.value)
-                        selected_galaxy.set(None)
+                        galaxy_added_callback(selected.value)
+                        selected.set(None)
                         deselect_galaxy_callback()
 
                     # Add galaxy button
@@ -111,7 +112,7 @@ def SelectionTool(
                 )
 
                 # Refresh images button
-                if selected_galaxy.value is not None:
+                if selected.value is not None:
                     refresh_images_btn = solara.Button(
                         v_on="tooltip.on",
                         color="#CCCCCC",
@@ -192,7 +193,7 @@ def SelectionTool(
                 coords=SkyCoord(galaxy["ra"], galaxy["decl"], unit=u.deg),
                 fov=fov
             )
-            selected_galaxy.set(galaxy)
+            selected.set(galaxy)
             galaxy_selected_callback(galaxy)
 
         wwt_widget.set_selection_change_callback(_on_selection_changed)
@@ -274,11 +275,10 @@ def SelectionTool(
 
     solara.use_effect(_on_refresh_images, dependencies=[refresh_images.value])
 
-    def _update_position():
-        if selected_measurement is None:
+    def _update_position(galaxy):
+        if galaxy is None:
             return
 
-        galaxy = selected_measurement["galaxy"]
         coords = SkyCoord(galaxy["ra"] * u.deg, galaxy["decl"] * u.deg, frame="icrs")
 
         wwt_widget = solara.get_widget(wwt_container).children[0]
@@ -287,4 +287,5 @@ def SelectionTool(
                         fov=GALAXY_FOV,
                         motion_counted=True)
 
-    solara.use_effect(_update_position, dependencies=[selected_measurement])
+    solara.use_effect(lambda: _update_position(selected_galaxy), dependencies=[selected_galaxy])
+    solara.use_effect(lambda: _update_position(candidate_galaxy), dependencies=[candidate_galaxy])
