@@ -171,9 +171,10 @@ def SelectionTool(
         wwt_widget.background = SDSS
 
         # Center the field on the location of the table data
-        _go_to_location(
-            wwt_widget, coords=INIT_COORDINATE, fov=1 * u.deg, instant=True
-        )
+        if not show_galaxies:
+            _go_to_location(
+                wwt_widget, coords=INIT_COORDINATE, fov=1 * u.deg, instant=True
+            )
 
         # Set up the selection callback
         def _on_selection_changed(wwt, updated):
