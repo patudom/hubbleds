@@ -207,7 +207,9 @@ def get_free_response(local_state: Reactive[LocalState], component_state: Reacti
     
     # Create question on Ref
     free_responses = Ref(local_state.fields.free_responses).value.copy()['responses']
-    free_responses[tag] = dict(tag=tag, response="", initialized=True, stage=component_state.value.stage_id)
+    # free_responses[tag] = dict(tag=tag, response="", initialized=True, stage=component_state.value.stage_id)
+    new = dict(tag=tag, response="", initialized=True, stage=component_state.value.stage_id)
+    free_responses = {**free_responses, tag: new }
     Ref(local_state.fields.free_responses).set({'responses': free_responses})
     return free_responses[tag]
 
@@ -216,7 +218,9 @@ def fix_free_responses_stage_missing(tag, local_state: Reactive[LocalState], com
     # just add the state if it's missing
     free_responses = Ref(local_state.fields.free_responses).value.copy()['responses']
     if tag not in free_responses.keys():
-        free_responses[tag] = dict(tag=tag, response="", initialized=True, stage=component_state.value.stage_id)
+        # free_responses[tag] = dict(tag=tag, response="", initialized=True, stage=component_state.value.stage_id)
+        new = dict(tag=tag, response="", initialized=True, stage=component_state.value.stage_id)
+        free_responses = {**free_responses, tag: new }
         Ref(local_state.fields.free_responses).set({'responses': free_responses})
         
         
@@ -224,11 +228,16 @@ def get_multiple_choice(local_state: Reactive[LocalState], component_state: Reac
     logger.info(f"Getting MC Score for tag: {tag}")
     if tag in local_state.value.mc_scoring['scores']:
         if 'stage' not in local_state.value.mc_scoring['scores'][tag]:
-            local_state.value.mc_scoring['scores'][tag]['stage'] = component_state.value.stage_id
+            # local_state.value.mc_scoring['scores'][tag]['stage'] = component_state.value.stage_id
+            new = local_state.value.mc_scoring['scores'][tag]
+            new['stage'] = component_state.value.stage_id
+            mc_scoring = {**local_state.value.mc_scoring['scores'], tag: new }
         return local_state.value.mc_scoring['scores'][tag]
     
     mc_scoring = Ref(local_state.fields.mc_scoring).value.copy()['scores']
-    mc_scoring[tag] = dict(tag=tag, score=None, choice=None, tries=0, wrong_attempts=0, stage=component_state.value.stage_id)
+    # mc_scoring[tag] = dict(tag=tag, score=None, choice=None, tries=0, wrong_attempts=0, stage=component_state.value.stage_id)
+    new = dict(tag=tag, score=None, choice=None, tries=0, wrong_attempts=0, stage=component_state.value.stage_id)
+    mc_scoring = {**mc_scoring, tag: new }
     Ref(local_state.fields.mc_scoring).set({'scores': mc_scoring})
     return mc_scoring[tag]
 
@@ -252,7 +261,15 @@ def mc_callback(
         # check for a missing tag
         if event[1] not in mc_scoring.keys():
             logger.info(f"Initializing MC Score for tag: {event[1]}")
-            mc_scoring[event[1]] = dict(
+            # mc_scoring[event[1]] = dict(
+            #     tag=event[1], 
+            #     score=None, 
+            #     choice=None, 
+            #     tries=0, 
+            #     wrong_attempts=0,
+            #     stage=component_state.value.stage_id
+            #     )
+            new_score = dict(
                 tag=event[1], 
                 score=None, 
                 choice=None, 
@@ -260,6 +277,7 @@ def mc_callback(
                 wrong_attempts=0,
                 stage=component_state.value.stage_id
                 )
+            mc_scoring = {**mc_scoring, event[1]: new_score}
             Ref(local_state.fields.mc_scoring).set({'scores': mc_scoring})
 
     # mc-score event returns a data which is an mc-score dictionary (includes tag)
@@ -268,7 +286,8 @@ def mc_callback(
         if 'stage' not in new_score:
             new_score['stage'] = component_state.value.stage_id
         new_score.update(event[1]) # update with new score, choice, tries, and wrong_attempts, but keeps the stage
-        mc_scoring[event[1]["tag"]] = new_score
+        # mc_scoring[event[1]["tag"]] = new_score
+        mc_scoring = {**mc_scoring, event[1]["tag"]: new_score} # update the score
         Ref(local_state.fields.mc_scoring).set({'scores': mc_scoring})
 
         # update piggybank_total
@@ -308,14 +327,22 @@ def fr_callback(
     logger.info(f"Free Response Callback Event: {event[0]}")
     if event[0] == "fr-initialize":
         if event[1]["tag"] not in free_responses.keys():
-            free_responses[event[1]["tag"]] = dict(tag=event[1]["tag"], response="", initialized=True, stage=component_state.value.stage_id)
+            # free_responses[event[1]["tag"]] = dict(tag=event[1]["tag"], response="", initialized=True, stage=component_state.value.stage_id)
+            new = dict(tag=event[1]["tag"], response="", initialized=True, stage=component_state.value.stage_id)
+            free_responses = {**free_responses, event[1]["tag"]: new }
             Ref(local_state.fields.free_responses).set({'responses': free_responses})
             if callback is not None:
                 callback()
     elif event[0] == "fr-update":
-        free_responses[event[1]["tag"]]['response'] = event[1]["response"]
+        # free_responses[event[1]["tag"]]['response'] = event[1]["response"]
+        new = free_responses[event[1]["tag"]]
+        new['response'] = event[1]["response"]
+        free_responses = {**free_responses, event[1]["tag"]: new }
         if 'stage' not in free_responses[event[1]["tag"]]:
-            free_responses[event[1]["tag"]]['stage'] = component_state.value.stage_id
+            # free_responses[event[1]["tag"]]['stage'] = component_state.value.stage_id
+            new = free_responses[event[1]["tag"]]
+            new['stage'] = component_state.value.stage_id
+            free_responses = {**free_responses, event[1]["tag"]: new }
         Ref(local_state.fields.free_responses).set({'responses': free_responses})
         if callback is not None:
                 callback()
