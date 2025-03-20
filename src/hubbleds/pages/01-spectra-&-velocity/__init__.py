@@ -290,8 +290,10 @@ def Page():
             return
         need = 1
         galaxies = LOCAL_API.get_galaxies(LOCAL_STATE)
-        sample = np.random.choice(galaxies, size=need, replace=False)
-        selection_tool_candidate_galaxy.set(sample[0].model_dump())
+        rng = np.random.default_rng()
+        index = rng.integers(low=0, high=len(galaxies)-1, size=need)[0]
+        galaxy = galaxies[index]
+        selection_tool_candidate_galaxy.set(galaxy.model_dump())
 
     def num_bad_velocities():
         measurements = Ref(LOCAL_STATE.fields.measurements)
