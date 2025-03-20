@@ -972,7 +972,10 @@ def Page():
                         # get angular size dotplot range
                         df1 = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'].to_dataframe()["ang_size_value"].to_numpy()
                         df2 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS].to_dataframe()
-                        df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
+                        if COMPONENT_STATE.value.current_step < Marker.dot_seq5:
+                            df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
+                        else:
+                            df2 = df2[df2['measurement_number']]["ang_size_value"].to_numpy()
                         df = np.concatenate((df1, df2))
                         ang_min = np.min(df)*0.9
                         ang_max = np.max(df)*1.1
