@@ -1,7 +1,7 @@
 import solara
 import enum
 
-from pydantic import field_validator, computed_field
+from pydantic import field_validator, Field, computed_field
 
 from cosmicds.state import BaseState
 from hubbleds.base_marker import BaseMarker 
@@ -59,7 +59,7 @@ class ComponentState(BaseComponentState, BaseState):
     meas_theta: float = 0.0
     ruler_click_count: int = 0
     n_meas: int = 0
-    bad_measurement: bool = False
+    bad_measurement: bool = Field(False, exclude=True)
     distances_total: int = 0
     fill_est_dist_values: bool = False
     
