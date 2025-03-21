@@ -205,13 +205,18 @@ def Page():
         with solara.Column():
             solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
 
+    stage4_ready = Ref(LOCAL_STATE.fields.enough_students_ready)
+
     if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
-        Stage4WaitingScreen(
-            completed_count=completed_count.value,
-            can_advance=LOCAL_STATE.value.enough_students_ready,
-            on_advance_click=_on_waiting_room_advance,
-        )
-        return
+        if not stage4_ready.value:
+            Stage4WaitingScreen(
+                completed_count=completed_count.value,
+                can_advance=LOCAL_STATE.value.enough_students_ready,
+                on_advance_click=_on_waiting_room_advance,
+            )
+            return
+        else:
+            _on_waiting_room_advance()
     else:
         try:
             class_ready_task.cancel()
