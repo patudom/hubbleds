@@ -545,7 +545,6 @@ def Page():
             show_example_data_table = COMPONENT_STATE.value.current_step_between(
                 Marker.cho_row1, Marker.rem_vel1 
             )
-
             selection_tool_measurement = selected_example_measurement if show_example_data_table else selected_measurement
             selection_tool_galaxy = selection_tool_measurement.value.galaxy.model_dump() \
                                         if (selection_tool_measurement.value is not None and selection_tool_measurement.value.galaxy is not None) \
@@ -558,8 +557,10 @@ def Page():
                 galaxy_selected_callback=_galaxy_selected_callback,
                 galaxy_added_callback=_galaxy_added_callback,
                 selected_galaxy=selection_tool_galaxy,
+                background_counter=selection_tool_bg_count,
                 deselect_galaxy_callback=_deselect_galaxy_callback,
                 candidate_galaxy=selection_tool_candidate_galaxy.value,
+                on_wwt_ready=lambda: Ref(COMPONENT_STATE.fields.wwt_ready).set(True),
             )
             
             if show_snackbar.value:

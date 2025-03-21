@@ -24,8 +24,10 @@ def SelectionTool(
     galaxy_selected_callback: Callable,
     galaxy_added_callback: Callable,
     deselect_galaxy_callback: Callable,
+    background_counter: solara.Reactive[int],
     selected_galaxy: Optional[dict] = None,
     candidate_galaxy: Optional[dict] = None,
+    on_wwt_ready: Optional[Callable] = None,
 ):
     show_wwt = solara.use_reactive(False)
     selected = solara.use_reactive(candidate_galaxy)
@@ -152,6 +154,8 @@ def SelectionTool(
         wwt_widget_container = solara.get_widget(wwt_container)
         wwt_widget_container.children = (wwt_widget,)
 
+        background_counter.subscribe(lambda _count: wwt_widget._on_background_change({"new": wwt_widget.background}))
+
         def cleanup():
             wwt_widget_container.children = ()
             wwt_widget.close()
@@ -198,6 +202,9 @@ def SelectionTool(
             galaxy_selected_callback(galaxy)
 
         wwt_widget.set_selection_change_callback(_on_selection_changed)
+
+        if on_wwt_ready is not None:
+            on_wwt_ready()
 
     solara.use_effect(_on_wwt_ready, dependencies=[show_wwt.value])
 
