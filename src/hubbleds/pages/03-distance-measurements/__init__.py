@@ -433,7 +433,7 @@ def Page():
     
     @computed
     def sync_dotplot_axes():
-        return Ref(COMPONENT_STATE.fields.current_step_between).value(Marker.dot_seq1, Marker.dot_seq4a)
+        return Ref(COMPONENT_STATE.fields.current_step_between).value(Marker.dot_seq1, Marker.dot_seq5c)
     
     def setup_zoom_sync():
         
