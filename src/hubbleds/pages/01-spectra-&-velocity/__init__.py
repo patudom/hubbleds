@@ -1026,42 +1026,43 @@ def Page():
                 )
 
 
-            with rv.Col(cols=12, lg=8, class_="no-y-padding"):
-                                        
-                if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                    viewer_data = [
-                        gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
-                        gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-                    ]
-                    
-                    if COMPONENT_STATE.value.current_step.value != Marker.rem_vel1.value:
-                        ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "second measurement")]
-                    else:
-                        ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "first measurement")]
-                    ignore += [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
-                    DotplotViewer(
-                        gjapp,
-                        title="Dotplot: Example Galaxy Velocities",
-                        data=viewer_data,
-                        component_id=DB_VELOCITY_FIELD,
-                        vertical_line_visible=show_synced_lines.value,
-                        line_marker_at=sync_velocity_line.value,
-                        line_marker_color=LIGHT_GENERIC_COLOR,
-                        on_click_callback=dotplot_click_callback,
-                        unit="km / s",
-                        x_label="Velocity (km/s)",
-                        y_label="Count",
-                        nbin=30,
-                        nbin_func=nbin_func,
-                        x_bounds=dotplot_bounds.value,
-                        on_x_bounds_changed=dotplot_bounds.set,
-                        reset_bounds=list(
-                            map(
-                                sync_example_wavelength_to_velocity,
-                                # bounds of example galaxy spectrum
-                                [3796.6455078125, 9187.5576171875])),
-                        hide_layers=ignore,  # type: ignore
-                    )
+            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1):
+                with rv.Col(cols=12, lg=8, class_="no-y-padding"):
+                                            
+                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                        viewer_data = [
+                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
+                            gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                        ]
+                        
+                        if COMPONENT_STATE.value.current_step.value != Marker.rem_vel1.value:
+                            ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "second measurement")]
+                        else:
+                            ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "first measurement")]
+                        ignore += [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
+                        DotplotViewer(
+                            gjapp,
+                            title="Dotplot: Example Galaxy Velocities",
+                            data=viewer_data,
+                            component_id=DB_VELOCITY_FIELD,
+                            vertical_line_visible=show_synced_lines.value,
+                            line_marker_at=sync_velocity_line.value,
+                            line_marker_color=LIGHT_GENERIC_COLOR,
+                            on_click_callback=dotplot_click_callback,
+                            unit="km / s",
+                            x_label="Velocity (km/s)",
+                            y_label="Count",
+                            nbin=30,
+                            nbin_func=nbin_func,
+                            x_bounds=dotplot_bounds.value,
+                            on_x_bounds_changed=dotplot_bounds.set,
+                            reset_bounds=list(
+                                map(
+                                    sync_example_wavelength_to_velocity,
+                                    # bounds of example galaxy spectrum
+                                    [3796.6455078125, 9187.5576171875])),
+                            hide_layers=ignore,  # type: ignore
+                        )
 
     # Spectrum Viewer row
     if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.che_mea1) or COMPONENT_STATE.value.current_step_between(Marker.dot_seq4, Marker.rem_vel1) or COMPONENT_STATE.value.current_step_at_or_after(Marker.rem_gal1):
@@ -1232,11 +1233,11 @@ def Page():
                                     update={"obs_wave_value": round(value), "velocity_value": velocity}
                                 )
                             )
-                        example_measurements[example_measurement_index] = example_measurement.value
-                        Ref(LOCAL_STATE.fields.example_measurements).set(example_measurements)
+                        # example_measurements[example_measurement_index] = example_measurement.value
+                        # Ref(LOCAL_STATE.fields.example_measurements).set(example_measurements)
                         obs_wave_tool_used.set(True)
-                        obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
-                        obs_wave.set(value)
+                        # obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                        # obs_wave.set(value)
                         
                     def _on_set_marker_location(value):
                         logger.info('Setting marker location spectrum -> dotplot')
