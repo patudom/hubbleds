@@ -383,6 +383,7 @@ def Page():
                 count.set(count.value + 1)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
+        _glue_data_setup()
    
         
     @computed
@@ -425,6 +426,7 @@ def Page():
                 Ref(LOCAL_STATE.fields.measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
+        _glue_data_setup()
     
     ang_size_dotplot_range = solara.use_reactive([])
     dist_dotplot_range = solara.use_reactive([])
