@@ -107,8 +107,8 @@ class ComponentState(BaseComponentState, BaseState):
     dotplot_tutorial_state: DotPlotTutorial = DotPlotTutorial()
     dotplot_tutorial_finished: bool = False
     dotplot_click_count: int = 0
-    has_bad_velocities: bool = False
-    has_multiple_bad_velocities: bool = False
+    has_bad_velocities: bool = Field(False, exclude=True)
+    has_multiple_bad_velocities: bool = Field(False, exclude=True)
     obs_wave_total: int = 0
     velocities_total: int = 0
     show_reflection_dialog: bool = False
