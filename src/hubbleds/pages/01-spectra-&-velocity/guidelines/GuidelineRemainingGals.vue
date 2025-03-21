@@ -20,9 +20,8 @@
       </span>
     </template>
 
-<!-- If there are no bad measurements and measurements are not complete -->
+<!-- If measurements are not complete -->
     <div
-      v-if="!state_view.has_bad_velocities && !state_view.has_multiple_bad_velocities"
     >
       <div
         class="mb-4"
@@ -43,23 +42,9 @@
       </div>
     </div>
 
-    <!-- If there are any bad measurements -->
+    <!-- If measurements are complete -->
     <div
-      v-if="state_view.has_bad_velocities || state_view.has_multiple_bad_velocities"
-    >
-      <p style="font-weight:bold; font-size:1.1em;">
-        Your measured wavelength value is not within the expected range. Please try again.
-      </p>
-      <p>
-        Align the vertical measuring tool to the <strong><span style="color:#ff665e; background-color: white; border-radius : 5px; padding: 3px">{{ state_view.selected_galaxy.element }} (observed)</span></strong> marker and click.
-      </p>
-      <p>
-        Ask your instructor if you are not sure where this is.
-      </p>
-    </div>
-    <!-- If measurements are complete and there are no bad measurements -->
-    <div
-      v-if="state_view.obswaves_total >= 5 &&!state_view.has_bad_velocities && !state_view.has_multiple_bad_velocities"
+      v-if="state_view.obswaves_total >= 5"
     >
       <p>
         You have measured the spectral line wavelengths for all of your galaxies.

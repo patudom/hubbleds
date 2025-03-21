@@ -104,6 +104,7 @@ def Page():
         race_viewer.state.title = "Race Data"
 
         layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
+        layer_viewer.state.title = "Our Class Data"
 
         viewers = {
             "race": race_viewer,

@@ -1349,6 +1349,16 @@ def Page():
                         else:
                             logger.info('Wavelength measurement is bad')
 
+                    if COMPONENT_STATE.value.has_bad_velocities:
+                        rv.Alert(
+                            elevation=2,
+                            icon="mdi-alert-circle-outline",
+                            prominent=True,
+                            dark=True,
+                            class_="ma-2 student-warning",
+                            children=["Your measured wavelength value is not within the expected range. Please try again. Ask your instructor if you are not sure where to measure."]
+                        )
+
                     SpectrumViewer(
                         galaxy_data=(
                             selected_measurement.value.galaxy
