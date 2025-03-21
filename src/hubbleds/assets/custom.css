@@ -99,6 +99,14 @@ h4 {
     background-color: #FAFAFA;
 }
 
+.v-application.theme--light .server-error {
+    color: black !important;
+}
+
+.v-application.theme--dark .server-error {
+    color: white !important;
+}
+
 /* Captions have slightly less contrast than general text */
 .v-application .caption {
     font-size: 1rem !important;
