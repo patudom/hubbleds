@@ -101,9 +101,11 @@ def DistanceToolComponent(galaxy,
                           bad_measurement_callback,
                           brightness_callback,
                           reset_canvas,
-                          sdss_counter,
+                          background_counter,
                           guard_range
                           ):
+
+    wwt_ready = solara.use_reactive(False)
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -146,8 +148,17 @@ def DistanceToolComponent(galaxy,
     
     solara.use_effect(_reset_canvas, [reset_canvas])
 
+    def _setup_wait_for_ready():
+        widget = cast(DistanceTool, solara.get_widget(tool))
+        if widget.wwt_ready:
+            wwt_ready.set(True)
+        else:
+            widget.observe(lambda change: wwt_ready.set(change["new"]), names="wwt_ready")
+
+    solara.use_effect(_setup_wait_for_ready, [])
+
     def _define_callbacks():
-        widget = cast(DistanceTool,solara.get_widget(tool))
+        widget = cast(DistanceTool, solara.get_widget(tool))
 
         def update_angular_size(change):
             if widget.measuring:
@@ -170,16 +181,15 @@ def DistanceToolComponent(galaxy,
             
         widget.observe(update_brightness, ["brightness"])
 
-        sdss_counter.subscribe(lambda _count: widget.set_background())
+        background_counter.subscribe(lambda _count: widget.set_background())
 
-    solara.use_effect(_define_callbacks, [])
+    solara.use_effect(_define_callbacks, [wwt_ready.value])
     
     
 
 @solara.component
 def Page():
     solara.Title("HubbleDS")
-    print("Stage 3")
     
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
@@ -636,7 +646,7 @@ def Page():
                 use_guard=True,
                 brightness_callback=brightness_callback,
                 reset_canvas=reset_canvas.value,
-                sdss_counter=distance_tool_bg_count,
+                background_counter=distance_tool_bg_count,
                 guard_range=example_guard_range if on_example_galaxy_marker.value else normal_guard_range
             )
             
