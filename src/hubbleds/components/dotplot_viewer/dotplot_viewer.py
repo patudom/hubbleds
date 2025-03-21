@@ -360,6 +360,7 @@ def DotplotViewer(
                 dotplot_view.state._update_bins()
             zoom_tool.on_zoom = on_zoom
             
+            reset_bounds.subscribe(lambda x: tool.activate())
             
             if line_marker_at.value is not None:
                 _update_lines(value = line_marker_at.value)

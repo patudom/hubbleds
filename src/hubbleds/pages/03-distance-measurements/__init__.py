@@ -383,6 +383,7 @@ def Page():
                 count.set(count.value + 1)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
+        _glue_data_setup()
    
         
     @computed
@@ -425,6 +426,7 @@ def Page():
                 Ref(LOCAL_STATE.fields.measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
+        _glue_data_setup()
     
     ang_size_dotplot_range = solara.use_reactive([])
     dist_dotplot_range = solara.use_reactive([])
@@ -433,7 +435,7 @@ def Page():
     
     @computed
     def sync_dotplot_axes():
-        return Ref(COMPONENT_STATE.fields.current_step_between).value(Marker.dot_seq1, Marker.dot_seq4a)
+        return Ref(COMPONENT_STATE.fields.current_step_between).value(Marker.dot_seq1, Marker.dot_seq5c)
     
     def setup_zoom_sync():
         
@@ -530,6 +532,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE), 
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                scroll_on_mount=False,
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
             )
             ScaffoldAlert(
@@ -979,7 +982,10 @@ def Page():
                         # get angular size dotplot range
                         df1 = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'].to_dataframe()["ang_size_value"].to_numpy()
                         df2 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS].to_dataframe()
-                        df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
+                        if COMPONENT_STATE.value.current_step < Marker.dot_seq5:
+                            df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
+                        else:
+                            df2 = df2["ang_size_value"].to_numpy()
                         df = np.concatenate((df1, df2))
                         ang_min = np.min(df)*0.9
                         ang_max = np.max(df)*1.1
