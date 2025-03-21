@@ -532,6 +532,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE), 
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                scroll_on_mount=False,
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
             )
             ScaffoldAlert(
