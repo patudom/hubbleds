@@ -1233,11 +1233,11 @@ def Page():
                                     update={"obs_wave_value": round(value), "velocity_value": velocity}
                                 )
                             )
-                        example_measurements[example_measurement_index] = example_measurement.value
-                        Ref(LOCAL_STATE.fields.example_measurements).set(example_measurements)
+                        # example_measurements[example_measurement_index] = example_measurement.value
+                        # Ref(LOCAL_STATE.fields.example_measurements).set(example_measurements)
                         obs_wave_tool_used.set(True)
-                        obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
-                        obs_wave.set(value)
+                        # obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                        # obs_wave.set(value)
                         
                     def _on_set_marker_location(value):
                         logger.info('Setting marker location spectrum -> dotplot')
