@@ -975,7 +975,7 @@ def Page():
                         if COMPONENT_STATE.value.current_step < Marker.dot_seq5:
                             df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
                         else:
-                            df2 = df2[df2['measurement_number']]["ang_size_value"].to_numpy()
+                            df2 = df2["ang_size_value"].to_numpy()
                         df = np.concatenate((df1, df2))
                         ang_min = np.min(df)*0.9
                         ang_max = np.max(df)*1.1
