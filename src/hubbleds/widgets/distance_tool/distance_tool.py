@@ -75,6 +75,7 @@ class DistanceTool(v.VueTemplate):
         self.last_update = datetime.now()
         self._rt = RepeatedTimer(self.UPDATE_TIME, self._update_wwt_state)
         self._rt.start()
+        self.set_background()
         self.update_text()
 
     def __del__(self):
