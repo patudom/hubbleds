@@ -364,7 +364,7 @@
           class="black--text"
           color="accent"
           depressed
-          @click="set_step(n - 1);" 
+          @click="set_step(step - 1);" 
         >
           Back
         </v-btn>
@@ -439,37 +439,51 @@ module.exports = {
       disableNext: false,
       freeResponses: [],
       frListener: null,
+      listenerSetup: false,
     };
   },
 
   mounted() {
-    this.frObserver = new MutationObserver((mutations) => {
-      let needUpdate = false;
-      mutations.forEach(mutation => {
-        if (needUpdate) {
-          return;
-        }
-        if (mutation.addedNodes.length > 0) {
-          needUpdate = [...mutation.addedNodes].some(this.needUpdateNode);
-        }
-        if (!needUpdate && mutation.removedNodes.length > 0) {
-          needUpdate = [...mutation.removedNodes].some(this.needUpdateNode);
-        }
-      });
-      if (needUpdate) {
-        this.updateFreeResponseList();
-        this.updateDisableNext();
-      }
-    });
-    this.frObserver.observe(this.$el, { childList: true, subtree: true });
+    const root = this.getRoot();
+    this.setupObserver();
   },
 
   methods: {
+    getRoot() {
+      return this.$refs.content.$el;
+    },
+    setupObserver() {
+      if (this.listenerSetup) {
+        return;
+      }
+      const root = this.getRoot();
+      this.frObserver = new MutationObserver((mutations) => {
+        let needUpdate = false;
+        mutations.forEach(mutation => {
+          if (needUpdate) {
+            return;
+          }
+          if (mutation.addedNodes.length > 0) {
+            needUpdate = [...mutation.addedNodes].some(this.needUpdateNode);
+          }
+          if (!needUpdate && mutation.removedNodes.length > 0) {
+            needUpdate = [...mutation.removedNodes].some(this.needUpdateNode);
+          }
+        });
+        if (needUpdate) {
+          this.updateFreeResponseList();
+          this.updateDisableNext();
+        }
+      });
+      this.frObserver.observe(root, { childList: true, subtree: true });
+      this.listenerSetup = true;
+    },
     // These methods are kinda hacky!
     // but they let us not ever have to deal with this stuff elsewhere
     // and not have to rewrite this in each guideline that has free responses
     updateFreeResponseList() {
-      const frElements = this.$el.querySelectorAll(".cds-free-response");
+      const root = this.getRoot();
+      const frElements = root.querySelectorAll(".cds-free-response");
       const frComponents = [...frElements].map(fr => fr.__vue__);
       for (let i = 0; i < frComponents.length; i++) {
         if (frComponents[i].$vnode.tag.indexOf("FreeResponse") < 0) {
@@ -482,7 +496,7 @@ module.exports = {
         this.frListener = (_event) => {
           this.updateDisableNext();
         };
-        this.$el.addEventListener('input', this.frListener);
+        root.addEventListener('input', this.frListener);
       }
     },
 
@@ -491,7 +505,6 @@ module.exports = {
     },
 
     updateDisableNext() {
-      console.log(this.require_fr, this.freeResponses.length, this.allFreeResponsesFilled());
       this.disableNext = this.require_fr && !this.allFreeResponsesFilled();
     },
 
@@ -508,7 +521,15 @@ module.exports = {
   watch: {
     step(newStep, oldStep) {
       const isInteractStep = this.freeResponses.length > 0;
+      this.set_step(newStep);
       this.set_max_step_completed(Math.max(this.max_step_completed, newStep - 1));
+    },
+    dialog(value) {
+      if (value) {
+        this.$nextTick(() => {
+          this.setupObserver();
+        });
+      }
     }
   }
 }
