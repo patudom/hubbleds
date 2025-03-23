@@ -52,6 +52,8 @@ def Page():
     clear_drawn_line = solara.use_reactive(0)
     clear_fit_line = solara.use_reactive(0)
 
+    skip_waiting_room, set_skip_waiting_room = solara.use_state(False)
+
     # LOCAL_API.update_class_size(GLOBAL_STATE)
 
     async def _load_component_state():
@@ -61,6 +63,13 @@ def Page():
 
         # TODO: What else to we need to do here?
         logger.info("Finished loading component state for stage 4.")
+
+        value = LOCAL_STATE.value.enough_students_ready \
+                or \
+                (check_completed_students_count() >= 12)
+
+        Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
+        set_skip_waiting_room(value)
         loaded_component_state.set(True)
 
     solara.lab.use_task(_load_component_state)
@@ -181,7 +190,8 @@ def Page():
     class_ready_task = solara.lab.use_task(keep_checking_class_data, dependencies=[])
 
     def _on_waiting_room_advance():
-        class_ready_task.cancel()
+        if class_ready_task.pending:
+            class_ready_task.cancel()
         load_class_data()
         transition_next(COMPONENT_STATE)
 
@@ -205,10 +215,8 @@ def Page():
         with solara.Column():
             solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
 
-    stage4_ready = Ref(LOCAL_STATE.fields.enough_students_ready)
-
     if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
-        if not stage4_ready.value:
+        if not skip_waiting_room:
             Stage4WaitingScreen(
                 completed_count=completed_count.value,
                 can_advance=LOCAL_STATE.value.enough_students_ready,
