@@ -19,7 +19,7 @@ from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_mu
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS
+from hubbleds.utils import AGE_CONSTANT, cancel_task, models_to_glue_data, PLOTLY_MARGINS
 
 from cosmicds.logger import setup_logger
 
@@ -133,7 +133,6 @@ def Page():
     def load_class_data():
         logger.info("Loading class data")
         class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
-        logger.info(len(class_measurements))
         measurements = Ref(LOCAL_STATE.fields.class_measurements)
         student_ids = Ref(LOCAL_STATE.fields.stage_4_class_data_students)
         if not class_measurements:
@@ -191,7 +190,7 @@ def Page():
 
     def _on_waiting_room_advance():
         if class_ready_task.pending:
-            class_ready_task.cancel()
+            cancel_task(class_ready_task)
         load_class_data()
         transition_next(COMPONENT_STATE)
 
@@ -226,10 +225,7 @@ def Page():
         else:
             _on_waiting_room_advance()
     else:
-        try:
-            class_ready_task.cancel()
-        except RuntimeError:
-            pass
+        cancel_task(class_ready_task)
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
