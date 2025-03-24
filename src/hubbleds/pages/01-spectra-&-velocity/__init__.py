@@ -410,8 +410,13 @@ def Page():
             selection_tool_bg_count.set(selection_tool_bg_count.value + 1)
 
     Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
-    
 
+    # Insurance policy
+    async def _wwt_ready_timeout():
+        await asyncio.sleep(10)
+        Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
+
+    solara.lab.use_task(_wwt_ready_timeout)
     
     with solara.Row():
         with solara.Column():
@@ -561,14 +566,7 @@ def Page():
                 deselect_galaxy_callback=_deselect_galaxy_callback,
                 candidate_galaxy=selection_tool_candidate_galaxy.value,
                 on_wwt_ready=lambda: Ref(COMPONENT_STATE.fields.wwt_ready).set(True),
-            )
-            
-            # Insurance policy
-            async def _wwt_ready_timeout():
-                await asyncio.sleep(10)
-                Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
-
-            solara.use_task(_wwt_ready_timeout)
+            ) 
             
             if show_snackbar.value:
                 solara.Info(label=LOCAL_STATE.value.snackbar_message)        
