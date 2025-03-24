@@ -563,6 +563,13 @@ def Page():
                 on_wwt_ready=lambda: Ref(COMPONENT_STATE.fields.wwt_ready).set(True),
             )
             
+            # Insurance policy
+            async def _wwt_ready_timeout():
+                await asyncio.sleep(10)
+                Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
+
+            solara.use_task(_wwt_ready_timeout)
+            
             if show_snackbar.value:
                 solara.Info(label=LOCAL_STATE.value.snackbar_message)        
 
