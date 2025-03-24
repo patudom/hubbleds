@@ -19,7 +19,7 @@ from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_mu
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.utils import AGE_CONSTANT, cancel_task, models_to_glue_data, PLOTLY_MARGINS
+from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS
 
 from cosmicds.logger import setup_logger
 
@@ -70,6 +70,8 @@ def Page():
 
         Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
         set_skip_waiting_room(value)
+        if value:
+            _on_waiting_room_advance()
         loaded_component_state.set(True)
 
     solara.lab.use_task(_load_component_state)
@@ -190,7 +192,7 @@ def Page():
 
     def _on_waiting_room_advance():
         if class_ready_task.pending:
-            cancel_task(class_ready_task)
+            class_ready_task.cancel()
         load_class_data()
         transition_next(COMPONENT_STATE)
 
@@ -222,10 +224,8 @@ def Page():
                 on_advance_click=_on_waiting_room_advance,
             )
             return
-        else:
-            _on_waiting_room_advance()
     else:
-        cancel_task(class_ready_task)
+        class_ready_task.cancel()
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():

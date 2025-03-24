@@ -314,10 +314,3 @@ def _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att):
 def subset_by_label(data, label):
         value = next((s for s in data.subsets if s.label == label), None)
         return value
-
-
-def cancel_task(task: Task):
-    try:
-        task.cancel()
-    except (RuntimeError, _CancelledErrorInOurTask):
-        pass
