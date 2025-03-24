@@ -6,7 +6,7 @@ from hubbleds.components import Stage2Slideshow, STAGE_2_SLIDESHOW_LENGTH
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, mc_callback 
 from .component_state import COMPONENT_STATE
 from hubbleds.remote import LOCAL_API
-from ...utils import get_image_path, DISTANCE_CONSTANT
+from ...utils import get_image_path, DISTANCE_CONSTANT, push_to_route
 
 from cosmicds.logger import setup_logger
 
@@ -85,7 +85,7 @@ def Page():
             "mc_score_2": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "how-much-closer-galaxies"), 
             "score_tag_2": "how-much-closer-galaxies",
         },
-        event_slideshow_finished=lambda _: router.push("03-distance-measurements"),
+        event_slideshow_finished=lambda _: push_to_route(route, "03-distance-measurements"),
         debug = LOCAL_STATE.value.debug_mode,
         speech=speech.value.model_dump(),
     )

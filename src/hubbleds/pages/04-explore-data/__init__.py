@@ -19,7 +19,7 @@ from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_mu
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS, get_image_path
+from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS, get_image_path, push_to_route
 
 from cosmicds.logger import setup_logger
 
@@ -197,7 +197,7 @@ def Page():
         load_class_data()
 
     def _jump_stage_5():
-        router.push("05-class-results-uncertainty")
+        push_to_route(router, "05-class-results-uncertainty")
 
     with solara.Row():
         with solara.Column():
@@ -399,7 +399,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",
-                event_next_callback=lambda _: router.push("05-class-results-uncertainty"),
+                event_next_callback=lambda _: push_to_route(router, "05-class-results-uncertainty"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),

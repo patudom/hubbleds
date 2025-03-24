@@ -9,7 +9,7 @@ from hubbleds.state import LOCAL_STATE, GLOBAL_STATE
 
 from hubbleds.remote import LOCAL_API
 from hubbleds.widgets.exploration_tool.exploration_tool import ExplorationTool
-from ..utils import get_image_path
+from ..utils import get_image_path, push_to_route
 
 from hubbleds.layout import Layout
 from cosmicds.logger import setup_logger
@@ -53,7 +53,7 @@ def Page():
             "Vesto Slipher and Spectral Data"
         ],
         image_location=get_image_path(router, "stage_intro"),
-        event_slideshow_finished=lambda _: router.push("01-spectra-&-velocity"),
+        event_slideshow_finished=lambda _: push_to_route(router, "01-spectra-&-velocity"),
         debug=LOCAL_STATE.value.debug_mode,
         exploration_tool=exploration_tool,
         exploration_tool1=exploration_tool1,

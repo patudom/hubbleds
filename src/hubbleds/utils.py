@@ -11,6 +11,7 @@ from glue_jupyter.app import JupyterApplication
 from numbers import Number
 from typing import List, Set, Tuple, TypeVar, Optional, cast, Any
 from collections.abc import Callable
+from solara.routing import Router
 from solara.toestand import Reactive
 
 from hubbleds.state import StudentMeasurement
@@ -319,3 +320,7 @@ def _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att):
 def subset_by_label(data, label):
         value = next((s for s in data.subsets if s.label == label), None)
         return value
+
+
+def push_to_route(router: Router, route: str):
+    router.push(f"{router.root_path}/{route}") 
