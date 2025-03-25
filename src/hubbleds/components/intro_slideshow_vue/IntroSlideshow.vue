@@ -1013,6 +1013,7 @@ module.exports = {
 
   watch: {
     step(val) {
+      this.set_step(val);
       this.target = '';
       if (val >= 3 && val <= 5) {
         const index = val - 3;

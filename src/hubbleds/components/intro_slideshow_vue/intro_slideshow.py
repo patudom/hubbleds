@@ -1,7 +1,7 @@
 
 import solara
 import reacton.ipyvuetify as rv
-
+INTRO_SLIDESHOW_LENGTH = 8
 @solara.component_vue("IntroSlideshow.vue")
 def IntroSlideshowVue(
     step,

@@ -14,6 +14,9 @@ from ..utils import IMAGE_BASE_URL
 from hubbleds.layout import Layout
 from cosmicds.logger import setup_logger
 
+from cosmicds.components import StateEditor
+from .component_state import COMPONENT_STATE, IntroSlideshow, Marker
+
 logger = setup_logger("STAGE INTRO")
 
 @solara.component
@@ -39,8 +42,10 @@ def Page():
         tool.go_to_coordinates(coordinates, fov=fov, instant=instant)
 
     speech = Ref(GLOBAL_STATE.fields.speech)
+    step = Ref(COMPONENT_STATE.fields.intro_slideshow_state.step)
     IntroSlideshowVue(
-        step = 0,
+        step = step.value,
+        event_set_step=step.set,
         length = 8,
         titles = [
             "Our Place in the Universe",
