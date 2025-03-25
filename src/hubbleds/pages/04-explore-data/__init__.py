@@ -225,8 +225,11 @@ def Page():
             )
             return
     else:
-        if class_ready_task.pending:
-            class_ready_task.cancel()
+        try:
+            if class_ready_task.pending:
+                class_ready_task.cancel()
+        except RuntimeError:
+            pass
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
