@@ -11,6 +11,7 @@ from glue_jupyter.app import JupyterApplication
 from numbers import Number
 from typing import List, Set, Tuple, TypeVar, Optional, cast, Any
 from collections.abc import Callable
+from solara.tasks import Task, _CancelledErrorInOurTask
 from solara.toestand import Reactive
 
 from hubbleds.state import StudentMeasurement
