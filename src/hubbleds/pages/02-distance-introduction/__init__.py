@@ -85,7 +85,7 @@ def Page():
             "mc_score_2": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "how-much-closer-galaxies"), 
             "score_tag_2": "how-much-closer-galaxies",
         },
-        event_slideshow_finished=lambda _: push_to_route(route, "03-distance-measurements"),
+        event_slideshow_finished=lambda _: push_to_route(router, "03-distance-measurements"),
         debug = LOCAL_STATE.value.debug_mode,
         speech=speech.value.model_dump(),
     )
