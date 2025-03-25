@@ -39,12 +39,14 @@ from ...data_management import (
 import numpy as np
 from glue.core import Data
 from hubbleds.utils import (
-    models_to_glue_data, 
+    models_to_glue_data,
+    push_to_route, 
     velocity_from_wavelengths, 
     v2w, w2v, sync_reactives,
     _add_or_update_data,
     _add_link,
-    subset_by_label
+    subset_by_label,
+    get_image_path,
 )
 from hubbleds.example_measurement_helpers import (
     create_example_subsets,
@@ -274,7 +276,7 @@ def Page():
                                                    galaxy=measurement.galaxy,
                                                    velocity_value=measurement.velocity_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        router.push("02-distance-introduction")
+        push_to_route(router, f"02-distance-introduction")
 
     def _select_random_galaxies():
         need = 5 - len(LOCAL_STATE.value.measurements)
@@ -760,7 +762,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: router.push("02-distance-introduction"),
+                event_next_callback=lambda _: push_to_route(router, "02-distance-introduction"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),
@@ -1384,13 +1386,16 @@ def Page():
                             SpectrumSlideshow(
                                 event_dialog_opened_callback=lambda _: spectrum_tutorial_opened.set(
                                     True
-                                )
+                                ),
+                                image_location=get_image_path(router, "stage_one_spectrum")
                             )
                 
                 if COMPONENT_STATE.value.current_step_at_or_after(Marker.ref_dat1): # space 2 buttons nicely
                     with rv.Row():
                         with rv.Col(cols=4, offset=2):
-                            SpectrumSlideshow()
+                            SpectrumSlideshow(
+                                image_location=get_image_path(router, "stage_one_spectrum")
+                            )
                         with rv.Col(cols=4):
                             show_reflection_dialog = Ref(
                                 COMPONENT_STATE.fields.show_reflection_dialog

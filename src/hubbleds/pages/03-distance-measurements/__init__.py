@@ -50,7 +50,9 @@ from hubbleds.utils import (
     distance_from_angular_size,
     models_to_glue_data,
     _add_or_update_data, _add_link,
-    subset_by_label
+    push_to_route,
+    subset_by_label,
+    get_image_path
     )
 
 from hubbleds.widgets.distance_tool.distance_tool import DistanceTool
@@ -301,7 +303,7 @@ def Page():
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
-        router.push("04-explore-data")
+        push_to_route(router, "04-explore-data")
 
     def _fill_thetas():
         dummy_measurements = LOCAL_API.get_dummy_data()
@@ -666,7 +668,8 @@ def Page():
                     AngsizeDosDontsSlideshow(
                         event_on_dialog_opened=lambda *args: dosdonts_tutorial_opened.set(
                             True
-                        )
+                        ),
+                        image_location = get_image_path(router, "stage_two_dos_donts")
                     )
 
     with solara.ColumnsResponsive(12, large=[4,8]):
@@ -744,7 +747,7 @@ def Page():
                 solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
-                event_next_callback=lambda _: router.push("04-explore-data"),
+                event_next_callback=lambda _: push_to_route(router, "04-explore-data"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.fil_rem1),
