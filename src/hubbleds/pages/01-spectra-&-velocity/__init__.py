@@ -187,7 +187,10 @@ def Page():
                 )[1]
 
             for component in data.main_components:
-                update[component.label].append(getattr(measurement, component.label, None))
+                value = getattr(measurement, component.label, None)
+                if value is None:
+                    value = float('nan')
+                update[component.label].append(value)
 
         new_data = Data(label=data.label, **update)
         data.update_values_from_data(new_data)

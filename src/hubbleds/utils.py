@@ -321,6 +321,5 @@ def subset_by_label(data, label):
         value = next((s for s in data.subsets if s.label == label), None)
         return value
 
-
 def push_to_route(router: Router, route: str):
     router.push(f"{router.root_path}/{route}") 

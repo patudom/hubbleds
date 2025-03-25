@@ -282,6 +282,10 @@ footer .v-card__text {
     color: #fff !important;
 }
 
+.toolbar .theme--light.v-btn.v-btn--disabled .v-icon {
+    color: hsla(0, 0%, 100%, .3) !important;
+}
+
 /* Hides the wavelength marker on the x-axis */
 /* div.plotly .hoverlayer g.axistext {
     display: none;
@@ -315,6 +319,10 @@ div.plotly .hoverlayer g.hovertext {
 .emergency-button {
     background-color: #CCCCCC !important;
     color: black !important;
+}
+
+.outline-warning {
+    border: 1px solid var(--warning) !important;
 }
 
 .student-warning.v-alert {
