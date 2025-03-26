@@ -44,7 +44,7 @@
             if (step === length-1) 
               { 
                 on_slideshow_finished();
-                step = 0;  
+                set_step(0);  
               }
           }"
         >
@@ -383,7 +383,7 @@
               :disabled="n > max_step_completed + 2"
               :input-value="active"
               icon
-              @click="toggle"
+              @click="toggle; set_step(n-1);"
             >
               <v-icon>mdi-record</v-icon>
             </v-btn>
