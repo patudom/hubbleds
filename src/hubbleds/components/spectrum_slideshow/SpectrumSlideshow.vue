@@ -415,7 +415,7 @@
                         <v-img
                           class="mx-a"
                           contain
-                          :src="`${image_location}/stsci_spectrum_element_montage.png`"
+                          :src="`${image_location}/stsci_spectrum_element_montage.jpg`"
                         ></v-img>
                       </v-col>
                       <v-col cols="2" class="d-flex flex-column" height="100%">

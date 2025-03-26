@@ -74,8 +74,8 @@
               </v-col>
               <v-col cols="12" lg="7" align="center">
                 <v-img
-                  :lazy-src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.png`"
-                  :src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.png`"
+                  :lazy-src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.jpg`"
+                  :src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.jpg`"
                   alt="Colorful image of our Milky Way galaxy in the sky over a dark silhouette of mountains on the horizon."
                   max-height = "550"
                   contain
@@ -116,8 +116,8 @@
                   <v-col cols="6" lg="12">
                     <v-img
                       position="center center"
-                      :lazy-src="`${image_location}/HST-SM4.png`"
-                      :src="`${image_location}/HST-SM4.png`"  
+                      :lazy-src="`${image_location}/HST-SM4.jpeg`"
+                      :src="`${image_location}/HST-SM4.jpeg`"  
                       alt="The Hubble Space Telescope against a dark background"
                       max-height = "250"
                       contain
@@ -125,8 +125,8 @@
                   </v-col>
                   <v-col cols="6" lg="12">
                     <v-img
-                      :lazy-src="`${image_location}/EdwinHubble.png`"
-                      :src="`${image_location}/EdwinHubble.png`"
+                      :lazy-src="`${image_location}/EdwinHubble.jpg`"
+                      :src="`${image_location}/EdwinHubble.jpg`"
                       alt="Astronomer Edwin Hubble holding an image of the Andromeda Galaxy"
                       max-height = "250"
                       contain
@@ -160,8 +160,8 @@
                 <v-row>
                   <v-col cols="12">
                     <v-img
-                      :lazy-src="`${image_location}/Astronomer_Edward_Charles_Pickering's_Harvard_computers.png`"
-                      :src="`${image_location}/Astronomer_Edward_Charles_Pickering's_Harvard_computers.png`"
+                      :lazy-src="`${image_location}/Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg`"
+                      :src="`${image_location}/Astronomer_Edward_Charles_Pickering's_Harvard_computers.jpg`"
                       alt="Eight women astronomers, wearing late 1800s clothing and hairstyles, are sitting or standing in a room. Some are observing astronomical images with magnifying glasses. Some are writing in notebooks."
                       max-height="300"
                       contain
@@ -746,8 +746,8 @@
               <v-col cols= "8">
                 <v-row class="pb-3">
                   <v-img
-                    :lazy-src="`${image_location}/Leavitt_at_work.png`"
-                    :src="`${image_location}/Leavitt_at_work.png`"
+                    :lazy-src="`${image_location}/Leavitt_at_work.jpg`"
+                    :src="`${image_location}/Leavitt_at_work.jpg`"
                       alt="Photograph of Henrietta Leavitt writing in a notebook. Several other notes are open neatly around her desk. "
                       max-height = "350"
                       contain
@@ -778,8 +778,8 @@
                 </v-row>
                 <v-row>
                   <v-img
-                    :lazy-src="`${image_location}/HSLeavittHSCr13Fig2_1912.png`"
-                    :src="`${image_location}/HSLeavittHSCr13Fig2_1912.png`"
+                    :lazy-src="`${image_location}/HSLeavittHSCr13Fig2_1912.jpeg`"
+                    :src="`${image_location}/HSLeavittHSCr13Fig2_1912.jpeg`"
                     alt="A graph depicting stellar magnitude on the y-axis and period in days on the x-axis. Two plots are shown that go from the bottom left to the upper right of the chart."
                     max-height = "200"
                     contain
@@ -817,8 +817,8 @@
               </v-col>
               <v-col cols="5">
                 <v-img
-                  :lazy-src="`${image_location}/V.M.Slipher.png`"
-                  :src="`${image_location}/V.M.Slipher.png`"
+                  :lazy-src="`${image_location}/V.M.Slipher.gif`"
+                  :src="`${image_location}/V.M.Slipher.gif`"
                   alt="Portrait of Vesto Slipher"
                   max-height = "400"
                   contain
