@@ -1,7 +1,7 @@
 import solara
 import enum
 
-from pydantic import field_validator, computed_field
+from pydantic import field_validator, Field, computed_field
 
 from cosmicds.state import BaseState
 from hubbleds.base_marker import BaseMarker 
@@ -59,13 +59,14 @@ class ComponentState(BaseComponentState, BaseState):
     meas_theta: float = 0.0
     ruler_click_count: int = 0
     n_meas: int = 0
-    bad_measurement: bool = False
+    bad_measurement: bool = Field(False, exclude=True)
     distances_total: int = 0
     fill_est_dist_values: bool = False
     
     show_dotplot_lines: bool = True
     angular_size_line: Optional[float | int] = None
     distance_line: Optional[float | int] = None
+    wwt_ready: bool = Field(False, exclude=True)
     
     @computed_field
     @property
@@ -79,6 +80,10 @@ class ComponentState(BaseComponentState, BaseState):
         if isinstance(v, int):
             return Marker(v)
         return v
+    
+    @property
+    def cho_row1_gate(self) -> bool:
+        return self.wwt_ready    
 
     @property
     def ang_siz2_gate(self):

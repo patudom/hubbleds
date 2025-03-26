@@ -11,6 +11,7 @@ from glue_jupyter.app import JupyterApplication
 from numbers import Number
 from typing import List, Set, Tuple, TypeVar, Optional, cast, Any
 from collections.abc import Callable
+from solara.routing import Router
 from solara.toestand import Reactive
 
 from hubbleds.state import StudentMeasurement
@@ -59,6 +60,9 @@ PLOTLY_MARGINS = {"l": 60, "r": 20, "t": 20, "b": 60}
 
 IMAGE_BASE_URL = "https://cosmicds.github.io/cds-website/hubbleds_images"
 
+IMAGE_BASE_STATIC_PATH = "/static/public"
+def get_image_path(router, sub_path):
+    return f"{router.root_path}{IMAGE_BASE_STATIC_PATH}/{sub_path}"
 
 def angle_to_json(angle, _widget):
     return {"value": angle.value, "unit": angle.unit.name}
@@ -298,6 +302,8 @@ def _add_or_update_data(gjapp: JupyterApplication, data: Data):
         gjapp.data_collection.append(data)
         return data
     
+from cosmicds.utils import basic_link_exists
+    
 def _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att):
     if isinstance(from_dc_name, Data):
         from_dc = from_dc_name
@@ -308,8 +314,12 @@ def _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att):
         to_dc = to_dc_name
     else:
         to_dc = gjapp.data_collection[to_dc_name]
-    gjapp.add_link(from_dc, from_att, to_dc, to_att)
+    if not basic_link_exists(gjapp.data_collection, from_dc.id[from_att], to_dc.id[to_att]):
+        gjapp.add_link(from_dc, from_att, to_dc, to_att)
     
 def subset_by_label(data, label):
         value = next((s for s in data.subsets if s.label == label), None)
         return value
+
+def push_to_route(router: Router, route: str):
+    router.push(f"{router.root_path}/{route}") 

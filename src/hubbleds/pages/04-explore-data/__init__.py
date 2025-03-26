@@ -19,7 +19,7 @@ from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_mu
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS
+from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS, get_image_path, push_to_route
 
 from cosmicds.logger import setup_logger
 
@@ -52,6 +52,8 @@ def Page():
     clear_drawn_line = solara.use_reactive(0)
     clear_fit_line = solara.use_reactive(0)
 
+    skip_waiting_room, set_skip_waiting_room = solara.use_state(False)
+
     # LOCAL_API.update_class_size(GLOBAL_STATE)
 
     async def _load_component_state():
@@ -61,6 +63,15 @@ def Page():
 
         # TODO: What else to we need to do here?
         logger.info("Finished loading component state for stage 4.")
+
+        value = LOCAL_STATE.value.enough_students_ready \
+                or \
+                (check_completed_students_count() >= 12)
+
+        Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
+        set_skip_waiting_room(value)
+        if value:
+            _on_waiting_room_advance()
         loaded_component_state.set(True)
 
     solara.lab.use_task(_load_component_state)
@@ -124,7 +135,6 @@ def Page():
     def load_class_data():
         logger.info("Loading class data")
         class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
-        logger.info(len(class_measurements))
         measurements = Ref(LOCAL_STATE.fields.class_measurements)
         student_ids = Ref(LOCAL_STATE.fields.stage_4_class_data_students)
         if not class_measurements:
@@ -181,7 +191,8 @@ def Page():
     class_ready_task = solara.lab.use_task(keep_checking_class_data, dependencies=[])
 
     def _on_waiting_room_advance():
-        class_ready_task.cancel()
+        if class_ready_task.pending:
+            class_ready_task.cancel()
         load_class_data()
         transition_next(COMPONENT_STATE)
 
@@ -197,7 +208,7 @@ def Page():
         load_class_data()
 
     def _jump_stage_5():
-        router.push("05-class-results-uncertainty")
+        push_to_route(router, "05-class-results-uncertainty")
 
     with solara.Row():
         with solara.Column():
@@ -206,19 +217,19 @@ def Page():
             solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
 
     if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
-        Stage4WaitingScreen(
-            completed_count=completed_count.value,
-            can_advance=LOCAL_STATE.value.enough_students_ready,
-            on_advance_click=_on_waiting_room_advance,
-        )
-        return
+        if not skip_waiting_room:
+            Stage4WaitingScreen(
+                completed_count=completed_count.value,
+                can_advance=LOCAL_STATE.value.enough_students_ready,
+                on_advance_click=_on_waiting_room_advance,
+            )
+            return
     else:
         try:
-            class_ready_task.cancel()
+            if class_ready_task.pending:
+                class_ready_task.cancel()
         except RuntimeError:
             pass
-
-    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -399,7 +410,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",
-                event_next_callback=lambda _: router.push("05-class-results-uncertainty"),
+                event_next_callback=lambda _: push_to_route(router, "05-class-results-uncertainty"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),
@@ -541,7 +552,7 @@ def Page():
                             "mc_score": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "race-age"),
                             "score_tag": "race-age"
                         },
-                        
+                        image_location=get_image_path(router,"stage_three"),
                         event_set_dialog=dialog.set,
                         event_set_step=step.set,
                         event_set_max_step_completed=max_step_completed.set,

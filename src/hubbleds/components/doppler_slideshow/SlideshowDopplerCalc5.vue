@@ -885,7 +885,7 @@
                 storeStudentVel(parseAnswer(['speed_light']), [lambda_obs, lambda_rest]);
                 set_step(step + 1);
               }
-          }"
+            }"
         >
           {{ (max_step_completed_5 <= 4) ? 'calculate' : 'next'}}
         </v-btn>

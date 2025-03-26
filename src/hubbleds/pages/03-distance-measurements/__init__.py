@@ -50,7 +50,9 @@ from hubbleds.utils import (
     distance_from_angular_size,
     models_to_glue_data,
     _add_or_update_data, _add_link,
-    subset_by_label
+    push_to_route,
+    subset_by_label,
+    get_image_path
     )
 
 from hubbleds.widgets.distance_tool.distance_tool import DistanceTool
@@ -101,9 +103,11 @@ def DistanceToolComponent(galaxy,
                           bad_measurement_callback,
                           brightness_callback,
                           reset_canvas,
-                          sdss_counter,
+                          background_counter,
                           guard_range
                           ):
+
+    wwt_ready = Ref(COMPONENT_STATE.fields.wwt_ready)
     tool = DistanceTool.element()
 
     def set_selected_galaxy():
@@ -146,8 +150,17 @@ def DistanceToolComponent(galaxy,
     
     solara.use_effect(_reset_canvas, [reset_canvas])
 
+    def _setup_wait_for_ready():
+        widget = cast(DistanceTool, solara.get_widget(tool))
+        if widget.wwt_ready:
+            wwt_ready.set(True)
+        else:
+            widget.observe(lambda change: wwt_ready.set(change["new"]), names="wwt_ready")
+
+    solara.use_effect(_setup_wait_for_ready, [])
+
     def _define_callbacks():
-        widget = cast(DistanceTool,solara.get_widget(tool))
+        widget = cast(DistanceTool, solara.get_widget(tool))
 
         def update_angular_size(change):
             if widget.measuring:
@@ -170,16 +183,15 @@ def DistanceToolComponent(galaxy,
             
         widget.observe(update_brightness, ["brightness"])
 
-        sdss_counter.subscribe(lambda _count: widget.set_background())
+        background_counter.subscribe(lambda _count: widget.set_background())
 
-    solara.use_effect(_define_callbacks, [])
+    solara.use_effect(_define_callbacks, [wwt_ready.value])
     
     
 
 @solara.component
 def Page():
     solara.Title("HubbleDS")
-    print("Stage 3")
     
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
@@ -291,7 +303,7 @@ def Page():
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
-        router.push("04-explore-data")
+        push_to_route(router, "04-explore-data")
 
     def _fill_thetas():
         dummy_measurements = LOCAL_API.get_dummy_data()
@@ -383,6 +395,7 @@ def Page():
                 count.set(count.value + 1)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
+        _glue_data_setup()
    
         
     @computed
@@ -425,6 +438,7 @@ def Page():
                 Ref(LOCAL_STATE.fields.measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
+        _glue_data_setup()
     
     ang_size_dotplot_range = solara.use_reactive([])
     dist_dotplot_range = solara.use_reactive([])
@@ -433,7 +447,7 @@ def Page():
     
     @computed
     def sync_dotplot_axes():
-        return Ref(COMPONENT_STATE.fields.current_step_between).value(Marker.dot_seq1, Marker.dot_seq4a)
+        return Ref(COMPONENT_STATE.fields.current_step_between).value(Marker.dot_seq1, Marker.dot_seq5c)
     
     def setup_zoom_sync():
         
@@ -530,6 +544,7 @@ def Page():
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE), 
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
+                scroll_on_mount=False,
                 show=COMPONENT_STATE.value.is_current_step(Marker.dot_seq5),
             )
             ScaffoldAlert(
@@ -633,7 +648,7 @@ def Page():
                 use_guard=True,
                 brightness_callback=brightness_callback,
                 reset_canvas=reset_canvas.value,
-                sdss_counter=distance_tool_bg_count,
+                background_counter=distance_tool_bg_count,
                 guard_range=example_guard_range if on_example_galaxy_marker.value else normal_guard_range
             )
             
@@ -653,7 +668,8 @@ def Page():
                     AngsizeDosDontsSlideshow(
                         event_on_dialog_opened=lambda *args: dosdonts_tutorial_opened.set(
                             True
-                        )
+                        ),
+                        image_location = get_image_path(router, "stage_two_dos_donts")
                     )
 
     with solara.ColumnsResponsive(12, large=[4,8]):
@@ -731,7 +747,7 @@ def Page():
                 solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
-                event_next_callback=lambda _: router.push("04-explore-data"),
+                event_next_callback=lambda _: push_to_route(router, "04-explore-data"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.fil_rem1),
@@ -979,7 +995,10 @@ def Page():
                         # get angular size dotplot range
                         df1 = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'].to_dataframe()["ang_size_value"].to_numpy()
                         df2 = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS].to_dataframe()
-                        df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
+                        if COMPONENT_STATE.value.current_step < Marker.dot_seq5:
+                            df2 = df2[df2['measurement_number']=='first']["ang_size_value"].to_numpy()
+                        else:
+                            df2 = df2["ang_size_value"].to_numpy()
                         df = np.concatenate((df1, df2))
                         ang_min = np.min(df)*0.9
                         ang_max = np.max(df)*1.1

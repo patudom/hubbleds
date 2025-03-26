@@ -22,7 +22,7 @@ from hubbleds.base_component_state import transition_next, transition_previous
 from hubbleds.components import UncertaintySlideshow, IdSlider
 from hubbleds.tools import *  # noqa
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, ClassSummary, StudentMeasurement, StudentSummary, get_free_response, get_multiple_choice, mc_callback, fr_callback
-from hubbleds.utils import create_single_summary, make_summary_data, models_to_glue_data
+from hubbleds.utils import create_single_summary, make_summary_data, models_to_glue_data, get_image_path, push_to_route
 from hubbleds.viewers.hubble_histogram_viewer import HubbleHistogramView
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
@@ -388,7 +388,7 @@ def Page():
     add_callback(line_fit_tool, 'active',  _on_best_fit_line_shown)
 
     def _jump_stage_6():
-        router.push("06-prodata")
+        push_to_route(router, "06-prodata")
 
     with solara.Row():
         with solara.Column():
@@ -620,6 +620,7 @@ def Page():
                             free_responses=[get_free_response(LOCAL_STATE, COMPONENT_STATE,'shortcoming-4'), get_free_response(LOCAL_STATE, COMPONENT_STATE,'systematic-uncertainty')],
                             event_set_step=uncertainty_step.set,
                             event_set_max_step_completed=uncertainty_max_step_completed.set,
+                            image_location=get_image_path(router,"stage_five")   
                         )
             
     #--------------------- Row 3: ALL DATA HUBBLE VIEWER - during class sequence -----------------------
@@ -688,6 +689,7 @@ def Page():
                         free_responses=[get_free_response(LOCAL_STATE, COMPONENT_STATE,'shortcoming-4'), get_free_response(LOCAL_STATE, COMPONENT_STATE,'systematic-uncertainty')],
                         event_set_step=uncertainty_step.set,
                         event_set_max_step_completed=uncertainty_max_step_completed.set,
+                        image_location=get_image_path(router,"stage_five")
                 )
 
     #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------
@@ -903,7 +905,7 @@ def Page():
                 ScaffoldAlert(
                     # TODO: event_next_callback should go to next stage but I don't know how to set that up.
                     GUIDELINE_ROOT / "GuidelineMoreDataDistribution.vue",
-                    event_next_callback=lambda _: router.push("06-prodata"),
+                    event_next_callback=lambda _: push_to_route(router, "06-prodata"),
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.mor_dat1),

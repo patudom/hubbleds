@@ -39,12 +39,14 @@ from ...data_management import (
 import numpy as np
 from glue.core import Data
 from hubbleds.utils import (
-    models_to_glue_data, 
+    models_to_glue_data,
+    push_to_route, 
     velocity_from_wavelengths, 
     v2w, w2v, sync_reactives,
     _add_or_update_data,
     _add_link,
-    subset_by_label
+    subset_by_label,
+    get_image_path,
 )
 from hubbleds.example_measurement_helpers import (
     create_example_subsets,
@@ -185,7 +187,10 @@ def Page():
                 )[1]
 
             for component in data.main_components:
-                update[component.label].append(getattr(measurement, component.label, None))
+                value = getattr(measurement, component.label, None)
+                if value is None:
+                    value = float('nan')
+                update[component.label].append(value)
 
         new_data = Data(label=data.label, **update)
         data.update_values_from_data(new_data)
@@ -271,7 +276,7 @@ def Page():
                                                    galaxy=measurement.galaxy,
                                                    velocity_value=measurement.velocity_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        router.push("02-distance-introduction")
+        push_to_route(router, f"02-distance-introduction")
 
     def _select_random_galaxies():
         need = 5 - len(LOCAL_STATE.value.measurements)
@@ -757,7 +762,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: router.push("02-distance-introduction"),
+                event_next_callback=lambda _: push_to_route(router, "02-distance-introduction"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),
@@ -1026,42 +1031,43 @@ def Page():
                 )
 
 
-            with rv.Col(cols=12, lg=8, class_="no-y-padding"):
-                                        
-                if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                    viewer_data = [
-                        gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
-                        gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-                    ]
-                    
-                    if COMPONENT_STATE.value.current_step.value != Marker.rem_vel1.value:
-                        ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "second measurement")]
-                    else:
-                        ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "first measurement")]
-                    ignore += [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
-                    DotplotViewer(
-                        gjapp,
-                        title="Dotplot: Example Galaxy Velocities",
-                        data=viewer_data,
-                        component_id=DB_VELOCITY_FIELD,
-                        vertical_line_visible=show_synced_lines.value,
-                        line_marker_at=sync_velocity_line.value,
-                        line_marker_color=LIGHT_GENERIC_COLOR,
-                        on_click_callback=dotplot_click_callback,
-                        unit="km / s",
-                        x_label="Velocity (km/s)",
-                        y_label="Count",
-                        nbin=30,
-                        nbin_func=nbin_func,
-                        x_bounds=dotplot_bounds.value,
-                        on_x_bounds_changed=dotplot_bounds.set,
-                        reset_bounds=list(
-                            map(
-                                sync_example_wavelength_to_velocity,
-                                # bounds of example galaxy spectrum
-                                [3796.6455078125, 9187.5576171875])),
-                        hide_layers=ignore,  # type: ignore
-                    )
+            if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1):
+                with rv.Col(cols=12, lg=8, class_="no-y-padding"):
+                                            
+                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                        viewer_data = [
+                            gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
+                            gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
+                        ]
+                        
+                        if COMPONENT_STATE.value.current_step.value != Marker.rem_vel1.value:
+                            ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "second measurement")]
+                        else:
+                            ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "first measurement")]
+                        ignore += [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
+                        DotplotViewer(
+                            gjapp,
+                            title="Dotplot: Example Galaxy Velocities",
+                            data=viewer_data,
+                            component_id=DB_VELOCITY_FIELD,
+                            vertical_line_visible=show_synced_lines.value,
+                            line_marker_at=sync_velocity_line.value,
+                            line_marker_color=LIGHT_GENERIC_COLOR,
+                            on_click_callback=dotplot_click_callback,
+                            unit="km / s",
+                            x_label="Velocity (km/s)",
+                            y_label="Count",
+                            nbin=30,
+                            nbin_func=nbin_func,
+                            x_bounds=dotplot_bounds.value,
+                            on_x_bounds_changed=dotplot_bounds.set,
+                            reset_bounds=list(
+                                map(
+                                    sync_example_wavelength_to_velocity,
+                                    # bounds of example galaxy spectrum
+                                    [3796.6455078125, 9187.5576171875])),
+                            hide_layers=ignore,  # type: ignore
+                        )
 
     # Spectrum Viewer row
     if COMPONENT_STATE.value.current_step_between(Marker.mee_spe1, Marker.che_mea1) or COMPONENT_STATE.value.current_step_between(Marker.dot_seq4, Marker.rem_vel1) or COMPONENT_STATE.value.current_step_at_or_after(Marker.rem_gal1):
@@ -1232,11 +1238,11 @@ def Page():
                                     update={"obs_wave_value": round(value), "velocity_value": velocity}
                                 )
                             )
-                        example_measurements[example_measurement_index] = example_measurement.value
-                        Ref(LOCAL_STATE.fields.example_measurements).set(example_measurements)
+                        # example_measurements[example_measurement_index] = example_measurement.value
+                        # Ref(LOCAL_STATE.fields.example_measurements).set(example_measurements)
                         obs_wave_tool_used.set(True)
-                        obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
-                        obs_wave.set(value)
+                        # obs_wave = Ref(COMPONENT_STATE.fields.obs_wave)
+                        # obs_wave.set(value)
                         
                     def _on_set_marker_location(value):
                         logger.info('Setting marker location spectrum -> dotplot')
@@ -1380,13 +1386,16 @@ def Page():
                             SpectrumSlideshow(
                                 event_dialog_opened_callback=lambda _: spectrum_tutorial_opened.set(
                                     True
-                                )
+                                ),
+                                image_location=get_image_path(router, "stage_one_spectrum")
                             )
                 
                 if COMPONENT_STATE.value.current_step_at_or_after(Marker.ref_dat1): # space 2 buttons nicely
                     with rv.Row():
                         with rv.Col(cols=4, offset=2):
-                            SpectrumSlideshow()
+                            SpectrumSlideshow(
+                                image_location=get_image_path(router, "stage_one_spectrum")
+                            )
                         with rv.Col(cols=4):
                             show_reflection_dialog = Ref(
                                 COMPONENT_STATE.fields.show_reflection_dialog

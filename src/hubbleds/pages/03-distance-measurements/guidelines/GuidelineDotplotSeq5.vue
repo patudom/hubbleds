@@ -4,6 +4,7 @@
     @back="back_callback()"
     @next="next_callback()"
     :can-advance="can_advance"
+    :scroll-on-mount="scroll_on_mount"
   >
     <template #before-next>
         Remeasure galaxy angular size
