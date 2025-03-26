@@ -154,10 +154,10 @@ h4 {
     
 }
 
-.theme--dark .inline-guideline-button.tutorial {
+.theme--dark .inline-guideline-button {
     outline: 1px solid black;
 }
-.theme--light .inline-guideline-button.tutorial {
+.theme--light .inline-guideline-button {
     outline: 1px solid white;
 }
 
