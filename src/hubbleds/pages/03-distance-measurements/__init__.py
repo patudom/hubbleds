@@ -763,13 +763,13 @@ def Page():
                     count = 0
                     has_ang_size = all(measurement.ang_size_value is not None for measurement in dataset)
                     if not has_ang_size:
-                        logger.info("\n ======= Not all galaxies have angular sizes ======= \n")
+                        logger.error("\n ======= Not all galaxies have angular sizes ======= \n")
                     for measurement in dataset:
                         if measurement.galaxy is not None and measurement.ang_size_value is not None:
                             count += 1
                             _update_distance_measurement(False, measurement.galaxy.model_dump(), measurement.ang_size_value)
                         elif measurement.ang_size_value is None:
-                            logger.info(f"Galaxy {measurement.galaxy_id} has no angular size")
+                            logger.error(f"Galaxy {measurement.galaxy_id} has no angular size")
                     logger.info(f"fill_galaxy_distances: Filled {count} distances")
                     put_measurements(samples=False)
                     distances_total.set(count)
