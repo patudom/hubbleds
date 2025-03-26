@@ -64,9 +64,12 @@ def Page():
 
     speech = Ref(GLOBAL_STATE.fields.speech)
     step = Ref(COMPONENT_STATE.fields.intro_slideshow_state.step)
+    max_step = Ref(COMPONENT_STATE.fields.intro_slideshow_state.max_step_completed)
     IntroSlideshowVue(
         step = step.value,
         event_set_step=step.set,
+        max_step=max_step.value,
+        event_set_max_step=max_step.set,
         length = 8,
         titles = [
             "Our Place in the Universe",

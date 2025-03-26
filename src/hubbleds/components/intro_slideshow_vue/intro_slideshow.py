@@ -9,6 +9,8 @@ def IntroSlideshowVue(
     titles,
     image_location,
     event_set_step,
+    max_step,
+    event_set_max_step,
     event_slideshow_finished,
     debug,
     exploration_tool,
