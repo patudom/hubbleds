@@ -38,16 +38,10 @@ def Page():
 
     class_plot_data = solara.use_reactive([])
 
-    # Which data layers to display in plotly viewer
-    layers_enabled = solara.use_reactive((False, True))
-
     # Are the buttons available to press?
-    draw_enabled = solara.use_reactive(False)
-    fit_enabled = solara.use_reactive(False)
     draw_active = solara.use_reactive(False)
 
     # Are the plotly traces actively displayed?
-    display_best_fit_gal = solara.use_reactive(False)
     clear_class_layer = solara.use_reactive(0)
     clear_drawn_line = solara.use_reactive(0)
     clear_fit_line = solara.use_reactive(0)
@@ -209,6 +203,24 @@ def Page():
 
     def _jump_stage_5():
         push_to_route(router, "05-class-results-uncertainty")
+
+    current_step = Ref(COMPONENT_STATE.fields.current_step)
+
+    @solara.lab.computed
+    def draw_enabled():
+        return current_step.value >= Marker.tre_lin2
+
+    @solara.lab.computed
+    def fit_enabled():
+        return current_step.value >= Marker.bes_fit1
+
+    @solara.lab.computed
+    def display_best_fit_gal():
+        return current_step.value >= Marker.hyp_gal1
+
+    @solara.lab.computed
+    def layers_enabled():
+        return (current_step.value.is_between(Marker.tre_dat2, Marker.hub_exp1), True)
 
     with solara.Row():
         with solara.Column():
@@ -417,37 +429,16 @@ def Page():
             )
 
         def _on_marker_update(marker):
-            if marker.is_between(Marker.tre_dat2, Marker.hub_exp1):
-                layers_enabled.set((True, True))
-            else:
-                layers_enabled.set((False, True))
-
-            if marker >= Marker.tre_lin2:
-                draw_enabled.set(True)
-            else:
-                draw_enabled.set(False)
-
-            if marker >= Marker.bes_fit1:
-                fit_enabled.set(True)
-            else:
-                fit_enabled.set(False)
-
-            if marker >= Marker.hyp_gal1:
-                display_best_fit_gal.set(True)
-            else:
-                display_best_fit_gal.set(False)
-
             if marker is Marker.tre_lin1:
                 # What we really want is for the viewer to check if this layer is visible when it gets to this marker, and if so, clear it.
                 clear_class_layer.set(clear_class_layer.value + 1)
 
-            #This has the same issues as above.
+            # This has the same issues as above.
             if marker is Marker.age_uni1:
                 clear_drawn_line.set(clear_drawn_line.value + 1)
                 draw_active.set(False)
             
-            
-        Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_update)
+        current_step.subscribe(_on_marker_update)
 
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
