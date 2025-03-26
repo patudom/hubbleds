@@ -856,6 +856,7 @@ def Page():
                         "selected_indices": selected_galaxy_index.value,
                         "show_select": True,
                         "button_icon": "mdi-tape-measure",
+                        "button_tooltip": "Calculate & Fill Distances",
                         "show_button": Ref(COMPONENT_STATE.fields.current_step_at_or_after).value(Marker.fil_rem1),
                         "event_on_button_pressed": lambda _: fill_galaxy_distances()
                     }
