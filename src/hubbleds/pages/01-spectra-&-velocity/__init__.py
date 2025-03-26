@@ -895,6 +895,7 @@ def Page():
                         Marker.cho_row1
                     ),
                     button_icon="mdi-run-fast",
+                    button_tooltip="Calculate & Fill Velocities",
                     show_button=COMPONENT_STATE.value.is_current_step(
                         Marker.dop_cal6
                     ),
