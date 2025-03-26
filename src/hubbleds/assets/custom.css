@@ -150,6 +150,15 @@ h4 {
     color:white !important;
     border-radius: 5px; 
     padding: 3px; 
+    padding-inline: 5px;
+    
+}
+
+.theme--dark .inline-guideline-button.tutorial {
+    outline: 1px solid black;
+}
+.theme--light .inline-guideline-button.tutorial {
+    outline: 1px solid white;
 }
 
 /* NOTE: .v-application based selectors will work, but often will need to be either !important or (also) have a higher specificity selector than the default Vuetify css. */
