@@ -440,6 +440,7 @@ module.exports = {
       freeResponses: [],
       frListener: null,
       listenerSetup: false,
+      requiredInteractSteps: [6],
     };
   },
 
@@ -451,6 +452,14 @@ module.exports = {
   methods: {
     getRoot() {
       return this.$refs.content.$el;
+    },
+    // Not terribly robust
+    isVisible(element) {
+      if (element.checkVisibility) {
+        return element.checkVisibility();
+      }
+      const rect = element.getBoundingClientRect();
+      return (rect.width != 0) && (rect.height != 0);
     },
     setupObserver() {
       if (this.listenerSetup) {
@@ -471,8 +480,7 @@ module.exports = {
           }
         });
         if (needUpdate) {
-          this.updateFreeResponseList();
-          this.updateDisableNext();
+          this.update();
         }
       });
       this.frObserver.observe(root, { childList: true, subtree: true });
@@ -490,7 +498,7 @@ module.exports = {
           frComponents[i] = frComponents[i].$parent;
         }
       }
-      this.freeResponses = frComponents;
+      this.freeResponses = frComponents.filter(fr => this.isVisible(fr.$el));
 
       if (this.freeResponses.length > 0 && this.frListener === null) {
         this.frListener = (_event) => {
@@ -502,6 +510,11 @@ module.exports = {
 
     allFreeResponsesFilled() {
       return this.freeResponses.every(fr => fr.$refs.textarea.valid);
+    },
+
+    update() {
+      this.updateFreeResponseList();
+      this.updateDisableNext();
     },
 
     updateDisableNext() {
@@ -520,9 +533,10 @@ module.exports = {
 
   watch: {
     step(newStep, oldStep) {
-      const isInteractStep = this.freeResponses.length > 0;
       this.set_step(newStep);
-      this.set_max_step_completed(Math.max(this.max_step_completed, newStep - 1));
+      const isInteractStep = this.requiredInteractSteps.includes(newStep);
+      const newCompleted = isInteractStep ? newStep - 1 : newStep;
+      this.set_max_step_completed(Math.max(this.max_step_completed, newCompleted));
     },
     dialog(value) {
       if (value) {
