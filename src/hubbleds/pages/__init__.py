@@ -23,6 +23,27 @@ logger = setup_logger("STAGE INTRO")
 def Page():
     solara.Title("HubbleDS")
     router = solara.use_router()
+    
+    loaded_component_state = solara.use_reactive(False)
+    async def _load_component_state():
+        LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+        logger.info("Finished loading component state.")
+        loaded_component_state.set(True)
+
+    solara.lab.use_task(_load_component_state)
+
+    async def _write_component_state():
+        if not loaded_component_state.value:
+            return
+
+        # Listen for changes in the states and write them to the database
+        res = LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+        if res:
+            logger.info("Wrote component state to database.")
+        else:
+            logger.info("Did not write component state to database.")
+
+    solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
 
     exploration_tool = ExplorationTool()
     exploration_tool1 = ExplorationTool()
