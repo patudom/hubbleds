@@ -222,6 +222,14 @@ def Page():
     def layers_enabled():
         return (current_step.value.is_between(Marker.tre_dat2, Marker.hub_exp1), True)
 
+    best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
+    @solara.lab.computed
+    def line_label():
+        if current_step.value >= Marker.age_uni4:
+            return f"Age: {round(AGE_CONSTANT / best_fit_slope.value)}"
+        else:
+            return None
+
     with solara.Row():
         with solara.Column():
             StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
@@ -481,7 +489,8 @@ def Page():
                                     "mode": "markers",
                                     "marker": { "color": color, "size": size },
                                     "visible": visibility,    
-                                    "hoverinfo": "none"
+                                    "hoverinfo": "none",
+                                    "showlegend": False,
                                 } for data, color, size, visibility in zip(layers, colors, sizes, layers_visible)
                             ]
 
@@ -516,6 +525,7 @@ def Page():
                                            plot_margins=PLOTLY_MARGINS,
                                            draw_enabled=draw_enabled.value,
                                            fit_enabled=fit_enabled.value,
+                                           line_label=line_label.value,
                                            display_best_fit_gal=display_best_fit_gal.value,
                                            draw_active=draw_active,
                                            # Use student data for best fit galaxy

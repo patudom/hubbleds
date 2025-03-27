@@ -5,7 +5,10 @@
     @back="back_callback()"
     @next="() => {
       const expectedAnswers = [state_view.hypgal_distance, state_view.hypgal_velocity];
-      validateAnswersJS(['gal_distance', 'gal_velocity'], expectedAnswers) ? next_callback() : null;
+      const valid = validateAnswersJS(['gal_distance', 'gal_velocity'], expectedAnswers);
+      if (valid) {
+        next_callback();
+      }
     }"
     :can-advance="can_advance"
   >

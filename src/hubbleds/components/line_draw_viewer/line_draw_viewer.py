@@ -9,6 +9,7 @@ from hubbleds.viewer_marker_colors import GENERIC_COLOR
 def LineDrawPlot(chart_id: str,
                  draw_active: bool,
                  fit_active: bool=False,
+                 line_label: Optional[str]=None,
                  event_line_drawn: Optional[Callable]=None,
                  event_line_fit: Optional[Callable[[Dict],None]] = None,
                  plot_data: Optional[list[dict]]=None,
@@ -43,12 +44,13 @@ def LineDrawViewer(chart_id: str,
                    display_best_fit_gal: Optional[bool]=False,
                    best_fit_gal_layer_index: Optional[int]=None,
                    draw_active: Optional[Reactive[bool]]=None,
+                   line_label: Optional[str]=None,
 
                    # The particular values of these don't matter;
                    # we're essentially just using them as signals
-                   clear_class_layer: Optional[int]=False,
-                   clear_drawn_line: Optional[int]=False,
-                   clear_fit_line: Optional[int]=False,
+                   clear_class_layer: Optional[int]=0,
+                   clear_drawn_line: Optional[int]=0,
+                   clear_fit_line: Optional[int]=0,
 ):
 
     draw_active = draw_active or solara.use_reactive(False)
@@ -101,6 +103,7 @@ def LineDrawViewer(chart_id: str,
         LineDrawPlot(chart_id=chart_id,
                      draw_active=draw_active.value,
                      fit_active=fit_active.value,
+                     line_label=line_label,
                      event_line_drawn=on_line_drawn,
                      event_line_fit=on_line_fit,
                      plot_data=plot_data,
@@ -113,5 +116,5 @@ def LineDrawViewer(chart_id: str,
                      clear_class_layer=clear_class_layer,
                      clear_drawn_line = clear_drawn_line,
                      clear_fit_line = clear_fit_line,
-                     bfg_color = GENERIC_COLOR
+                     bfg_color=GENERIC_COLOR
         )

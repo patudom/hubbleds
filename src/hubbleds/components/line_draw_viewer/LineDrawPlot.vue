@@ -77,7 +77,7 @@ export default {
           },
 
         ],
-        layout: { xaxis, yaxis, hovermode: "none", dragmode: false, showlegend: false },
+        layout: { xaxis, yaxis, hovermode: "none", dragmode: false, showlegend: true },
         config: { displayModeBar: false, responsive: true },
       },
       element: null,
@@ -107,7 +107,8 @@ export default {
           shape: "line"
         },
         visible: false,
-        hoverinfo: "skip"
+        hoverinfo: "skip",
+        showlegend: this.line_label != null,
       };
     },
     screenToWorld(event) {
@@ -225,7 +226,7 @@ export default {
       const line = this.element.data[this.drawnLineTraceIndex];
       const x = line.x[1];
       const y = line.y[1];
-      Plotly.addTraces(this.chart_id, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: this.endpointSize, color: "#000000" }, hoverinfo: "none" });
+      Plotly.addTraces(this.chart_id, { x: [x], y: [y], type: "scatter", mode: "markers", marker: { size: this.endpointSize, color: "#000000" }, hoverinfo: "none", showlegend: false });
       this.lastEndpoint = [x, y];
       // Try storing actual endpoint trace index
       const chartElement = document.getElementById(this.chart_id);
@@ -358,7 +359,8 @@ export default {
               mode: "markers", 
               marker: { size: 14, color: this.bfg_color },
               visible: true,
-              hoverinfo: "skip"
+              hoverinfo: "skip",
+              showlegend: false,
             };
             Plotly.addTraces(this.chart_id, trace);
             // Store best fit galaxy trace index
@@ -396,6 +398,10 @@ export default {
       } catch (e) {
         console.warn(e);
       }        
+    },
+    line_label(value) {
+      const indices = this.fitLineTraceIndices.filter(idx => this.element.data[idx].visible);
+      Plotly.update(this.chart_id, { showlegend: value != null && value.length > 0, name: value }, indices);
     },
     movingLine(value) {
       if (value) {
