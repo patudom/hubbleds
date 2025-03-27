@@ -226,7 +226,7 @@ def Page():
     @solara.lab.computed
     def line_label():
         if current_step.value >= Marker.age_uni4:
-            return f"Age: {round(AGE_CONSTANT / best_fit_slope.value)}"
+            return f"Age: {round(AGE_CONSTANT / best_fit_slope.value)} Gyr"
         else:
             return None
 
