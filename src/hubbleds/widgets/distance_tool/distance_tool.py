@@ -129,6 +129,8 @@ class DistanceTool(v.VueTemplate):
 
     @observe('measuredDistance')
     def _on_measured_distance_changed(self, change):
+        if change["new"] == 0:
+            return
         fov = self.widget.get_fov()
         widget_height = self._height_from_pixel_str(self.widget.layout.height)
         ang_size = Angle(((change["new"] / widget_height) * fov))
