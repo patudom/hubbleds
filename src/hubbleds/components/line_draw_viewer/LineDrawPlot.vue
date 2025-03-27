@@ -373,9 +373,8 @@ export default {
         }
       } else if (this.bestFitGalaxyTraceIndex > 0) {
         try {
-          console.log(this.bestFitGalaxyTraceIndex);
           console.log("clearing best fit galaxy trace", this.bestFitGalaxyTraceIndex);
-          Plotly.update(this.chart_id, { visible: false }, {} [this.bestFitGalaxyTraceIndex]);
+          Plotly.update(this.chart_id, { visible: false }, {}, [this.bestFitGalaxyTraceIndex]);
         } catch (e) {
           console.warn(e);
         }

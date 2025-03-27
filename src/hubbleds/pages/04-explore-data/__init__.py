@@ -516,7 +516,7 @@ def Page():
                                            plot_margins=PLOTLY_MARGINS,
                                            draw_enabled=draw_enabled.value,
                                            fit_enabled=fit_enabled.value,
-                                           display_best_fit_gal = display_best_fit_gal.value,
+                                           display_best_fit_gal=display_best_fit_gal.value,
                                            draw_active=draw_active,
                                            # Use student data for best fit galaxy
                                            best_fit_gal_layer_index=1,
