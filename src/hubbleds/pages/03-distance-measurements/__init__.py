@@ -483,7 +483,7 @@ def Page():
 
     # Insurance policy
     async def _wwt_ready_timeout():
-        await asyncio.sleep(10)
+        await asyncio.sleep(7)
         Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
 
     solara.lab.use_task(_wwt_ready_timeout)
