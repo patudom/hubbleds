@@ -89,4 +89,5 @@ def Page():
         exploration_tool2=exploration_tool2,
         event_go_to_location=go_to_location,
         speech=speech.value.model_dump(),
+        show_team_interface=GLOBAL_STATE.value.show_team_interface
     )
