@@ -77,7 +77,19 @@ export default {
           },
 
         ],
-        layout: { xaxis, yaxis, hovermode: "none", dragmode: false, showlegend: true },
+        layout: {
+          xaxis,
+          yaxis,
+          hovermode: "none",
+          dragmode: false,
+          showlegend: true,
+          legend: {
+            xanchor: "left",
+            yanchor: "top",
+            x: 0.01,
+            y: 0.99,
+          }
+        },
         config: { displayModeBar: false, responsive: true },
       },
       element: null,
@@ -285,6 +297,8 @@ export default {
       }
     },
     setupPlotlyHandlers(draw_active) {
+      this.element.on("plotly_legendclick", (data) => false);
+      this.element.on("plotly_legenddoubleclick", (data) => false);
       if (draw_active) {
         this.element.on("plotly_click", this.plotlyClickHandler);
         this.element.on("plotly_hover", this.plotlyHoverHandler);
@@ -401,7 +415,7 @@ export default {
     },
     line_label(value) {
       const indices = this.fitLineTraceIndices.filter(idx => this.element.data[idx].visible);
-      Plotly.update(this.chart_id, { showlegend: value != null && value.length > 0, name: value }, indices);
+      Plotly.update(this.chart_id, { showlegend: value != null && value.length > 0, name: value }, {}, indices);
     },
     movingLine(value) {
       if (value) {
