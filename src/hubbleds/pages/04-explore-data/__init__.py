@@ -26,7 +26,7 @@ from cosmicds.logger import setup_logger
 logger = setup_logger("STAGE 4")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-
+show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 @solara.component
 def Page():
@@ -210,11 +210,12 @@ def Page():
     def _jump_stage_5():
         push_to_route(router, "05-class-results-uncertainty")
 
-    with solara.Row():
-        with solara.Column():
-            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
-        with solara.Column():
-            solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
+    if show_team_interface:
+        with solara.Row():
+            with solara.Column():
+                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+            with solara.Column():
+                solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
 
     if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
         if not skip_waiting_room:
@@ -558,4 +559,5 @@ def Page():
                         event_set_max_step_completed=max_step_completed.set,
                         event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                         event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
+                        show_team_interface=show_team_interface,
                     )

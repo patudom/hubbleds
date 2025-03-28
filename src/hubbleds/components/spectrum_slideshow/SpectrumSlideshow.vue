@@ -683,7 +683,7 @@
           next
         </v-btn>
         <v-btn
-          v-if="step < length-1"
+          v-if="step < length-1 && show_team_interface"
           class="demo-button"
           depressed
           @click="() => {

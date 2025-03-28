@@ -14,5 +14,6 @@ def AngsizeDosDontsSlideshow(
     currentTitle="Measurement Dos and Don'ts",
     image_location=f"{IMAGE_BASE_URL}/stage_two_dos_donts",
     event_on_dialog_opened=None,
+    show_team_interface=False,
 ):
     pass
