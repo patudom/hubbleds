@@ -64,7 +64,7 @@ def Page():
 
         Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
         set_skip_waiting_room(value)
-        if value:
+        if value and COMPONENT_STATE.value.current_step == Marker.wwt_wait:
             _on_waiting_room_advance()
         loaded_component_state.set(True)
 
@@ -185,6 +185,7 @@ def Page():
     class_ready_task = solara.lab.use_task(keep_checking_class_data, dependencies=[])
 
     def _on_waiting_room_advance():
+        print("\n\n\n=========Waiting room advance clicked=========\n\n\n")
         if class_ready_task.pending:
             class_ready_task.cancel()
         load_class_data()
