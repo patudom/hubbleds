@@ -141,7 +141,7 @@ export default {
     resizeObserver.observe(this.canvas);
   },
 
-  unmounted() {
+  beforeDestroy() {
     window.removeEventListener('resize', this.handleResize);
     resizeObserver.unobserve(this.canvas);
   },
