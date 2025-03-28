@@ -831,7 +831,7 @@
 
       <!-- first button below just being used for testing, delete when using live with students -->
       <v-btn
-        v-if="step < 12 && debug"
+        v-if="step < 12"
         class="demo-button"
         depressed
         @click="() => {
