@@ -346,6 +346,10 @@ div.plotly .hoverlayer g.hovertext {
     background-color: var(--primary);
 }
 
+.nav-top.v-list-item:after {
+    content: none;
+}
+
 .v-application .layer_toggle {
     border-color: black !important;
 }

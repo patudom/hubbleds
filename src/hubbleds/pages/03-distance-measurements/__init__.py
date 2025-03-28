@@ -1,6 +1,7 @@
 import solara
 from solara.lab import computed
 
+import asyncio
 import numpy as np
 
 from reacton import ipyvuetify as rv
@@ -105,11 +106,18 @@ def DistanceToolComponent(galaxy,
                           brightness_callback,
                           reset_canvas,
                           background_counter,
-                          guard_range
+                          guard_range,
+                          on_wwt_ready=None,
                           ):
 
-    wwt_ready = Ref(COMPONENT_STATE.fields.wwt_ready)
+    wwt_ready = solara.use_reactive(False)
     tool = DistanceTool.element()
+
+    def _on_wwt_ready(ready):
+        if ready and (on_wwt_ready is not None):
+            on_wwt_ready()
+
+    wwt_ready.subscribe(_on_wwt_ready)
 
     def set_selected_galaxy():
         widget = solara.get_widget(tool)
@@ -475,6 +483,13 @@ def Page():
     
     Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
 
+    # Insurance policy
+    async def _wwt_ready_timeout():
+        await asyncio.sleep(7)
+        Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
+
+    solara.lab.use_task(_wwt_ready_timeout)
+
     @computed
     def example_galaxy_measurement_number():
         if use_second_measurement.value:
@@ -649,7 +664,8 @@ def Page():
                 brightness_callback=brightness_callback,
                 reset_canvas=reset_canvas.value,
                 background_counter=distance_tool_bg_count,
-                guard_range=example_guard_range if on_example_galaxy_marker.value else normal_guard_range
+                guard_range=example_guard_range if on_example_galaxy_marker.value else normal_guard_range,
+                on_wwt_ready=lambda: Ref(COMPONENT_STATE.fields.wwt_ready).set(True),
             )
             
             if COMPONENT_STATE.value.bad_measurement:
