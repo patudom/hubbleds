@@ -26,7 +26,7 @@ from cosmicds.logger import setup_logger
 logger = setup_logger("STAGE 4")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-
+show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 @solara.component
 def Page():
@@ -230,11 +230,12 @@ def Page():
         else:
             return None
 
-    with solara.Row():
-        with solara.Column():
-            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
-        with solara.Column():
-            solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
+    if show_team_interface:
+        with solara.Row():
+            with solara.Column():
+                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+            with solara.Column():
+                solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
 
     if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
         if not skip_waiting_room:
@@ -255,6 +256,7 @@ def Page():
         with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineExploreData.vue",
+                event_back_callback=lambda _: push_to_route(router, "03-distance-measurements"),
                 event_next_callback = lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.exp_dat1),
@@ -559,4 +561,5 @@ def Page():
                         event_set_max_step_completed=max_step_completed.set,
                         event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                         event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
+                        show_team_interface=show_team_interface,
                     )

@@ -933,7 +933,7 @@
       </v-btn>
       <!-- first button below just being used for testing, delete when using live with students -->
       <v-btn
-        v-if="step < length-1"
+        v-if="step < length-1 && show_team_interface"
         class="demo-button"
         depressed
         @click="() => {
@@ -1013,6 +1013,10 @@ module.exports = {
 
   watch: {
     step(val) {
+      this.set_step(val);
+      if (val > this.max_step) {
+        this.set_max_step(val);
+      }
       this.target = '';
       if (val >= 3 && val <= 5) {
         const index = val - 3;

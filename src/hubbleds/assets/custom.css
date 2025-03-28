@@ -150,6 +150,15 @@ h4 {
     color:white !important;
     border-radius: 5px; 
     padding: 3px; 
+    padding-inline: 5px;
+    
+}
+
+.theme--dark .inline-guideline-button {
+    outline: 1px solid black;
+}
+.theme--light .inline-guideline-button {
+    outline: 1px solid white;
 }
 
 /* NOTE: .v-application based selectors will work, but often will need to be either !important or (also) have a higher specificity selector than the default Vuetify css. */
@@ -296,6 +305,10 @@ div.plotly .hoverlayer g.hovertext {
     /* display: none; */
 }
 
+.table-header-text {
+    font-size: 1.4em;
+    font-weight: bold;
+}
  
 
 .fr-unit-custom {
@@ -335,6 +348,10 @@ div.plotly .hoverlayer g.hovertext {
 .v-list-item-group .v-list-item--active:not(.layer_toggle .v-list-item--active) {
     color: white;
     background-color: var(--primary);
+}
+
+.nav-top.v-list-item:after {
+    content: none;
 }
 
 .v-application .layer_toggle {

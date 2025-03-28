@@ -62,6 +62,8 @@ GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 EXAMPLE_GALAXY_MEASUREMENTS_FIRST = EXAMPLE_GALAXY_MEASUREMENTS + '_first'
 EXAMPLE_GALAXY_MEASUREMENTS_SECOND = EXAMPLE_GALAXY_MEASUREMENTS + '_second'
 
+show_team_interface = GLOBAL_STATE.value.show_team_interface
+
 def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
     z_meas =  (measwave - restwave) / restwave
     fractional_difference = (((z_meas - z) / z)** 2)**0.5
@@ -415,20 +417,27 @@ def Page():
             selection_tool_bg_count.set(selection_tool_bg_count.value + 1)
 
     Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
-    
 
-    
-    with solara.Row():
-        with solara.Column():
-            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
-        with solara.Column():
-            solara.Button(label="Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_stage1_go_stage2, classes=["demo-button"])
-            solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies, classes=["demo-button"])
+    # Insurance policy
+    async def _wwt_ready_timeout():
+        await asyncio.sleep(7)
+        Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
+
+    solara.lab.use_task(_wwt_ready_timeout)
+
+    if show_team_interface:
+        with rv.Row():
+            with solara.Column():
+                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+            with solara.Column():
+                solara.Button(label="Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_stage1_go_stage2, classes=["demo-button"])
+                solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies, classes=["demo-button"])
 
     with rv.Row():
         with rv.Col(cols=12, lg=4):
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineIntro.vue",
+                event_back_callback=lambda _: push_to_route(router, "/"),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.mee_gui1),
@@ -566,7 +575,7 @@ def Page():
                 deselect_galaxy_callback=_deselect_galaxy_callback,
                 candidate_galaxy=selection_tool_candidate_galaxy.value,
                 on_wwt_ready=lambda: Ref(COMPONENT_STATE.fields.wwt_ready).set(True),
-            )
+            ) 
             
             if show_snackbar.value:
                 solara.Info(label=LOCAL_STATE.value.snackbar_message)        
@@ -704,6 +713,7 @@ def Page():
                         ),
                         "score_tag": "interpret-velocity",
                     },
+                    show_team_interface=show_team_interface,
                 )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
@@ -740,8 +750,9 @@ def Page():
                 },
                 speech=speech.value,
             )
-            if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
-                solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none;", classes=["demo-button"])
+            if show_team_interface:
+                if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
+                    solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none;", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineDopplerCalc6.vue",
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
@@ -895,6 +906,7 @@ def Page():
                         Marker.cho_row1
                     ),
                     button_icon="mdi-run-fast",
+                    button_tooltip="Calculate & Fill Velocities",
                     show_button=COMPONENT_STATE.value.is_current_step(
                         Marker.dop_cal6
                     ),
@@ -941,6 +953,7 @@ def Page():
                             COMPONENT_STATE.fields.show_dotplot_tutorial_dialog
                         ).set(v),
                         event_set_step = Ref(COMPONENT_STATE.fields.dotplot_tutorial_state.step).set,
+                        show_team_interface=show_team_interface,
                     )
                 
     # Dot Plot 1st measurement row
@@ -1387,14 +1400,16 @@ def Page():
                                 event_dialog_opened_callback=lambda _: spectrum_tutorial_opened.set(
                                     True
                                 ),
-                                image_location=get_image_path(router, "stage_one_spectrum")
+                                image_location=get_image_path(router, "stage_one_spectrum"),
+                                show_team_interface=show_team_interface,
                             )
                 
                 if COMPONENT_STATE.value.current_step_at_or_after(Marker.ref_dat1): # space 2 buttons nicely
                     with rv.Row():
                         with rv.Col(cols=4, offset=2):
                             SpectrumSlideshow(
-                                image_location=get_image_path(router, "stage_one_spectrum")
+                                image_location=get_image_path(router, "stage_one_spectrum"),
+                                show_team_interface=show_team_interface,
                             )
                         with rv.Col(cols=4):
                             show_reflection_dialog = Ref(
@@ -1446,4 +1461,5 @@ def Page():
                                 event_on_reflection_complete=lambda _: reflection_complete.set(
                                     True
                                 ),
+                                show_team_interface=show_team_interface,
                             )

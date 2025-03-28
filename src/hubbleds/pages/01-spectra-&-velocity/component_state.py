@@ -205,6 +205,10 @@ class ComponentState(BaseComponentState, BaseState):
     @property
     def ref_vel1_gate(self) -> bool:
         return self.velocities_total >= 5
+    
+    @property
+    def end_sta1_gate(self) -> bool:
+        return LOCAL_STATE.value.question_completed("reflect_vel_value")
 
     @property
     def nxt_stg_gate(self) -> bool:

@@ -85,13 +85,35 @@ def LineDrawViewer(chart_id: str,
             rv.Spacer()
 
             fit_button = solara.IconButton(
+                v_on="tooltip.on",
                 classes=["toolbar"], icon_name="mdi-chart-timeline-variant", on_click=_on_fit_clicked,
                 disabled=(not fit_enabled)
             )
 
             draw_button = solara.IconButton(
+                v_on="tooltip.on",
                 classes=["toolbar"], icon_name="mdi-message-draw", on_click=_on_draw_clicked, 
                 disabled=(not draw_enabled)
+            )
+            
+            rv.Tooltip(
+                top=True,
+                v_slots = [{
+                    "name": "activator",
+                    "variable": "tooltip",
+                    "children": rv.FabTransition(children=[fit_button])
+                }],
+                children = ["Show best fit line"]
+            )
+            
+            rv.Tooltip(
+                top=True,
+                v_slots = [{
+                    "name": "activator",
+                    "variable": "tooltip",
+                    "children": rv.FabTransition(children=[draw_button])
+                }],
+                children = ["Draw a line on the plot"]
             )
 
             # best_fit_button = solara.IconButton(

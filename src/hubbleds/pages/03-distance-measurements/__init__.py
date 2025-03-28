@@ -1,6 +1,7 @@
 import solara
 from solara.lab import computed
 
+import asyncio
 import numpy as np
 
 from reacton import ipyvuetify as rv
@@ -76,6 +77,7 @@ from hubbleds.example_measurement_helpers import (
 
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
+show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 logger = setup_logger("STAGE3")
 
@@ -104,11 +106,18 @@ def DistanceToolComponent(galaxy,
                           brightness_callback,
                           reset_canvas,
                           background_counter,
-                          guard_range
+                          guard_range,
+                          on_wwt_ready=None,
                           ):
 
-    wwt_ready = Ref(COMPONENT_STATE.fields.wwt_ready)
+    wwt_ready = solara.use_reactive(False)
     tool = DistanceTool.element()
+
+    def _on_wwt_ready(ready):
+        if ready and (on_wwt_ready is not None):
+            on_wwt_ready()
+
+    wwt_ready.subscribe(_on_wwt_ready)
 
     def set_selected_galaxy():
         widget = solara.get_widget(tool)
@@ -343,13 +352,12 @@ def Page():
     
     solara.use_effect(_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
 
-    with solara.Row():
-        with solara.Column():
-            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
-        with solara.Column():
-            solara.Button(label="Shortcut: Fill in distance data & Jump to Stage 4", on_click=_fill_data_points, classes=["demo-button"])
-    # StateEditor(Marker, cast(solara.Reactive[BaseState],COMPONENT_STATE), LOCAL_STATE, LOCAL_API, show_all=False)
-    
+    if show_team_interface:
+        with solara.Row():
+            with solara.Column():
+                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+            with solara.Column():
+                solara.Button(label="Shortcut: Fill in distance data & Jump to Stage 4", on_click=_fill_data_points, classes=["demo-button"])    
 
     def put_measurements(samples):
         if samples:
@@ -475,6 +483,13 @@ def Page():
     
     Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
 
+    # Insurance policy
+    async def _wwt_ready_timeout():
+        await asyncio.sleep(7)
+        Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
+
+    solara.lab.use_task(_wwt_ready_timeout)
+
     @computed
     def example_galaxy_measurement_number():
         if use_second_measurement.value:
@@ -486,6 +501,7 @@ def Page():
         with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAngsizeMeas1.vue",
+                event_back_callback=lambda _: push_to_route(router, "02-distance-introduction"),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.ang_siz1),
@@ -649,7 +665,8 @@ def Page():
                 brightness_callback=brightness_callback,
                 reset_canvas=reset_canvas.value,
                 background_counter=distance_tool_bg_count,
-                guard_range=example_guard_range if on_example_galaxy_marker.value else normal_guard_range
+                guard_range=example_guard_range if on_example_galaxy_marker.value else normal_guard_range,
+                on_wwt_ready=lambda: Ref(COMPONENT_STATE.fields.wwt_ready).set(True),
             )
             
             if COMPONENT_STATE.value.bad_measurement:
@@ -669,7 +686,8 @@ def Page():
                         event_on_dialog_opened=lambda *args: dosdonts_tutorial_opened.set(
                             True
                         ),
-                        image_location = get_image_path(router, "stage_two_dos_donts")
+                        image_location = get_image_path(router, "stage_two_dos_donts"),
+                        show_team_interface = show_team_interface,
                     )
 
     with solara.ColumnsResponsive(12, large=[4,8]):
@@ -743,7 +761,7 @@ def Page():
                     "bad_angsize": False
                 }
             )
-            if COMPONENT_STATE.value.is_current_step(Marker.rep_rem1):
+            if (COMPONENT_STATE.value.is_current_step(Marker.rep_rem1) and show_team_interface):
                 solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
@@ -766,19 +784,19 @@ def Page():
                     count = 0
                     has_ang_size = all(measurement.ang_size_value is not None for measurement in dataset)
                     if not has_ang_size:
-                        logger.info("\n ======= Not all galaxies have angular sizes ======= \n")
+                        logger.error("\n ======= Not all galaxies have angular sizes ======= \n")
                     for measurement in dataset:
                         if measurement.galaxy is not None and measurement.ang_size_value is not None:
                             count += 1
                             _update_distance_measurement(False, measurement.galaxy.model_dump(), measurement.ang_size_value)
                         elif measurement.ang_size_value is None:
-                            logger.info(f"Galaxy {measurement.galaxy_id} has no angular size")
+                            logger.error(f"Galaxy {measurement.galaxy_id} has no angular size")
                     logger.info(f"fill_galaxy_distances: Filled {count} distances")
                     put_measurements(samples=False)
                     distances_total.set(count)
                     fill_galaxy_pressed.set(True)
 
-                if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
+                if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and show_team_interface):
                     solara.Button("Demo Shortcut: Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances() , classes=["demo-button"])
 
 
@@ -859,6 +877,7 @@ def Page():
                         "selected_indices": selected_galaxy_index.value,
                         "show_select": True,
                         "button_icon": "mdi-tape-measure",
+                        "button_tooltip": "Calculate & Fill Distances",
                         "show_button": Ref(COMPONENT_STATE.fields.current_step_at_or_after).value(Marker.fil_rem1),
                         "event_on_button_pressed": lambda _: fill_galaxy_distances()
                     }

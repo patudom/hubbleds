@@ -903,15 +903,16 @@
           Done
         </v-btn>
         <v-btn
-            class="demo-button"
-            depressed
-            @click="() => {
-              set_dialog(false);
-              set_student_c(300000);
-              storeStudentVel(300000, [lambda_obs, lambda_rest]);
-              set_student_vel_calc(true);
-              next_callback();
-            }"
+          v-if="show_team_interface"
+          class="demo-button"
+          depressed
+          @click="() => {
+            set_dialog(false);
+            set_student_c(300000);
+            storeStudentVel(300000, [lambda_obs, lambda_rest]);
+            set_student_vel_calc(true);
+            next_callback();
+          }"
         >
           shortcut: calc & close
         </v-btn>

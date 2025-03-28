@@ -26,6 +26,6 @@ def HubbleExpUniverseSlideshow(
     event_set_max_step_completed: Callable | None = None,
     event_mc_callback: Callable | None = None,
     event_on_slideshow_finished: Callable | None = None,
-
+    show_team_interface: bool = False,
 ):
     pass

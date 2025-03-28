@@ -36,7 +36,7 @@ from hubbleds.viewer_marker_colors import (
     HST_KEY_COLOR_NAME,
 )
 
-from ...utils import HST_KEY_AGE, models_to_glue_data, AGE_CONSTANT
+from ...utils import HST_KEY_AGE, models_to_glue_data, AGE_CONSTANT, push_to_route
 
 from .component_state import COMPONENT_STATE, Marker
 
@@ -60,6 +60,7 @@ logger = setup_logger("STAGE")
 
 # the guidelines in the current files parent directory
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
+show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 
 def basic_viewer_setup(viewer_class, glue_session, data_collection, name, x_att, y_att):
@@ -76,6 +77,7 @@ def Page():
     solara.Title("HubbleDS")
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
+    router = solara.use_router()
 
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -257,12 +259,14 @@ def Page():
 
     loaded_component_state.subscribe(_on_component_state_loaded) 
 
-    StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+    if show_team_interface:
+        StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
     
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData0.vue",
+                event_back_callback=lambda _: push_to_route(router, "05-class-results-uncertainty"),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat0),

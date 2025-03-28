@@ -180,6 +180,19 @@
           {{ step < length-1 ? 'next' : '' }}
         </v-btn>
         <v-btn
+          v-if="step < length-1 && show_team_interface"
+          class="demo-button"
+          depressed
+          @click="() => {
+            show_dialog(false); 
+            tutorial_finished();
+            set_step(0); 
+            // this.$refs.synth.stopSpeaking();
+          }"
+        >
+          move on
+        </v-btn>        
+        <v-btn
           v-if = "step == length-1"
           color="accent"
           class="black--text"

@@ -44,7 +44,7 @@ logger = setup_logger("STAGE 5")
 
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-
+show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 @solara.component
 def Page():
@@ -362,6 +362,13 @@ def Page():
 
     class_best_fit_clicked = Ref(COMPONENT_STATE.fields.class_best_fit_clicked)
 
+    uncertainty_step = Ref(
+        COMPONENT_STATE.fields.uncertainty_state.step
+    )
+    uncertainty_max_step_completed = Ref(
+        COMPONENT_STATE.fields.uncertainty_state.max_step_completed
+    )
+
     def _on_best_fit_line_shown(active):
         if not class_best_fit_clicked.value:
             class_best_fit_clicked.set(active)
@@ -383,11 +390,12 @@ def Page():
     def _jump_stage_6():
         push_to_route(router, "06-prodata")
 
-    with solara.Row():
-        with solara.Column():
-            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
-        with solara.Column():
-            solara.Button(label="Shortcut: Jump to Stage 6", on_click=_jump_stage_6, classes=["demo-button"])
+    if show_team_interface:
+        with solara.Row():
+            with solara.Column():
+                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
+            with solara.Column():
+                solara.Button(label="Shortcut: Jump to Stage 6", on_click=_jump_stage_6, classes=["demo-button"])
 
     def _on_component_state_loaded(value: bool):
         if not value:
@@ -422,6 +430,7 @@ def Page():
             with rv.Col():
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineRandomVariability.vue",
+                    event_back_callback=lambda _: push_to_route(router, "04-explore-data"),
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     allow_back=False,
@@ -605,12 +614,16 @@ def Page():
                         UncertaintySlideshow(
                             event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
                             step=COMPONENT_STATE.value.uncertainty_state.step,
+                            max_step_completed=COMPONENT_STATE.value.uncertainty_state.max_step_completed,
                             age_calc_short1=get_free_response(LOCAL_STATE, COMPONENT_STATE,"shortcoming-1").get("response"),
                             age_calc_short2=get_free_response(LOCAL_STATE, COMPONENT_STATE,"shortcoming-2").get("response"),
                             age_calc_short_other=get_free_response(LOCAL_STATE, COMPONENT_STATE,"other-shortcomings").get("response"),    
                             event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                             free_responses=[get_free_response(LOCAL_STATE, COMPONENT_STATE,'shortcoming-4'), get_free_response(LOCAL_STATE, COMPONENT_STATE,'systematic-uncertainty')],
-                            image_location=get_image_path(router,"stage_five")   
+                            event_set_step=uncertainty_step.set,
+                            event_set_max_step_completed=uncertainty_max_step_completed.set,
+                            image_location=get_image_path(router,"stage_five"),
+                            show_team_interface=show_team_interface,   
                         )
             
     #--------------------- Row 3: ALL DATA HUBBLE VIEWER - during class sequence -----------------------
@@ -671,12 +684,16 @@ def Page():
                     UncertaintySlideshow(
                         event_on_slideshow_finished=lambda _: Ref(COMPONENT_STATE.fields.uncertainty_slideshow_finished).set(True),
                         step=COMPONENT_STATE.value.uncertainty_state.step,
+                        max_step_completed=COMPONENT_STATE.value.uncertainty_state.max_step_completed,
                         age_calc_short1=get_free_response(LOCAL_STATE, COMPONENT_STATE,"shortcoming-1").get("response"),
                         age_calc_short2=get_free_response(LOCAL_STATE, COMPONENT_STATE,"shortcoming-2").get("response"),
                         age_calc_short_other=get_free_response(LOCAL_STATE, COMPONENT_STATE,"other-shortcomings").get("response"),  
                         event_fr_callback = lambda event: fr_callback(event, LOCAL_STATE, COMPONENT_STATE, lambda: LOCAL_API.put_story_state(GLOBAL_STATE, LOCAL_STATE)),
                         free_responses=[get_free_response(LOCAL_STATE, COMPONENT_STATE,'shortcoming-4'), get_free_response(LOCAL_STATE, COMPONENT_STATE,'systematic-uncertainty')],
-                        image_location=get_image_path(router,"stage_five")
+                        event_set_step=uncertainty_step.set,
+                        event_set_max_step_completed=uncertainty_max_step_completed.set,
+                        image_location=get_image_path(router,"stage_five"),
+                        show_team_interface=show_team_interface, 
                 )
 
     #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------

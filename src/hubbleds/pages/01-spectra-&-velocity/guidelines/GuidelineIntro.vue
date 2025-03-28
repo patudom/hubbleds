@@ -5,17 +5,12 @@
     max-width="800"
     elevation="6"
     title-text="Introducing the Guidelines"
+    @back="back_callback()"
     @next="next_callback()"
-    :allow-back="false"
     :can-advance="can_advance"
     :speech="speech"
+    back-text="Stage 0"
   >
-    <template #back-content>
-      <div>
-        Open menu to return to earlier stages.<br>
-        (Open/close menu with <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #172c4d; border-radius: 5px;"><v-icon style="color:white!important;">mdi-menu</v-icon></v-btn> above)
-      </div>
-    </template>
     <template #before-next>
       Viewer loading
     </template>
@@ -27,6 +22,10 @@
       </p>
       <p>
         The information in the boxes will suggest what you should focus on, or what you should do next.
+      </p>
+      <p>
+        Use left Stage Navigation to return to earlier stages.
+        (If closed, open navigation with <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #172c4d; border-radius: 5px;"><v-icon style="color:white!important;">mdi-menu</v-icon></v-btn> above)
       </p>
     </div>
 

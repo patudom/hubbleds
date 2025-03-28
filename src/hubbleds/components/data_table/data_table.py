@@ -30,6 +30,7 @@ def DataTable(
     selected_indices: list[int] = [],
     highlighted: bool = False,
     button_icon: str = "",
+    button_tooltip: str = "",
     show_button: bool = False,
     show_select: bool = False,
     event_on_row_selected: Callable = lambda: None,

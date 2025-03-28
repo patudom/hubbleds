@@ -18,9 +18,14 @@
           {{ title }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon @click="on_button_pressed" v-if="show_button">
+      <v-tooltip top :disabled="button_tooltip === ''" v-if="show_button">
+        {{ button_tooltip }}
+        <template v-slot:activator="{ on, attrs }">
+      <v-btn :disabled="!show_button" v-on="on" v-bind="attrs" icon @click="on_button_pressed">
         <v-icon> {{ button_icon.replace(/['"]/g, '') }} </v-icon>
       </v-btn>
+    </template>
+      </v-tooltip>
     </v-toolbar>
 
     <v-data-table
@@ -43,7 +48,7 @@
         <thead>
         <tr>
           <th v-for="header in headers">
-            <span v-html="header.text"></span>
+            <span class="table-header-text" v-html="header.text"></span>
           </th>
         </tr>
         </thead>

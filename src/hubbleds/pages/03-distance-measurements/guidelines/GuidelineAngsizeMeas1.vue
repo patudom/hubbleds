@@ -5,16 +5,11 @@
     max-width="800"
     elevation="6"
     title-text="Angular Size Measurements"
+    @back="back_callback()"
     @next="next_callback()"
-    :allow-back="false"
     :can-advance="can_advance"
+    back-text="Stage 2"
   >
-    <template #back-content>
-      <div>
-        Open menu to return to earlier stages.<br>
-        (Open/close menu with <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #172c4d; border-radius: 5px;"><v-icon style="color:white!important;">mdi-menu</v-icon></v-btn> above)
-      </div>
-    </template>
     <template #before-next>
       Viewer loading
     </template>
@@ -29,6 +24,10 @@
       </p>
       <p>
         Like last time, we will all measure the same example galaxy first.
+      </p>
+      <p>
+        Use left Stage Navigation to return to earlier stages.
+        (If closed, open navigation with <v-btn icon tile dark x-small disabled class="mx-1" elevation="2" style="background-color: #172c4d; border-radius: 5px;"><v-icon style="color:white!important;">mdi-menu</v-icon></v-btn> above)
       </p>
     </div>
   </scaffold-alert>

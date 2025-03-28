@@ -1,4 +1,3 @@
-from .intro_slideshow.intro_slideshow import IntroSlideshow
 from .data_table.data_table import DataTable
 from .spectrum_viewer.spectrum_viewer import SpectrumViewer
 from .spectrum_slideshow.spectrum_slideshow import SpectrumSlideshow
@@ -21,5 +20,5 @@ from .dotplot_tutorial_slideshow import DotplotTutorialSlideshow
 from .id_slider import IdSlider
 from .line_draw_viewer import LineDrawViewer
 from .plotly_layer_toggle import PlotlyLayerToggle
-from .intro_slideshow_vue.intro_slideshow import IntroSlideshowVue
+from .intro_slideshow_vue.intro_slideshow import IntroSlideshowVue, INTRO_SLIDESHOW_LENGTH
 from .stage_4_waiting_screen import Stage4WaitingScreen

@@ -140,13 +140,25 @@ def SpectrumViewer(
 
             rv.Spacer()
 
-            solara.IconButton(
+            reset_button = solara.IconButton(
+                v_on="tooltip.on",
                 flat=True,
                 tile=True,
                 icon_name="mdi-cached",
                 on_click=_on_reset_button_clicked,
             )
-
+            
+            rv.Tooltip(
+                top=True,
+                v_slots = [{
+                    "name": "activator",
+                    "variable": "tooltip",
+                    "children": rv.FabTransition(children=[reset_button])
+                }],
+                children = ["Reset View"]
+            )
+            
+            
             with rv.BtnToggle(
                 v_model=toggle_group_state.value,
                 on_v_model=toggle_group_state.set,
@@ -156,14 +168,36 @@ def SpectrumViewer(
                 multiple=True,
             ):
 
-                solara.IconButton(
+                zoom_button = solara.IconButton(
+                    v_on="tooltip.on",
                     icon_name="mdi-select-search",
                     on_click=_zoom_button_clicked,
                 )
+                
+                rv.Tooltip(
+                    top=True,
+                    v_slots = [{
+                        "name": "activator",
+                        "variable": "tooltip",
+                        "children": rv.FabTransition(children=[zoom_button])
+                    }],
+                    children = ["Zoom wavelength axis"]
+                )
 
-                solara.IconButton(
+                rest_wave_button = solara.IconButton(
+                    v_on="tooltip.on",
                     icon_name="mdi-lambda",
                     on_click=_rest_wave_tool_toggled,
+                )
+                
+                rv.Tooltip(
+                    top=True,
+                    v_slots = [{
+                        "name": "activator",
+                        "variable": "tooltip",
+                        "children": rv.FabTransition(children=[rest_wave_button])
+                    }],
+                    children = ["Show rest wavelength"]
                 )
 
         if spec_data_task.value is None:
