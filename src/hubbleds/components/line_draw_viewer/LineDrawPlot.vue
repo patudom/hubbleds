@@ -73,7 +73,8 @@ export default {
               shape: "line"
             },
             visible: false,
-            hoverinfo: "skip"
+            hoverinfo: "skip",
+            showlegend: false,
           },
 
         ],
