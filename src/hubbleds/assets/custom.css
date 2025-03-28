@@ -305,6 +305,10 @@ div.plotly .hoverlayer g.hovertext {
     /* display: none; */
 }
 
+.table-header-text {
+    font-size: 1.4em;
+    font-weight: bold;
+}
  
 
 .fr-unit-custom {
