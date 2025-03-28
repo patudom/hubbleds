@@ -1,8 +1,9 @@
 <template>
   <scaffold-alert
     title-text="Random Variability"
+    @back="back_callback()"
     @next="next_callback()"
-    :allow-back="allow_back"
+    back-text="Stage 4"
     :can-advance="can_advance"
   >
     <div

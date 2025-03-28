@@ -154,7 +154,11 @@ def SelectionTool(
         wwt_widget_container = solara.get_widget(wwt_container)
         wwt_widget_container.children = (wwt_widget,)
 
-        background_counter.subscribe(lambda _count: wwt_widget._on_background_change({"new": wwt_widget.background}))
+        def _on_bg_counter(_count):
+            wwt_widget._on_background_change({"new": wwt_widget.background})
+            wwt_widget._on_foreground_change({"new": wwt_widget.foreground})
+
+        background_counter.subscribe(_on_bg_counter)
 
         def cleanup():
             wwt_widget_container.children = ()

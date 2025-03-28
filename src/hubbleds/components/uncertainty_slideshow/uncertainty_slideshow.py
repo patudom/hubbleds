@@ -31,5 +31,6 @@ def UncertaintySlideshow(
     max_step_completed=0,
     event_set_step=None,
     event_set_max_step_completed=None,
+    show_team_interface=False,
 ):
     pass

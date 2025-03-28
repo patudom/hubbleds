@@ -16,6 +16,7 @@ def ReflectVelocitySlideshow(
     max_step_completed,
     reflection_complete,
     state_view,
+    show_team_interface,
 
     # Event handlers
     event_set_dialog,

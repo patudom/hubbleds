@@ -316,6 +316,10 @@ div.plotly .hoverlayer g.hovertext {
     /* display: none; */
 }
 
+.table-header-text {
+    font-size: 1.4em;
+    font-weight: bold;
+}
  
 
 .fr-unit-custom {
@@ -355,6 +359,10 @@ div.plotly .hoverlayer g.hovertext {
 .v-list-item-group .v-list-item--active:not(.layer_toggle .v-list-item--active) {
     color: white;
     background-color: var(--primary);
+}
+
+.nav-top.v-list-item:after {
+    content: none;
 }
 
 .v-application .layer_toggle {

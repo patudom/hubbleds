@@ -26,7 +26,7 @@ from cosmicds.logger import setup_logger
 logger = setup_logger("STAGE 4")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-
+show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 @solara.component
 def Page():
@@ -38,16 +38,10 @@ def Page():
 
     class_plot_data = solara.use_reactive([])
 
-    # Which data layers to display in plotly viewer
-    layers_enabled = solara.use_reactive((False, True))
-
     # Are the buttons available to press?
-    draw_enabled = solara.use_reactive(False)
-    fit_enabled = solara.use_reactive(False)
     draw_active = solara.use_reactive(False)
 
     # Are the plotly traces actively displayed?
-    display_best_fit_gal = solara.use_reactive(False)
     clear_class_layer = solara.use_reactive(0)
     clear_drawn_line = solara.use_reactive(0)
     clear_fit_line = solara.use_reactive(0)
@@ -210,11 +204,38 @@ def Page():
     def _jump_stage_5():
         push_to_route(router, "05-class-results-uncertainty")
 
-    with solara.Row():
-        with solara.Column():
-            StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
-        with solara.Column():
-            solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
+    current_step = Ref(COMPONENT_STATE.fields.current_step)
+
+    @solara.lab.computed
+    def draw_enabled():
+        return current_step.value >= Marker.tre_lin2
+
+    @solara.lab.computed
+    def fit_enabled():
+        return current_step.value >= Marker.bes_fit1
+
+    @solara.lab.computed
+    def display_best_fit_gal():
+        return current_step.value >= Marker.hyp_gal1
+
+    @solara.lab.computed
+    def layers_enabled():
+        return (current_step.value.is_between(Marker.tre_dat2, Marker.hub_exp1), True)
+
+    best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
+    @solara.lab.computed
+    def line_label():
+        if current_step.value >= Marker.age_uni4:
+            return f"Age: {round(AGE_CONSTANT / best_fit_slope.value)} Gyr"
+        else:
+            return None
+
+    if show_team_interface:
+        with solara.Row():
+            with solara.Column():
+                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+            with solara.Column():
+                solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
 
     if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
         if not skip_waiting_room:
@@ -235,6 +256,7 @@ def Page():
         with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineExploreData.vue",
+                event_back_callback=lambda _: push_to_route(router, "03-distance-measurements"),
                 event_next_callback = lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.exp_dat1),
@@ -417,37 +439,16 @@ def Page():
             )
 
         def _on_marker_update(marker):
-            if marker.is_between(Marker.tre_dat2, Marker.hub_exp1):
-                layers_enabled.set((True, True))
-            else:
-                layers_enabled.set((False, True))
-
-            if marker >= Marker.tre_lin2:
-                draw_enabled.set(True)
-            else:
-                draw_enabled.set(False)
-
-            if marker >= Marker.bes_fit1:
-                fit_enabled.set(True)
-            else:
-                fit_enabled.set(False)
-
-            if marker >= Marker.hyp_gal1:
-                display_best_fit_gal.set(True)
-            else:
-                display_best_fit_gal.set(False)
-
             if marker is Marker.tre_lin1:
                 # What we really want is for the viewer to check if this layer is visible when it gets to this marker, and if so, clear it.
                 clear_class_layer.set(clear_class_layer.value + 1)
 
-            #This has the same issues as above.
+            # This has the same issues as above.
             if marker is Marker.age_uni1:
                 clear_drawn_line.set(clear_drawn_line.value + 1)
                 draw_active.set(False)
             
-            
-        Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_update)
+        current_step.subscribe(_on_marker_update)
 
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
@@ -490,7 +491,8 @@ def Page():
                                     "mode": "markers",
                                     "marker": { "color": color, "size": size },
                                     "visible": visibility,    
-                                    "hoverinfo": "none"
+                                    "hoverinfo": "none",
+                                    "showlegend": False,
                                 } for data, color, size, visibility in zip(layers, colors, sizes, layers_visible)
                             ]
 
@@ -525,7 +527,8 @@ def Page():
                                            plot_margins=PLOTLY_MARGINS,
                                            draw_enabled=draw_enabled.value,
                                            fit_enabled=fit_enabled.value,
-                                           display_best_fit_gal = display_best_fit_gal.value,
+                                           line_label=line_label.value,
+                                           display_best_fit_gal=display_best_fit_gal.value,
                                            draw_active=draw_active,
                                            # Use student data for best fit galaxy
                                            best_fit_gal_layer_index=1,
@@ -558,4 +561,5 @@ def Page():
                         event_set_max_step_completed=max_step_completed.set,
                         event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                         event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
+                        show_team_interface=show_team_interface,
                     )
