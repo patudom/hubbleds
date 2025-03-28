@@ -48,7 +48,7 @@
         <thead>
         <tr>
           <th v-for="header in headers">
-            <span v-html="header.text"></span>
+            <span class="table-header-text" v-html="header.text"></span>
           </th>
         </tr>
         </thead>

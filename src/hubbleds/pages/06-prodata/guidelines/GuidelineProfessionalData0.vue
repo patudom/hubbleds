@@ -5,8 +5,9 @@
     max-width="800"
     elevation="6"
     header-text="Professional Data"
-    :allow-back="false"
+    @back="back_callback()"
     @next="next_callback()"
+    back-text="Stage 5"
     :can-advance="can_advance"
   >
   

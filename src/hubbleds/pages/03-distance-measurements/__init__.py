@@ -501,6 +501,7 @@ def Page():
         with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAngsizeMeas1.vue",
+                event_back_callback=lambda _: push_to_route(router, "02-distance-introduction"),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.ang_siz1),

@@ -248,7 +248,7 @@
           depressed
           @click="() => {
             set_dialog(false); 
-            tutorial_finished();
+            on_slideshow_finished();
             set_step(0); 
             // this.$refs.synth.stopSpeaking();
           }"
