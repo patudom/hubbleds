@@ -430,6 +430,7 @@ def Page():
             with rv.Col():
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineRandomVariability.vue",
+                    event_back_callback=lambda _: push_to_route(router, "04-explore-data"),
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     allow_back=False,

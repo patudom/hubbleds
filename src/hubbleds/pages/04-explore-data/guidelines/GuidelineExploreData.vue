@@ -2,9 +2,10 @@
   <scaffold-alert
     title-text="Explore Your Data"
     next-text="graph"
+    @back="back_callback()"
     @next="next_callback()"
     :can-advance="can_advance"
-    :allow-back="false"
+    back-text="Stage 3"
   >
     <div
       class="mb-4"

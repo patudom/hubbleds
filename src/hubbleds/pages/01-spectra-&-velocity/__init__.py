@@ -437,6 +437,7 @@ def Page():
         with rv.Col(cols=12, lg=4):
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineIntro.vue",
+                event_back_callback=lambda _: push_to_route(router, "/"),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.mee_gui1),
