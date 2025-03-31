@@ -213,32 +213,33 @@ body:has(.v-application.theme--light), .v-sheet.theme--light {
     padding-block: 0;
 }
 
-.footer .col {
+footer .col {
     padding-block: 0;
 }
 
-.footer .row {
+footer .row {
     align-items: center;
     margin-left: 0;
 }
 
-.footer .v-card__text {
+footer .v-card__text {
     padding: 6px;
 }
 
-.footer {
+footer.v-footer {
     /* position: fixed; */
+    padding: 0 !important;
 }
 
 /* Hide the footer on a short screen (Chromebooks ~768 px) */
 @media (max-height: 800px) {
-  .footer.v-footer {
+  footer.v-footer {
     /* display: none; */
   }
 }
 /* also hide on narrow screens (Chromebooks ~1366 px)*/
 @media (max-width: 1200px) {
-  .footer.v-footer {
+  footer.v-footer {
     /* display: none; */
   }
 }
@@ -285,7 +286,7 @@ body:has(.v-application.theme--light), .v-sheet.theme--light {
 }
 
 .solara-container-main {
-    min-height: calc(100% - 64px) !important;
+    min-height: calc(100vh - 64px) !important;
 }
 
 /***** 
