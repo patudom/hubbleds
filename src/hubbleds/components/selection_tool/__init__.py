@@ -4,8 +4,9 @@ import astropy.units as u
 import solara
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
-from ipywwt import WWTWidget
 from reacton import ipyvuetify as rv
+
+from hubbleds.widgets.hubble_wwt import HubbleWWTWidget
 
 from ...state import LOCAL_STATE
 from ...utils import GALAXY_FOV
@@ -148,7 +149,7 @@ def SelectionTool(
         """
         Add the WWT widget to the container.
         """
-        wwt_widget = WWTWidget(use_remote=True)
+        wwt_widget = HubbleWWTWidget(use_remote=True)
         wwt_widget.observe(lambda change: show_wwt.set(change["new"]), "_wwt_ready")
 
         wwt_widget_container = solara.get_widget(wwt_container)
@@ -249,7 +250,7 @@ def SelectionTool(
     solara.use_effect(_on_show_galaxies, dependencies=[show_galaxies])
 
     def _go_to_location(
-        wwt_widget: WWTWidget,
+        wwt_widget: HubbleWWTWidget,
         coords: SkyCoord,
         fov: u.Quantity,
         instant: Optional[bool] = None,
