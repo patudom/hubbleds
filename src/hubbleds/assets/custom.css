@@ -285,9 +285,6 @@ footer.v-footer {
     background-color: #000;
 }
 
-.solara-container-main {
-    min-height: calc(100vh - 64px) !important;
-}
 
 /***** 
     ================================
