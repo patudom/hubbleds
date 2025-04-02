@@ -15,7 +15,7 @@ from hubbleds.layout import Layout
 from cosmicds.logger import setup_logger
 
 from cosmicds.components import StateEditor
-from .component_state import COMPONENT_STATE, IntroSlideshow, Marker
+from .component_state import COMPONENT_STATE, Marker
 
 logger = setup_logger("STAGE INTRO")
 
@@ -63,13 +63,12 @@ def Page():
         tool.go_to_coordinates(coordinates, fov=fov, instant=instant)
 
     speech = Ref(GLOBAL_STATE.fields.speech)
-    step = Ref(COMPONENT_STATE.fields.intro_slideshow_state.step)
-    max_step = Ref(COMPONENT_STATE.fields.intro_slideshow_state.max_step_completed)
+
     IntroSlideshowVue(
-        step = step.value,
-        event_set_step=step.set,
-        max_step=max_step.value,
-        event_set_max_step=max_step.set,
+        step=COMPONENT_STATE.value.intro_slideshow_state.step,
+        event_set_step=Ref(COMPONENT_STATE.fields.intro_slideshow_state.step).set,
+        max_step=COMPONENT_STATE.value.intro_slideshow_state.max_step_completed,
+        event_set_max_step=Ref(COMPONENT_STATE.fields.intro_slideshow_state.max_step_completed).set,
         length = 8,
         titles = [
             "Our Place in the Universe",

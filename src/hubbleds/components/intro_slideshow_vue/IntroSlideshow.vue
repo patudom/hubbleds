@@ -34,18 +34,16 @@
     </v-toolbar>
 
     <v-window
-      style="height: calc(100vh - 300px);"
-      class="overflow-auto"
+      style="height: calc(100vh - 250px); overflow: auto;"
       v-model="step"
     >
 
       <v-window-item :value="0" 
         class="no-transition"
-       >
+      >
         <v-card-text
-          style="min-height: 550px;"
         >
-          <v-container>
+          
             <v-row>
               <v-col cols="12" lg="5">
                 <p>
@@ -77,7 +75,7 @@
                   :lazy-src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.jpg`"
                   :src="`${image_location}/MilkyWayOverMountainsNASASTScILevay.jpg`"
                   alt="Colorful image of our Milky Way galaxy in the sky over a dark silhouette of mountains on the horizon."
-                  max-height = "550"
+                  max-height = "550px"
                   contain
                 ></v-img>
                 <div
@@ -88,7 +86,7 @@
                 </div>
               </v-col>
             </v-row>
-          </v-container>
+          
         </v-card-text>
       </v-window-item>
 
@@ -97,7 +95,7 @@
       >
         <v-card-text
         >
-          <v-container>
+          
             <v-row>
               <v-col cols="12" lg="5">
                 
@@ -141,7 +139,7 @@
                 </div>
               </v-col>
             </v-row>
-          </v-container>
+          
         </v-card-text>
       </v-window-item>
       
@@ -149,7 +147,7 @@
         class="no-transition"
        >
         <v-card-text>
-          <v-container>
+          
             <v-row>
               <v-col cols="12" lg="5">
                 <p>
@@ -205,7 +203,7 @@
                 </v-row>
               </v-col>
             </v-row>
-          </v-container>
+          
         </v-card-text>
       </v-window-item>
 
@@ -213,7 +211,7 @@
         class="no-transition"
       >
         <v-card-text>
-          <v-container>
+          
             <v-row>
               <v-col>
                 <div
@@ -240,64 +238,48 @@
                       <v-row>
                         <v-col>
                           <jupyter-widget :widget="exploration_tool" />
-                        </v-col>
-                      </v-row>
-                      <v-row>
-                        <v-col>
                           <div
-                            class="text-center grey--text"
+                            class="text-center grey--text mt-2"
                             style="width: 100%;"
                           >
-                            Interactive view provided by WorldWide Telescope
+                            <i>Interactive view provided by WorldWide Telescope</i>
                           </div>
                         </v-col>
                       </v-row>
+                      
                     </v-col>
-                    <v-col
-                      cols="4"
-                      lg="3"
+                    <v-col 
+                      cols="4" 
+                      lg="3" 
+                      style="gap:1rem;"
                     >
-                      <v-row>
-                        <v-col
-                          cols="12"
-                          lg="4"
+                      <v-row class="justify-start" style="gap:1em;">
+                        <v-chip
+                          label
+                          outlined
                         >
-                          <v-chip
-                            label
-                            outlined
-                          >
-                            Pan
-                          </v-chip>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          lg="8"
-                          class="pt-2"
+                          Pan
+                        </v-chip>|
+                        <div class="pt-2"
                         >
                           <strong>click + drag</strong><br>
                           (or use <strong class="codeFont">I-J-K-L</strong> keys)
-                        </v-col>
+                        </div>
                       </v-row>
                       <v-row>
-                        <v-col
-                          cols="12"
-                          lg="4"
-                        >
+                      <v-row class="justify-start" style="gap:1em;">
                           <v-chip
                             label
                             outlined
                           >
                             Zoom
-                          </v-chip>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          lg="8"
-                          class="pt-2"
+                        </v-chip>|
+                        <div class="pt-2"
                         >
                           <strong>scroll in and out</strong><br>
                           (or use <strong class="codeFont">Z-X</strong> keys)
-                        </v-col>
+                        </div>
+                      </v-row>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -322,13 +304,13 @@
                 class="mx-4 black--text"
                 @click="() => {
                   timerComplete[0] = false;
-                  step++;
+                  set_step(step+1);
                 }"
               >
                 move on
               </v-btn>
             </v-snackbar>
-          </v-container>                                      
+                                                
         </v-card-text>
       </v-window-item>
 
@@ -336,7 +318,7 @@
         class="no-transition"
       >
         <v-card-text>
-          <v-container>
+          
             <v-row>
               <v-col>
                 <div
@@ -358,6 +340,12 @@
                       offset-lg="1"
                     >
                       <jupyter-widget :widget="exploration_tool1" />
+                      <div
+                        class="text-center grey--text mt-2"
+                        style="width: 100%;"
+                      >
+                        <i>Interactive view provided by WorldWide Telescope</i>
+                      </div>
                     </v-col>
                     <v-col
                       cols="4"
@@ -513,14 +501,6 @@
                       </v-row>
                     </v-col>
                   </v-row>
-                  <v-row>
-                    <div
-                      class="text-center grey--text"
-                      style="width: 100%;"
-                    >
-                      <i>Interactive view provided by WorldWide Telescope</i>
-                    </div>
-                  </v-row>
                 </div>
               </v-col>
             </v-row>
@@ -542,13 +522,13 @@
                 class="mx-4 black--text"
                 @click="() => {
                   timerComplete[1] = false;
-                  step++;
+                  set_step(step+1);
                 }"
               >
                 move on
               </v-btn>
             </v-snackbar>
-          </v-container>
+          
         </v-card-text>
       </v-window-item> 
 
@@ -556,7 +536,7 @@
         class="no-transition"
       >
         <v-card-text>
-          <v-container>
+          
             <v-row>
               <v-col>
                 <div
@@ -578,6 +558,12 @@
                       offset-lg="1"
                     >
                       <jupyter-widget :widget="exploration_tool2" />
+                      <div
+                        class="text-center grey--text mt-2"
+                        style="width: 100%;"
+                      >
+                        <i>Interactive view provided by WorldWide Telescope</i>
+                      </div>
                     </v-col>
                     <v-col
                       cols="4"
@@ -691,14 +677,6 @@
                       </v-row>
                     </v-col>
                   </v-row>
-                  <v-row>
-                    <div
-                      class="text-center grey--text"
-                      style="width: 100%;"
-                    >
-                      <i>Interactive view provided by WorldWide Telescope</i>
-                    </div>
-                  </v-row> 
                 </div>
               </v-col>
             </v-row>
@@ -720,13 +698,13 @@
                 class="mx-4 black--text"
                 @click="() => {
                   timerComplete[2] = false;
-                  step++;
+                  set_step(step+1);
                 }"
               >
                 move on
               </v-btn>
             </v-snackbar>
-          </v-container>   
+             
         </v-card-text>
       </v-window-item>
 
@@ -734,7 +712,7 @@
         class="no-transition"
       >
         <v-card-text>
-          <v-container>
+          
             <v-row>
               <v-col>
                 <p>
@@ -793,7 +771,7 @@
                 </v-row>
               </v-col>
             </v-row>
-          </v-container>
+          
         </v-card-text>
       </v-window-item>
 
@@ -802,7 +780,7 @@
         
       >
         <v-card-text>
-          <v-container>
+          
             <v-row>
               <v-col>
                 <p>
@@ -831,7 +809,7 @@
                   </div>
               </v-col>
             </v-row>
-          </v-container>
+          
         </v-card-text>
       </v-window-item>
     </v-window>
@@ -847,7 +825,7 @@
         color="accent"
         depressed
         @click="() => {
-          step--;
+          set_step(step-1);
           let options = null;
           if (step === 4) {
             options = {
@@ -886,7 +864,7 @@
           <v-btn
             :input-value="active"
             icon
-            @click="toggle"
+            @click="toggle; set_step(n-1);"
           >
             <v-icon
               color="info lighten-1"
@@ -906,7 +884,7 @@
         color="accent"
         depressed
         @click="() => {
-          step++;
+          set_step(step+1);
           let options = null;
           if (step === 4) {
             options = {
@@ -938,7 +916,7 @@
         depressed
         @click="() => {
           slideshow_finished();
-          step = 0;
+          set_step(0);
           // this.$refs.synth.stopSpeaking();
         }"
       >
@@ -952,7 +930,7 @@
         depressed
         @click="() => { 
           slideshow_finished();
-          step = 0;
+          set_step(0);
           // this.$refs.synth.stopSpeaking();
         }"
       >
@@ -970,7 +948,7 @@
 
 #slideshow-root .v-card__text{
   padding: 0px 15px 0px;
-  min-height: 550px;
+  /* min-height: 550px;  */
 }
 
 #exploration-tool, #exploration-tool2, #exploration-tool3 {
@@ -1013,7 +991,6 @@ module.exports = {
 
   watch: {
     step(val) {
-      this.set_step(val);
       if (val > this.max_step) {
         this.set_max_step(val);
       }
