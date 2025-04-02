@@ -34,7 +34,7 @@
     </v-toolbar>
 
     <v-window
-      style="height: calc(100vh - 200px); overflow: auto;"
+      style="height: calc(100vh - 300px); overflow: auto;"
       v-model="step"
     >
 
@@ -991,7 +991,6 @@ module.exports = {
 
   watch: {
     step(val) {
-      this.set_step(val);
       if (val > this.max_step) {
         this.set_max_step(val);
       }

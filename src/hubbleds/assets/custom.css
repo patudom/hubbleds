@@ -234,13 +234,13 @@ footer.v-footer {
 /* Hide the footer on a short screen (Chromebooks ~768 px) */
 @media (max-height: 800px) {
   footer.v-footer {
-    /* display: none; */
+    display: none;
   }
 }
 /* also hide on narrow screens (Chromebooks ~1366 px)*/
 @media (max-width: 1200px) {
   footer.v-footer {
-    /* display: none; */
+    display: none;
   }
 }
 

@@ -36,7 +36,7 @@ class ComponentState(BaseComponentState, BaseState):
     @computed_field
     @property
     def progress(self) -> float:
-        return (self.max_step + 1) / self.total_steps
+        return (self.intro_slideshow_state.max_step_completed + 1) / self.total_steps
 
 
 COMPONENT_STATE = solara.reactive(ComponentState())
