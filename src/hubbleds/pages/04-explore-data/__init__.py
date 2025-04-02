@@ -64,7 +64,7 @@ def Page():
 
         Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
         set_skip_waiting_room(value)
-        if value:
+        if value and COMPONENT_STATE.value.current_step == Marker.wwt_wait:
             _on_waiting_room_advance()
         loaded_component_state.set(True)
 

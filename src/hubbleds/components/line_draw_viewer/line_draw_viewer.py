@@ -53,7 +53,7 @@ def LineDrawViewer(chart_id: str,
                    clear_fit_line: Optional[int]=0,
 ):
 
-    draw_active = draw_active or solara.use_reactive(False)
+    draw_active = draw_active if draw_active is not None else solara.use_reactive(False)
     fit_active = solara.use_reactive(False)
     # best_fit_active = solara.use_reactive(False)
 
