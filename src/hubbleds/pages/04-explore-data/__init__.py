@@ -51,7 +51,7 @@ def Page():
 
     # LOCAL_API.update_class_size(GLOBAL_STATE)
 
-    async def _load_component_state():
+    def _load_component_state():
         # Load stored component state from database, measurement data is
         # considered higher-level and is loaded when the story starts
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -69,7 +69,7 @@ def Page():
             _on_waiting_room_advance()
         loaded_component_state.set(True)
 
-    solara.lab.use_task(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
 
     async def _write_component_state():
         if not loaded_component_state.value:

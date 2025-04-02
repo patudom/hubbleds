@@ -56,7 +56,7 @@ def Page():
     router = solara.use_router()
     location = solara.use_context(solara.routing._location_context)
 
-    async def _load_component_state():
+    def _load_component_state():
         # Load stored component state from database, measurement data is
         # considered higher-level and is loaded when the story starts
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -65,7 +65,7 @@ def Page():
         logger.info("Finished loading component state for stage 4.")
         loaded_component_state.set(True)
 
-    solara.lab.use_task(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
 
     async def _write_component_state():
         if not loaded_component_state.value:
@@ -77,9 +77,6 @@ def Page():
             logger.info("Wrote stage 5 component state to database.")
         else:
             logger.info("Did not write stage 5 component state to database.")
-
-
-        
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     

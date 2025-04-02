@@ -81,12 +81,12 @@ def Page():
     router = solara.use_router()
     location = solara.use_context(solara.routing._location_context)
 
-    async def _load_component_state():
+    def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
         logger.info("Finished loading component state")
         loaded_component_state.set(True)
     
-    solara.lab.use_task(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
     
     async def _write_component_state():
         if not loaded_component_state.value:
