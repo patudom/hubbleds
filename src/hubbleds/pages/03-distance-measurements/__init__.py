@@ -229,7 +229,7 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
-    measurements_setup = solara.use_reactive(False)
+    seed_data_setup = solara.use_reactive(False)
     def _glue_setup() -> JupyterApplication:
         gjapp = gjapp = JupyterApplication(
             GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
@@ -238,7 +238,7 @@ def Page():
         # Get the example seed data
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
             load_and_create_seed_data(gjapp, LOCAL_STATE)
-        measurements_setup.set(True)
+        seed_data_setup.set(True)
         
         return gjapp
     
@@ -327,7 +327,7 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
     
-    subsets_setup = solara.use_reactive(False)
+    example_data_setup = solara.use_reactive(False)
     def add_example_measurements_to_glue():
         logger.info('in add_example_measurements_to_glue')
         if len(LOCAL_STATE.value.example_measurements) > 0:
@@ -337,11 +337,10 @@ def Page():
             create_example_subsets(gjapp, example_measurements_glue)
             
             use_this = add_or_update_data(example_measurements_glue)
-            if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                subsets_setup.set(True)
             use_this.style.color = MY_DATA_COLOR
-
-            link_example_seed_and_measurements(gjapp)
+            if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                example_data_setup.set(True)
+                link_example_seed_and_measurements(gjapp)
         else:
             logger.info('no example measurements yet')
     
@@ -1000,7 +999,7 @@ def Page():
                 if COMPONENT_STATE.value.current_step_between(Marker.dot_seq1, Marker.dot_seq5c):
                     # solara.Text(f"measurements setup: {measurements_setup.value}")
                     # solara.Text(f"subsets setup: {subsets_setup.value}")
-                    if measurements_setup.value and subsets_setup.value and EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                    if seed_data_setup.value and example_data_setup.value and EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                         ignore = []
                     
                         ignore = [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
