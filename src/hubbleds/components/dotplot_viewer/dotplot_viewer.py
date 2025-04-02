@@ -29,19 +29,28 @@ logger = setup_logger("DOTPLOT")
 from glue_jupyter import JupyterApplication
 
 
-def valid_two_element_array(arr: Union[None, list]):
-    try:
-        return not (arr is None or len(arr) != 2 or np.isnan(arr).any())
-    except:
+def is_valid_range(arr: Union[None, list]):
+    # is it None or not an iterable?
+    if arr is None or  not hasattr(arr, '__iter__'):
         return False
+    if len(arr) != 2:
+        return False
+    # check for bad value: None, not a number, or inf, nan
+    if any(x is None for x in arr):
+        return False
+    if not all(isinstance(x, (int, float)) for x in arr):
+        return False
+    if any(not np.isfinite(x) for x in arr):
+        return False
+    return True
 
 def different_value(arr, value, index):
-    if not valid_two_element_array(arr):
+    if not is_valid_range(arr):
         return True
     return arr[index] != value
 
 def this_or_default(arr, default, index):
-    if not valid_two_element_array(arr):
+    if not is_valid_range(arr):
         return default
     return arr[index]
 
@@ -107,7 +116,7 @@ def DotplotViewer(
     reset_bounds: Reactive[list] = solara.use_reactive(reset_bounds, on_change=on_reset_bounds_changed) # type: ignore
     hide_layers: Reactive[list] = solara.use_reactive(hide_layers, on_change=on_hide_layers_changed) # type: ignore
     
-    if len(x_bounds.value) == 0 and len(reset_bounds.value) == 2:
+    if len(x_bounds.value) == 0 and is_valid_range(reset_bounds.value):
         x_bounds.set(reset_bounds.value)
         
         
@@ -166,10 +175,9 @@ def DotplotViewer(
                         _add_data(dotplot_view, viewer_data)
 
             dotplot_view.state.hist_n_bin = nbin
-            if x_bounds.value is not None:
-                if len(x_bounds.value) == 2:
-                    dotplot_view.state.x_min = x_bounds.value[0]
-                    dotplot_view.state.x_max = x_bounds.value[1]
+            if is_valid_range(x_bounds.value):
+                dotplot_view.state.x_min = x_bounds.value[0]
+                dotplot_view.state.x_max = x_bounds.value[1]
             
             if nbin_func is not None:
                 dotplot_view.state.hist_n_bin = nbin_func(dotplot_view.state.x_min, dotplot_view.state.x_max)   
@@ -323,7 +331,7 @@ def DotplotViewer(
                 else:
                     new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
                 
-                if ( valid_two_element_array(x_bounds.value) and not np.isclose(x_bounds.value, new_range).all() ):
+                if ( is_valid_range(x_bounds.value) and not np.isclose(x_bounds.value, new_range).all() ):
                     logger.info(f'{title}: reset x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
                     x_bounds.set(new_range)
                 else:
@@ -333,7 +341,7 @@ def DotplotViewer(
                 logger.info(f"{title}: Zoomed")
                 new_range = [dotplot_view.state.x_min, dotplot_view.state.x_max]
                 if (
-                    not valid_two_element_array(x_bounds.value) or
+                    not is_valid_range(x_bounds.value) or
                     not np.isclose(x_bounds.value, new_range).all()
                     ):
                     logger.info(f'{title}: set x_bounds ({new_range[0]:0.2f}, {new_range[1]:0.2f})')
@@ -373,10 +381,11 @@ def DotplotViewer(
                         xmin = dotplot_view.state.x_min
                     if xmax is None:
                         xmax = dotplot_view.state.x_max
-                    dotplot_view.state.hist_n_bin = nbin_func(xmin, xmax)
+                    if is_valid_range([xmin, xmax]):
+                        dotplot_view.state.hist_n_bin = nbin_func(xmin, xmax)
             def update_x_bounds(new_val):
                 logger.info(f"{title}: Updating x_bounds")
-                if new_val is not None and len(new_val) == 2:
+                if is_valid_range(new_val):
                     dotplot_view.state.x_min = new_val[0]
                     dotplot_view.state.x_max = new_val[1]
                 reset_hist_n_bin(new_val[0], new_val[1])
