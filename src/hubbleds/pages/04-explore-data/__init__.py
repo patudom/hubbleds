@@ -460,7 +460,7 @@ def Page():
                     with rv.Col(class_="no-padding"):
 
                         def _layer_toggled(data):
-                            if data["visible"] and data["index"] is 3:
+                            if data["visible"] and data["index"] == 3:
                                 Ref(COMPONENT_STATE.fields.class_data_displayed).set(True)
 
                         PlotlyLayerToggle(chart_id="line-draw-viewer",
