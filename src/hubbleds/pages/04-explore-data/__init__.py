@@ -172,8 +172,12 @@ def Page():
 
         Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
         set_skip_waiting_room(value)
-        if value and COMPONENT_STATE.value.current_step == Marker.wwt_wait:
-            _on_waiting_room_advance()
+        if value:
+            if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
+                _on_waiting_room_advance()
+            else:
+                load_class_data()
+
         loaded_component_state.set(True)
 
     solara.use_memo(_load_component_state, dependencies=[])
@@ -200,6 +204,7 @@ def Page():
             student_plot_data.set(measurements)
     solara.lab.use_task(_load_student_data)
 
+    # TODO: not sure what this is supposed to do
     if not (class_ready_task.finished or class_ready_task.pending):
         load_class_data()
 
