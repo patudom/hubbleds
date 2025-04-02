@@ -1040,7 +1040,7 @@ def Page():
             if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1):
                 with rv.Col(cols=12, lg=8, class_="no-y-padding"):
                                             
-                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
+                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection and len(LOCAL_STATE.value.example_measurements) > 0:
                         viewer_data = [
                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
