@@ -55,6 +55,12 @@ def Page():
         logger.info(f"Count: {count}")
         return count
 
+    def _on_waiting_room_advance():
+        if class_ready_task.pending:
+            class_ready_task.cancel()
+        load_class_data()
+        transition_next(COMPONENT_STATE)
+
     def _load_component_state():
         # Load stored component state from database, measurement data is
         # considered higher-level and is loaded when the story starts
@@ -182,12 +188,6 @@ def Page():
             await asyncio.sleep(10)
 
     class_ready_task = solara.lab.use_task(keep_checking_class_data, dependencies=[])
-
-    def _on_waiting_room_advance():
-        if class_ready_task.pending:
-            class_ready_task.cancel()
-        load_class_data()
-        transition_next(COMPONENT_STATE)
 
     student_plot_data = solara.use_reactive(LOCAL_STATE.value.measurements)
     async def _load_student_data():
