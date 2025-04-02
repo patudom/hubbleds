@@ -34,7 +34,7 @@
     </v-toolbar>
 
     <v-window
-      style="height: calc(100vh - 300px); overflow: auto;"
+      style="height: calc(100vh - 250px); overflow: auto;"
       v-model="step"
     >
 
