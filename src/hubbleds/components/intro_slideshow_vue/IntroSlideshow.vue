@@ -304,7 +304,7 @@
                 class="mx-4 black--text"
                 @click="() => {
                   timerComplete[0] = false;
-                  step++;
+                  set_step(step+1);
                 }"
               >
                 move on
@@ -522,7 +522,7 @@
                 class="mx-4 black--text"
                 @click="() => {
                   timerComplete[1] = false;
-                  step++;
+                  set_step(step+1);
                 }"
               >
                 move on
@@ -698,7 +698,7 @@
                 class="mx-4 black--text"
                 @click="() => {
                   timerComplete[2] = false;
-                  step++;
+                  set_step(step+1);
                 }"
               >
                 move on
@@ -825,7 +825,7 @@
         color="accent"
         depressed
         @click="() => {
-          step--;
+          set_step(step-1);
           let options = null;
           if (step === 4) {
             options = {
@@ -864,7 +864,7 @@
           <v-btn
             :input-value="active"
             icon
-            @click="toggle"
+            @click="toggle; set_step(n-1);"
           >
             <v-icon
               color="info lighten-1"
@@ -884,7 +884,7 @@
         color="accent"
         depressed
         @click="() => {
-          step++;
+          set_step(step+1);
           let options = null;
           if (step === 4) {
             options = {
@@ -916,7 +916,7 @@
         depressed
         @click="() => {
           slideshow_finished();
-          step = 0;
+          set_step(0);
           // this.$refs.synth.stopSpeaking();
         }"
       >
@@ -930,7 +930,7 @@
         depressed
         @click="() => { 
           slideshow_finished();
-          step = 0;
+          set_step(0);
           // this.$refs.synth.stopSpeaking();
         }"
       >
