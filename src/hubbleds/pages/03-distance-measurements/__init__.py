@@ -1026,6 +1026,8 @@ def Page():
                         
                         
                         def dist_bins(distmin, distmax):
+                            if distmin is None or distmax is None:
+                                return 64
                             return int(10 + 0.3 * min(180, ((DISTANCE_CONSTANT / distmin) - (DISTANCE_CONSTANT / distmax))))
                         DotplotViewer(gjapp, 
                                         data = [
@@ -1052,6 +1054,8 @@ def Page():
                                             )
                         if COMPONENT_STATE.value.current_step_at_or_after(Marker.dot_seq4):
                             def angsize_bins(angmin, angmax):
+                                if angmin is None or angmax is None:
+                                    return 64
                                 return int(10 + 0.3 * min(180,(angmax - angmin)))
                             
                             DotplotViewer(gjapp, 

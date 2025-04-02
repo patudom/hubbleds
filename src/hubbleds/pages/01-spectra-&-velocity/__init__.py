@@ -70,6 +70,8 @@ def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
     return fractional_difference > tolerance
 
 def nbin_func(xmin, xmax):
+    if xmin is None or xmax is None:
+        return 30
     # full range is 246422.9213488496
     frac_range = (xmax - xmin) / 246423
     max_bins = 100
