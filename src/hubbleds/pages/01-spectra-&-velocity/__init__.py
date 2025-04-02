@@ -418,13 +418,6 @@ def Page():
 
     Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
 
-    # Insurance policy
-    async def _wwt_ready_timeout():
-        await asyncio.sleep(7)
-        Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
-
-    solara.lab.use_task(_wwt_ready_timeout)
-
     if show_team_interface:
         with rv.Row():
             with solara.Column():
@@ -563,6 +556,10 @@ def Page():
             selection_tool_galaxy = selection_tool_measurement.value.galaxy.model_dump() \
                                         if (selection_tool_measurement.value is not None and selection_tool_measurement.value.galaxy is not None) \
                                         else None
+
+            def _on_wwt_ready_callback():
+                print("CALLED")
+                Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
             
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
@@ -574,7 +571,7 @@ def Page():
                 background_counter=selection_tool_bg_count,
                 deselect_galaxy_callback=_deselect_galaxy_callback,
                 candidate_galaxy=selection_tool_candidate_galaxy.value,
-                on_wwt_ready=lambda: Ref(COMPONENT_STATE.fields.wwt_ready).set(True),
+                on_wwt_ready=_on_wwt_ready_callback,
             ) 
             
             if show_snackbar.value:
