@@ -15,7 +15,7 @@ from hubbleds.layout import Layout
 from cosmicds.logger import setup_logger
 
 from cosmicds.components import StateEditor
-from .component_state import COMPONENT_STATE, IntroSlideshow, Marker
+from .component_state import COMPONENT_STATE, Marker
 
 logger = setup_logger("STAGE INTRO")
 
