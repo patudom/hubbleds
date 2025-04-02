@@ -120,7 +120,8 @@ def Page():
             logger.info("Did not write component state to database.")
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
-
+    
+    seed_data_setup = solara.use_reactive(False)
     def _glue_setup() -> JupyterApplication:
         # NOTE: use_memo has to be part of the main page render. Including it
         #  in a conditional will result in an error.
@@ -130,7 +131,7 @@ def Page():
 
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
             load_and_create_seed_data(gjapp, LOCAL_STATE)
-        
+            seed_data_setup.set(True)
         return gjapp
 
     gjapp = solara.use_memo(_glue_setup, dependencies=[])
@@ -219,6 +220,7 @@ def Page():
         else:
             logger.info('\t\t no changes for second measurement')
     
+    example_data_setup = solara.use_reactive(False)
     def add_example_measurements_to_glue():
         logger.info('in add_example_measurements_to_glue')
         if len(LOCAL_STATE.value.example_measurements) > 0:
@@ -234,6 +236,7 @@ def Page():
             use_this.style.color = MY_DATA_COLOR
 
             link_example_seed_and_measurements(gjapp)
+            example_data_setup.set(True)
         else:
             logger.info('no example measurements yet')
 
@@ -241,8 +244,6 @@ def Page():
     def _glue_sync_setup():
         logger.info('running _glue_sync_setup')
         if Ref(LOCAL_STATE.fields.measurements_loaded).value:
-            # logger.info(f'\texample_measurements: {len(LOCAL_STATE.value.example_measurements)}')
-            # logger.info(f'\tmeasurements: {len(LOCAL_STATE.value.measurements)}')
             add_example_measurements_to_glue()
             update_second_example_measurement()
 
@@ -356,6 +357,8 @@ def Page():
 
     @computed
     def show_synced_lines():
+        if not example_data_setup.value:
+            return False
         return Ref(COMPONENT_STATE.fields.current_step).value.value >= Marker.dot_seq5.value and Ref(COMPONENT_STATE.fields.dotplot_click_count).value > 0
 
     
@@ -375,14 +378,16 @@ def Page():
             return velocity
     
     def sync_spectrum_to_dotplot_range(value):
-        logger.info('Setting dotplot range from spectrum range')
-        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-        return [w2v(v, lambda_rest) for v in value]
+        if len(LOCAL_STATE.value.example_measurements) > 0:
+            logger.info('Setting dotplot range from spectrum range')
+            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+            return [w2v(v, lambda_rest) for v in value]
     
     def sync_dotplot_to_spectrum_range(value):
-        logger.info('Setting spectrum range from dotplot range')
-        lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
-        return [v2w(v, lambda_rest) for v in value]
+        if len(LOCAL_STATE.value.example_measurements) > 0:
+            logger.info('Setting spectrum range from dotplot range')
+            lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
+            return [v2w(v, lambda_rest) for v in value]
 
     def _reactive_subscription_setup():
         Ref(COMPONENT_STATE.fields.selected_galaxy).subscribe(print_selected_galaxy)
@@ -1040,7 +1045,11 @@ def Page():
             if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1):
                 with rv.Col(cols=12, lg=8, class_="no-y-padding"):
                                             
-                    if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection and len(LOCAL_STATE.value.example_measurements) > 0:
+                    if (EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection 
+                        and len(LOCAL_STATE.value.example_measurements) > 0
+                        and seed_data_setup.value
+                        and example_data_setup.value
+                        ):
                         viewer_data = [
                             gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA + '_first'],
                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
