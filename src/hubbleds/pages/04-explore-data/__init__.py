@@ -55,6 +55,64 @@ def Page():
         logger.info(f"Count: {count}")
         return count
 
+    def load_class_data():
+        logger.info("Loading class data")
+        class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
+        measurements = Ref(LOCAL_STATE.fields.class_measurements)
+        student_ids = Ref(LOCAL_STATE.fields.stage_4_class_data_students)
+        if not class_measurements:
+            return []
+
+        if student_ids.value:
+            class_data_points = [m for m in class_measurements if m.student_id in student_ids.value]
+        else:
+            class_data_points = class_measurements
+            ids = [int(id) for id in np.unique([m.student_id for m in class_measurements])]
+            student_ids.set(ids)
+        measurements.set(class_measurements)
+
+        _on_class_data_loaded(class_data_points)
+        return class_data_points
+
+    def _on_class_data_loaded(class_data_points: List[StudentMeasurement]):
+        logger.info("Setting up class glue data")
+        if not class_data_points:
+            return
+
+        class_data = models_to_glue_data(class_data_points, label="Stage 4 Class Data")
+        if not class_data.components:
+            class_data = empty_data_from_model_class(StudentMeasurement, label="Stage 4 Class Data")
+        class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
+        class_data.style.color = MY_CLASS_COLOR
+        class_data.style.alpha = 1
+        class_data.style.markersize = 10
+
+        layer_viewer = viewers["layer"]
+        layer_viewer.add_data(class_data)
+        layer_viewer.state.x_att = class_data.id['est_dist_value']
+        layer_viewer.state.y_att = class_data.id['velocity_value']
+        with delay_callback(layer_viewer.state, 'x_max', 'y_max'):
+            layer_viewer.state.reset_limits()
+            layer_viewer.state.x_max = 1.06 * layer_viewer.state.x_max
+            layer_viewer.state.y_max = 1.06 * layer_viewer.state.y_max   
+        layer_viewer.state.x_axislabel = "Distance (Mpc)"
+        layer_viewer.state.y_axislabel = "Velocity (km/s)"
+        layer_viewer.state.title = "Our Data"
+
+        class_plot_data.set(class_data_points)
+
+    async def keep_checking_class_data():
+        enough_students_ready = Ref(LOCAL_STATE.fields.enough_students_ready)
+        # Add a state guard in case task cancellation fails
+        while COMPONENT_STATE.value.current_step == Marker.wwt_wait:
+            count = check_completed_students_count()
+            if (not enough_students_ready.value) and count >= 12:
+                enough_students_ready.set(True)
+            completed_count.set(count)
+            await asyncio.sleep(10)
+
+    class_ready_task = solara.lab.use_task(keep_checking_class_data, dependencies=[])
+
     def _on_waiting_room_advance():
         if class_ready_task.pending:
             class_ready_task.cancel()
@@ -130,64 +188,6 @@ def Page():
         return gjapp, viewers
 
     gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
-
-    def load_class_data():
-        logger.info("Loading class data")
-        class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
-        measurements = Ref(LOCAL_STATE.fields.class_measurements)
-        student_ids = Ref(LOCAL_STATE.fields.stage_4_class_data_students)
-        if not class_measurements:
-            return []
-
-        if student_ids.value:
-            class_data_points = [m for m in class_measurements if m.student_id in student_ids.value]
-        else:
-            class_data_points = class_measurements
-            ids = [int(id) for id in np.unique([m.student_id for m in class_measurements])]
-            student_ids.set(ids)
-        measurements.set(class_measurements)
-
-        _on_class_data_loaded(class_data_points)
-        return class_data_points
-
-    def _on_class_data_loaded(class_data_points: List[StudentMeasurement]):
-        logger.info("Setting up class glue data")
-        if not class_data_points:
-            return
-
-        class_data = models_to_glue_data(class_data_points, label="Stage 4 Class Data")
-        if not class_data.components:
-            class_data = empty_data_from_model_class(StudentMeasurement, label="Stage 4 Class Data")
-        class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
-        class_data.style.color = MY_CLASS_COLOR
-        class_data.style.alpha = 1
-        class_data.style.markersize = 10
-
-        layer_viewer = viewers["layer"]
-        layer_viewer.add_data(class_data)
-        layer_viewer.state.x_att = class_data.id['est_dist_value']
-        layer_viewer.state.y_att = class_data.id['velocity_value']
-        with delay_callback(layer_viewer.state, 'x_max', 'y_max'):
-            layer_viewer.state.reset_limits()
-            layer_viewer.state.x_max = 1.06 * layer_viewer.state.x_max
-            layer_viewer.state.y_max = 1.06 * layer_viewer.state.y_max   
-        layer_viewer.state.x_axislabel = "Distance (Mpc)"
-        layer_viewer.state.y_axislabel = "Velocity (km/s)"
-        layer_viewer.state.title = "Our Data"
-
-        class_plot_data.set(class_data_points)
-
-    async def keep_checking_class_data():
-        enough_students_ready = Ref(LOCAL_STATE.fields.enough_students_ready)
-        # Add a state guard in case task cancellation fails
-        while COMPONENT_STATE.value.current_step == Marker.wwt_wait:
-            count = check_completed_students_count()
-            if (not enough_students_ready.value) and count >= 12:
-                enough_students_ready.set(True)
-            completed_count.set(count)
-            await asyncio.sleep(10)
-
-    class_ready_task = solara.lab.use_task(keep_checking_class_data, dependencies=[])
 
     student_plot_data = solara.use_reactive(LOCAL_STATE.value.measurements)
     async def _load_student_data():
