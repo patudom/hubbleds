@@ -80,10 +80,6 @@ class ComponentState(BaseComponentState, BaseState):
         if isinstance(v, int):
             return Marker(v)
         return v
-    
-    @property
-    def cho_row1_gate(self) -> bool:
-        return self.wwt_ready    
 
     @property
     def ang_siz2_gate(self):
