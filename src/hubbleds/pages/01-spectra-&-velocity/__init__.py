@@ -62,7 +62,6 @@ GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 EXAMPLE_GALAXY_MEASUREMENTS_FIRST = EXAMPLE_GALAXY_MEASUREMENTS + '_first'
 EXAMPLE_GALAXY_MEASUREMENTS_SECOND = EXAMPLE_GALAXY_MEASUREMENTS + '_second'
 
-show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
     z_meas =  (measwave - restwave) / restwave
@@ -413,7 +412,7 @@ def Page():
 
     Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
 
-    if show_team_interface:
+    if GLOBAL_STATE.value.show_team_interface:
         with rv.Row():
             with solara.Column():
                 StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
@@ -704,7 +703,7 @@ def Page():
                         ),
                         "score_tag": "interpret-velocity",
                     },
-                    show_team_interface=show_team_interface,
+                    show_team_interface=GLOBAL_STATE.value.show_team_interface,
                 )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
@@ -741,7 +740,7 @@ def Page():
                 },
                 speech=speech.value,
             )
-            if show_team_interface:
+            if GLOBAL_STATE.value.show_team_interface:
                 if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
                     solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none;", classes=["demo-button"])
             ScaffoldAlert(
@@ -944,7 +943,7 @@ def Page():
                             COMPONENT_STATE.fields.show_dotplot_tutorial_dialog
                         ).set(v),
                         event_set_step = Ref(COMPONENT_STATE.fields.dotplot_tutorial_state.step).set,
-                        show_team_interface=show_team_interface,
+                        show_team_interface=GLOBAL_STATE.value.show_team_interface,
                     )
                 
     # Dot Plot 1st measurement row
@@ -1392,7 +1391,7 @@ def Page():
                                     True
                                 ),
                                 image_location=get_image_path(router, "stage_one_spectrum"),
-                                show_team_interface=show_team_interface,
+                                show_team_interface=GLOBAL_STATE.value.show_team_interface,
                             )
                 
                 if COMPONENT_STATE.value.current_step_at_or_after(Marker.ref_dat1): # space 2 buttons nicely
@@ -1400,7 +1399,7 @@ def Page():
                         with rv.Col(cols=4, offset=2):
                             SpectrumSlideshow(
                                 image_location=get_image_path(router, "stage_one_spectrum"),
-                                show_team_interface=show_team_interface,
+                                show_team_interface=GLOBAL_STATE.value.show_team_interface,
                             )
                         with rv.Col(cols=4):
                             show_reflection_dialog = Ref(
@@ -1452,5 +1451,5 @@ def Page():
                                 event_on_reflection_complete=lambda _: reflection_complete.set(
                                     True
                                 ),
-                                show_team_interface=show_team_interface,
+                                show_team_interface=GLOBAL_STATE.value.show_team_interface,
                             )

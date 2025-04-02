@@ -44,7 +44,6 @@ logger = setup_logger("STAGE 5")
 
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 @solara.component
 def Page():
@@ -389,7 +388,7 @@ def Page():
     def _jump_stage_6():
         push_to_route(router, location, "06-prodata")
 
-    if show_team_interface:
+    if GLOBAL_STATE.value.show_team_interface:
         with solara.Row():
             with solara.Column():
                 StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=False)
@@ -622,7 +621,7 @@ def Page():
                             event_set_step=uncertainty_step.set,
                             event_set_max_step_completed=uncertainty_max_step_completed.set,
                             image_location=get_image_path(router,"stage_five"),
-                            show_team_interface=show_team_interface,   
+                            show_team_interface=GLOBAL_STATE.value.show_team_interface,   
                         )
             
     #--------------------- Row 3: ALL DATA HUBBLE VIEWER - during class sequence -----------------------
@@ -692,7 +691,7 @@ def Page():
                         event_set_step=uncertainty_step.set,
                         event_set_max_step_completed=uncertainty_max_step_completed.set,
                         image_location=get_image_path(router,"stage_five"),
-                        show_team_interface=show_team_interface, 
+                        show_team_interface=GLOBAL_STATE.value.show_team_interface, 
                 )
 
     #--------------------- Row 4: OUR CLASS HISTOGRAM VIEWER -----------------------

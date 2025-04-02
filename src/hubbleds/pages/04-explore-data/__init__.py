@@ -26,7 +26,6 @@ from cosmicds.logger import setup_logger
 logger = setup_logger("STAGE 4")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 @solara.component
 def Page():
@@ -237,7 +236,7 @@ def Page():
         else:
             return None
 
-    if show_team_interface:
+    if GLOBAL_STATE.value.show_team_interface:
         with solara.Row():
             with solara.Column():
                 StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
@@ -568,5 +567,5 @@ def Page():
                         event_set_max_step_completed=max_step_completed.set,
                         event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                         event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
-                        show_team_interface=show_team_interface,
+                        show_team_interface=GLOBAL_STATE.value.show_team_interface,
                     )

@@ -77,8 +77,6 @@ from hubbleds.example_measurement_helpers import (
 
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-show_team_interface = GLOBAL_STATE.value.show_team_interface
-
 logger = setup_logger("STAGE3")
 
 def update_second_example_measurement():
@@ -353,7 +351,7 @@ def Page():
     
     solara.use_effect(_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
 
-    if show_team_interface:
+    if GLOBAL_STATE.value.show_team_interface:
         with solara.Row():
             with solara.Column():
                 StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
@@ -688,7 +686,7 @@ def Page():
                             True
                         ),
                         image_location = get_image_path(router, "stage_two_dos_donts"),
-                        show_team_interface = show_team_interface,
+                        show_team_interface= GLOBAL_STATE.value.show_team_interface,
                     )
 
     with solara.ColumnsResponsive(12, large=[4,8]):
@@ -762,7 +760,7 @@ def Page():
                     "bad_angsize": False
                 }
             )
-            if (COMPONENT_STATE.value.is_current_step(Marker.rep_rem1) and show_team_interface):
+            if (COMPONENT_STATE.value.is_current_step(Marker.rep_rem1) and GLOBAL_STATE.value.show_team_interface):
                 solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
@@ -797,7 +795,7 @@ def Page():
                     distances_total.set(count)
                     fill_galaxy_pressed.set(True)
 
-                if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and show_team_interface):
+                if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
                     solara.Button("Demo Shortcut: Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances() , classes=["demo-button"])
 
 
