@@ -34,7 +34,7 @@ def Page():
 
     solara.use_memo(_load_component_state, dependencies=[])
 
-    async def _write_component_state():
+    def _write_component_state():
         if not loaded_component_state.value:
             return
 
@@ -47,15 +47,14 @@ def Page():
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
 
-    exploration_tool = ExplorationTool()
-    exploration_tool1 = ExplorationTool()
-    exploration_tool2 = ExplorationTool()
+    def _get_exploration_tool():
+        return ExplorationTool()
 
-    exploration_tools = [exploration_tool, exploration_tool1, exploration_tool2]
+    exploration_tool = solara.use_memo(_get_exploration_tool, dependencies=[])
 
     def go_to_location(options):
         index = options.get("index", 0)
-        tool = exploration_tools[index]
+        tool = exploration_tool #exploration_tools[index]
         fov_as = options.get("fov", 216000)
         fov = fov_as * u.arcsec
         ra = options.get("ra")
@@ -86,8 +85,8 @@ def Page():
         event_slideshow_finished=lambda _: push_to_route(router, location, "01-spectra-&-velocity"),
         debug=LOCAL_STATE.value.debug_mode,
         exploration_tool=exploration_tool,
-        exploration_tool1=exploration_tool1,
-        exploration_tool2=exploration_tool2,
+        exploration_tool1=exploration_tool,
+        exploration_tool2=exploration_tool,
         event_go_to_location=go_to_location,
         speech=speech.value.model_dump(),
         show_team_interface=GLOBAL_STATE.value.show_team_interface
