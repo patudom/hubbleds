@@ -84,8 +84,10 @@ def Page():
     loaded_component_state = solara.use_reactive(False)
     selection_tool_candidate_galaxy = solara.use_reactive(None)
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
+    
 
-    async def _load_component_state():
+    def _load_component_state():
         # Load stored component state from database, measurement data is
         #   considered higher-level and is loaded when the story starts.
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -102,8 +104,7 @@ def Page():
         logger.info("Finished loading component state.")
         loaded_component_state.set(True)
 
-    solara.lab.use_task(_load_component_state)
-    # solara.use_memo(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
 
     async def _write_component_state():
         if not loaded_component_state.value:
@@ -130,7 +131,7 @@ def Page():
         
         return gjapp
 
-    gjapp = solara.use_memo(_glue_setup)
+    gjapp = solara.use_memo(_glue_setup, dependencies=[])
 
     def add_or_update_data(data: Data):
         return _add_or_update_data(gjapp, data)
@@ -145,7 +146,7 @@ def Page():
             lambda *args: total_galaxies.set(len(measurements.value))
         )
 
-    solara.use_memo(_state_callback_setup)
+    solara.use_memo(_state_callback_setup, dependencies=[])
 
     @computed
     def use_second_measurement():
@@ -242,9 +243,8 @@ def Page():
             # logger.info(f'\tmeasurements: {len(LOCAL_STATE.value.measurements)}')
             add_example_measurements_to_glue()
             update_second_example_measurement()
-    
-    
-    solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)]) 
+
+    solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded).value])
 
     selection_tool_bg_count = solara.use_reactive(0)
 
@@ -278,7 +278,7 @@ def Page():
                                                    galaxy=measurement.galaxy,
                                                    velocity_value=measurement.velocity_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        push_to_route(router, f"02-distance-introduction")
+        push_to_route(router, location, f"02-distance-introduction")
 
     def _select_random_galaxies():
         need = 5 - len(LOCAL_STATE.value.measurements)
@@ -437,7 +437,7 @@ def Page():
         with rv.Col(cols=12, lg=4):
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineIntro.vue",
-                event_back_callback=lambda _: push_to_route(router, "/"),
+                event_back_callback=lambda _: push_to_route(router, location, location, "/"),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.mee_gui1),
@@ -773,7 +773,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: push_to_route(router, "02-distance-introduction"),
+                event_next_callback=lambda _: push_to_route(router, location, location, "02-distance-introduction"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),

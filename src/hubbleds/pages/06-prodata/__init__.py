@@ -77,7 +77,9 @@ def Page():
     solara.Title("HubbleDS")
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
+
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
     async def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -266,7 +268,7 @@ def Page():
         with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineProfessionalData0.vue",
-                event_back_callback=lambda _: push_to_route(router, "05-class-results-uncertainty"),
+                event_back_callback=lambda _: push_to_route(router, location, "05-class-results-uncertainty"),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.pro_dat0),

@@ -52,7 +52,9 @@ def Page():
     loaded_component_state = solara.use_reactive(False)
     student_slider_setup, set_student_slider_setup = solara.use_state(False)
     class_slider_setup, set_class_slider_setup = solara.use_state(False)
+
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
     async def _load_component_state():
         # Load stored component state from database, measurement data is
@@ -388,7 +390,7 @@ def Page():
     add_callback(line_fit_tool, 'active',  _on_best_fit_line_shown)
 
     def _jump_stage_6():
-        push_to_route(router, "06-prodata")
+        push_to_route(router, location, "06-prodata")
 
     if show_team_interface:
         with solara.Row():
@@ -430,7 +432,7 @@ def Page():
             with rv.Col():
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineRandomVariability.vue",
-                    event_back_callback=lambda _: push_to_route(router, "04-explore-data"),
+                    event_back_callback=lambda _: push_to_route(router, location, "04-explore-data"),
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     allow_back=False,
@@ -909,7 +911,7 @@ def Page():
                 ScaffoldAlert(
                     # TODO: event_next_callback should go to next stage but I don't know how to set that up.
                     GUIDELINE_ROOT / "GuidelineMoreDataDistribution.vue",
-                    event_next_callback=lambda _: push_to_route(router, "06-prodata"),
+                    event_next_callback=lambda _: push_to_route(router, location, "06-prodata"),
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.mor_dat1),

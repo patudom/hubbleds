@@ -33,6 +33,7 @@ def Page():
     solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
     completed_count = solara.use_reactive(0)
 
@@ -202,7 +203,7 @@ def Page():
         load_class_data()
 
     def _jump_stage_5():
-        push_to_route(router, "05-class-results-uncertainty")
+        push_to_route(router, location, "05-class-results-uncertainty")
 
     current_step = Ref(COMPONENT_STATE.fields.current_step)
 
@@ -256,7 +257,7 @@ def Page():
         with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineExploreData.vue",
-                event_back_callback=lambda _: push_to_route(router, "03-distance-measurements"),
+                event_back_callback=lambda _: push_to_route(router, location, "03-distance-measurements"),
                 event_next_callback = lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.exp_dat1),
@@ -432,7 +433,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",
-                event_next_callback=lambda _: push_to_route(router, "05-class-results-uncertainty"),
+                event_next_callback=lambda _: push_to_route(router, location, "05-class-results-uncertainty"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),
