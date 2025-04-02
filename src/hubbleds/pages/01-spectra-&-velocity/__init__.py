@@ -201,8 +201,7 @@ def Page():
         new_data = Data(label=data.label, **update)
         data.update_values_from_data(new_data)
 
-    example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
-    example_measurements.subscribe(_update_seed_data_with_examples)
+    
 
 
     def update_second_example_measurement():
@@ -248,6 +247,9 @@ def Page():
             update_second_example_measurement()
 
     solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded).value])
+    example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
+    example_measurements.subscribe(lambda *args: _glue_sync_setup())
+    example_measurements.subscribe(_update_seed_data_with_examples)
 
     selection_tool_bg_count = solara.use_reactive(0)
 
