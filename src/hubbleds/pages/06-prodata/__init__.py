@@ -88,7 +88,7 @@ def Page():
     
     solara.use_memo(_load_component_state, dependencies=[])
     
-    async def _write_component_state():
+    def _write_component_state():
         if not loaded_component_state.value:
             return
 

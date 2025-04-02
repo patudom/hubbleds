@@ -85,7 +85,6 @@ def Page():
     selection_tool_candidate_galaxy = solara.use_reactive(None)
     router = solara.use_router()
     location = solara.use_context(solara.routing._location_context)
-    
 
     def _load_component_state():
         # Load stored component state from database, measurement data is
@@ -97,7 +96,8 @@ def Page():
         if len(LOCAL_STATE.value.measurements) != total_galaxies.value:
             logger.error(
                 "Detected mismatch between stored measurements and current "
-                "recorded number of galaxies."
+                f"recorded number of galaxies. Stored: {len(LOCAL_STATE.value.measurements)}, "
+                f"Current: {total_galaxies.value}."
             )
             total_galaxies.set(len(LOCAL_STATE.value.measurements))
 
@@ -106,7 +106,7 @@ def Page():
 
     solara.use_memo(_load_component_state, dependencies=[])
 
-    async def _write_component_state():
+    def _write_component_state():
         if not loaded_component_state.value:
             return
 
@@ -347,8 +347,6 @@ def Page():
     def print_selected_example_galaxy(galaxy):
         print('selected example galaxy is now:', galaxy)
 
-    
-
     sync_wavelength_line = solara.use_reactive(6565.0)
     sync_velocity_line = solara.use_reactive(0.0)
     spectrum_bounds = solara.use_reactive([])
@@ -383,10 +381,7 @@ def Page():
         logger.info('Setting spectrum range from dotplot range')
         lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
         return [v2w(v, lambda_rest) for v in value]
-            
-    
 
-    
     def _reactive_subscription_setup():
         Ref(COMPONENT_STATE.fields.selected_galaxy).subscribe(print_selected_galaxy)
         Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
@@ -558,7 +553,6 @@ def Page():
                                         else None
 
             def _on_wwt_ready_callback():
-                print("CALLED")
                 Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
             
             SelectionTool(
