@@ -260,8 +260,7 @@ def SelectionTool(
         fov: u.Quantity,
         instant: Optional[bool] = None,
         motion_counted: bool = True,
-    ):  
-        print(f"Going to location: {coords}, fov: {fov}, instant: {instant}, motion_counted: {motion_counted}")
+    ):
         if instant is None:
             if motion_counted:
                 instant = motions_left <= 0

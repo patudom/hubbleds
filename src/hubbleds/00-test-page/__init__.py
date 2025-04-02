@@ -51,7 +51,7 @@ def Page():
     
     solara.lab.use_task(_load_component_state)
     
-    async def _write_component_state():
+    def _write_component_state():
         if not loaded_component_state.value:
             return
 
