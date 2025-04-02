@@ -1047,7 +1047,6 @@ def Page():
                                             
                     if (EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection 
                         and len(LOCAL_STATE.value.example_measurements) > 0
-                        and seed_data_setup.value
                         and example_data_setup.value
                         ):
                         viewer_data = [
@@ -1055,11 +1054,12 @@ def Page():
                             gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
                         ]
                         
+                        ignore = [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
                         if COMPONENT_STATE.value.current_step.value != Marker.rem_vel1.value:
-                            ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "second measurement")]
+                            ignore += [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "second measurement")]
                         else:
-                            ignore = [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "first measurement")]
-                        ignore += [gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]]
+                            ignore += [subset_by_label(gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS], "first measurement")]
+                        
                         DotplotViewer(
                             gjapp,
                             title="Dotplot: Example Galaxy Velocities",
