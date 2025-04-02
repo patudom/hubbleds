@@ -115,7 +115,10 @@ def Page():
 
     def _on_waiting_room_advance():
         if class_ready_task.pending:
-            class_ready_task.cancel()
+            try:
+                class_ready_task.cancel()
+            except RuntimeError:
+                pass
         load_class_data()
         transition_next(COMPONENT_STATE)
 
