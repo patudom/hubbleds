@@ -10,14 +10,12 @@ class Marker(enum.Enum, BaseMarker):
     int_sli1 = enum.auto()
     end_intro1 = enum.auto()
 
-class IntroSlideshow(BaseModel):
-    step: int = 0
-    max_step_completed: int = 0
 
 class ComponentState(BaseComponentState, BaseState):
     current_step: Marker = Marker.int_sli1
     stage_id: str = "introduction"
-    intro_slideshow_state: IntroSlideshow = IntroSlideshow()
+    step: int = 0
+    max_step_completed: int = 0
     
     _max_step: int = 0 # not included in model
     
@@ -29,14 +27,14 @@ class ComponentState(BaseComponentState, BaseState):
     @computed_field
     @property
     def max_step(self) -> int:
-        self._max_step = max(self.intro_slideshow_state.step, self._max_step)
+        self._max_step = max(self.step, self._max_step)
         return self._max_step
     
     
     @computed_field
     @property
     def progress(self) -> float:
-        return (self.intro_slideshow_state.max_step_completed + 1) / self.total_steps
+        return (self.max_step_completed + 1) / self.total_steps
 
 
 COMPONENT_STATE = solara.reactive(ComponentState())

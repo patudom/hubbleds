@@ -12,7 +12,7 @@
       <v-toolbar-title
         class="text-h6 text-uppercase font-weight-regular"
       >
-        {{ titles[step] }}
+        {{ titles[slideStep] }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <speech-synthesizer
@@ -27,7 +27,7 @@
           const currentWindowItem = this.$el.querySelector('.v-window-item--active');
           return currentWindowItem?.contains(element) ?? false;
         }"
-        :autospeak-on-change="step"
+        :autospeak-on-change="slideStep"
         :selectors="['div.v-toolbar__title.text-h6', 'h3', 'p']"
         :options="speech"
       />
@@ -35,7 +35,7 @@
 
     <v-window
       style="height: calc(100vh - 300px); overflow: auto;"
-      v-model="step"
+      v-model="slideStep"
     >
 
       <v-window-item :value="0" 
@@ -304,7 +304,7 @@
                 class="mx-4 black--text"
                 @click="() => {
                   timerComplete[0] = false;
-                  step++;
+                  slideStep++;
                 }"
               >
                 move on
@@ -522,7 +522,7 @@
                 class="mx-4 black--text"
                 @click="() => {
                   timerComplete[1] = false;
-                  step++;
+                  slideStep++;
                 }"
               >
                 move on
@@ -698,7 +698,7 @@
                 class="mx-4 black--text"
                 @click="() => {
                   timerComplete[2] = false;
-                  step++;
+                  slideStep++;
                 }"
               >
                 move on
@@ -820,14 +820,14 @@
       class="justify-space-between"
     >
       <v-btn
-        :disabled="step === 0"
+        :disabled="slideStep === 0"
         class="black--text"
         color="accent"
         depressed
         @click="() => {
-          step--;
+          slideStep--;
           let options = null;
-          if (step === 4) {
+          if (slideStep === 4) {
             options = {
               index: 1,
               ra: 266.64, // default MW coords
@@ -852,7 +852,7 @@
       </v-btn>
       <v-spacer></v-spacer>
       <v-item-group
-        v-model="step"
+        v-model="slideStep"
         class="text-center"
         mandatory
       >
@@ -875,18 +875,18 @@
         </v-item>
       </v-item-group>
       <v-spacer></v-spacer>
-      <!-- Code to use for disable in button below if step 3 depends on exploring WWT first: -->
-      <!-- :disabled="step === length-1 || (step === 3 && !exploration_complete)" -->
+      <!-- Code to use for disable in button below if slideStep 3 depends on exploring WWT first: -->
+      <!-- :disabled="slideStep === length-1 || (slideStep === 3 && !exploration_complete)" -->
       <v-btn
-        :disabled="step >= length-1"
-        v-if="step < length-1"
+        :disabled="slideStep >= length-1"
+        v-if="slideStep < length-1"
         class="black--text"
         color="accent"
         depressed
         @click="() => {
-          step++;
+          slideStep++;
           let options = null;
-          if (step === 4) {
+          if (slideStep === 4) {
             options = {
               index: 1,
               ra: 266.64, // default MW coords
@@ -911,26 +911,26 @@
       </v-btn>
       <!-- first button below just being used for testing, delete when using live with students -->
       <v-btn
-        v-if="step < length-1 && show_team_interface"
+        v-if="slideStep < length-1 && show_team_interface"
         class="demo-button"
         depressed
         @click="() => {
           slideshow_finished();
-          step = 0;
+          slideStep = 0;
           // this.$refs.synth.stopSpeaking();
         }"
       >
         jump to Stage 1
       </v-btn>
       <v-btn
-        v-if="step >= length-1"
-        :disabled="step > length-1"
+        v-if="slideStep >= length-1"
+        :disabled="slideStep > length-1"
         color="accent"
         class="black--text"
         depressed
         @click="() => { 
           slideshow_finished();
-          step = 0;
+          slideStep = 0;
           // this.$refs.synth.stopSpeaking();
         }"
       >
@@ -966,11 +966,15 @@ module.exports = {
   props: ["continueText"],
   data() {
     return {
+      slideStep: 0,
       target: '',
       timerDuration: [300000, 180000, 180000],
       timerStarted: [false, false, false],
       timerComplete: [false, false, false],
     };
+  },
+  mounted() {
+    this.slideStep = this.step;
   },
   methods: {
     getRoot() {
@@ -990,7 +994,11 @@ module.exports = {
   },
 
   watch: {
-    step(val) {
+    slideStep(val) {
+      this.$nextTick(() => {
+        this.set_step(val);
+      });
+
       if (val > this.max_step) {
         this.set_max_step(val);
       }

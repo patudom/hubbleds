@@ -63,10 +63,10 @@ def Page():
         tool.go_to_coordinates(coordinates, fov=fov, instant=instant)
 
     speech = Ref(GLOBAL_STATE.fields.speech)
-    step = Ref(COMPONENT_STATE.fields.intro_slideshow_state.step)
-    max_step = Ref(COMPONENT_STATE.fields.intro_slideshow_state.max_step_completed)
+    step = Ref(COMPONENT_STATE.fields.step)
+    max_step = Ref(COMPONENT_STATE.fields.max_step_completed)
     IntroSlideshowVue(
-        step = step.value,
+        step = COMPONENT_STATE.value.step,
         event_set_step=step.set,
         max_step=max_step.value,
         event_set_max_step=max_step.set,
