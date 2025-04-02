@@ -82,6 +82,10 @@ class ComponentState(BaseComponentState, BaseState):
         return v
 
     @property
+    def cho_row1_gate(self) -> bool:
+        return self.wwt_ready
+
+    @property
     def ang_siz2_gate(self):
         return bool(self.selected_example_galaxy)
 
