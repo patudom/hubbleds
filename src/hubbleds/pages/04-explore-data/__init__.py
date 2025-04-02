@@ -118,7 +118,7 @@ def Page():
             try:
                 class_ready_task.cancel()
             except RuntimeError:
-                pass
+                return
         load_class_data()
         transition_next(COMPONENT_STATE)
 
