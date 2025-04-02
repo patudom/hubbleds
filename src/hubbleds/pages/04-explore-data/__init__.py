@@ -49,7 +49,11 @@ def Page():
 
     skip_waiting_room, set_skip_waiting_room = solara.use_state(False)
 
-    # LOCAL_API.update_class_size(GLOBAL_STATE)
+    def check_completed_students_count():
+        logger.info("Checking how many students have completed measurements")
+        count = LOCAL_API.get_students_completed_measurements_count(GLOBAL_STATE, LOCAL_STATE)
+        logger.info(f"Count: {count}")
+        return count
 
     def _load_component_state():
         # Load stored component state from database, measurement data is
@@ -120,12 +124,6 @@ def Page():
         return gjapp, viewers
 
     gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
-
-    def check_completed_students_count():
-        logger.info("Checking how many students have completed measurements")
-        count = LOCAL_API.get_students_completed_measurements_count(GLOBAL_STATE, LOCAL_STATE)
-        logger.info(f"Count: {count}")
-        return count
 
     def load_class_data():
         logger.info("Loading class data")
