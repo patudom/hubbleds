@@ -139,6 +139,14 @@ class ComponentState(BaseComponentState, BaseState):
         )
 
     @property
+    def sel_gal1_gate(self) -> bool:
+        return self.wwt_ready
+
+    @property
+    def sel_gal2_gate(self) -> bool:
+        return self.wwt_ready
+
+    @property
     def not_gal1_gate(self) -> bool:
         return self.total_galaxies >= 1
 

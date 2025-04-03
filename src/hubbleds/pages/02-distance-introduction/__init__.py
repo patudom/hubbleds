@@ -17,8 +17,9 @@ def Page():
     solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
-    async def _load_component_state():
+    def _load_component_state():
         # Load stored component state from database, measurement data is
         # considered higher-level and is loaded when the story starts
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -27,9 +28,9 @@ def Page():
         logger.info("Finished loading component state for stage 2.")
         loaded_component_state.set(True)
 
-    solara.lab.use_task(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
 
-    async def _write_component_state():
+    def _write_component_state():
         if not loaded_component_state.value:
             return
 
@@ -40,8 +41,6 @@ def Page():
             logger.info("Wrote component state for stage 2 to database.")
         else:
             logger.info("Did not write component state for stage 2 to database.")
-
-        
 
     logger.info("Trying to write component state for stage 2.")
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
@@ -85,7 +84,7 @@ def Page():
             "mc_score_2": get_multiple_choice(LOCAL_STATE, COMPONENT_STATE, "how-much-closer-galaxies"), 
             "score_tag_2": "how-much-closer-galaxies",
         },
-        event_slideshow_finished=lambda _: push_to_route(router, "03-distance-measurements"),
+        event_slideshow_finished=lambda _: push_to_route(router, location, "03-distance-measurements"),
         debug = LOCAL_STATE.value.debug_mode,
         speech=speech.value.model_dump(),
     )

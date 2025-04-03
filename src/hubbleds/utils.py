@@ -11,12 +11,16 @@ from glue_jupyter.app import JupyterApplication
 from numbers import Number
 from typing import List, Set, Tuple, TypeVar, Optional, cast, Any
 from collections.abc import Callable
+import solara
 from solara.routing import Router
 from solara.toestand import Reactive
+from solara.server import settings
 
 from hubbleds.state import StudentMeasurement
 from glue.core import Data
 from numpy import asarray
+
+from pathlib import Path
 
 try:
     from astropy.cosmology import Planck18 as planck
@@ -321,5 +325,9 @@ def subset_by_label(data, label):
         value = next((s for s in data.subsets if s.label == label), None)
         return value
 
-def push_to_route(router: Router, route: str):
-    router.push(f"{router.root_path}/{route}") 
+def push_to_route(router: Router, location, route: str):
+    if route != '/':
+        path = Path(f"{router.root_path}/{route}")
+        router.push(str(path))
+    else:
+        location.pathname = settings.main.base_url

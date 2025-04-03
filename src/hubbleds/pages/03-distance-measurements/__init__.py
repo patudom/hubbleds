@@ -205,17 +205,18 @@ def Page():
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
     distance_tool_bg_count = solara.use_reactive(0)
 
-    async def _load_component_state():
+    def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
         logger.info("Finished loading component state")
         loaded_component_state.set(True)
     
-    solara.lab.use_task(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
     
-    async def _write_component_state():
+    def _write_component_state():
         if not loaded_component_state.value:
             return
 
@@ -312,7 +313,7 @@ def Page():
             measurement.student_id = GLOBAL_STATE.value.student.id
         Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
-        push_to_route(router, "04-explore-data")
+        push_to_route(router, location, "04-explore-data")
 
     def _fill_thetas():
         dummy_measurements = LOCAL_API.get_dummy_data()
@@ -501,7 +502,7 @@ def Page():
         with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineAngsizeMeas1.vue",
-                event_back_callback=lambda _: push_to_route(router, "02-distance-introduction"),
+                event_back_callback=lambda _: push_to_route(router, location, "02-distance-introduction"),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.ang_siz1),
@@ -765,7 +766,7 @@ def Page():
                 solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
-                event_next_callback=lambda _: push_to_route(router, "04-explore-data"),
+                event_next_callback=lambda _: push_to_route(router, location, "04-explore-data"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.fil_rem1),

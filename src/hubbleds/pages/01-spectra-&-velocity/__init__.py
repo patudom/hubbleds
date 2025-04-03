@@ -80,12 +80,14 @@ def nbin_func(xmin, xmax):
 @solara.component
 def Page():
     solara.Title("HubbleDS")
-    logger.info("Rendering Stage 1: Spectra & Velocity")
+
     loaded_component_state = solara.use_reactive(False)
     selection_tool_candidate_galaxy = solara.use_reactive(None)
-    router = solara.use_router()
 
-    async def _load_component_state():
+    router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
+
+    def _load_component_state():
         # Load stored component state from database, measurement data is
         #   considered higher-level and is loaded when the story starts.
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -95,17 +97,17 @@ def Page():
         if len(LOCAL_STATE.value.measurements) != total_galaxies.value:
             logger.error(
                 "Detected mismatch between stored measurements and current "
-                "recorded number of galaxies."
+                f"recorded number of galaxies. Stored: {len(LOCAL_STATE.value.measurements)}, "
+                f"Current: {total_galaxies.value}."
             )
             total_galaxies.set(len(LOCAL_STATE.value.measurements))
 
         logger.info("Finished loading component state.")
         loaded_component_state.set(True)
 
-    solara.lab.use_task(_load_component_state)
-    # solara.use_memo(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
 
-    async def _write_component_state():
+    def _write_component_state():
         if not loaded_component_state.value:
             return
 
@@ -130,7 +132,7 @@ def Page():
         
         return gjapp
 
-    gjapp = solara.use_memo(_glue_setup)
+    gjapp = solara.use_memo(_glue_setup, dependencies=[])
 
     def add_or_update_data(data: Data):
         return _add_or_update_data(gjapp, data)
@@ -145,7 +147,7 @@ def Page():
             lambda *args: total_galaxies.set(len(measurements.value))
         )
 
-    solara.use_memo(_state_callback_setup)
+    solara.use_memo(_state_callback_setup, dependencies=[])
 
     @computed
     def use_second_measurement():
@@ -242,9 +244,8 @@ def Page():
             # logger.info(f'\tmeasurements: {len(LOCAL_STATE.value.measurements)}')
             add_example_measurements_to_glue()
             update_second_example_measurement()
-    
-    
-    solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)]) 
+
+    solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded).value])
 
     selection_tool_bg_count = solara.use_reactive(0)
 
@@ -278,7 +279,7 @@ def Page():
                                                    galaxy=measurement.galaxy,
                                                    velocity_value=measurement.velocity_value))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        push_to_route(router, f"02-distance-introduction")
+        push_to_route(router, location, f"02-distance-introduction")
 
     def _select_random_galaxies():
         need = 5 - len(LOCAL_STATE.value.measurements)
@@ -347,8 +348,6 @@ def Page():
     def print_selected_example_galaxy(galaxy):
         print('selected example galaxy is now:', galaxy)
 
-    
-
     sync_wavelength_line = solara.use_reactive(6565.0)
     sync_velocity_line = solara.use_reactive(0.0)
     spectrum_bounds = solara.use_reactive([])
@@ -383,10 +382,7 @@ def Page():
         logger.info('Setting spectrum range from dotplot range')
         lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
         return [v2w(v, lambda_rest) for v in value]
-            
-    
 
-    
     def _reactive_subscription_setup():
         Ref(COMPONENT_STATE.fields.selected_galaxy).subscribe(print_selected_galaxy)
         Ref(COMPONENT_STATE.fields.selected_example_galaxy).subscribe(print_selected_example_galaxy)
@@ -418,13 +414,6 @@ def Page():
 
     Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
 
-    # Insurance policy
-    async def _wwt_ready_timeout():
-        await asyncio.sleep(7)
-        Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
-
-    solara.lab.use_task(_wwt_ready_timeout)
-
     if show_team_interface:
         with rv.Row():
             with solara.Column():
@@ -437,7 +426,7 @@ def Page():
         with rv.Col(cols=12, lg=4):
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineIntro.vue",
-                event_back_callback=lambda _: push_to_route(router, "/"),
+                event_back_callback=lambda _: push_to_route(router, location, "/"),
                 event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.mee_gui1),
@@ -563,6 +552,9 @@ def Page():
             selection_tool_galaxy = selection_tool_measurement.value.galaxy.model_dump() \
                                         if (selection_tool_measurement.value is not None and selection_tool_measurement.value.galaxy is not None) \
                                         else None
+
+            def _on_wwt_ready_callback():
+                Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
             
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
@@ -574,7 +566,7 @@ def Page():
                 background_counter=selection_tool_bg_count,
                 deselect_galaxy_callback=_deselect_galaxy_callback,
                 candidate_galaxy=selection_tool_candidate_galaxy.value,
-                on_wwt_ready=lambda: Ref(COMPONENT_STATE.fields.wwt_ready).set(True),
+                on_wwt_ready=_on_wwt_ready_callback,
             ) 
             
             if show_snackbar.value:
@@ -773,7 +765,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: push_to_route(router, "02-distance-introduction"),
+                event_next_callback=lambda _: push_to_route(router, location, "02-distance-introduction"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),

@@ -173,6 +173,11 @@ def SelectionTool(
         """
         Set up the WWT widget when it is ready.
         """
+        # Apparently, `use_effect` triggers immediately, and then based on
+        #  dependencies. So we need to check if the WWT is ready.
+        if not show_wwt.value:
+            return
+
         wwt_widget = solara.get_widget(wwt_container).children[0]
 
         # Update the displayed foreground and background
@@ -255,8 +260,7 @@ def SelectionTool(
         fov: u.Quantity,
         instant: Optional[bool] = None,
         motion_counted: bool = True,
-    ):  
-        print(f"Going to location: {coords}, fov: {fov}, instant: {instant}, motion_counted: {motion_counted}")
+    ):
         if instant is None:
             if motion_counted:
                 instant = motions_left <= 0

@@ -52,9 +52,11 @@ def Page():
     loaded_component_state = solara.use_reactive(False)
     student_slider_setup, set_student_slider_setup = solara.use_state(False)
     class_slider_setup, set_class_slider_setup = solara.use_state(False)
-    router = solara.use_router()
 
-    async def _load_component_state():
+    router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
+
+    def _load_component_state():
         # Load stored component state from database, measurement data is
         # considered higher-level and is loaded when the story starts
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -63,9 +65,9 @@ def Page():
         logger.info("Finished loading component state for stage 4.")
         loaded_component_state.set(True)
 
-    solara.lab.use_task(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
 
-    async def _write_component_state():
+    def _write_component_state():
         if not loaded_component_state.value:
             return
 
@@ -75,9 +77,6 @@ def Page():
             logger.info("Wrote stage 5 component state to database.")
         else:
             logger.info("Did not write stage 5 component state to database.")
-
-
-        
 
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
@@ -388,7 +387,7 @@ def Page():
     add_callback(line_fit_tool, 'active',  _on_best_fit_line_shown)
 
     def _jump_stage_6():
-        push_to_route(router, "06-prodata")
+        push_to_route(router, location, "06-prodata")
 
     if show_team_interface:
         with solara.Row():
@@ -397,8 +396,8 @@ def Page():
             with solara.Column():
                 solara.Button(label="Shortcut: Jump to Stage 6", on_click=_jump_stage_6, classes=["demo-button"])
 
-    def _on_component_state_loaded(value: bool):
-        if not value:
+    def _parse_component_state():
+        if not loaded_component_state.value:
             return
 
         student_low_age = Ref(COMPONENT_STATE.fields.student_low_age)
@@ -418,7 +417,7 @@ def Page():
         class_low_age.set(round(min(all_class_summ_data["age_value"])))
         class_high_age.set(round(max(all_class_summ_data["age_value"])))
 
-    loaded_component_state.subscribe(_on_component_state_loaded)
+    solara.use_memo(_parse_component_state, dependencies=[loaded_component_state.value])
 
     #--------------------- Row 1: OUR DATA HUBBLE VIEWER -----------------------
     if (
@@ -430,7 +429,7 @@ def Page():
             with rv.Col():
                 ScaffoldAlert(
                     GUIDELINE_ROOT / "GuidelineRandomVariability.vue",
-                    event_back_callback=lambda _: push_to_route(router, "04-explore-data"),
+                    event_back_callback=lambda _: push_to_route(router, location, "04-explore-data"),
                     event_next_callback=lambda _: transition_next(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     allow_back=False,
@@ -909,7 +908,7 @@ def Page():
                 ScaffoldAlert(
                     # TODO: event_next_callback should go to next stage but I don't know how to set that up.
                     GUIDELINE_ROOT / "GuidelineMoreDataDistribution.vue",
-                    event_next_callback=lambda _: push_to_route(router, "06-prodata"),
+                    event_next_callback=lambda _: push_to_route(router, location, "06-prodata"),
                     event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                     can_advance=COMPONENT_STATE.value.can_transition(next=True),
                     show=COMPONENT_STATE.value.is_current_step(Marker.mor_dat1),

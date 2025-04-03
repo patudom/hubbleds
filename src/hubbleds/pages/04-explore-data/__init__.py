@@ -33,6 +33,7 @@ def Page():
     solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
     completed_count = solara.use_reactive(0)
 
@@ -47,42 +48,6 @@ def Page():
     clear_fit_line = solara.use_reactive(0)
 
     skip_waiting_room, set_skip_waiting_room = solara.use_state(False)
-
-    # LOCAL_API.update_class_size(GLOBAL_STATE)
-
-    async def _load_component_state():
-        # Load stored component state from database, measurement data is
-        # considered higher-level and is loaded when the story starts
-        LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
-
-        # TODO: What else to we need to do here?
-        logger.info("Finished loading component state for stage 4.")
-
-        value = LOCAL_STATE.value.enough_students_ready \
-                or \
-                (check_completed_students_count() >= 12)
-
-        Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
-        set_skip_waiting_room(value)
-        if value and COMPONENT_STATE.value.current_step == Marker.wwt_wait:
-            _on_waiting_room_advance()
-        loaded_component_state.set(True)
-
-    solara.lab.use_task(_load_component_state)
-
-    async def _write_component_state():
-        if not loaded_component_state.value:
-            return
-
-        # Listen for changes in the states and write them to the database
-        res = LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
-        if res:
-            logger.info("Wrote component state for stage 4 to database.")
-        else:
-            logger.info("Did not write component state for stage 4 to database.")
-
-
-    solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
 
     def glue_setup() -> Tuple[JupyterApplication, Dict[str, CDSScatterView]]:
         gjapp = JupyterApplication(
@@ -186,9 +151,50 @@ def Page():
 
     def _on_waiting_room_advance():
         if class_ready_task.pending:
-            class_ready_task.cancel()
+            try:
+                class_ready_task.cancel()
+            except RuntimeError:
+                pass
         load_class_data()
         transition_next(COMPONENT_STATE)
+
+    def _load_component_state():
+        # Load stored component state from database, measurement data is
+        # considered higher-level and is loaded when the story starts
+        LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+
+        # TODO: What else to we need to do here?
+        logger.info("Finished loading component state for stage 4.")
+
+        value = LOCAL_STATE.value.enough_students_ready \
+                or \
+                (check_completed_students_count() >= 12)
+
+        Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
+        set_skip_waiting_room(value)
+        if value:
+            if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
+                _on_waiting_room_advance()
+            else:
+                load_class_data()
+
+        loaded_component_state.set(True)
+
+    solara.use_memo(_load_component_state, dependencies=[])
+
+    def _write_component_state():
+        if not loaded_component_state.value:
+            return
+
+        # Listen for changes in the states and write them to the database
+        res = LOCAL_API.put_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
+        if res:
+            logger.info("Wrote component state for stage 4 to database.")
+        else:
+            logger.info("Did not write component state for stage 4 to database.")
+
+
+    solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
 
     student_plot_data = solara.use_reactive(LOCAL_STATE.value.measurements)
     async def _load_student_data():
@@ -198,11 +204,12 @@ def Page():
             student_plot_data.set(measurements)
     solara.lab.use_task(_load_student_data)
 
+    # TODO: not sure what this is supposed to do
     if not (class_ready_task.finished or class_ready_task.pending):
         load_class_data()
 
     def _jump_stage_5():
-        push_to_route(router, "05-class-results-uncertainty")
+        push_to_route(router, location, "05-class-results-uncertainty")
 
     current_step = Ref(COMPONENT_STATE.fields.current_step)
 
@@ -256,7 +263,7 @@ def Page():
         with rv.Col():
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineExploreData.vue",
-                event_back_callback=lambda _: push_to_route(router, "03-distance-measurements"),
+                event_back_callback=lambda _: push_to_route(router, location, "03-distance-measurements"),
                 event_next_callback = lambda _: transition_next(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.exp_dat1),
@@ -432,7 +439,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",
-                event_next_callback=lambda _: push_to_route(router, "05-class-results-uncertainty"),
+                event_next_callback=lambda _: push_to_route(router, location, "05-class-results-uncertainty"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),
@@ -458,7 +465,7 @@ def Page():
                     with rv.Col(class_="no-padding"):
 
                         def _layer_toggled(data):
-                            if data["visible"] and data["index"] is 3:
+                            if data["visible"] and data["index"] == 3:
                                 Ref(COMPONENT_STATE.fields.class_data_displayed).set(True)
 
                         PlotlyLayerToggle(chart_id="line-draw-viewer",
