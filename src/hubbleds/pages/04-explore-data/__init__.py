@@ -107,41 +107,6 @@ def Page():
 
     student_plot_data = solara.use_reactive(LOCAL_STATE.value.measurements)
 
-    def glue_setup() -> Tuple[JupyterApplication, Dict[str, CDSScatterView]]:
-        gjapp = JupyterApplication(
-            GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
-        )
-
-        race_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
-        race_data = Data(**{
-            "label": "Hubble Race Data",
-            "Distance (km)": [12, 24, 30],
-            "Velocity (km/hr)": [4, 8, 10],
-        })
-        race_data = GLOBAL_STATE.value.add_or_update_data(race_data)
-        race_data.style.color = GENERIC_COLOR
-        race_data.style.alpha = 1
-        race_data.style.markersize = 10
-        race_viewer.add_data(race_data)
-        race_viewer.state.x_att = race_data.id["Distance (km)"]
-        race_viewer.state.y_att = race_data.id["Velocity (km/hr)"]
-        race_viewer.state.x_max = 1.1 * race_viewer.state.x_max
-        race_viewer.state.y_max = 1.1 * race_viewer.state.y_max
-        race_viewer.state.x_min = 0
-        race_viewer.state.y_min = 0
-        race_viewer.state.title = "Race Data"
-
-        layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
-
-        viewers = {
-            "race": race_viewer,
-            "layer": layer_viewer,
-        }
-
-        return gjapp, viewers
-
-    gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
-
     if not (load_class_data.value or load_class_data.pending):
         load_class_data()
 
@@ -355,6 +320,42 @@ def Page():
         clear_class_layer = solara.use_reactive(0)
         clear_drawn_line = solara.use_reactive(0)
         clear_fit_line = solara.use_reactive(0)
+
+        def glue_setup() -> Tuple[JupyterApplication, Dict[str, CDSScatterView]]:
+            gjapp = JupyterApplication(
+                GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
+            )
+
+            race_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
+            race_data = Data(**{
+                "label": "Hubble Race Data",
+                "Distance (km)": [12, 24, 30],
+                "Velocity (km/hr)": [4, 8, 10],
+            })
+            race_data = GLOBAL_STATE.value.add_or_update_data(race_data)
+            race_data.style.color = GENERIC_COLOR
+            race_data.style.alpha = 1
+            race_data.style.markersize = 10
+            race_viewer.add_data(race_data)
+            race_viewer.state.x_att = race_data.id["Distance (km)"]
+            race_viewer.state.y_att = race_data.id["Velocity (km/hr)"]
+            race_viewer.state.x_max = 1.1 * race_viewer.state.x_max
+            race_viewer.state.y_max = 1.1 * race_viewer.state.y_max
+            race_viewer.state.x_min = 0
+            race_viewer.state.y_min = 0
+            race_viewer.state.title = "Race Data"
+
+            layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
+
+            viewers = {
+                "race": race_viewer,
+                "layer": layer_viewer,
+            }
+
+            return gjapp, viewers
+
+        gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
+
 
         def _on_marker_update(marker):
             if Marker.is_between(marker, Marker.tre_dat2, Marker.hub_exp1):
