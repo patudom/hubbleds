@@ -958,7 +958,7 @@ def Page():
                     )
                 
     # Dot Plot 1st measurement row
-    if COMPONENT_STATE.value.current_step_between(Marker.obs_wav2, Marker.rem_vel1): 
+    if COMPONENT_STATE.value.current_step_between(Marker.int_dot1, Marker.rem_vel1): 
         with rv.Row(class_="no-y-padding"):
             with rv.Col(cols=12, lg=4, class_="no-y-padding"):
                 ScaffoldAlert(
