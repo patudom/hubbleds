@@ -233,7 +233,7 @@ def Page():
     best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
     @solara.lab.computed
     def line_label():
-        if current_step.value >= Marker.age_uni4:
+        if current_step.value >= Marker.age_uni4 and best_fit_slope.value is not None:
             return f"Age: {round(AGE_CONSTANT / best_fit_slope.value)} Gyr"
         else:
             return None
