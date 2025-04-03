@@ -87,7 +87,7 @@ def Page():
 
     solara.use_memo(_load_component_state, dependencies=[])
 
-    async def _write_component_state():
+    def _write_component_state():
         if not loaded_component_state.value:
             return
 
@@ -494,7 +494,6 @@ def Page():
                 selection_tool_galaxy = selected_measurement
             
             def _on_wwt_ready_callback():
-                print("CALLED")
                 Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
 
             SelectionTool(
