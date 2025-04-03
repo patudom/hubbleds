@@ -117,6 +117,10 @@ def Page():
         gjapp = JupyterApplication(
             GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
         )
+        
+        if len(LOCAL_STATE.value.measurements) == 0:
+            data_ready.set(False)
+            return gjapp, {}
 
         layer_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
         student_slider_viewer = gjapp.new_data_viewer(HubbleScatterView, show=False)
