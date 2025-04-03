@@ -301,6 +301,29 @@ header.cosmicds-appbar > div.v-toolbar__content > [tag=h3]::after {
     line-height: 1.2;
 }
 
+header.cosmicds-appbar h2 {
+    font-size: min(2vw, 1.5rem);
+    font-weight: 500;
+}
+
+
+header.cosmicds-appbar h3 {
+    font-size: min(2vw, 1.1rem);
+    font-weight: 500;
+}
+
+/* i don't know if this one get's used */
+header.cosmicds-appbar h4 {
+    font-size: min(2vw, 1em);
+    font-weight: 500;
+}
+
+
+@media (max-width: 800px) {
+    header.cosmicds-appbar > div.v-toolbar__content > [tag=h3]::after {
+        content: "DEMO: Progress not saved";
+    }
+}
 /***** 
     ================================
     Solara/Vuetify default overrides 
