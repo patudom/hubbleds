@@ -493,6 +493,10 @@ def Page():
             else:
                 selection_tool_galaxy = selected_measurement
             
+            def _on_wwt_ready_callback():
+                print("CALLED")
+                Ref(COMPONENT_STATE.fields.wwt_ready).set(True)
+
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
                     [Marker.sel_gal2, Marker.not_gal1, Marker.sel_gal3]
@@ -506,6 +510,7 @@ def Page():
                 ),
                 deselect_galaxy_callback=_deselect_galaxy_callback,
                 bg_counter=selection_tool_bg_count,
+                on_wwt_ready=_on_wwt_ready_callback,
             )
             
             if show_snackbar.value:
