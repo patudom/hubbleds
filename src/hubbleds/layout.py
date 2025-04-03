@@ -24,6 +24,7 @@ def Layout(children=[]):
     location = solara.use_context(solara.routing._location_context)
 
     route_current, routes_current_level = solara.use_route(peek=True)
+    route_index = routes_current_level.index(route_current)
 
     def _load_global_local_states():
         if student_id.value is None:
@@ -88,15 +89,6 @@ def Layout(children=[]):
         # Store the current route index so that users will be returned to their
         #  previous location when they return to the app
         Ref(LOCAL_STATE.fields.last_route).set(f"{route_current.path}")
-
-        route_index = next(
-            (
-                i
-                for i, r in enumerate(router.routes)
-                if r.path == router.path.strip("/")
-            ),
-            None,
-        )
         Ref(LOCAL_STATE.fields.max_route_index).set(
             max(route_index or 0, LOCAL_STATE.value.max_route_index or 0)
         )
