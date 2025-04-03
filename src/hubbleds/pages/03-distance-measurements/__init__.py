@@ -75,6 +75,7 @@ from hubbleds.example_measurement_helpers import (
     load_and_create_seed_data
 )
 
+from hubbleds.demo_helpers import set_dummy_all_measurements
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 logger = setup_logger("STAGE3")
@@ -306,10 +307,7 @@ def Page():
     # loaded_component_state.subscribe(_initialize_state)
     
     def _fill_data_points():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        for measurement in dummy_measurements:
-            measurement.student_id = GLOBAL_STATE.value.student.id
-        Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
+        set_dummy_all_measurements(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
         push_to_route(router, location, "04-explore-data")
 

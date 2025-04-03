@@ -37,6 +37,7 @@ from hubbleds.viewer_marker_colors import (
     OTHER_STUDENTS_COLOR,
     GENERIC_COLOR
 )
+from hubbleds.demo_helpers import set_dummy_all_measurements
 
 from cosmicds.logger import setup_logger
 
@@ -109,7 +110,7 @@ def Page():
                 viewer.state.hist_n_bin = int(xmax - xmin)
                 viewer.state.hist_x_min = xmin
                 viewer.state.hist_x_max = xmax
-
+    force_memo_update = solara.use_reactive(False)
     data_ready = solara.use_reactive(False)
     def glue_setup() -> Tuple[JupyterApplication, Dict[str, PlotlyBaseView]]:
         # NOTE: use_memo has to be part of the main page render. Including it
@@ -310,10 +311,10 @@ def Page():
                                             filter=lambda msg: msg.data.label in ("All Student Summaries", "All Class Summaries"))
 
         data_ready.set(True)
-
+        logger.info("Finished setting up glue viewers")
         return gjapp, viewers
 
-    gjapp, viewers = solara.use_memo(glue_setup, dependencies=[])
+    gjapp, viewers = solara.use_memo(glue_setup, dependencies=[force_memo_update.value])
 
     if not data_ready.value:
         rv.ProgressCircular(
@@ -322,6 +323,19 @@ def Page():
             indeterminate=True,
             size=100,
         )
+        
+        if GLOBAL_STATE.value.show_team_interface:
+
+            def fill_all_data():
+                set_dummy_all_measurements(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
+                Ref(LOCAL_STATE.fields.measurements_loaded).set(True)
+                force_memo_update.set(not force_memo_update.value)
+            solara.Button(
+                label="Fill in Sample Data",
+                on_click=fill_all_data,
+                classes=["demo-button"],
+            )
+
         return
 
     _update_bins((viewers["all_student_hist"], viewers["class_hist"]))

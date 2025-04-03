@@ -20,7 +20,7 @@ from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS, get_image_path, push_to_route
-
+from hubbleds.demo_helpers import set_dummy_all_measurements
 from cosmicds.logger import setup_logger
 
 logger = setup_logger("STAGE 4")
@@ -257,6 +257,19 @@ def Page():
                 class_ready_task.cancel()
         except RuntimeError:
             pass
+        
+    if len(LOCAL_STATE.value.measurements) == 0:
+        solara.Error(
+            "You have not added any measurements yet. Please add some before continuing.",
+            icon="mdi-alert",
+        )
+        
+        if GLOBAL_STATE.value.show_team_interface:
+            def _fill_all_data():
+                set_dummy_all_measurements(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
+
+            solara.Button(label="Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_all_data, classes=["demo-button"])
+        return
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():

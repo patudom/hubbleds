@@ -55,6 +55,8 @@ from hubbleds.example_measurement_helpers import (
     load_and_create_seed_data,
 )
 
+from hubbleds.demo_helpers import set_dummy_wavelength_and_velocity
+
 logger = setup_logger("STAGE")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
@@ -269,14 +271,7 @@ def Page():
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
 
     def _fill_stage1_go_stage2():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   galaxy=measurement.galaxy,
-                                                   velocity_value=measurement.velocity_value))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        set_dummy_wavelength_and_velocity(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
         push_to_route(router, location, f"02-distance-introduction")
 
     def _select_random_galaxies():
