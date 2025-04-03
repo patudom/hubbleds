@@ -22,7 +22,7 @@ jobs:
         if: ${{ !env.ACT }}
         uses: actions/checkout@v4
         with:
-          ref: short-demo
+          ref: ${{ github.head_ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
