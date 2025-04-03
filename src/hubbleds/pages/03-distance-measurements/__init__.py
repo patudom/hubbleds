@@ -75,7 +75,7 @@ from hubbleds.example_measurement_helpers import (
     load_and_create_seed_data
 )
 
-from hubbleds.demo_helpers import set_dummy_all_measurements
+from hubbleds.demo_helpers import set_dummy_all_measurements, set_dummy_wave_vel_ang
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 logger = setup_logger("STAGE3")
@@ -312,15 +312,7 @@ def Page():
         push_to_route(router, location, "04-explore-data")
 
     def _fill_thetas():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   velocity_value=measurement.velocity_value,
-                                                   ang_size_value=measurement.ang_size_value,
-                                                   galaxy=measurement.galaxy))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        set_dummy_wave_vel_ang(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
     
     example_data_setup = solara.use_reactive(False)
