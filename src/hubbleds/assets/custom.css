@@ -58,12 +58,12 @@ h2 {
 }
 
 h3 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 500;
 }
 
 h4 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 500;
 }
 
@@ -273,18 +273,18 @@ footer .v-card__text {
     DEMO VERSION TAG
     ================================
 *****/
-header.cosmicds-appbar > div.v-toolbar__content > h3 {
+header.cosmicds-appbar > div.v-toolbar__content > [tag=h3] {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
-header.cosmicds-appbar > div.v-toolbar__content > h3::after {
+header.cosmicds-appbar > div.v-toolbar__content > [tag=h3]::after {
     content: "Shortened DEMO Version:\AProgress and measurements are NOT saved";
     white-space: pre-wrap;
     display: block;
     text-align: center;
-    font-size: 0.8em;
+    font-size: 0.7em;
     font-weight: bold;
     color: white;
     background-color: red;
