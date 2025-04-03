@@ -47,13 +47,13 @@ GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 @solara.lab.computed
 def selected_example_measurement():
     return LOCAL_STATE.value.get_example_measurement(
-        COMPONENT_STATE.value.selected_example_galaxy
+        Ref(COMPONENT_STATE.fields.selected_example_galaxy).value
     )
 
 
 @solara.lab.computed
 def selected_measurement():
-    return LOCAL_STATE.value.get_measurement(COMPONENT_STATE.value.selected_galaxy)
+    return LOCAL_STATE.value.get_measurement(Ref(COMPONENT_STATE.fields.selected_galaxy).value)
 
 def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
     z_meas =  (measwave - restwave) / restwave
@@ -263,7 +263,8 @@ def Page():
         first_measurement = dummy_measurements[0]
         measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id, galaxy=first_measurement.galaxy))
         Ref(LOCAL_STATE.fields.measurements).set(measurements)
-        _galaxy_selected_callback(first_measurement.galaxy)
+        if first_measurement.galaxy:
+            _galaxy_selected_callback(first_measurement.galaxy.model_dump())
 
     def num_bad_velocities():
         measurements = Ref(LOCAL_STATE.fields.measurements)
@@ -492,7 +493,7 @@ def Page():
                 selection_tool_galaxy = selected_example_measurement
             else:
                 selection_tool_galaxy = selected_measurement
-            
+
             SelectionTool(
                 show_galaxies=COMPONENT_STATE.value.current_step_in(
                     [Marker.sel_gal2, Marker.not_gal1, Marker.sel_gal3]
@@ -678,7 +679,7 @@ def Page():
                 selected_example_galaxy = Ref(
                     COMPONENT_STATE.fields.selected_example_galaxy
                 )
-                
+
                 DataTable(
                     title="Example Galaxy",
                     items=[x.dict() for x in LOCAL_STATE.value.example_measurements],

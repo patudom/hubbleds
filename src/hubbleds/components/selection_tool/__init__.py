@@ -235,6 +235,10 @@ def SelectionTool(
             wwt_widget.center_on_coordinates(
                 START_COORDINATES, fov=60 * u.deg, instant=True
             )
+        else:
+            wwt_widget.center_on_coordinates(
+                INIT_COORDINATES, fov=3 * u.deg, instant=True
+            )
 
     solara.use_effect(_on_show_galaxies, dependencies=[show_galaxies])
 
@@ -257,3 +261,26 @@ def SelectionTool(
         wwt_widget.refresh_tile_cache()
 
     solara.use_effect(_on_refresh_images, dependencies=[refresh_images.value])
+    
+    
+    
+    def _on_selected_measurement():
+        """
+        Update the selected measurement in the WWT widget.
+        """
+        wwt_widget = solara.get_widget(wwt_container).children[0]
+        if selected_measurement is not None:
+            if 'galaxy' in selected_measurement:
+                ra = selected_measurement["galaxy"]["ra"]
+                dec = selected_measurement["galaxy"]["decl"]
+                wwt_widget.center_on_coordinates(
+                    SkyCoord(
+                        ra, dec,
+                        unit=u.deg,
+                    ),
+                    fov=GALAXY_FOV,
+                    instant=True,
+                )
+        # else:
+        #     reset_view.set(not reset_view.value)
+    solara.use_effect(_on_selected_measurement, dependencies=[selected_measurement])
