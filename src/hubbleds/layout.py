@@ -106,7 +106,6 @@ def Layout(children=[]):
                 )
                 push_to_route(router, location, LOCAL_STATE.value.last_route)
             else:
-                logger.info("IT's done.")
                 route_restored.set(True)
 
     solara.use_memo(_restore_user_location)
