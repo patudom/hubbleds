@@ -261,7 +261,7 @@ def Page():
     loaded_component_state.subscribe(_on_component_state_loaded) 
 
     if GLOBAL_STATE.value.show_team_interface:
-        StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+        StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=not GLOBAL_STATE.value.educator)
     
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
