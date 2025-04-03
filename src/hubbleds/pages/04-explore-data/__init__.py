@@ -27,23 +27,6 @@ logger = setup_logger("STAGE 4")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
-
-@solara.lab.task
-async def load_class_data():
-    logger.info("Loading class data")
-    class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
-    logger.info(len(class_measurements))
-    measurements = Ref(LOCAL_STATE.fields.class_measurements)
-    student_ids = Ref(LOCAL_STATE.fields.stage_4_class_data_students)
-    if class_measurements and not student_ids.value:
-        ids = [int(id) for id in np.unique([m.student_id for m in class_measurements])]
-        student_ids.set(ids)
-    measurements.set(class_measurements)
-
-    class_data_points = [m for m in class_measurements if m.student_id in student_ids.value]
-    return class_data_points
-
-
 @solara.component
 def Page():
     solara.Title("HubbleDS")
@@ -53,6 +36,47 @@ def Page():
 
     if not LOCAL_STATE.value.measurements:
         fill_data_points()
+
+    def load_class_data():
+        logger.info("Loading class data")
+        class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
+        logger.info(len(class_measurements))
+        measurements = Ref(LOCAL_STATE.fields.class_measurements)
+        student_ids = Ref(LOCAL_STATE.fields.stage_4_class_data_students)
+        if class_measurements and not student_ids.value:
+            ids = [int(id) for id in np.unique([m.student_id for m in class_measurements])]
+            student_ids.set(ids)
+        measurements.set(class_measurements)
+
+        class_data_points = [m for m in class_measurements if m.student_id in student_ids.value]
+        return class_data_points
+
+    def _on_class_data_loaded(class_data_points: List[StudentMeasurement]):
+        logger.info("Setting up class glue data")
+        if not class_data_points:
+            return
+
+        class_data = models_to_glue_data(class_data_points, label="Stage 4 Class Data")
+        if not class_data.components:
+            class_data = empty_data_from_model_class(StudentMeasurement, label="Stage 4 Class Data")
+        class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
+        class_data.style.color = MY_CLASS_COLOR
+        class_data.style.alpha = 1
+        class_data.style.markersize = 10
+
+        layer_viewer = viewers["layer"]
+        layer_viewer.add_data(class_data)
+        layer_viewer.state.x_att = class_data.id['est_dist_value']
+        layer_viewer.state.y_att = class_data.id['velocity_value']
+        with delay_callback(layer_viewer.state, 'x_max', 'y_max'):
+            layer_viewer.state.reset_limits()
+            layer_viewer.state.x_max = 1.06 * layer_viewer.state.x_max
+            layer_viewer.state.y_max = 1.06 * layer_viewer.state.y_max   
+        layer_viewer.state.x_axislabel = "Distance (Mpc)"
+        layer_viewer.state.y_axislabel = "Velocity (km/s)"
+        layer_viewer.state.title = "Our Data"
+
+        class_plot_data.set(class_data_points)
 
     def _load_component_state():
         # Load stored component state from database, measurement data is
@@ -120,33 +144,6 @@ def Page():
 
     if not (load_class_data.value or load_class_data.pending):
         load_class_data()
-
-    def _on_class_data_loaded(class_data_points: List[StudentMeasurement]):
-        logger.info("Setting up class glue data")
-        if not class_data_points:
-            return
-
-        class_data = models_to_glue_data(class_data_points, label="Stage 4 Class Data")
-        if not class_data.components:
-            class_data = empty_data_from_model_class(StudentMeasurement, label="Stage 4 Class Data")
-        class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
-        class_data.style.color = MY_CLASS_COLOR
-        class_data.style.alpha = 1
-        class_data.style.markersize = 10
-
-        layer_viewer = viewers["layer"]
-        layer_viewer.add_data(class_data)
-        layer_viewer.state.x_att = class_data.id['est_dist_value']
-        layer_viewer.state.y_att = class_data.id['velocity_value']
-        with delay_callback(layer_viewer.state, 'x_max', 'y_max'):
-            layer_viewer.state.reset_limits()
-            layer_viewer.state.x_max = 1.06 * layer_viewer.state.x_max
-            layer_viewer.state.y_max = 1.06 * layer_viewer.state.y_max   
-        layer_viewer.state.x_axislabel = "Distance (Mpc)"
-        layer_viewer.state.y_axislabel = "Velocity (km/s)"
-        layer_viewer.state.title = "Our Data"
-
-        class_plot_data.set(class_data_points)
 
     if load_class_data.value:
         _on_class_data_loaded(load_class_data.value)
