@@ -92,6 +92,15 @@ class StudentMeasurement(BaseModel):
     # @property
     # def last_modified(self) -> str:
     #     return f"{datetime.datetime.now(datetime.UTC)}"
+    @property
+    def completed(self) -> bool:
+        return (
+            self.obs_wave_value is not None
+            and self.velocity_value is not None
+            and self.ang_size_value is not None
+            and self.est_dist_value is not None
+        )
+    
 
 
 class BaseSummary(BaseModel):

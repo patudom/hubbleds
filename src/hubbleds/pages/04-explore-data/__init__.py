@@ -258,17 +258,19 @@ def Page():
         except RuntimeError:
             pass
         
-    if len(LOCAL_STATE.value.measurements) == 0:
+    if (len(LOCAL_STATE.value.measurements) == 0 
+        or not all(m.completed for m in LOCAL_STATE.value.measurements) # all([]) = True :/
+        ):
         solara.Error(
-            "You have not added any measurements yet. Please add some before continuing.",
+            "You have not added any or have incomplete measurements. Please add/finish some before continuing.",
             icon="mdi-alert",
         )
-        
         if GLOBAL_STATE.value.show_team_interface:
             def _fill_all_data():
                 set_dummy_all_measurements(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
-
             solara.Button(label="Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_all_data, classes=["demo-button"])
+            _fill_all_data()
+            best_fit_slope.set(16.9653)
         return
 
     with solara.ColumnsResponsive(12, large=[4,8]):

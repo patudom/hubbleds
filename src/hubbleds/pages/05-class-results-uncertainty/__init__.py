@@ -335,7 +335,7 @@ def Page():
                 on_click=fill_all_data,
                 classes=["demo-button"],
             )
-
+            fill_all_data()
         return
 
     _update_bins((viewers["all_student_hist"], viewers["class_hist"]))

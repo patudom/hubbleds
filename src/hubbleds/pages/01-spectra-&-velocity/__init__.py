@@ -55,7 +55,9 @@ from hubbleds.example_measurement_helpers import (
     load_and_create_seed_data,
 )
 
-from hubbleds.demo_helpers import set_dummy_wavelength_and_velocity
+from hubbleds.demo_helpers import (set_dummy_wavelength_and_velocity, 
+                                   set_dummy_all_measurements,
+                                   set_dummy_wavelength)
 
 logger = setup_logger("STAGE")
 
@@ -256,25 +258,10 @@ def Page():
     selection_tool_bg_count = solara.use_reactive(0)
 
     def _fill_galaxies():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   galaxy=measurement.galaxy,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   velocity_value=measurement.velocity_value,
-                                                   ang_size_value=measurement.ang_size_value,
-                                                   est_dist_value=measurement.est_dist_value))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        set_dummy_all_measurements(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
 
     def _fill_lambdas():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   galaxy=measurement.galaxy))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        set_dummy_wavelength(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
 
     def _fill_stage1_go_stage2():
         set_dummy_wavelength_and_velocity(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
