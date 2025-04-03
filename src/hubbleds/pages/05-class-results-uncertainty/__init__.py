@@ -388,8 +388,8 @@ def Page():
         with solara.Column():
             solara.Button(label="Demo Shortcut: Jump to Stage 6", on_click=_jump_stage_6, classes=["demo-button"])
 
-    def _on_component_state_loaded(value: bool):
-        if not value:
+    def _parse_component_state():
+        if not loaded_component_state.value:
             return
 
         student_low_age = Ref(COMPONENT_STATE.fields.student_low_age)
@@ -409,7 +409,7 @@ def Page():
         class_low_age.set(round(min(all_class_summ_data["age_value"])))
         class_high_age.set(round(max(all_class_summ_data["age_value"])))
 
-    loaded_component_state.subscribe(_on_component_state_loaded)
+    solara.use_memo(_parse_component_state, dependencies=[loaded_component_state.value])
 
     #--------------------- Row 1: OUR DATA HUBBLE VIEWER -----------------------
     if (
