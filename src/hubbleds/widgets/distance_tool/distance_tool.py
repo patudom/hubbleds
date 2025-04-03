@@ -6,7 +6,7 @@ import ipyvue as v
 from astropy.coordinates import Angle, SkyCoord
 from cosmicds.utils import RepeatedTimer, load_template
 from ipywidgets import DOMWidget, widget_serialization
-from ipywwt import WWTWidget
+from hubbleds.widgets.hubble_wwt import HubbleWWTWidget
 from traitlets import Instance, Bool, Float, Int, Unicode, observe, Dict
 
 from ...utils import GALAXY_FOV, angle_to_json, \
@@ -55,7 +55,7 @@ class DistanceTool(v.VueTemplate):
     START_COORDINATES = SkyCoord(170 * u.deg, 13.3 * u.deg, frame='icrs')
 
     def __init__(self, *args, **kwargs):
-        self.widget = WWTWidget(use_remote=True)
+        self.widget = HubbleWWTWidget(use_remote=True)
         self.background = self.SDSS
         self.measuring = kwargs.get('measuring', False)
         self.guard = kwargs.get('guard', False)
