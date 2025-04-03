@@ -163,6 +163,11 @@ def SelectionTool(
         """
         Set up the WWT widget when it is ready.
         """
+        # Apparently, `use_effect` triggers immediately, and then based on
+        #  dependencies. So we need to check if the WWT is ready.
+        if not show_wwt.value:
+            return
+
         wwt_widget = solara.get_widget(wwt_container).children[0]
 
         # Update the displayed foreground and background
