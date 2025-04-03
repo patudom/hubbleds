@@ -170,6 +170,8 @@ def Page():
                 (check_completed_students_count() >= 12)
 
         Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
+        if GLOBAL_STATE.value.educator:
+            value = False
         set_skip_waiting_room(value)
         if value:
             if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
