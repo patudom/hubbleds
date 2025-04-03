@@ -2,7 +2,6 @@ import solara
 from cosmicds.components import MathJaxSupport, PlotlySupport, \
     GoogleAnalyticsSupport
 from cosmicds.layout import BaseLayout, BaseSetup
-from cosmicds.layout import BaseLayout, BaseSetup
 from cosmicds.logger import setup_logger
 from cosmicds.logger import setup_logger
 from hubbleds.remote import LOCAL_API
@@ -17,6 +16,7 @@ logger = setup_logger("LAYOUT")
 @solara.component
 def Layout(children=[]):
     BaseSetup(
+        force_demo=True,
         story_name=LOCAL_STATE.value.story_id,
         story_title=LOCAL_STATE.value.title
     )
@@ -26,7 +26,7 @@ def Layout(children=[]):
 
     router = solara.use_router()
     location = solara.use_context(solara.routing._location_context)
-    
+
     route_current, routes_current_level = solara.use_route(peek=True)
 
     if route_current in routes_current_level:
@@ -93,5 +93,4 @@ def Layout(children=[]):
         children=children,
         story_name=LOCAL_STATE.value.story_id,
         story_title=LOCAL_STATE.value.title,
-        force_demo=True
     )
