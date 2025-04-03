@@ -4,7 +4,7 @@ import astropy.units as u
 import solara
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
-from ipywwt import WWTWidget
+from hubbleds.widgets.hubble_wwt import HubbleWWTWidget
 from reacton import ipyvuetify as rv
 
 from ...state import LOCAL_STATE
@@ -145,7 +145,7 @@ def SelectionTool(
         """
         Add the WWT widget to the container.
         """
-        wwt_widget = WWTWidget(use_remote=True)
+        wwt_widget = HubbleWWTWidget(use_remote=True)
         wwt_widget.observe(lambda change: show_wwt.set(change["new"]), "_wwt_ready")
 
         wwt_widget_container = solara.get_widget(wwt_container)
@@ -163,6 +163,11 @@ def SelectionTool(
         """
         Set up the WWT widget when it is ready.
         """
+        # Apparently, `use_effect` triggers immediately, and then based on
+        #  dependencies. So we need to check if the WWT is ready.
+        if not show_wwt.value:
+            return
+
         wwt_widget = solara.get_widget(wwt_container).children[0]
 
         # Update the displayed foreground and background
