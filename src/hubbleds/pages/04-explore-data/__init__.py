@@ -63,7 +63,7 @@ def Page():
         logger.info("Finished loading component state for stage 4.")
         loaded_component_state.set(True)
 
-    solara.lab.use_task(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
 
     async def _write_component_state():
         if not loaded_component_state.value:
