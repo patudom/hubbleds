@@ -135,6 +135,7 @@ class LocalState(BaseLocalState):
     stage_4_class_data_students: list[int] = []
     stage_5_class_data_students: list[int] = []
     last_route: Optional[str] = None
+    route_restored: bool = Field(False, exclude=True)
 
     @cached_property
     def galaxies(self) -> dict[int, GalaxyData]:

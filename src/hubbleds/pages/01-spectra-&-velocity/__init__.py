@@ -80,9 +80,10 @@ def nbin_func(xmin, xmax):
 @solara.component
 def Page():
     solara.Title("HubbleDS")
-    logger.info("Rendering Stage 1: Spectra & Velocity")
+
     loaded_component_state = solara.use_reactive(False)
     selection_tool_candidate_galaxy = solara.use_reactive(None)
+
     router = solara.use_router()
     location = solara.use_context(solara.routing._location_context)
 

@@ -1,16 +1,10 @@
 import solara
-from cosmicds.components import MathJaxSupport, PlotlySupport, \
-    GoogleAnalyticsSupport
-from cosmicds.components import MathJaxSupport, PlotlySupport, \
-    GoogleAnalyticsSupport
 from cosmicds.layout import BaseLayout, BaseSetup
-from cosmicds.layout import BaseLayout, BaseSetup
-from cosmicds.logger import setup_logger
 from cosmicds.logger import setup_logger
 from hubbleds.remote import LOCAL_API
+from hubbleds.utils import push_to_route
 from solara.toestand import Ref
 
-from .state import GLOBAL_STATE
 from .state import GLOBAL_STATE, LOCAL_STATE
 
 logger = setup_logger("LAYOUT")
@@ -19,27 +13,23 @@ logger = setup_logger("LAYOUT")
 @solara.component
 def Layout(children=[]):
     BaseSetup(
-        story_name=LOCAL_STATE.value.story_id,
-        story_title=LOCAL_STATE.value.title
+        story_name=LOCAL_STATE.value.story_id, story_title=LOCAL_STATE.value.title
     )
 
     student_id = Ref(GLOBAL_STATE.fields.student.id)
     loaded_states = solara.use_reactive(False)
+    route_restored = Ref(LOCAL_STATE.fields.route_restored)
 
     router = solara.use_router()
     location = solara.use_context(solara.routing._location_context)
 
     route_current, routes_current_level = solara.use_route(peek=True)
 
-    if route_current in routes_current_level:
-        Ref(LOCAL_STATE.fields.last_route).set(router.path)
-
-    route_index = next((i for i, r in enumerate(router.routes) if r.path == router.path.strip('/')), None)
-    Ref(LOCAL_STATE.fields.max_route_index).set(max(route_index or 0, LOCAL_STATE.value.max_route_index or 0))
-
     def _load_global_local_states():
         if student_id.value is None:
-            logger.warning(f"Failed to load measurements: ID `{GLOBAL_STATE.value.student.id}` not found.")
+            logger.warning(
+                f"Failed to load measurements: ID `{GLOBAL_STATE.value.student.id}` not found."
+            )
             return
 
         logger.info(
@@ -57,8 +47,6 @@ def Layout(children=[]):
         )
 
         logger.info("Finished loading state.")
-        if LOCAL_STATE.value.last_route is not None:
-            router.push(LOCAL_STATE.value.last_route)
 
         Ref(LOCAL_STATE.fields.measurements_loaded).set(True)
 
@@ -85,15 +73,59 @@ def Layout(children=[]):
                 f"Did not write {'story state' if not put_state else ''} "
                 f"{'measurements' if not put_meas else ''} "
                 f"{'sample measurements' if not put_samp else ''} "
-                f"to database.")
+                f"to database."
+            )
 
     solara.lab.use_task(
         _write_local_global_states, dependencies=[GLOBAL_STATE.value, LOCAL_STATE.value]
     )
 
-    BaseLayout(
-        local_state=LOCAL_STATE,
-        children=children,
-        story_name=LOCAL_STATE.value.story_id,
-        story_title=LOCAL_STATE.value.title,
-    )
+    def _store_user_location():
+        if not route_restored.value:
+            return
+
+        logger.info(f"Storing path location as `{route_current.path}`")
+        # Store the current route index so that users will be returned to their
+        #  previous location when they return to the app
+        Ref(LOCAL_STATE.fields.last_route).set(f"{route_current.path}")
+
+        route_index = next(
+            (
+                i
+                for i, r in enumerate(router.routes)
+                if r.path == router.path.strip("/")
+            ),
+            None,
+        )
+        Ref(LOCAL_STATE.fields.max_route_index).set(
+            max(route_index or 0, LOCAL_STATE.value.max_route_index or 0)
+        )
+
+    solara.use_effect(_store_user_location, dependencies=[route_current])
+
+    def _restore_user_location():
+        if not route_restored.value:
+            if (
+                LOCAL_STATE.value.last_route is not None
+                and route_current.path != LOCAL_STATE.value.last_route
+            ):
+                logger.info(
+                    f"Restoring path location to `{LOCAL_STATE.value.last_route}`"
+                )
+                push_to_route(router, location, LOCAL_STATE.value.last_route)
+            else:
+                logger.info("IT's done.")
+                route_restored.set(True)
+
+    solara.use_memo(_restore_user_location)
+
+    # The rendering takes a moment while the route resolves, this can appear as
+    #  a flicker before the true page loads. Here, we hide the page until the
+    #  route is restored.
+    if route_restored.value:
+        BaseLayout(
+            local_state=LOCAL_STATE,
+            children=children,
+            story_name=LOCAL_STATE.value.story_id,
+            story_title=LOCAL_STATE.value.title,
+        )
