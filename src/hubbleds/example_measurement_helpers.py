@@ -25,18 +25,18 @@ import numpy as np
 
 
 
-def create_example_subsets(gjapp: JupyterApplication, data: Data):
+def create_example_subsets(gjapp: JupyterApplication, example_data: Data):
     if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
         example_data = gjapp.data_collection[EXAMPLE_GALAXY_MEASUREMENTS]
-        current_subsets = example_data.subsets
-        if 'first measurement' not in (s.label for s in current_subsets):
-            first = example_data.new_subset(example_data.id['measurement_number'] == 'first', label='first measurement')
-            first.style.color = MY_DATA_COLOR
-            first.style.alpha = 1.0
-        if 'second measurement' not in (s.label for s in current_subsets):
-            second = example_data.new_subset(example_data.id['measurement_number'] == 'second', label='second measurement')
-            second.style.color = MY_DATA_COLOR
-            second.style.alpha = 1.0
+    current_subsets = example_data.subsets
+    if 'first measurement' not in (s.label for s in current_subsets):
+        first = example_data.new_subset(example_data.id['measurement_number'] == 'first', label='first measurement')
+        first.style.color = MY_DATA_COLOR
+        first.style.alpha = 1.0
+    if 'second measurement' not in (s.label for s in current_subsets):
+        second = example_data.new_subset(example_data.id['measurement_number'] == 'second', label='second measurement')
+        second.style.color = MY_DATA_COLOR
+        second.style.alpha = 1.0
             
 
 def link_example_seed_and_measurements(gjapp: JupyterApplication):
