@@ -81,7 +81,7 @@ def Page():
     if not LOCAL_STATE.value.measurements:
         fill_data_points()
 
-    async def _load_component_state():
+    def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
 
         logger.info("Finished loading component state")

@@ -44,7 +44,7 @@ def Page():
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
     
-    async def _load_component_state():
+    def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
         logger.info("Finished loading component state")
         loaded_component_state.set(True)

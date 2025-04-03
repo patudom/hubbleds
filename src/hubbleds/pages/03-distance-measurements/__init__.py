@@ -47,7 +47,8 @@ from hubbleds.utils import (
     GALAXY_FOV,
     distance_from_angular_size,
     measurement_list_to_glue_data,
-    get_image_path
+    get_image_path,
+    push_to_route,
     )
 
 from hubbleds.widgets.distance_tool.distance_tool import DistanceTool
@@ -134,13 +135,14 @@ def Page():
     # === Setup State Loading and Writing ===
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
     distance_tool_bg_count = solara.use_reactive(0)
 
     if not LOCAL_STATE.value.measurements:
         fill_velocities()
 
-    async def _load_component_state():
+    def _load_component_state():
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
 
         logger.info(LOCAL_STATE.value.measurements)
@@ -214,7 +216,7 @@ def Page():
     def _fill_data_to_stage_4():
         fill_data_points()
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
-        router.push("04-explore-data")
+        push_to_route(router, location, "04-explore-data")
 
     def _fill_thetas():
         fill_thetas()
@@ -569,7 +571,7 @@ def Page():
                 solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
-                event_next_callback=lambda _: router.push("04-explore-data"),
+                event_next_callback=lambda _: push_to_route(router, location, "04-explore-data"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.fil_rem1),

@@ -37,7 +37,7 @@ from ...data_management import (
 )
 import numpy as np
 from glue.core import Data
-from hubbleds.utils import models_to_glue_data, velocity_from_wavelengths, get_image_path
+from hubbleds.utils import models_to_glue_data, velocity_from_wavelengths, get_image_path, push_to_route
 
 logger = setup_logger("STAGE")
 
@@ -66,8 +66,9 @@ def Page():
     logger.info("Rendering Stage 1: Spectra & Velocity")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
-    async def _load_component_state():
+    def _load_component_state():
         # Load stored component state from database, measurement data is
         #   considered higher-level and is loaded when the story starts.
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -84,8 +85,7 @@ def Page():
         logger.info("Finished loading component state.")
         loaded_component_state.set(True)
 
-    solara.lab.use_task(_load_component_state)
-    # solara.use_memo(_load_component_state)
+    solara.use_memo(_load_component_state, dependencies=[])
 
     async def _write_component_state():
         if not loaded_component_state.value:
@@ -121,7 +121,7 @@ def Page():
             data = gjapp.data_collection[EXAMPLE_GALAXY_SEED_DATA]
         return gjapp
 
-    gjapp = solara.use_memo(_glue_setup)
+    gjapp = solara.use_memo(_glue_setup, dependencies=[])
 
     def _state_callback_setup():
         # We want to minize duplicate state handling, but also keep the states
@@ -133,7 +133,7 @@ def Page():
             lambda *args: total_galaxies.set(len(measurements.value))
         )
 
-    solara.use_memo(_state_callback_setup)
+    solara.use_memo(_state_callback_setup, dependencies=[])
 
     # Load selected galaxy spectrum data in the background to avoid hitched
     #  in the front-end user experience.
@@ -227,7 +227,7 @@ def Page():
 
     def _fill_stage1_go_stage2():
         fill_velocities()
-        router.push("02-distance-introduction")
+        push_to_route(router, location, "02-distance-introduction")
 
 # This is what we'll need on main to truly get random galaxies.
     # def _select_random_galaxies():
@@ -336,7 +336,7 @@ def Page():
         sync_velocity_line.subscribe(sync_example_velocity_to_wavelength)
         sync_wavelength_line.subscribe(sync_example_wavelength_to_velocity)
     
-    solara.use_memo(_sync_setup)
+    solara.use_memo(_sync_setup, dependencies=[])
     
     def print_selected_galaxy(galaxy):
         print('selected galaxy is now:', galaxy)
@@ -658,7 +658,7 @@ def Page():
             # )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineEndStage1.vue",
-                event_next_callback=lambda _: router.push("02-distance-introduction"),
+                event_next_callback=lambda _: push_to_route(router, location, "02-distance-introduction"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.end_sta1),

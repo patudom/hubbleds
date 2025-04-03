@@ -13,6 +13,10 @@ from typing import List, Set, Tuple, TypeVar
 from hubbleds.state import StudentMeasurement
 from glue.core import Data
 from numpy import asarray
+import solara
+from solara.routing import Router
+from solara.server import settings
+from pathlib import Path
 
 try:
     from astropy.cosmology import Planck18 as planck
@@ -213,3 +217,10 @@ def make_summary_data(measurement_data: Data,
         data_kwargs["label"] = label
 
     return Data(**data_kwargs)
+
+def push_to_route(router: Router, location, route: str):
+    if route != '/':
+        path = Path(f"{router.root_path}/{route}")
+        router.push(str(path))
+    else:
+        location.pathname = settings.main.base_url

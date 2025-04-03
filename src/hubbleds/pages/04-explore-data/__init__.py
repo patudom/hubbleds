@@ -19,7 +19,7 @@ from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, StudentMeasurement, get_mu
 from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
-from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS, get_image_path
+from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS, get_image_path, push_to_route
 
 from cosmicds.logger import setup_logger
 
@@ -49,11 +49,12 @@ def Page():
     solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
     if not LOCAL_STATE.value.measurements:
         fill_data_points()
 
-    async def _load_component_state():
+    def _load_component_state():
         # Load stored component state from database, measurement data is
         # considered higher-level and is loaded when the story starts
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -151,7 +152,7 @@ def Page():
         _on_class_data_loaded(load_class_data.value)
 
     def _jump_stage5():
-        router.push("05-class-results-uncertainty")
+        push_to_route(router, location, "05-class-results-uncertainty")
 
     with solara.Row():
         with solara.Column():
@@ -338,7 +339,7 @@ def Page():
             )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineShortcomingsEst2.vue",
-                event_next_callback=lambda _: router.push("05-class-results-uncertainty"),
+                event_next_callback=lambda _: push_to_route(router, location, "05-class-results-uncertainty"),
                 event_back_callback=lambda _: transition_previous(COMPONENT_STATE),
                 can_advance=COMPONENT_STATE.value.can_transition(next=True),
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),

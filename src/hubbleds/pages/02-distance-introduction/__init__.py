@@ -6,7 +6,7 @@ from hubbleds.components import Stage2Slideshow
 from hubbleds.state import LOCAL_STATE, GLOBAL_STATE, get_multiple_choice, mc_callback 
 from .component_state import COMPONENT_STATE
 from hubbleds.remote import LOCAL_API
-from ...utils import get_image_path, DISTANCE_CONSTANT
+from ...utils import get_image_path, DISTANCE_CONSTANT, push_to_route
 
 from cosmicds.logger import setup_logger
 
@@ -17,8 +17,9 @@ def Page():
     solara.Title("HubbleDS")
     loaded_component_state = solara.use_reactive(False)
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
 
-    async def _load_component_state():
+    def _load_component_state():
         # Load stored component state from database, measurement data is
         # considered higher-level and is loaded when the story starts
         LOCAL_API.get_stage_state(GLOBAL_STATE, LOCAL_STATE, COMPONENT_STATE)
@@ -89,7 +90,7 @@ def Page():
                 ), 
             "score_tag_2": "how-much-closer-galaxies",
         },
-        event_slideshow_finished=lambda _: router.push("03-distance-measurements"),
+        event_slideshow_finished=lambda _: push_to_route(router, location, "03-distance-measurements"),
         debug = LOCAL_STATE.value.debug_mode,
         speech=speech.value.model_dump(),
     )

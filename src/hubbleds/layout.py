@@ -17,11 +17,12 @@ def Layout(children=[]):
     loaded_states = solara.use_reactive(False)
 
     router = solara.use_router()
+    location = solara.use_context(solara.routing._location_context)
     Ref(LOCAL_STATE.fields.last_route).set(router.path)
     route_index = next((i for i, r in enumerate(router.routes) if r.path == router.path.strip('/')), None)
     Ref(LOCAL_STATE.fields.max_route_index).set(max(route_index or 0, LOCAL_STATE.value.max_route_index or 0))
 
-    async def _load_global_local_states():
+    def _load_global_local_states():
         if not GLOBAL_STATE.value.student.id:
             logger.warning("Failed to load measurements: no student was found.")
             return
@@ -47,9 +48,9 @@ def Layout(children=[]):
 
         Ref(LOCAL_STATE.fields.measurements_loaded).set(True)
 
-    solara.lab.use_task(_load_global_local_states, dependencies=[student_id.value])
+    # solara.lab.use_task(_load_global_local_states, dependencies=[student_id.value])
 
-    # solara.use_memo(_load_local_state, dependencies=[student_id.value])
+    solara.use_memo(_load_global_local_states, dependencies=[student_id.value])
 
     async def _write_local_global_states():
         if not loaded_states.value:
