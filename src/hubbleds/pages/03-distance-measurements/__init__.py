@@ -324,12 +324,12 @@ def Page():
             
             use_this = add_or_update_data(example_measurements_glue)
             use_this.style.color = MY_DATA_COLOR
+            link_example_seed_and_measurements(gjapp)
             if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                 if not example_data_setup.value:
                     logger.info('added example measurements to glue')
                 else:
                     logger.info('updated example measurements in glue')
-                link_example_seed_and_measurements(gjapp)
             example_data_setup.set(True)
                 
         else:
