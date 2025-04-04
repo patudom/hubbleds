@@ -237,8 +237,11 @@ def Page():
             use_this.style.color = MY_DATA_COLOR
 
             link_example_seed_and_measurements(gjapp)
+            if not example_data_setup.value:
+                logger.info('added example measurements to glue')
+            else:
+                logger.info('updated example measurements in glue')
             example_data_setup.set(True)
-            logger.info('added example measurements to glue')
         else:
             logger.info('add_example_measurements_to_glue: no example measurements yet')
 

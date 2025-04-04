@@ -316,7 +316,6 @@ def Page():
     
     example_data_setup = solara.use_reactive(False)
     def add_example_measurements_to_glue():
-        logger.info('in add_example_measurements_to_glue')
         if len(LOCAL_STATE.value.example_measurements) > 0:
             logger.info(f'has {len(LOCAL_STATE.value.example_measurements)} example measurements')
             example_measurements_glue = models_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
@@ -326,9 +325,13 @@ def Page():
             use_this = add_or_update_data(example_measurements_glue)
             use_this.style.color = MY_DATA_COLOR
             if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                example_data_setup.set(True)
+                if not example_data_setup.value:
+                    logger.info('added example measurements to glue')
+                else:
+                    logger.info('updated example measurements in glue')
                 link_example_seed_and_measurements(gjapp)
-            logger.info('added example measurements to glue')
+            example_data_setup.set(True)
+                
         else:
             logger.info('add_example_measurements_to_glue: no example measurements yet')
     
@@ -339,6 +342,7 @@ def Page():
     
     
     solara.use_effect(_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
+    Ref(LOCAL_STATE.fields.example_measurements).subscribe(lambda *args: _glue_data_setup())
 
     if GLOBAL_STATE.value.show_team_interface:
         with solara.Row():
@@ -391,7 +395,7 @@ def Page():
                 count.set(count.value + 1)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
-        _glue_data_setup()
+        
    
         
     @computed
@@ -434,7 +438,7 @@ def Page():
                 Ref(LOCAL_STATE.fields.measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
-        _glue_data_setup()
+
     
     ang_size_dotplot_range = solara.use_reactive([])
     dist_dotplot_range = solara.use_reactive([])
