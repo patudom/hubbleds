@@ -259,7 +259,22 @@ def Page():
                 class_ready_task.cancel()
         except RuntimeError:
             pass
-        
+    
+    def _state_callback_setup():
+        def _on_marker_update(marker):
+            if marker is Marker.tre_lin1:
+                # What we really want is for the viewer to check if this layer is visible when it gets to this marker, and if so, clear it.
+                clear_class_layer.set(clear_class_layer.value + 1)
+
+            # This has the same issues as above.
+            if marker is Marker.age_uni1:
+                clear_drawn_line.set(clear_drawn_line.value + 1)
+                draw_active.set(False)
+            
+        current_step.subscribe(_on_marker_update)
+    
+    solara.use_memo(_state_callback_setup, dependencies=[])
+    
     if (len(LOCAL_STATE.value.measurements) == 0 
         or not all(m.completed for m in LOCAL_STATE.value.measurements) # all([]) = True :/
         ):
@@ -461,17 +476,6 @@ def Page():
                 show=COMPONENT_STATE.value.is_current_step(Marker.sho_est2),
             )
 
-        def _on_marker_update(marker):
-            if marker is Marker.tre_lin1:
-                # What we really want is for the viewer to check if this layer is visible when it gets to this marker, and if so, clear it.
-                clear_class_layer.set(clear_class_layer.value + 1)
-
-            # This has the same issues as above.
-            if marker is Marker.age_uni1:
-                clear_drawn_line.set(clear_drawn_line.value + 1)
-                draw_active.set(False)
-            
-        current_step.subscribe(_on_marker_update)
 
         with rv.Col(class_="no-padding"):
             if COMPONENT_STATE.value.current_step_between(Marker.tre_dat1, Marker.sho_est2):
