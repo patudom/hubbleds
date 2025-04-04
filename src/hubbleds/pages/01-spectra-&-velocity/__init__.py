@@ -49,10 +49,14 @@ from hubbleds.utils import (
     get_image_path,
 )
 from hubbleds.example_measurement_helpers import (
-    create_example_subsets,
-    link_example_seed_and_measurements,
-    _update_second_example_measurement,
-    load_and_create_seed_data,
+    assert_example_measurements_in_glue
+)
+
+from hubbleds.stage_one_and_three_setup import (
+    initialize_second_example_measurement,
+    _add_or_update_example_measurements_to_glue,
+    _glue_setup,
+    _update_seed_data_with_examples,
 )
 
 from hubbleds.demo_helpers import (set_dummy_wavelength_and_velocity, 
@@ -63,8 +67,6 @@ logger = setup_logger("STAGE")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 
-EXAMPLE_GALAXY_MEASUREMENTS_FIRST = EXAMPLE_GALAXY_MEASUREMENTS + '_first'
-EXAMPLE_GALAXY_MEASUREMENTS_SECOND = EXAMPLE_GALAXY_MEASUREMENTS + '_second'
 
 
 def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
@@ -126,22 +128,26 @@ def Page():
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
     seed_data_setup = solara.use_reactive(False)
-    def _glue_setup() -> JupyterApplication:
-        # NOTE: use_memo has to be part of the main page render. Including it
-        #  in a conditional will result in an error.
-        gjapp = JupyterApplication(
-            GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
-        )
-
+    def glue_setup() -> JupyterApplication:
+        gjapp = _glue_setup()
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
-            load_and_create_seed_data(gjapp, LOCAL_STATE)
-            seed_data_setup.set(True)
+            raise ValueError(
+                f"Missing {EXAMPLE_GALAXY_SEED_DATA} in glue data collection."
+            )
+        seed_data_setup.set(True)
         return gjapp
+    
 
-    gjapp = solara.use_memo(_glue_setup, dependencies=[])
+    gjapp = solara.use_memo(glue_setup, dependencies=[])
+    
+    example_data_setup = solara.use_reactive(False)
+    def add_or_update_example_measurements_to_glue():
+        if (gjapp is not None):
+            _add_or_update_example_measurements_to_glue(gjapp)
+            assert_example_measurements_in_glue(gjapp)
+            example_data_setup.set(True)
 
-    def add_or_update_data(data: Data):
-        return _add_or_update_data(gjapp, data)
+
 
     def _state_callback_setup():
         # We want to minize duplicate state handling, but also keep the states
@@ -152,6 +158,30 @@ def Page():
         measurements.subscribe_change(
             lambda *args: total_galaxies.set(len(measurements.value))
         )
+        
+        example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
+        def _on_example_measurement_change(meas):
+            # make sure the 2nd one is initialized
+            initialize_second_example_measurement()
+            
+            # make sure it is in glue
+            add_or_update_example_measurements_to_glue()
+
+            # make sure it is in the seed data
+            _update_seed_data_with_examples(gjapp, meas)
+            
+        example_measurements.subscribe(
+            _on_example_measurement_change
+        )
+        
+        def _on_marker_updated(marker):
+            if COMPONENT_STATE.value.current_step.value >= Marker.rem_vel1.value:
+                initialize_second_example_measurement() # either set them to current or keep from DB
+            if COMPONENT_STATE.value.current_step_between(Marker.mee_gui1, Marker.sel_gal4):
+                selection_tool_bg_count.set(selection_tool_bg_count.value + 1)
+
+        Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
+
 
     solara.use_memo(_state_callback_setup, dependencies=[])
 
@@ -169,94 +199,14 @@ def Page():
     def selected_measurement():
         return Ref(LOCAL_STATE.fields.get_measurement).value(Ref(COMPONENT_STATE.fields.selected_galaxy).value)
     
-    def add_link(from_dc_name, from_att, to_dc_name, to_att):
-        _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att)
 
-    def _update_seed_data_with_examples(example_data):
-        logger.info('in _update_seed_data_with_examples')
-        label = EXAMPLE_GALAXY_SEED_DATA + "_first"
-        if label not in gjapp.data_collection:
-            return 
-
-        student = Ref(GLOBAL_STATE.fields.student)
-        data = gjapp.data_collection[label]
-        keep = data[STUDENT_ID_COMPONENT] != student.value.id
-        update = {
-            c.label: list(data[c][keep])
-            for c in data.main_components
-        }
-
-        examples_count = len(example_data)
-        if examples_count == 1:
-            measurement = example_data[0]
-        elif examples_count >= 2:
-            numbers = ("first", "second")
-            measurement = \
-                sorted(example_data,
-                       key=lambda v: numbers.index(v.measurement_number) if v.measurement_number in numbers else len(numbers)
-                )[1]
-
-            for component in data.main_components:
-                value = getattr(measurement, component.label, None)
-                if value is None:
-                    value = float('nan')
-                update[component.label].append(value)
-
-        new_data = Data(label=data.label, **update)
-        data.update_values_from_data(new_data)
-
-    
-
-
-    def update_second_example_measurement():
-        example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
-        if len(example_measurements.value) < 2:
-            # logger.info('No second example measurement to update')
-            return
-        
-        changed, updated = _update_second_example_measurement(example_measurements.value)
-        
-        if changed != '':
-            logger.info(f'Updating second example measurement: {changed}')
-            example_measurements.set([example_measurements.value[0], updated])
-        else:
-            logger.info('\t\t no changes for second measurement')
-    
-    example_data_setup = solara.use_reactive(False)
-    def add_example_measurements_to_glue():
-        if len(LOCAL_STATE.value.example_measurements) > 0:
-            logger.info(f'has {len(LOCAL_STATE.value.example_measurements)} example measurements')
-            example_measurements_glue = models_to_glue_data(
-                LOCAL_STATE.value.example_measurements,
-                label=EXAMPLE_GALAXY_MEASUREMENTS,
-            )
-            example_measurements_glue.style.color = MY_DATA_COLOR
-            create_example_subsets(gjapp, example_measurements_glue)
-
-            use_this = add_or_update_data(example_measurements_glue)
-            use_this.style.color = MY_DATA_COLOR
-
-            link_example_seed_and_measurements(gjapp)
-            if not example_data_setup.value:
-                logger.info('added example measurements to glue')
-            else:
-                logger.info('updated example measurements in glue')
-            example_data_setup.set(True)
-        else:
-            logger.info('add_example_measurements_to_glue: no example measurements yet')
-
-    
-    def _glue_sync_setup():
-        logger.info('running _glue_sync_setup')
+    def _init_glue_data_setup():
+        logger.info("The glue data use effect")
         if Ref(LOCAL_STATE.fields.measurements_loaded).value:
-            add_example_measurements_to_glue() # does nothing if data already added to glue
-            update_second_example_measurement() # does nothing if no second example measurement
+            add_or_update_example_measurements_to_glue()
+            initialize_second_example_measurement()
 
-    solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded).value])
-    example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
-    example_measurements.subscribe(lambda *args: _glue_sync_setup()) 
-    example_measurements.subscribe(_update_seed_data_with_examples)
-
+    solara.use_effect(_init_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded).value])
     selection_tool_bg_count = solara.use_reactive(0)
 
     def _fill_galaxies():
@@ -398,13 +348,7 @@ def Page():
     speech = Ref(GLOBAL_STATE.fields.speech)
 
 
-    def _on_marker_updated(marker):
-        if COMPONENT_STATE.value.current_step.value >= Marker.rem_vel1.value:
-            update_second_example_measurement() # either set them to current or keep from DB
-        if COMPONENT_STATE.value.current_step_between(Marker.mee_gui1, Marker.sel_gal4):
-            selection_tool_bg_count.set(selection_tool_bg_count.value + 1)
 
-    Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
 
     if GLOBAL_STATE.value.show_team_interface:
         with rv.Row():
@@ -663,8 +607,6 @@ def Page():
                         )
                     )
                     
-                    if COMPONENT_STATE.value.current_step.value == Marker.rem_vel1.value:
-                        add_example_measurements_to_glue()
 
                 DopplerSlideshow(
                     dialog=COMPONENT_STATE.value.show_doppler_dialog,

@@ -69,10 +69,14 @@ from typing import List, Tuple, cast
 from hubbleds.utils import sync_reactives
 
 from hubbleds.example_measurement_helpers import (
-    create_example_subsets,
-    link_example_seed_and_measurements,
-    _update_second_example_measurement,
-    load_and_create_seed_data
+    assert_example_measurements_in_glue
+)
+
+from hubbleds.stage_one_and_three_setup import (
+    initialize_second_example_measurement,
+    _add_or_update_example_measurements_to_glue,
+    _glue_setup,
+    _update_seed_data_with_examples,
 )
 
 from hubbleds.demo_helpers import set_dummy_all_measurements, set_dummy_wave_vel_ang
@@ -80,19 +84,6 @@ from hubbleds.demo_helpers import set_dummy_all_measurements, set_dummy_wave_vel
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 logger = setup_logger("STAGE3")
 
-def update_second_example_measurement():
-    example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
-    if len(example_measurements.value) < 2:
-        logger.debug('No second example measurement to update')
-        return
-    
-    changed, updated = _update_second_example_measurement(example_measurements.value)
-    
-    if changed != '':
-        logger.info(f'Updating second example measurement: {changed}')
-        example_measurements.set([example_measurements.value[0], updated])
-    else:
-        logger.info('\t\t no changes for second measurement')
 
 @solara.component
 def DistanceToolComponent(galaxy,
@@ -228,26 +219,46 @@ def Page():
     solara.lab.use_task(_write_component_state, dependencies=[COMPONENT_STATE.value])
     
     seed_data_setup = solara.use_reactive(False)
-    def _glue_setup() -> JupyterApplication:
-        gjapp = gjapp = JupyterApplication(
-            GLOBAL_STATE.value.glue_data_collection, GLOBAL_STATE.value.glue_session
-        )
-        
-        # Get the example seed data
+    def glue_setup() -> JupyterApplication:
+        gjapp = _glue_setup()
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
-            load_and_create_seed_data(gjapp, LOCAL_STATE)
+            raise ValueError(
+                f"Missing {EXAMPLE_GALAXY_SEED_DATA} in glue data collection."
+            )
         seed_data_setup.set(True)
-        
         return gjapp
     
+
+    gjapp = solara.use_memo(glue_setup, dependencies=[])
     
-    gjapp = solara.use_memo(_glue_setup)
     
-    def add_or_update_data(data):
-        return _add_or_update_data(gjapp, data)
+    example_data_setup = solara.use_reactive(False)
+    def add_or_update_example_measurements_to_glue():
+        if (gjapp is not None):
+            _add_or_update_example_measurements_to_glue(gjapp)
+            assert_example_measurements_in_glue(gjapp)
+            example_data_setup.set(True)
+
+
+    second_example_ready = solara.use_reactive(False)
     
-    def add_link(from_dc_name, from_att, to_dc_name, to_att):
-        _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att)
+    reset_canvas = solara.use_reactive(1) # increment to reset canvas
+    def _on_marker_updated(marker_new, marker_old):
+        # logger.info(f"Marker updated from {marker_old} to {marker_new}")
+        if marker_old == Marker.est_dis3:
+            _distance_cb(COMPONENT_STATE.value.meas_theta)
+            Ref(COMPONENT_STATE.fields.fill_est_dist_values).set(True)
+        
+        if marker_new == Marker.dot_seq5:
+            # clear the canvas before we get to the second measurement. 
+            reset_canvas.set(reset_canvas.value + 1)
+        if marker_new.is_between(Marker.dot_seq1, Marker.dot_seq4):
+            # also don't want to allow changing the measurement
+            reset_canvas.set(reset_canvas.value + 1)
+
+        distance_tool_bg_count.set(distance_tool_bg_count.value + 1)
+    
+    
     
     def _state_callback_setup():
         # We want to minimize duplicate state handling, but also keep the states
@@ -275,9 +286,31 @@ def Page():
         n_meas = Ref(COMPONENT_STATE.fields.n_meas)
         n_meas.subscribe(_on_measurement_added)
         
+        example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
+        def _on_example_measurement_change(meas):
+            # make sure the 2nd one is initialized
+            initialize_second_example_measurement()
+            
+            # make sure it is in glue
+            add_or_update_example_measurements_to_glue()
 
+            # make sure it is in the seed data
+            _update_seed_data_with_examples(gjapp, meas)
+            
+        example_measurements.subscribe(
+            _on_example_measurement_change
+        )
         
-    solara.use_memo(_state_callback_setup)
+        Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
+        
+        def show_ruler_range(marker):
+            print(f"show_ruler_range: {marker}")
+            COMPONENT_STATE.value.show_ruler = marker.is_between(Marker.ang_siz3, Marker.est_dis4) or \
+            marker.is_between(Marker.dot_seq5, Marker.last())
+        
+        Ref(COMPONENT_STATE.fields.current_step).subscribe(show_ruler_range)
+        
+    solara.use_effect(_state_callback_setup, dependencies=[])
     
     def _initialize_state():
         if (not loaded_component_state.value) or (not LOCAL_STATE.value.measurements_loaded):
@@ -315,34 +348,15 @@ def Page():
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
     
     example_data_setup = solara.use_reactive(False)
-    def add_example_measurements_to_glue():
-        if len(LOCAL_STATE.value.example_measurements) > 0:
-            logger.info(f'has {len(LOCAL_STATE.value.example_measurements)} example measurements')
-            example_measurements_glue = models_to_glue_data(LOCAL_STATE.value.example_measurements, label=EXAMPLE_GALAXY_MEASUREMENTS)
-            example_measurements_glue.style.color = MY_DATA_COLOR
-            create_example_subsets(gjapp, example_measurements_glue)
-            
-            use_this = add_or_update_data(example_measurements_glue)
-            use_this.style.color = MY_DATA_COLOR
-            link_example_seed_and_measurements(gjapp)
-            if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
-                if not example_data_setup.value:
-                    logger.info('added example measurements to glue')
-                else:
-                    logger.info('updated example measurements in glue')
-            example_data_setup.set(True)
-                
-        else:
-            logger.info('add_example_measurements_to_glue: no example measurements yet')
     
     
-    def _glue_data_setup():
-        add_example_measurements_to_glue()
-        update_second_example_measurement()
+    def _init_glue_data_setup():
+        logger.info("The glue data use effect")
+        if Ref(LOCAL_STATE.fields.measurements_loaded).value:
+            add_or_update_example_measurements_to_glue()
+            initialize_second_example_measurement()
     
-    
-    solara.use_effect(_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
-    Ref(LOCAL_STATE.fields.example_measurements).subscribe(lambda *args: _glue_data_setup())
+    solara.use_effect(_init_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded).value])
 
     if GLOBAL_STATE.value.show_team_interface:
         with solara.Row():
@@ -363,25 +377,22 @@ def Page():
         if update_example:
             index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"], measurement_number=meas_num)
             if index is not None:
-                measurements = LOCAL_STATE.value.example_measurements
-                measurement = measurements[index]
-                measurement =(
-                    measurement.model_copy(
+                measurement = Ref(LOCAL_STATE.fields.example_measurements[index])
+                measurement.set(
+                    measurement.value.model_copy(
                         update={
                             "ang_size_value": arcsec_value,
                             "brightness": brightness
                             }
                         )
                 )
-                measurements[index] = measurement
-                Ref(LOCAL_STATE.fields.example_measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
         else:
             index = LOCAL_STATE.value.get_measurement_index(galaxy["id"])
             if index is not None:
                 measurements = LOCAL_STATE.value.measurements
-                measurement = measurements[index]
+                measurement = LOCAL_STATE.value.measurements[index]
                 measurement = (
                     measurement.model_copy(
                         update={
@@ -410,16 +421,14 @@ def Page():
             index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"], measurement_number=measurement_number)
             if index is not None:
                 measurements = LOCAL_STATE.value.example_measurements
-                measurement = measurements[index]
-                measurement = (
-                    measurement.model_copy(
+                measurement = Ref(LOCAL_STATE.fields.example_measurements[index])
+                measurement.set(
+                    measurement.value.model_copy(
                         update={
                             "est_dist_value": distance
                             }
                         )
                 )
-                measurements[index] = measurement
-                Ref(LOCAL_STATE.fields.example_measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
         else:
@@ -460,20 +469,6 @@ def Page():
     
     solara.use_effect(setup_zoom_sync, dependencies = [])
     
-    reset_canvas = solara.use_reactive(1) # increment to reset canvas
-    def _on_marker_updated(marker_new, marker_old):
-        # logger.info(f"Marker updated from {marker_old} to {marker_new}")
-        if marker_old == Marker.est_dis3:
-            _distance_cb(COMPONENT_STATE.value.meas_theta)
-            Ref(COMPONENT_STATE.fields.fill_est_dist_values).set(True)
-        
-        if marker_new == Marker.dot_seq5:
-            # clear the canvas before we get to the second measurement. 
-            reset_canvas.set(reset_canvas.value + 1)
-
-        distance_tool_bg_count.set(distance_tool_bg_count.value + 1)
-    
-    Ref(COMPONENT_STATE.fields.current_step).subscribe_change(_on_marker_updated)
 
     # Insurance policy
     async def _wwt_ready_timeout():
@@ -564,12 +559,6 @@ def Page():
             )
 
         with rv.Col():
-            def show_ruler_range(marker):
-                COMPONENT_STATE.value.show_ruler = marker.is_between(Marker.ang_siz3, Marker.est_dis4) or \
-                marker.is_between(Marker.dot_seq5, Marker.last())
-            
-            current_step = Ref(COMPONENT_STATE.fields.current_step)
-            current_step.subscribe(show_ruler_range)
 
             @computed
             def on_example_galaxy_marker():
@@ -630,7 +619,6 @@ def Page():
                 updates the distance of the galaxy in the data model and
                 puts the measurements in the database.
                 """
-                logger.info(f'_distance_cb. example: {on_example_galaxy_marker.value}')
                 _update_distance_measurement(on_example_galaxy_marker.value, current_galaxy.value, theta, example_galaxy_measurement_number.value)
                 put_measurements(samples=on_example_galaxy_marker.value)
 
@@ -830,6 +818,16 @@ def Page():
                         return [
                             x.dict() for x in LOCAL_STATE.value.example_measurements if x.measurement_number == 'first'
                         ]
+                    
+                # DataTable(
+                #     title="Example Galaxy",
+                #     headers=common_headers + [{ "text": "Measurement Number", "value": "measurement_number" }],
+                #     items=[x.dict() for x in LOCAL_STATE.value.example_measurements],
+                #     show_select=True,
+                #     selected_indices=selected_example_galaxy_index.value,
+                #     event_on_row_selected=update_example_galaxy
+                # )
+
                 
                 DataTable(
                     title="Example Galaxy",
