@@ -141,7 +141,7 @@ def DistanceToolComponent(galaxy,
     solara.use_effect(turn_on_guard, [use_guard])
     
     def _reset_canvas():
-        logger.info('resetting canvas')
+        logger.debug('resetting canvas')
         widget = cast(DistanceTool,solara.get_widget(tool))
         widget.reset_canvas()
     
@@ -222,10 +222,11 @@ def Page():
     def glue_setup() -> JupyterApplication:
         gjapp = _glue_setup()
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
-            raise ValueError(
+            logger.error(
                 f"Missing {EXAMPLE_GALAXY_SEED_DATA} in glue data collection."
             )
-        seed_data_setup.set(True)
+        else:
+            seed_data_setup.set(True)
         return gjapp
     
 
@@ -762,7 +763,7 @@ def Page():
                     count = 0
                     has_ang_size = all(measurement.ang_size_value is not None for measurement in dataset)
                     if not has_ang_size:
-                        logger.error("\n ======= Not all galaxies have angular sizes ======= \n")
+                        logger.error("\n fill_galaxy_distances: Not all galaxies have angular sizes  \n")
                     for measurement in dataset:
                         if measurement.galaxy is not None and measurement.ang_size_value is not None:
                             count += 1
@@ -795,7 +796,7 @@ def Page():
                     flag = galaxy.get("value", True)
                     value = galaxy["item"]["galaxy"] if flag else None
                     selected_example_galaxy = Ref(COMPONENT_STATE.fields.selected_example_galaxy)
-                    logger.info(f"selected_example_galaxy: {value}")
+                    logger.debug(f"selected_example_galaxy: {value}")
                     selected_example_galaxy.set(value)
                     if COMPONENT_STATE.value.is_current_step(Marker.cho_row1):
                         transition_to(COMPONENT_STATE, Marker.ang_siz2)
@@ -958,19 +959,15 @@ def Page():
                 
                 
                 def set_angular_size_line(points):
-                    logger.info("Called set_angular_size_line")
                     angular_size_line = Ref(COMPONENT_STATE.fields.angular_size_line)
                     if len(points.xs) > 0:
-                        logger.info(f"Setting angular size line with {points.xs}")
                         distance = points.xs[0]
                         angular_size = DISTANCE_CONSTANT / distance
                         angular_size_line.set(angular_size)
                 
                 def set_distance_line(points):
-                    logger.info("Called set_distance_line")
                     distance_line = Ref(COMPONENT_STATE.fields.distance_line)
                     if len(points.xs) > 0:
-                        logger.info(f"Setting distance line with {points.xs}")
                         angular_size = points.xs[0]
                         distance = DISTANCE_CONSTANT / angular_size
                         distance_line.set(distance)

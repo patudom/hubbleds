@@ -131,10 +131,11 @@ def Page():
     def glue_setup() -> JupyterApplication:
         gjapp = _glue_setup()
         if EXAMPLE_GALAXY_SEED_DATA not in gjapp.data_collection:
-            raise ValueError(
+            logger.error(
                 f"Missing {EXAMPLE_GALAXY_SEED_DATA} in glue data collection."
             )
-        seed_data_setup.set(True)
+        else:
+            seed_data_setup.set(True)
         return gjapp
     
 
@@ -537,7 +538,7 @@ def Page():
             show_values = Ref(COMPONENT_STATE.fields.show_dop_cal4_values)
             
             def _on_validate_transition(validated):
-                logger.info("Validated transition to dop_cal5: %s", validated)
+                logger.debug("Validated transition to dop_cal5: %s", validated)
                 validation_4_failed.set(not validated)
                 show_values.set(validated)
                 if not validated:
@@ -547,7 +548,7 @@ def Page():
                     transition_to(COMPONENT_STATE, Marker.dop_cal5)
 
                 show_doppler_dialog = Ref(COMPONENT_STATE.fields.show_doppler_dialog)
-                logger.info("Setting show_doppler_dialog to %s", validated)
+                logger.debug("Setting show_doppler_dialog to %s", validated)
                 show_doppler_dialog.set(validated)
 
             
