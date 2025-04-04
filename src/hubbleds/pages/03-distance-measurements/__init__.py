@@ -81,16 +81,16 @@ GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 logger = setup_logger("STAGE3")
 
 def update_second_example_measurement():
+    logger.info("update_second_example_measurement")
     example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
     if len(example_measurements.value) < 2:
         logger.info('No second example measurement to update')
         return
     
     changed, updated = _update_second_example_measurement(example_measurements.value)
-    logger.info('Updating second example measurement')
     
     if changed != '':
-        logger.info(f'\t\t setting example_measurements: {changed}')
+        logger.info(f'Updating second example measurement: {changed}')
         example_measurements.set([example_measurements.value[0], updated])
     else:
         logger.info('\t\t no changes for second measurement')
@@ -354,22 +354,24 @@ def Page():
             LOCAL_API.put_measurements(GLOBAL_STATE, LOCAL_STATE)
             
     def _update_angular_size(update_example: bool, galaxy, angular_size, count, meas_num = 'first', brightness = 1.0):
+        logger.info("_update_angular_size")
         # if bool(galaxy) and angular_size is not None:
         arcsec_value = int(angular_size.to(u.arcsec).value)
         if update_example:
             index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"], measurement_number=meas_num)
             if index is not None:
+                logger.info(f'updating example measurement {index}')
                 measurements = LOCAL_STATE.value.example_measurements
-                measurement = Ref(LOCAL_STATE.fields.example_measurements[index])
-                measurement.set(
-                    measurement.value.model_copy(
+                measurement = measurements[index]
+                measurement =(
+                    measurement.model_copy(
                         update={
                             "ang_size_value": arcsec_value,
                             "brightness": brightness
                             }
                         )
                 )
-                measurements[index] = measurement.value
+                measurements[index] = measurement
                 Ref(LOCAL_STATE.fields.example_measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
@@ -400,21 +402,23 @@ def Page():
         
             
     def _update_distance_measurement(update_example: bool, galaxy, theta, measurement_number = 'first'):
+        logger.info("_update_distance_measurement")
         # if bool(galaxy) and theta is not None:
         distance = distance_from_angular_size(theta)
         if update_example:
             index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"], measurement_number=measurement_number)
             if index is not None:
+                logger.info(f'updating example measurement {index}')
                 measurements = LOCAL_STATE.value.example_measurements
-                measurement = Ref(LOCAL_STATE.fields.example_measurements[index])
-                measurement.set(
-                    measurement.value.model_copy(
+                measurement = measurements[index]
+                measurement = (
+                    measurement.model_copy(
                         update={
                             "est_dist_value": distance
                             }
                         )
                 )
-                measurements[index] = measurement.value
+                measurements[index] = measurement
                 Ref(LOCAL_STATE.fields.example_measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
