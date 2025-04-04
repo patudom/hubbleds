@@ -151,6 +151,11 @@ def Page():
             LOCAL_API.get_measurements(GLOBAL_STATE, LOCAL_STATE)
 
         class_measurements = LOCAL_API.get_class_measurements(GLOBAL_STATE, LOCAL_STATE)
+        # if we are a teacher then our measurements were not loaded with class_measurements and only exist on the front end in LOCAL_STATE.value.measuements
+        #  make sure we add these to the class_measurements
+        if (not GLOBAL_STATE.value.update_db) and len(LOCAL_STATE.value.measurements)>0:
+            class_measurements.extend(m for m in LOCAL_STATE.value.measurements)
+
         measurements = Ref(LOCAL_STATE.fields.class_measurements)
         student_ids = Ref(LOCAL_STATE.fields.stage_5_class_data_students)
         if class_measurements and not student_ids.value:
@@ -182,6 +187,8 @@ def Page():
         student_data = GLOBAL_STATE.value.add_or_update_data(student_data)
 
         class_ids = LOCAL_STATE.value.stage_5_class_data_students
+        if (not GLOBAL_STATE.value.update_db) and len(LOCAL_STATE.value.measurements)>0:
+            class_ids.append([m.student_id for m in LOCAL_STATE.value.measurements][0])
         class_data_points = [m for m in LOCAL_STATE.value.class_measurements if m.student_id in class_ids]
         class_data = models_to_glue_data(class_data_points, label="Class Data")
         class_data = GLOBAL_STATE.value.add_or_update_data(class_data)
