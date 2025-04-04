@@ -75,10 +75,9 @@ from hubbleds.example_measurement_helpers import (
     load_and_create_seed_data
 )
 
+from hubbleds.demo_helpers import set_dummy_all_measurements, set_dummy_wave_vel_ang
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-show_team_interface = GLOBAL_STATE.value.show_team_interface
-
 logger = setup_logger("STAGE3")
 
 def update_second_example_measurement():
@@ -308,23 +307,12 @@ def Page():
     # loaded_component_state.subscribe(_initialize_state)
     
     def _fill_data_points():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        for measurement in dummy_measurements:
-            measurement.student_id = GLOBAL_STATE.value.student.id
-        Ref(LOCAL_STATE.fields.measurements).set(dummy_measurements)
+        set_dummy_all_measurements(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
         push_to_route(router, location, "04-explore-data")
 
     def _fill_thetas():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   velocity_value=measurement.velocity_value,
-                                                   ang_size_value=measurement.ang_size_value,
-                                                   galaxy=measurement.galaxy))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        set_dummy_wave_vel_ang(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
         Ref(COMPONENT_STATE.fields.angular_sizes_total).set(5)
     
     example_data_setup = solara.use_reactive(False)
@@ -352,10 +340,10 @@ def Page():
     
     solara.use_effect(_glue_data_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded)])
 
-    if show_team_interface:
+    if GLOBAL_STATE.value.show_team_interface:
         with solara.Row():
             with solara.Column():
-                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=not GLOBAL_STATE.value.educator)
             with solara.Column():
                 solara.Button(label="Shortcut: Fill in distance data & Jump to Stage 4", on_click=_fill_data_points, classes=["demo-button"])    
 
@@ -687,7 +675,7 @@ def Page():
                             True
                         ),
                         image_location = get_image_path(router, "stage_two_dos_donts"),
-                        show_team_interface = show_team_interface,
+                        show_team_interface= GLOBAL_STATE.value.show_team_interface,
                     )
 
     with solara.ColumnsResponsive(12, large=[4,8]):
@@ -761,7 +749,7 @@ def Page():
                     "bad_angsize": False
                 }
             )
-            if (COMPONENT_STATE.value.is_current_step(Marker.rep_rem1) and show_team_interface):
+            if (COMPONENT_STATE.value.is_current_step(Marker.rep_rem1) and GLOBAL_STATE.value.show_team_interface):
                 solara.Button(label="DEMO SHORTCUT: FILL θ MEASUREMENTS", on_click=_fill_thetas, style="text-transform: none", classes=["demo-button"])
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineFillRemainingGalaxies.vue",
@@ -796,7 +784,7 @@ def Page():
                     distances_total.set(count)
                     fill_galaxy_pressed.set(True)
 
-                if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and show_team_interface):
+                if (COMPONENT_STATE.value.current_step_at_or_after(Marker.fil_rem1) and GLOBAL_STATE.value.show_team_interface):
                     solara.Button("Demo Shortcut: Fill Galaxy Distances", on_click=lambda: fill_galaxy_distances() , classes=["demo-button"])
 
 

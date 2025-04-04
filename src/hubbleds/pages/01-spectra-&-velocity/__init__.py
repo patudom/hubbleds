@@ -55,6 +55,10 @@ from hubbleds.example_measurement_helpers import (
     load_and_create_seed_data,
 )
 
+from hubbleds.demo_helpers import (set_dummy_wavelength_and_velocity, 
+                                   set_dummy_all_measurements,
+                                   set_dummy_wavelength)
+
 logger = setup_logger("STAGE")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
@@ -62,7 +66,6 @@ GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 EXAMPLE_GALAXY_MEASUREMENTS_FIRST = EXAMPLE_GALAXY_MEASUREMENTS + '_first'
 EXAMPLE_GALAXY_MEASUREMENTS_SECOND = EXAMPLE_GALAXY_MEASUREMENTS + '_second'
 
-show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 def is_wavelength_poorly_measured(measwave, restwave, z, tolerance = 0.5):
     z_meas =  (measwave - restwave) / restwave
@@ -255,35 +258,13 @@ def Page():
     selection_tool_bg_count = solara.use_reactive(0)
 
     def _fill_galaxies():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   galaxy=measurement.galaxy,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   velocity_value=measurement.velocity_value,
-                                                   ang_size_value=measurement.ang_size_value,
-                                                   est_dist_value=measurement.est_dist_value))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        set_dummy_all_measurements(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
 
     def _fill_lambdas():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   galaxy=measurement.galaxy))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        set_dummy_wavelength(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
 
     def _fill_stage1_go_stage2():
-        dummy_measurements = LOCAL_API.get_dummy_data()
-        measurements = []
-        for measurement in dummy_measurements:
-            measurements.append(StudentMeasurement(student_id=GLOBAL_STATE.value.student.id,
-                                                   obs_wave_value=measurement.obs_wave_value,
-                                                   galaxy=measurement.galaxy,
-                                                   velocity_value=measurement.velocity_value))
-        Ref(LOCAL_STATE.fields.measurements).set(measurements)
+        set_dummy_wavelength_and_velocity(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
         push_to_route(router, location, f"02-distance-introduction")
 
     def _select_random_galaxies():
@@ -423,10 +404,10 @@ def Page():
 
     Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
 
-    if show_team_interface:
+    if GLOBAL_STATE.value.show_team_interface:
         with rv.Row():
             with solara.Column():
-                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=not GLOBAL_STATE.value.educator)
             with solara.Column():
                 solara.Button(label="Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_stage1_go_stage2, classes=["demo-button"])
                 solara.Button(label="Choose 5 random galaxies", on_click=_select_random_galaxies, classes=["demo-button"])
@@ -714,7 +695,7 @@ def Page():
                         ),
                         "score_tag": "interpret-velocity",
                     },
-                    show_team_interface=show_team_interface,
+                    show_team_interface=GLOBAL_STATE.value.show_team_interface,
                 )
             ScaffoldAlert(
                 GUIDELINE_ROOT / "GuidelineCheckMeasurement.vue",
@@ -751,7 +732,7 @@ def Page():
                 },
                 speech=speech.value,
             )
-            if show_team_interface:
+            if GLOBAL_STATE.value.show_team_interface:
                 if COMPONENT_STATE.value.is_current_step(Marker.rem_gal1):
                     solara.Button(label="DEMO SHORTCUT: FILL λ MEASUREMENTS", on_click=_fill_lambdas, style="text-transform: none;", classes=["demo-button"])
             ScaffoldAlert(
@@ -954,7 +935,7 @@ def Page():
                             COMPONENT_STATE.fields.show_dotplot_tutorial_dialog
                         ).set(v),
                         event_set_step = Ref(COMPONENT_STATE.fields.dotplot_tutorial_state.step).set,
-                        show_team_interface=show_team_interface,
+                        show_team_interface=GLOBAL_STATE.value.show_team_interface,
                     )
                 
     # Dot Plot 1st measurement row
@@ -1406,7 +1387,7 @@ def Page():
                                     True
                                 ),
                                 image_location=get_image_path(router, "stage_one_spectrum"),
-                                show_team_interface=show_team_interface,
+                                show_team_interface=GLOBAL_STATE.value.show_team_interface,
                             )
                 
                 if COMPONENT_STATE.value.current_step_at_or_after(Marker.ref_dat1): # space 2 buttons nicely
@@ -1414,7 +1395,7 @@ def Page():
                         with rv.Col(cols=4, offset=2):
                             SpectrumSlideshow(
                                 image_location=get_image_path(router, "stage_one_spectrum"),
-                                show_team_interface=show_team_interface,
+                                show_team_interface=GLOBAL_STATE.value.show_team_interface,
                             )
                         with rv.Col(cols=4):
                             show_reflection_dialog = Ref(
@@ -1466,5 +1447,5 @@ def Page():
                                 event_on_reflection_complete=lambda _: reflection_complete.set(
                                     True
                                 ),
-                                show_team_interface=show_team_interface,
+                                show_team_interface=GLOBAL_STATE.value.show_team_interface,
                             )

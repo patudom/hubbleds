@@ -60,7 +60,6 @@ logger = setup_logger("STAGE")
 
 # the guidelines in the current files parent directory
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 
 def basic_viewer_setup(viewer_class, glue_session, data_collection, name, x_att, y_att):
@@ -261,8 +260,8 @@ def Page():
 
     loaded_component_state.subscribe(_on_component_state_loaded) 
 
-    if show_team_interface:
-        StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+    if GLOBAL_STATE.value.show_team_interface:
+        StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=not GLOBAL_STATE.value.educator)
     
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():

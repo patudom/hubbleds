@@ -20,13 +20,12 @@ from hubbleds.viewers.hubble_scatter_viewer import HubbleScatterView
 from .component_state import COMPONENT_STATE, Marker
 from hubbleds.remote import LOCAL_API
 from hubbleds.utils import AGE_CONSTANT, models_to_glue_data, PLOTLY_MARGINS, get_image_path, push_to_route
-
+from hubbleds.demo_helpers import set_dummy_all_measurements
 from cosmicds.logger import setup_logger
 
 logger = setup_logger("STAGE 4")
 
 GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
-show_team_interface = GLOBAL_STATE.value.show_team_interface
 
 @solara.component
 def Page():
@@ -171,6 +170,8 @@ def Page():
                 (check_completed_students_count() >= 12)
 
         Ref(LOCAL_STATE.fields.enough_students_ready).set(value)
+        if GLOBAL_STATE.value.educator:
+            value = False
         set_skip_waiting_room(value)
         if value:
             if COMPONENT_STATE.value.current_step == Marker.wwt_wait:
@@ -232,15 +233,15 @@ def Page():
     best_fit_slope = Ref(LOCAL_STATE.fields.best_fit_slope)
     @solara.lab.computed
     def line_label():
-        if current_step.value >= Marker.age_uni4:
+        if current_step.value >= Marker.age_uni4 and best_fit_slope.value is not None:
             return f"Age: {round(AGE_CONSTANT / best_fit_slope.value)} Gyr"
         else:
             return None
 
-    if show_team_interface:
+    if GLOBAL_STATE.value.show_team_interface:
         with solara.Row():
             with solara.Column():
-                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=True)
+                StateEditor(Marker, COMPONENT_STATE, LOCAL_STATE, LOCAL_API, show_all=not GLOBAL_STATE.value.educator)
             with solara.Column():
                 solara.Button(label="Shortcut: Jump to Stage 5", on_click=_jump_stage_5, classes=["demo-button"])
 
@@ -258,6 +259,21 @@ def Page():
                 class_ready_task.cancel()
         except RuntimeError:
             pass
+        
+    if (len(LOCAL_STATE.value.measurements) == 0 
+        or not all(m.completed for m in LOCAL_STATE.value.measurements) # all([]) = True :/
+        ):
+        solara.Error(
+            "You have not added any or have incomplete measurements. Please add/finish some before continuing.",
+            icon="mdi-alert",
+        )
+        if GLOBAL_STATE.value.show_team_interface:
+            def _fill_all_data():
+                set_dummy_all_measurements(LOCAL_API, LOCAL_STATE, GLOBAL_STATE)
+            solara.Button(label="Shortcut: Fill in galaxy velocity data & Jump to Stage 2", on_click=_fill_all_data, classes=["demo-button"])
+            _fill_all_data()
+            best_fit_slope.set(16.9653)
+        return
 
     with solara.ColumnsResponsive(12, large=[4,8]):
         with rv.Col():
@@ -568,5 +584,5 @@ def Page():
                         event_set_max_step_completed=max_step_completed.set,
                         event_mc_callback=lambda event: mc_callback(event, LOCAL_STATE, COMPONENT_STATE),
                         event_on_slideshow_finished=lambda _: slideshow_finished.set(True),
-                        show_team_interface=show_team_interface,
+                        show_team_interface=GLOBAL_STATE.value.show_team_interface,
                     )

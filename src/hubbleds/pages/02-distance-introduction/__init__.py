@@ -86,6 +86,6 @@ def Page():
         },
         event_return_to_stage1=lambda _: push_to_route(router, location, "01-spectra-&-velocity"),  
         event_slideshow_finished=lambda _: push_to_route(router, location, "03-distance-measurements"),
-        debug = LOCAL_STATE.value.debug_mode,
+        debug = GLOBAL_STATE.value.show_team_interface,
         speech=speech.value.model_dump(),
     )
