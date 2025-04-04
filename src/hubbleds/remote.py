@@ -344,6 +344,9 @@ class LocalAPI(BaseAPI):
         global_state: Reactive[GlobalState],
         local_state: Reactive[LocalState],
     ) -> int:
+        if global_state.value.classroom.class_info is None or 'id' not in global_state.value.classroom.class_info:
+            logger.warning("No class id found in classroom info.")
+            return 0
         url = (
             f"{self.API_URL}/{local_state.value.story_id}/class-measurements/students-completed/"
             f"{global_state.value.student.id}/{global_state.value.classroom.class_info['id']}"
