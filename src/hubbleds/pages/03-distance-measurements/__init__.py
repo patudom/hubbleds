@@ -379,16 +379,16 @@ def Page():
             index = LOCAL_STATE.value.get_measurement_index(galaxy["id"])
             if index is not None:
                 measurements = LOCAL_STATE.value.measurements
-                measurement = Ref(LOCAL_STATE.fields.measurements[index])
-                measurement.set(
-                    measurement.value.model_copy(
+                measurement = measurements[index]
+                measurement = (
+                    measurement.model_copy(
                         update={
                             "ang_size_value": arcsec_value,
                             "brightness": brightness
                             }
                         )
                 )
-                measurements[index] = measurement.value
+                measurements[index] = measurement
                 Ref(LOCAL_STATE.fields.measurements).set(measurements)
                 count.set(count.value + 1)
             else:
@@ -426,15 +426,15 @@ def Page():
             index = LOCAL_STATE.value.get_measurement_index(galaxy["id"])
             if index is not None:
                 measurements = LOCAL_STATE.value.measurements
-                measurement = Ref(LOCAL_STATE.fields.measurements[index])
-                measurement.set(
-                    measurement.value.model_copy(
+                measurement = measurements[index]
+                measurement = (
+                    measurement.model_copy(
                         update={
                             "est_dist_value": distance
                             }
                         )
                 )
-                measurements[index] = measurement.value
+                measurements[index] = measurement
                 Ref(LOCAL_STATE.fields.measurements).set(measurements)
             else:
                 raise ValueError(f"Could not find measurement for galaxy {galaxy['id']}")
