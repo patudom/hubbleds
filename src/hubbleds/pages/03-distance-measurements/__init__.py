@@ -81,10 +81,9 @@ GUIDELINE_ROOT = Path(__file__).parent / "guidelines"
 logger = setup_logger("STAGE3")
 
 def update_second_example_measurement():
-    logger.info("update_second_example_measurement")
     example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
     if len(example_measurements.value) < 2:
-        logger.info('No second example measurement to update')
+        logger.debug('No second example measurement to update')
         return
     
     changed, updated = _update_second_example_measurement(example_measurements.value)
@@ -329,8 +328,9 @@ def Page():
             if EXAMPLE_GALAXY_MEASUREMENTS in gjapp.data_collection:
                 example_data_setup.set(True)
                 link_example_seed_and_measurements(gjapp)
+            logger.info('added example measurements to glue')
         else:
-            logger.info('no example measurements yet')
+            logger.info('add_example_measurements_to_glue: no example measurements yet')
     
     
     def _glue_data_setup():
@@ -354,13 +354,11 @@ def Page():
             LOCAL_API.put_measurements(GLOBAL_STATE, LOCAL_STATE)
             
     def _update_angular_size(update_example: bool, galaxy, angular_size, count, meas_num = 'first', brightness = 1.0):
-        logger.info("_update_angular_size")
         # if bool(galaxy) and angular_size is not None:
         arcsec_value = int(angular_size.to(u.arcsec).value)
         if update_example:
             index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"], measurement_number=meas_num)
             if index is not None:
-                logger.info(f'updating example measurement {index}')
                 measurements = LOCAL_STATE.value.example_measurements
                 measurement = measurements[index]
                 measurement =(
@@ -402,13 +400,11 @@ def Page():
         
             
     def _update_distance_measurement(update_example: bool, galaxy, theta, measurement_number = 'first'):
-        logger.info("_update_distance_measurement")
         # if bool(galaxy) and theta is not None:
         distance = distance_from_angular_size(theta)
         if update_example:
             index = LOCAL_STATE.value.get_example_measurement_index(galaxy["id"], measurement_number=measurement_number)
             if index is not None:
-                logger.info(f'updating example measurement {index}')
                 measurements = LOCAL_STATE.value.example_measurements
                 measurement = measurements[index]
                 measurement = (
@@ -613,10 +609,8 @@ def Page():
                 # the above, but if the student goes back, the distance should update if the distance is already set.
                 if on_example_galaxy_marker.value:
                     index = LOCAL_STATE.value.get_example_measurement_index(current_galaxy.value["id"], measurement_number=example_galaxy_measurement_number.value)
-                    logger.info("============== auto_fill_distance ===============")
-                    logger.info(f'index: {index}')
                     if index is not None and LOCAL_STATE.value.example_measurements[index].est_dist_value is not None:
-                        logger.info("autofill the distance")
+                        logger.info(f"autofill the distance of index {index}")
                         auto_fill_distance = True
                 if auto_fill_distance:
                     _distance_cb(angle.to(u.arcsec).value)
@@ -641,7 +635,7 @@ def Page():
                 ruler_click_count.set(count)
             
             def brightness_callback(brightness):
-                logger.info(f'Brightness: {brightness}')
+                # logger.info(f'Brightness: {brightness}')
                 current_brightness.set(brightness / 100)
                 
             example_guard_range = [Angle("6 arcsec"), Angle("6 arcmin")]

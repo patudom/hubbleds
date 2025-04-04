@@ -173,7 +173,7 @@ def Page():
         _add_link(gjapp, from_dc_name, from_att, to_dc_name, to_att)
 
     def _update_seed_data_with_examples(example_data):
-
+        logger.info('in _update_seed_data_with_examples')
         label = EXAMPLE_GALAXY_SEED_DATA + "_first"
         if label not in gjapp.data_collection:
             return 
@@ -211,21 +211,19 @@ def Page():
     def update_second_example_measurement():
         example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
         if len(example_measurements.value) < 2:
-            logger.info('No second example measurement to update')
+            # logger.info('No second example measurement to update')
             return
         
         changed, updated = _update_second_example_measurement(example_measurements.value)
-        logger.info('Updating second example measurement')
         
         if changed != '':
-            logger.info(f'\t\t setting example_measurements: {changed}')
+            logger.info(f'Updating second example measurement: {changed}')
             example_measurements.set([example_measurements.value[0], updated])
         else:
             logger.info('\t\t no changes for second measurement')
     
     example_data_setup = solara.use_reactive(False)
     def add_example_measurements_to_glue():
-        logger.info('in add_example_measurements_to_glue')
         if len(LOCAL_STATE.value.example_measurements) > 0:
             logger.info(f'has {len(LOCAL_STATE.value.example_measurements)} example measurements')
             example_measurements_glue = models_to_glue_data(
@@ -240,19 +238,20 @@ def Page():
 
             link_example_seed_and_measurements(gjapp)
             example_data_setup.set(True)
+            logger.info('added example measurements to glue')
         else:
-            logger.info('no example measurements yet')
+            logger.info('add_example_measurements_to_glue: no example measurements yet')
 
     
     def _glue_sync_setup():
         logger.info('running _glue_sync_setup')
         if Ref(LOCAL_STATE.fields.measurements_loaded).value:
-            add_example_measurements_to_glue()
-            update_second_example_measurement()
+            add_example_measurements_to_glue() # does nothing if data already added to glue
+            update_second_example_measurement() # does nothing if no second example measurement
 
     solara.use_memo(_glue_sync_setup, dependencies=[Ref(LOCAL_STATE.fields.measurements_loaded).value])
     example_measurements = Ref(LOCAL_STATE.fields.example_measurements)
-    example_measurements.subscribe(lambda *args: _glue_sync_setup())
+    example_measurements.subscribe(lambda *args: _glue_sync_setup()) 
     example_measurements.subscribe(_update_seed_data_with_examples)
 
     selection_tool_bg_count = solara.use_reactive(0)
@@ -351,25 +350,25 @@ def Page():
         if len(LOCAL_STATE.value.example_measurements) > 0:
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
             lambda_obs = v2w(velocity, lambda_rest)
-            print(f'sync_example_velocity_to_wavelength {velocity:0.2f} -> {lambda_obs:0.2f}')
+            logger.debug(f'sync_example_velocity_to_wavelength {velocity:0.2f} -> {lambda_obs:0.2f}')
             return lambda_obs
     
     def sync_example_wavelength_to_velocity(wavelength):
         if len(LOCAL_STATE.value.example_measurements) > 0:
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
             velocity = w2v(wavelength, lambda_rest)
-            print(f'sync_example_wavelength_to_velocity {wavelength:0.2f} -> {velocity:0.2f}')
+            logger.debug(f'sync_example_wavelength_to_velocity {wavelength:0.2f} -> {velocity:0.2f}')
             return velocity
     
     def sync_spectrum_to_dotplot_range(value):
         if len(LOCAL_STATE.value.example_measurements) > 0:
-            logger.info('Setting dotplot range from spectrum range')
+            logger.debug('Setting dotplot range from spectrum range')
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
             return [w2v(v, lambda_rest) for v in value]
     
     def sync_dotplot_to_spectrum_range(value):
         if len(LOCAL_STATE.value.example_measurements) > 0:
-            logger.info('Setting spectrum range from dotplot range')
+            logger.debug('Setting spectrum range from dotplot range')
             lambda_rest = LOCAL_STATE.value.example_measurements[0].rest_wave_value
             return [v2w(v, lambda_rest) for v in value]
 
@@ -1244,10 +1243,10 @@ def Page():
                         # obs_wave.set(value)
                         
                     def _on_set_marker_location(value):
-                        logger.info('Setting marker location spectrum -> dotplot')
+                        logger.debug('Setting marker location spectrum -> dotplot')
                         velocity = sync_example_wavelength_to_velocity(value)
                         if velocity:
-                            logger.info(f'Setting velocity {velocity: 0.2f} ')
+                            logger.debug(f'Setting velocity {velocity: 0.2f} ')
                             sync_velocity_line.set(velocity)
 
                     obs_wave_tool_used = Ref(COMPONENT_STATE.fields.obs_wave_tool_used)
