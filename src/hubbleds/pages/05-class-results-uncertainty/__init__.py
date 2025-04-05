@@ -378,9 +378,6 @@ def Page():
             show_class_data(marker)
             show_student_data(marker)
 
-    current_step = Ref(COMPONENT_STATE.fields.current_step)
-    
-    current_step.subscribe(update_layer_viewer_visibilities)
     update_layer_viewer_visibilities(COMPONENT_STATE.value.current_step)
 
     class_best_fit_clicked = Ref(COMPONENT_STATE.fields.class_best_fit_clicked)
@@ -405,7 +402,14 @@ def Page():
         if marker <= Marker.sho_mya1 or marker >= Marker.con_int2:
             show_class_hide_my_age_subset(True)
 
-    Ref(COMPONENT_STATE.fields.current_step).subscribe(_on_marker_updated)
+    def _state_callback_setup():
+        current_step = Ref(COMPONENT_STATE.fields.current_step)
+        current_step.subscribe(update_layer_viewer_visibilities)
+        current_step.subscribe(_on_marker_updated)
+        
+    solara.use_memo(_state_callback_setup, dependencies=[])
+
+    
 
     line_fit_tool = viewers["layer"].toolbar.tools['hubble:linefit']
     add_callback(line_fit_tool, 'active',  _on_best_fit_line_shown)
