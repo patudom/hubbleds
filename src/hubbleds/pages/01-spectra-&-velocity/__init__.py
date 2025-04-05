@@ -757,7 +757,7 @@ def Page():
                 
                 
                 common_headers = [
-                                    {"text": "Galaxy Name", "align": "start","sortable": False,"value": "name",},
+                                    {"text": "Galaxy ID", "align": "start","sortable": False,"value": "name",},
                                     {"text": "Element", "value": "element"},
                                     {"text": "&lambda;<sub>rest</sub> (&Aring;)",
                                      "value": "rest_wave_value"},
@@ -766,7 +766,7 @@ def Page():
                                     {"text": "Velocity (km/s)", "value": "velocity_value"},
                                 ]
                 if use_second_measurement.value:
-                    measnum_header = {"text": "Measurement Number", "value": "measurement_number"}
+                    measnum_header = {"text": "Measurement", "value": "measurement_number"}
                     common_headers.append(measnum_header)
 
                 

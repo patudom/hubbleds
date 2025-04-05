@@ -330,7 +330,7 @@ def Page():
                 items=[x.model_dump() for x in LOCAL_STATE.value.measurements],
                 headers=[
                     {
-                        "text": "Galaxy Name",
+                        "text": "Galaxy ID",
                         "align": "start",
                         "sortable": False,
                         "value": "galaxy.name"

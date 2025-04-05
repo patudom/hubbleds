@@ -781,7 +781,7 @@ def Page():
 
                 common_headers = [
                     {
-                        "text": "Galaxy Name",
+                        "text": "Galaxy ID",
                         "align": "start",
                         "sortable": False,
                         "value": "name"
