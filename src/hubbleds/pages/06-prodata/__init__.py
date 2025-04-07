@@ -268,7 +268,8 @@ def Page():
 
     current_step.subscribe(display_fit_legend)
     display_fit_legend(COMPONENT_STATE.value.current_step)
-    show_fit_line(True)
+    
+    solara.use_effect(lambda : show_fit_line(True), dependencies=[])
 
     @staticmethod
     def linear_slope(x, y):
