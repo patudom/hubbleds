@@ -36,7 +36,7 @@ from hubbleds.viewer_marker_colors import (
     HST_KEY_COLOR_NAME,
 )
 
-from ...utils import HST_KEY_AGE, models_to_glue_data, AGE_CONSTANT, push_to_route
+from ...utils import HST_KEY_AGE, models_to_glue_data, AGE_CONSTANT, push_to_route, PLOTLY_MARGINS
 
 from .component_state import COMPONENT_STATE, Marker
 
@@ -142,9 +142,18 @@ def Page():
 
         viewer = cast(HubbleFitView, gjapp.new_data_viewer(HubbleFitView, show=False))
         viewer.state.title = "Professional Data"
-        viewer.figure.update_xaxes(showline=True, mirror=False)
-        viewer.figure.update_yaxes(showline=True, mirror=False)
+        viewer.figure.update_layout(margin=PLOTLY_MARGINS)
+        viewer.figure.update_xaxes(showline=True, mirror=False, title="Distance (Mpc)")
+        viewer.figure.update_yaxes(showline=True, mirror=False, title="Velocity (km/s)")
         viewer.ignore(lambda data: data.label == "student_slider_subset")
+        
+        old_reset = viewer.state.reset_limits
+        def new_reset():
+            old_reset()
+            viewer.figure.update_xaxes(title="Distance (Mpc)")
+            viewer.figure.update_yaxes(title="Velocity (km/s)")
+        viewer.state.reset_limits = new_reset
+        
         
         return gjapp, viewer
     
@@ -160,8 +169,13 @@ def Page():
 
     solara.use_memo(_state_callback_setup)    
     
+    def show_fit_line(show = True):
+        tool = viewer.toolbar.tools['hubble:linefit']
+        if show != tool.active:
+            tool.activate()
+        Ref(COMPONENT_STATE.fields.fit_line_shown).set(tool.active)
     
-    def show_class_data(viewer):
+    def add_class_data(viewer):
         data = gjapp.data_collection['Class Data']
         if data not in viewer.state.layers_data:
             print('adding class data')
@@ -170,11 +184,16 @@ def Page():
             viewer.add_data(data)
             viewer.state.x_att = data.id['est_dist_value']
             viewer.state.y_att = data.id['velocity_value']
+    
+    def show_class_data(viewer):
+        data = gjapp.data_collection['Class Data']
+        if data not in viewer.state.layers_data:
+            add_class_data(viewer)
             viewer.state.reset_limits()
         else:
             viewer.layer_artist_for_data(data).visible = True
 
-    def show_hubble1929_data(viewer):
+    def add_hubble1929_data(viewer):
         data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
         if data not in viewer.state.layers_data:
             print('adding Hubble 1929')
@@ -183,11 +202,16 @@ def Page():
             viewer.add_data(data)
             viewer.state.x_att = data.id['Distance (Mpc)']
             viewer.state.y_att = data.id['Tweaked Velocity (km/s)']
+
+    def show_hubble1929_data(viewer):
+        data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
+        if data not in viewer.state.layers_data:
+            add_hubble1929_data(viewer)
             viewer.state.reset_limits()
         else:
             viewer.layer_artist_for_data(data).visible = True
                 
-    def show_hst_key_data(viewer):
+    def add_hst_key_data(viewer):
         data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
         if data not in viewer.state.layers_data:
             print('adding HST key')
@@ -196,19 +220,27 @@ def Page():
             viewer.add_data(data)
             viewer.state.x_att = data.id['Distance (Mpc)']
             viewer.state.y_att = data.id['Velocity (km/s)']  
-            viewer.state.reset_limits()
+
+
+    def show_hst_key_data(viewer):
+        data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
+        if data not in viewer.state.layers_data:
+          add_hst_key_data(viewer)
+          viewer.state.reset_limits()
         else:
             viewer.layer_artist_for_data(data).visible = True
 
     def hide_hubble1929_data(viewer):
         data = gjapp.data_collection[HUBBLE_1929_DATA_LABEL]
-        if data in viewer.state.layers_data:
-            viewer.layer_artist_for_data(data).visible = False
+        if data not in viewer.state.layers_data:
+            add_hubble1929_data(viewer)
+        viewer.layer_artist_for_data(data).visible = False
 
     def hide_hstkey_data(viewer):
         data = gjapp.data_collection[HUBBLE_KEY_DATA_LABEL]
-        if data in viewer.state.layers_data:
-            viewer.layer_artist_for_data(data).visible = False
+        if data not in viewer.state.layers_data:
+            add_hst_key_data(viewer)
+        viewer.layer_artist_for_data(data).visible = False
 
     def add_data_by_marker(viewer, marker):
         if marker >= Marker.pro_dat0:
@@ -216,11 +248,10 @@ def Page():
         if marker.is_between(Marker.pro_dat1, Marker.pro_dat4):
             show_class_data(viewer)
             show_hubble1929_data(viewer)
-            hide_hstkey_data(viewer)
         if marker.is_between(Marker.pro_dat5, Marker.pro_dat7):
             show_class_data(viewer)
-            show_hst_key_data(viewer)
             hide_hubble1929_data(viewer)
+            show_hst_key_data(viewer)
         if marker >= Marker.pro_dat8:
             show_class_data(viewer)
             show_hubble1929_data(viewer)
@@ -237,6 +268,8 @@ def Page():
 
     current_step.subscribe(display_fit_legend)
     display_fit_legend(COMPONENT_STATE.value.current_step)
+    
+    solara.use_effect(lambda : show_fit_line(True), dependencies=[])
 
     @staticmethod
     def linear_slope(x, y):
