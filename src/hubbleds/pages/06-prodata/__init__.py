@@ -142,9 +142,18 @@ def Page():
 
         viewer = cast(HubbleFitView, gjapp.new_data_viewer(HubbleFitView, show=False))
         viewer.state.title = "Professional Data"
-        viewer.figure.update_xaxes(showline=True, mirror=False)
-        viewer.figure.update_yaxes(showline=True, mirror=False)
+        viewer.figure.update_layout(margin=PLOTLY_MARGINS)
+        viewer.figure.update_xaxes(showline=True, mirror=False, title="Distance (Mpc)")
+        viewer.figure.update_yaxes(showline=True, mirror=False, title="Velocity (km/s)")
         viewer.ignore(lambda data: data.label == "student_slider_subset")
+        
+        old_reset = viewer.state.reset_limits
+        def new_reset():
+            old_reset()
+            viewer.figure.update_xaxes(title="Distance (Mpc)")
+            viewer.figure.update_yaxes(title="Velocity (km/s)")
+        viewer.state.reset_limits = new_reset
+        
         
         return gjapp, viewer
     
